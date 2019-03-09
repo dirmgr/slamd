@@ -225,7 +225,7 @@ public class SLAMDDB
         String message = "Specified database directory \"" + dbDirectory +
                          "\" exists but is not a directory.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
     }
     else
@@ -243,7 +243,7 @@ public class SLAMDDB
           slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                  JobClass.stackTraceToString(e));
-          throw new DatabaseException(message, e);
+          throw new SLAMDDatabaseException(message, e);
         }
       }
       else
@@ -252,7 +252,7 @@ public class SLAMDDB
                          "\" does not exist and the SLAMD server has been " +
                          "configured to not create it.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
     }
 
@@ -301,8 +301,9 @@ public class SLAMDDB
         dbEnv.close();
       } catch (Exception e2) {}
 
-      throw new DatabaseException("Unable to open the SLAMD databases:  " + e,
-                                  e);
+      throw new SLAMDDatabaseException(
+           "Unable to open the SLAMD databases:  " + e,
+           e);
     }
 
 
@@ -398,9 +399,8 @@ public class SLAMDDB
     {
       if (! dbDir.isDirectory())
       {
-        throw new DatabaseException("Specified database directory \"" +
-                                    dbDirectory +
-                                    "\" exists but is not a directory.");
+        throw new SLAMDDatabaseException("Specified database directory \"" +
+             dbDirectory + "\" exists but is not a directory.");
       }
     }
     else
@@ -474,9 +474,8 @@ public class SLAMDDB
     {
       if (! dbDir.isDirectory())
       {
-        throw new DatabaseException("Specified database directory \"" +
-                                    dbDirectory +
-                                    "\" exists but is not a directory.");
+        throw new SLAMDDatabaseException("Specified database directory \"" +
+             dbDirectory + "\" exists but is not a directory.");
       }
     }
     else
@@ -487,8 +486,10 @@ public class SLAMDDB
       }
       catch (Exception e)
       {
-        throw new DatabaseException("Unable to create database directory \"" +
-                                    dbDirectory + "\" -- " + e, e);
+        throw new SLAMDDatabaseException(
+             "Unable to create database directory \"" + dbDirectory +
+                  "\" -- " + e,
+             e);
       }
     }
 
@@ -721,7 +722,7 @@ public class SLAMDDB
         String message = "Unable to open SLAMD databases because the " +
                          "database environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -856,7 +857,7 @@ public class SLAMDDB
                            "transactions and this method has been configured " +
                            "to not abort them.";
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-          throw new DatabaseException(message);
+          throw new SLAMDDatabaseException(message);
         }
       }
 
@@ -912,7 +913,7 @@ public class SLAMDDB
         String message = "Unable to close the environment because the " +
                          "databases are still open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -1132,8 +1133,8 @@ public class SLAMDDB
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException("Unexpected error occurred while " +
-                                    "performing the export:  " + e, e);
+        throw new SLAMDDatabaseException("Unexpected error occurred while " +
+             "performing the export:  " + e, e);
       }
       finally
       {
@@ -1184,8 +1185,8 @@ public class SLAMDDB
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException("Unexpected error occurred while " +
-                                    "performing the export:  " + e, e);
+        throw new SLAMDDatabaseException("Unexpected error occurred while " +
+             "performing the export:  " + e, e);
       }
 
       outputStream.flush();
@@ -1232,8 +1233,8 @@ public class SLAMDDB
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException("Unexpected error occurred while " +
-                                    "performing the export:  " + e, e);
+        throw new SLAMDDatabaseException("Unexpected error occurred while " +
+             "performing the export:  " + e, e);
       }
 
       outputStream.flush();
@@ -1697,8 +1698,8 @@ public class SLAMDDB
     Database db = getDB(dbName);
     if (db == null)
     {
-      throw new DatabaseException("No database found with a name of \"" +
-                                  dbName + '"');
+      throw new SLAMDDatabaseException("No database found with a name of \"" +
+           dbName + '"');
     }
 
     CursorConfig cursorConfig = new CursorConfig();
@@ -1729,8 +1730,8 @@ public class SLAMDDB
     }
     catch (Exception e)
     {
-      throw new DatabaseException("Unexpected exception caught while " +
-                                  "retrieving DB keys:  " + e, e);
+      throw new SLAMDDatabaseException("Unexpected exception caught while " +
+           "retrieving DB keys:  " + e, e);
     }
     finally
     {
@@ -1897,8 +1898,8 @@ public class SLAMDDB
                                  ASN1Element.getBytes(parameterValue));
     if (status != OperationStatus.SUCCESS)
     {
-      throw new DatabaseException("Unexpected status returned from put:  " +
-                                  status);
+      throw new SLAMDDatabaseException(
+           "Unexpected status returned from put:  " + status);
     }
 
     configHash.put(parameterName, parameterValue);
@@ -1955,8 +1956,8 @@ public class SLAMDDB
              ASN1Element.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
     {
-      throw new DatabaseException("Unexpected status returned from put:  " +
-                                  status);
+      throw new SLAMDDatabaseException(
+           "Unexpected status returned from put:  " + status);
     }
 
     configHash.put(parameterName, String.valueOf(parameterValue));
@@ -2013,8 +2014,8 @@ public class SLAMDDB
              ASN1Element.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
     {
-      throw new DatabaseException("Unexpected status returned from put:  " +
-                                  status);
+      throw new SLAMDDatabaseException(
+           "Unexpected status returned from put:  " + status);
     }
 
     configHash.put(parameterName, String.valueOf(parameterValue));
@@ -2215,8 +2216,8 @@ public class SLAMDDB
     catch (Exception e)
     {
       txn.abort();
-      throw new DatabaseException("Unable to retrieve job folder " +
-                                  folderName + " -- " + e, e);
+      throw new SLAMDDatabaseException(
+           "Unable to retrieve job folder " + folderName + " -- " + e, e);
     }
 
 
@@ -2224,9 +2225,8 @@ public class SLAMDDB
     if ((childNames != null) && (childNames.length > 0))
     {
       abortTransaction(txn);
-      throw new DatabaseException("Unable to delete job folder " + folderName +
-                                  " because it contains one or more child " +
-                                  "folders.");
+      throw new SLAMDDatabaseException("Unable to delete job folder " +
+           folderName + " because it contains one or more child folders.");
     }
 
 
@@ -2245,16 +2245,17 @@ public class SLAMDDB
         catch (Exception e)
         {
           abortTransaction(txn);
-          throw new DatabaseException("Unable to delete jobs contained in " +
-                                      "folder " + folderName + " -- " + e, e);
+          throw new SLAMDDatabaseException(
+               "Unable to delete jobs contained in folder " + folderName +
+                    " -- " + e,
+               e);
         }
       }
       else
       {
         abortTransaction(txn);
-        throw new DatabaseException("Cannot delete job folder " + folderName +
-                                    " because it still contains one or more " +
-                                    "jobs.");
+        throw new SLAMDDatabaseException("Cannot delete job folder " +
+             folderName + " because it still contains one or more jobs.");
       }
     }
 
@@ -2274,17 +2275,18 @@ public class SLAMDDB
         catch (Exception e)
         {
           abortTransaction(txn);
-          throw new DatabaseException("Unable to delete optimizing jobs " +
-                                      "contained in folder " + folderName +
-                                      " -- " + e, e);
+          throw new SLAMDDatabaseException(
+               "Unable to delete optimizing jobs contained in folder " +
+                    folderName + " -- " + e,
+               e);
         }
       }
       else
       {
         abortTransaction(txn);
-        throw new DatabaseException("Cannot delete job folder " + folderName +
-                                    " because it still contains one or more " +
-                                    "optimizing jobs.");
+        throw new SLAMDDatabaseException("Cannot delete job folder " +
+             folderName + " because it still contains one or more optimizing " +
+             "jobs.");
       }
     }
 
@@ -2304,17 +2306,18 @@ public class SLAMDDB
         catch (Exception e)
         {
           abortTransaction(txn);
-          throw new DatabaseException("Unable to delete uploaded files " +
-                                      "contained in job folder " + folderName +
-                                      " -- " + e, e);
+          throw new SLAMDDatabaseException(
+               "Unable to delete uploaded files contained in job folder " +
+                    folderName + " -- " + e,
+               e);
         }
       }
       else
       {
         abortTransaction(txn);
-        throw new DatabaseException("Cannot delete job folder " + folderName +
-                                    " because it still contains one or more " +
-                                    "uploaded files.");
+        throw new SLAMDDatabaseException("Cannot delete job folder " +
+             folderName + " because it still contains one or more uploaded " +
+             "files.");
       }
     }
 
@@ -2327,8 +2330,8 @@ public class SLAMDDB
     catch (Exception e)
     {
       abortTransaction(txn);
-      throw new DatabaseException("Cannot delete job folder " + folderName +
-                                  " -- " + e, e);
+      throw new SLAMDDatabaseException(
+           "Cannot delete job folder " + folderName +  " -- " + e, e);
     }
   }
 
@@ -2843,7 +2846,7 @@ public class SLAMDDB
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException(message, e);
+        throw new SLAMDDatabaseException(message, e);
       }
     }
 
@@ -3256,7 +3259,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
-      throw new DatabaseException(message, e);
+      throw new SLAMDDatabaseException(message, e);
     }
   }
 
@@ -3309,7 +3312,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
-      throw new DatabaseException(message, e);
+      throw new SLAMDDatabaseException(message, e);
     }
   }
 
@@ -3539,7 +3542,7 @@ public class SLAMDDB
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException(message, e);
+        throw new SLAMDDatabaseException(message, e);
       }
     }
   }
@@ -3601,7 +3604,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
-      throw new DatabaseException(message, e);
+      throw new SLAMDDatabaseException(message, e);
     }
   }
 
@@ -3656,7 +3659,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
-      throw new DatabaseException(message, e);
+      throw new SLAMDDatabaseException(message, e);
     }
   }
 
@@ -3923,7 +3926,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(de));
-      throw new DatabaseException(message, de);
+      throw new SLAMDDatabaseException(message, de);
     }
 
 
@@ -4020,7 +4023,7 @@ public class SLAMDDB
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                                JobClass.stackTraceToString(e));
-        throw new DatabaseException(message, e);
+        throw new SLAMDDatabaseException(message, e);
       }
     }
     else
@@ -4072,7 +4075,7 @@ public class SLAMDDB
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
-      throw new DatabaseException(message, e);
+      throw new SLAMDDatabaseException(message, e);
     }
   }
 
@@ -4315,7 +4318,7 @@ public class SLAMDDB
         String message = "Cannot create a transaction when the database " +
                          "environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -4354,7 +4357,7 @@ public class SLAMDDB
         String message = "Cannot commit a transaction when the database " +
                          "environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -4389,7 +4392,7 @@ public class SLAMDDB
         String message = "Cannot abort a transaction when the database " +
                          "environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -4435,7 +4438,7 @@ public class SLAMDDB
         String message = "Cannot perform the get because the databases are " +
                          "not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -4486,7 +4489,7 @@ public class SLAMDDB
         String message = "Cannot perform the put because the databases are " +
                          "not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 
@@ -4531,7 +4534,8 @@ public class SLAMDDB
     }
     catch (Exception e)
     {
-      throw new DatabaseException("Unable to update the database:  " + e, e);
+      throw new SLAMDDatabaseException("Unable to update the database:  " + e,
+           e);
     }
   }
 
@@ -4569,7 +4573,8 @@ public class SLAMDDB
     }
     catch (Exception e)
     {
-      throw new DatabaseException("Unable to update the database:  " + e, e);
+      throw new SLAMDDatabaseException("Unable to update the database:  " + e,
+           e);
     }
   }
 
@@ -4600,7 +4605,7 @@ public class SLAMDDB
         String message = "Cannot perform the delete because the databases " +
                          "are not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
-        throw new DatabaseException(message);
+        throw new SLAMDDatabaseException(message);
       }
 
 

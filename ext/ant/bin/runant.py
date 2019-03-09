@@ -1,9 +1,10 @@
 #!/usr/bin/python
-# Copyright 2001,2003-2004 The Apache Software Foundation
-#
-#  Licensed under the Apache License, Version 2.0 (the "License");
-#  you may not use this file except in compliance with the License.
-#  You may obtain a copy of the License at
+# Licensed to the Apache Software Foundation (ASF) under one or more
+#  contributor license agreements.  See the NOTICE file distributed with
+#  this work for additional information regarding copyright ownership.
+#  The ASF licenses this file to You under the Apache License, Version 2.0
+#  (the "License"); you may not use this file except in compliance with
+#  the License.  You may obtain a copy of the License at
 #
 #      http://www.apache.org/licenses/LICENSE-2.0
 #
@@ -18,13 +19,10 @@
 
  runant.py
 
-    This script is a translation of the runant.pl written by Steve Loughran.
+    This script is a translation of the runant.pl
     It runs ant with/out arguments, it should be quite portable (thanks to
     the python os library)
     This script has been tested with Python2.0/Win2K
-
- created:         2001-04-11
- author:          Pierre Dittgen pierre.dittgen@criltelecom.com
 
  Assumptions:
 
@@ -53,7 +51,10 @@ if not os.environ.has_key('JAVACMD'):
         if not os.path.exists(os.environ['JAVA_HOME']):
             print "Warning: JAVA_HOME is not defined correctly."
         else:
-            JAVACMD = os.path.join(os.environ['JAVA_HOME'], 'bin', 'java')
+            JAVA_HOME = os.environ['JAVA_HOME']
+            while JAVA_HOME[0] == JAVA_HOME[-1] == "\"":
+                JAVA_HOME = JAVA_HOME[1:-1]
+            JAVACMD = os.path.join(JAVA_HOME, 'bin', 'java')
     else:
         print "Warning: JAVA_HOME not set."
 else:
@@ -63,7 +64,7 @@ if not JAVACMD:
 
 launcher_jar = os.path.join(ANT_LIB, 'ant-launcher.jar')
 if not os.path.exists(launcher_jar):
-    print 'Unable to locate ant-launcher.jar. Expected to find it in %s' % \
+    print 'Warning: Unable to locate ant-launcher.jar. Expected to find it in %s' % \
         ANT_LIB
 
 # Build up standard classpath (LOCALCLASSPATH)
@@ -85,16 +86,20 @@ if os.environ.has_key('ANT_ARGS'):
 
 CLASSPATH = ""
 if os.environ.has_key('CLASSPATH'):
-    CLASSPATH = os.environ['CLASSPATH']
+    CLASSPATH = "-lib " + os.environ['CLASSPATH']
+
+while JAVACMD[0] == JAVACMD[-1] == "\"":
+    JAVACMD = JAVACMD[1:-1]
 
 # Builds the commandline
-cmdline = ('%s %s -classpath %s -Dant.home=%s %s ' + \
-    'org.apache.tools.ant.launch.Launcher %s -lib %s %s') \
+cmdline = ('"%s" %s -classpath %s -Dant.home=%s %s ' + \
+    'org.apache.tools.ant.launch.Launcher %s %s %s') \
      % (JAVACMD, ANT_OPTS, LOCALCLASSPATH, ANT_HOME, OPTS, ANT_ARGS, \
         CLASSPATH, string.join(sys.argv[1:], ' '))
 
 if debug:
     print '\n%s\n\n' % (cmdline)
+sys.stdout.flush()
 
 # Run the biniou!
 os.system(cmdline)

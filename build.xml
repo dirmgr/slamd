@@ -173,7 +173,7 @@ public class DynamicConstants
     <mkdir  dir="${classes.dir}" />
 
     <javac srcdir="${source.dir}" destdir="${classes.dir}" optimize="true"
-           debug="on" debuglevel="lines,source" source="1.5" target="1.5"
+           debug="on" debuglevel="lines,source" source="1.8" target="1.8"
            fork="true" memoryInitialSize="${MEM}" memoryMaximumSize="${MEM}">
       <compilerarg value="-Xlint:all" />
       <classpath>
@@ -400,7 +400,7 @@ public class DynamicConstants
     <delete dir="${javadoc.dir}" />
     <mkdir  dir="${javadoc.dir}" />
 
-    <javadoc destdir="${javadoc.dir}" source="1.5" additionalparam="-quiet"
+    <javadoc destdir="${javadoc.dir}" source="1.8" additionalparam="-quiet"
              windowtitle="SLAMD ${build.id} JavaDoc Documentation"
              maxmemory="${MEM}">
       <classpath>

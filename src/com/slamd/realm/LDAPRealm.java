@@ -830,7 +830,7 @@ public class LDAPRealm
 
     // The username and credentials are valid, so return the Principal
     // associated with the user.
-    Principal userPrincipal = new GenericPrincipal(this, username, credentials);
+    Principal userPrincipal = new GenericPrincipal(username, credentials, null);
     long expirationTime = now + CACHE_EXPIRATION_TIME;
     cachedUser = new CachedUser(username, userDN, hashedPassword, userPrincipal,
                                 expirationTime);
@@ -859,13 +859,13 @@ public class LDAPRealm
         port = Integer.parseInt(ldapPort);
         if ((port < 1) || (port > 65535))
         {
-          log("The port number must be between 1 and 65535.");
+          logError("The port number must be between 1 and 65535.");
           return null;
         }
       }
       catch (NumberFormatException nfe)
       {
-        log("Cannot interpret " + ldapPort + " as an integer value.");
+        logError("Cannot interpret " + ldapPort + " as an integer value.");
         return null;
       }
 
@@ -893,7 +893,7 @@ public class LDAPRealm
       }
       catch (LDAPException le)
       {
-        log("Could not establish the search connection:  " + le);
+        logError("Could not establish the search connection:  " + le);
         searchConnection = null;
         return null;
       }
@@ -918,7 +918,7 @@ public class LDAPRealm
     }
     catch (LDAPException le)
     {
-      log("Could not perform a search in the user directory:  " + le);
+      logError("Could not perform a search in the user directory:  " + le);
       try
       {
         searchConnection.disconnect();
@@ -953,13 +953,13 @@ public class LDAPRealm
         port = Integer.parseInt(ldapPort);
         if ((port < 1) || (port > 65535))
         {
-          log("The port number must be between 1 and 65535.");
+          logError("The port number must be between 1 and 65535.");
           return false;
         }
       }
       catch (NumberFormatException nfe)
       {
-        log("Cannot interpret " + ldapPort + " as an integer value.");
+        logError("Cannot interpret " + ldapPort + " as an integer value.");
         return false;
       }
 
@@ -986,7 +986,7 @@ public class LDAPRealm
       }
       catch (LDAPException le)
       {
-        log("Could not establish the bind connection:  " + le);
+        logError("Could not establish the bind connection:  " + le);
         bindConnection = null;
         return false;
       }
@@ -1009,7 +1009,7 @@ public class LDAPRealm
         case LDAPException.CONSTRAINT_VIOLATION:
              break;
         default:
-             log("Could not perform the bind:  " + le);
+             logError("Could not perform the bind:  " + le);
              try
              {
                bindConnection.disconnect();
@@ -1043,7 +1043,7 @@ public class LDAPRealm
       }
       catch (Exception e)
       {
-        log("Unable to obtain SHA digest implementation.");
+        logError("Unable to obtain SHA digest implementation.");
         return null;
       }
     }
@@ -1112,7 +1112,7 @@ public class LDAPRealm
     }
     catch (LDAPException le)
     {
-      log("Unable to retrieve membership entry " + membershipDN + ":  " +
+      logError("Unable to retrieve membership entry " + membershipDN + ":  " +
           le);
       membershipType = MEMBERSHIP_TYPE_UNKNOWN;
       return;
@@ -1123,14 +1123,16 @@ public class LDAPRealm
     LDAPAttribute attr = membershipEntry.getAttribute("objectClass");
     if (attr == null)
     {
-      log("Unable to retrieve objectClass values from entry " + membershipDN);
+      logError("Unable to retrieve objectClass values from entry " +
+           membershipDN);
       membershipType = MEMBERSHIP_TYPE_UNKNOWN;
       return;
     }
     String[] values = attr.getStringValueArray();
     if ((values == null) || (values.length == 0))
     {
-      log("Unable to retrieve objectClass values from entry " + membershipDN);
+      logError("Unable to retrieve objectClass values from entry " +
+           membershipDN);
       membershipType = MEMBERSHIP_TYPE_UNKNOWN;
       return;
     }
@@ -1154,7 +1156,7 @@ public class LDAPRealm
         attr = membershipEntry.getAttribute(MEMBER_URL_ATTRIBUTE);
         if (attr == null)
         {
-          log("Unable to retrieve " + MEMBER_URL_ATTRIBUTE +
+          logError("Unable to retrieve " + MEMBER_URL_ATTRIBUTE +
               " attribute from groupOfURLs entry " + membershipDN);
           membershipType = MEMBERSHIP_TYPE_UNKNOWN;
           return;
@@ -1162,7 +1164,7 @@ public class LDAPRealm
         values = attr.getStringValueArray();
         if ((values == null) || (values.length == 0))
         {
-          log("Unable to retrieve " + MEMBER_URL_ATTRIBUTE +
+          logError("Unable to retrieve " + MEMBER_URL_ATTRIBUTE +
               " attribute from groupOfURLs entry " + membershipDN);
           membershipType = MEMBERSHIP_TYPE_UNKNOWN;
           return;
@@ -1178,7 +1180,7 @@ public class LDAPRealm
         }
         catch (Exception e)
         {
-          log("Unable to parse value '" + values[1] + "' as an LDAP URL.");
+          logError("Unable to parse value '" + values[1] + "' as an LDAP URL.");
           membershipType = MEMBERSHIP_TYPE_UNKNOWN;
           return;
         }
@@ -1307,7 +1309,7 @@ public class LDAPRealm
   /**
    * Shuts down this realm and releases the resources associated with it.
    */
-  public void stop()
+  public void stopInternal()
   {
     // Invoke the superclass stop() method.
     try
@@ -1326,21 +1328,6 @@ public class LDAPRealm
     {
       bindConnection.disconnect();
     } catch (LDAPException le) {}
-  }
-
-
-
-  /**
-   * Retrieves a short name for this Realm implementation, for use in log
-   * messages.
-   *
-   * @return  A short name for this Realm implementation, for use in log
-   *          messages.
-   */
-  @Override()
-  protected String getName()
-  {
-    return "LDAPRealm";
   }
 
 
@@ -1371,6 +1358,18 @@ public class LDAPRealm
   protected Principal getPrincipal(String username)
   {
     return null;
+  }
+
+
+
+  /**
+   * Logs the provided error message to Tomcat.
+   *
+   * @param  message  The message to be logged.
+   */
+  private void logError(final String message)
+  {
+    container.getLogger().error(message);
   }
 }
 

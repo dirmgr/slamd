@@ -11,7 +11,7 @@
  *
  * The Original Code is the SLAMD Distributed Load Generation Engine.
  * The Initial Developer of the Original Code is Neil A. Wilson.
- * Portions created by Neil A. Wilson are Copyright (C) 2004-2010.
+ * Portions created by Neil A. Wilson are Copyright (C) 2004-2019.
  * Some preexisting portions Copyright (C) 2002-2006 Sun Microsystems, Inc.
  * All Rights Reserved.
  *

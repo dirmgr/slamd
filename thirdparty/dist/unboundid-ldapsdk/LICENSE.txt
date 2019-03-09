@@ -1,11 +1,11 @@
-UnboundID LDAP SDK for Java (Standard Edition)
-Copyright 2007-2010 UnboundID Corp.
+UnboundID LDAP SDK for Java
+Copyright 2007-2019 Ping Identity Corporation
 
 
-The Standard Edition of the UnboundID LDAP SDK for Java is available under
-three licenses:  the GNU General Public License version 2 (GPLv2), the GNU
-Lesser General Public License version 2.1 (LGPLv2.1) and a free-right-to-use
-use license created by UnboundID Corp.
+The UnboundID LDAP SDK for Java is available under three licenses:  the GNU
+General Public License version 2 (GPLv2), the GNU Lesser General Public License
+version 2.1 (LGPLv2.1) and a free-right-to-use use license created by Ping
+Identity Corporation.
 
 See the LICENSE-GPLv2.txt file for the GNU General Public License version 2.
 
@@ -15,3 +15,6 @@ version 2.1.
 See the LICENSE-UnboundID-LDAPSDK.txt file for the UnboundID LDAP SDK Free Use
 License.
 
+Licensees of Ping Identity, UnboundID, and Nokia/Alcatel-Lucent 8661 server
+products may also use the LDAP SDK under the terms of the server product
+licenses.

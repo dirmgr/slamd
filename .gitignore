@@ -1,2 +1,4 @@
 build
 src/com/slamd/common/DynamicConstants.java
+.idea
+*.iml

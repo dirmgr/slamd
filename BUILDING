@@ -1,0 +1,19 @@
+This is the build environment for the SLAMD Distributed Load Generation Engine.
+To build SLAMD, execute the build.sh script on UNIX systems, or the build.bat
+batch file on Windows.  If you get an error message that indicates that the
+JAVA_HOME environment variable is not set, then you must define that variable
+to reference the root of the Java 1.4 or higher JDK installation.  On most UNIX
+systems, this may be done like:
+
+     JAVA_HOME=/usr/java
+     export JAVA_HOME
+
+On Windows, this may be done like:
+
+     set JAVA_HOME=C:\java
+
+When the build is complete, the "build/classes" directory will contain all the
+compiled class files, and the "build/package" directory will contain the
+packaged SLAMD server and client archives.  If JavaDoc documentation is to be
+generated, then it will be under the "build/javadoc" directory.
+

@@ -1,0 +1,10 @@
+# The major, minor, and point version numbers, which should be integer values.
+MAJOR_VERSION=2
+MINOR_VERSION=0
+POINT_VERSION=1
+
+# The version qualifier string, which may be empty if no qualifier is needed,
+# or it may be a string like "-alpha1" or "-update2".  It should not contain
+# any spaces or other characters that might not be suitable for use in a
+# filename.
+VERSION_QUALIFIER=

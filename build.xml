@@ -1,0 +1,439 @@
+<!--
+ !                             Sun Public License
+ !
+ ! The contents of this file are subject to the Sun Public License Version
+ ! 1.0 (the "License").  You may not use this file except in compliance with
+ ! the License.  A copy of the License is available at http://www.sun.com/
+ !
+ ! The Original Code is the SLAMD Distributed Load Generation Engine.
+ ! The Initial Developer of the Original Code is Neil A. Wilson.
+ ! Portions created by Neil A. Wilson are Copyright (C) 2004-2010.
+ ! Some preexisting portions Copyright (C) 2002-2006 Sun Microsystems, Inc.
+ ! All Rights Reserved.
+ !
+ ! Contributor(s):  Neil A. Wilson
+ ! -->
+<project name="SLAMD" basedir="." default="package">
+  <description>
+    This is the build script for the SLAMD Distributed Load Generation Engine.
+    For more information about SLAMD, see http://www.SLAMD.com/.
+  </description>
+
+
+
+  <!-- Define a number of constants for use in the build process -->
+  <property name="build.dir"         location="build"                 />
+  <property name="classes.dir"       location="${build.dir}/classes"  />
+  <property name="javadoc.dir"       location="${build.dir}/javadoc"  />
+  <property name="ext.dir"           location="ext"                   />
+  <property name="lib.dir"           location="lib"                   />
+  <property name="package.dir"       location="${build.dir}/package"  />
+  <property name="source.dir"        location="src"                   />
+  <property name="docs.dir"          location="docs"                  />
+  <property name="scripts.dir"       location="scripts"               />
+  <property name="thirdparty.dir"    location="thirdparty"            />
+  <property name="base.server.dir"   location="base_server"           />
+  <property name="base.client.dir"   location="base_client"           />
+  <property name="base.monitor.dir"  location="base_monitor_client"   />
+  <property name="checkstyle.dir"    location="${ext.dir}/checkstyle" />
+  <property name="official_build"    value="false"                    />
+  <property file="VERSION"                                            />
+
+
+
+  <!-- The "clean" target, which removes all build files. -->
+  <target name="clean"
+          description="Remove any files generated during the build process.">
+    <echo message="Removing previous build files...." />
+
+    <delete dir="${build.dir}"   />
+    <delete file="${source.dir}/com/slamd/common/DynamicConstants.java" />
+  </target>
+
+
+
+  <!-- Perform common initialization needed for all builds -->
+  <target name="init" description="Initialize the build environment.">
+    <tstamp>
+      <format property="timestamp" pattern="yyyyMMddHHmmss" />
+    </tstamp>
+
+    <condition property="version.string"
+               value="${MAJOR_VERSION}.${MINOR_VERSION}.${POINT_VERSION}${VERSION_QUALIFIER}">
+      <istrue value="${official_build}" />
+    </condition>
+
+    <condition property="version.string"
+               value="${MAJOR_VERSION}.${MINOR_VERSION}.${POINT_VERSION}${VERSION_QUALIFIER}-${timestamp}">
+      <not>
+        <isset property="version.string" />
+      </not>
+    </condition>
+
+    <condition property="build.id"
+               value="${version.string}">
+      <istrue value="${official_build}" />
+    </condition>
+
+    <condition property="build.id" value="${timestamp}">
+      <not>
+        <isset property="build.id" />
+      </not>
+    </condition>
+
+    <condition property="MEM" value="128M">
+      <not>
+        <isset property="MEM" />
+      </not>
+    </condition>
+
+    <echo file="${source.dir}/com/slamd/common/DynamicConstants.java">/*
+ *                             Sun Public License
+ *
+ * The contents of this file are subject to the Sun Public License Version
+ * 1.0 (the "License").  You may not use this file except in compliance with
+ * the License.  A copy of the License is available at http://www.sun.com/
+ *
+ * The Original Code is the SLAMD Distributed Load Generation Engine.
+ * The Initial Developer of the Original Code is Neil A. Wilson.
+ * Portions created by Neil A. Wilson are Copyright (C) 2004-2010.
+ * Some preexisting portions Copyright (C) 2002-2006 Sun Microsystems, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):  Neil A. Wilson
+ */
+package com.slamd.common;
+
+
+
+/**
+ * This file has been dynamically generated as part of the SLAMD build
+ * process.  Do not edit it directly.
+ */
+public class DynamicConstants
+{
+  /**
+   * Indicates whether this is an official build.
+   */
+  public static final boolean OFFICIAL_BUILD = ${official_build};
+
+
+
+  /**
+   * The SLAMD version string to be displayed to the end user.
+   */
+  public static final String SLAMD_VERSION = "${version.string}";
+
+
+
+  /**
+   * The timestamp that this SLAMD build was created.
+   */
+  public static final String BUILD_DATE = "${timestamp}";
+
+
+
+  /**
+   * The major version number for this SLAMD build.
+   */
+  public static final int MAJOR_VERSION = ${MAJOR_VERSION};
+
+
+
+  /**
+   * The minor version number for this SLAMD build.
+   */
+  public static final int MINOR_VERSION = ${MINOR_VERSION};
+
+
+
+  /**
+   * The point version number for this SLAMD build.
+   */
+  public static final int POINT_VERSION = ${POINT_VERSION};
+
+
+
+  /**
+   * The version qualifier string for this SLAMD build.
+   */
+  public static final String VERSION_QUALIFIER = "${VERSION_QUALIFIER}";
+}
+</echo>
+  </target>
+
+
+
+  <!-- Compile the main Java source code -->
+  <target name="build" depends="init"
+          description="Compile the main SLAMD source files.">
+    <echo message="Compiling Java source...." />
+
+    <delete dir="${classes.dir}" />
+    <mkdir  dir="${classes.dir}" />
+
+    <javac srcdir="${source.dir}" destdir="${classes.dir}" optimize="true"
+           debug="on" debuglevel="lines,source" source="1.5" target="1.5"
+           fork="true" memoryInitialSize="${MEM}" memoryMaximumSize="${MEM}">
+      <compilerarg value="-Xlint:all" />
+      <classpath>
+        <fileset dir="${ext.dir}">
+          <include name="*.jar" />
+        </fileset>
+
+        <fileset dir="${lib.dir}">
+          <include name="*.jar" />
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+
+
+  <!-- Create the package directory and begin to populate it -->
+  <target name="create-package-dir" depends="build">
+    <echo message="Creating package structure...." />
+
+    <delete dir="${package.dir}" />
+    <mkdir  dir="${package.dir}" />
+
+    <copy todir="${package.dir}">
+      <fileset dir="${base.server.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/webapps/ROOT/documentation" />
+    <copy todir="${package.dir}/slamd/webapps/ROOT/documentation">
+      <fileset dir="${docs.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <untar src="${thirdparty.dir}/tomcat.tar.gz" dest="${package.dir}"
+           compression="gzip" />
+    <move todir="${package.dir}/slamd">
+      <fileset dir="${package.dir}/tomcat" includes="**/*" />
+    </move>
+    <delete dir="${package.dir}/tomcat" />
+
+    <mkdir dir="${package.dir}/slamd/thirdparty" />
+    <copy todir="${package.dir}/slamd/thirdparty">
+      <fileset dir="${thirdparty.dir}/dist" includes="**/*"
+               excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/webapps/slamd/WEB-INF/classes" />
+
+    <mkdir dir="${package.dir}/slamd/webapps/slamd/WEB-INF/lib" />
+    <jar destfile="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+         index="true">
+      <fileset dir="${classes.dir}" />
+    </jar>
+
+    <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+          todir="${package.dir}/slamd/server/lib" />
+
+    <copy todir="${package.dir}/slamd/webapps/slamd/WEB-INF/lib">
+      <fileset dir="lib" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <copy todir="${package.dir}/slamd">
+      <fileset dir="${base.client.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/slamd_client/classes" />
+
+    <mkdir dir="${package.dir}/slamd/slamd_client/lib" />
+
+    <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+          todir="${package.dir}/slamd/slamd_client/lib" />
+
+    <copy todir="${package.dir}/slamd/slamd_client/lib">
+      <fileset dir="${lib.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <copy todir="${package.dir}/slamd">
+      <fileset dir="${base.monitor.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/classes" />
+
+    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/lib" />
+
+    <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+          todir="${package.dir}/slamd/slamd_monitor_client/lib" />
+
+    <copy todir="${package.dir}/slamd/slamd_monitor_client/lib">
+      <fileset dir="${lib.dir}" includes="**/*" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/tools" />
+    <fixcrlf srcDir="${scripts.dir}" destDir="${package.dir}/slamd/tools"
+             includes="**/*.sh" eol="lf" />
+    <fixcrlf srcDir="${scripts.dir}" destDir="${package.dir}/slamd/tools"
+             includes="**/*.bat" eol="crlf" />
+
+    <mkdir dir="${package.dir}/slamd/slamd_client/tools" />
+    <fixcrlf srcDir="${scripts.dir}"
+             destDir="${package.dir}/slamd/slamd_client/tools"
+             includes="**/*.sh" eol="lf" />
+    <fixcrlf srcDir="${scripts.dir}"
+             destDir="${package.dir}/slamd/slamd_client/tools"
+             includes="**/*.bat" eol="crlf" />
+
+    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/tools" />
+    <fixcrlf srcDir="${scripts.dir}"
+             destDir="${package.dir}/slamd/slamd_monitor_client/tools"
+             includes="**/*.sh" eol="lf" />
+    <fixcrlf srcDir="${scripts.dir}"
+             destDir="${package.dir}/slamd/slamd_monitor_client/tools"
+             includes="**/*.bat" eol="crlf" />
+
+    <fixcrlf srcDir="${package.dir}/slamd/bin" includes="*.sh"  eol="lf" />
+    <fixcrlf srcDir="${package.dir}/slamd/bin" includes="*.bat" eol="crlf" />
+
+    <fixcrlf srcDir="${package.dir}/slamd/slamd_client" includes="*.sh"
+             eol="lf" />
+    <fixcrlf srcDir="${package.dir}/slamd/slamd_client" includes="*.bat"
+             eol="crlf" />
+
+    <fixcrlf srcDir="${package.dir}/slamd/slamd_monitor_client" includes="*.sh"
+             eol="lf" />
+    <fixcrlf srcDir="${package.dir}/slamd/slamd_monitor_client" includes="*.bat"
+             eol="crlf" />
+
+    <mkdir dir="${package.dir}/slamd/tools/MakeLDIF" />
+    <copy toDir="${package.dir}/slamd/tools/MakeLDIF">
+      <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/slamd_client/tools/MakeLDIF" />
+    <copy toDir="${package.dir}/slamd/slamd_client/tools/MakeLDIF">
+      <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
+    </copy>
+
+    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/tools/MakeLDIF" />
+    <copy toDir="${package.dir}/slamd/slamd_monitor_client/tools/MakeLDIF">
+      <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
+    </copy>
+
+    <chmod perm="755">
+      <fileset dir="${package.dir}" includes="**/*.sh" />
+    </chmod>
+  </target>
+
+
+
+  <!-- Package the SLAMD Server into a WAR file -->
+  <target name="package-war" depends="clean,init,build,create-package-dir"
+          description="Package the SLAMD Server into a WAR file">
+    <echo message="Generating the SLAMD Server WAR file...." />
+
+    <jar destfile="${package.dir}/slamd-${build.id}.war" index="true">
+      <fileset dir="${package.dir}/slamd/webapps/slamd" includes="**/*" />
+    </jar>
+  </target>
+
+
+
+  <!-- Package the SLAMD Server into a ZIP file -->
+  <target name="package" depends="clean,init,build,create-package-dir"
+          description="Package the SLAMD Server for distribution">
+    <echo message="Packaging SLAMD...." />
+
+    <zip destfile="${package.dir}/slamd/slamd_client-${build.id}.zip">
+      <zipfileset dir="${package.dir}/slamd" includes="slamd_client/**/*"
+                  excludes="slamd_client/**/*.sh" filemode="644"
+                  dirmode="755" />
+      <zipfileset dir="${package.dir}/slamd" includes="slamd_client/**/*.sh"
+                  filemode="755" dirmode="755" />
+    </zip>
+
+    <delete dir="${package.dir}/slamd/slamd_client" />
+    <copy file="${package.dir}/slamd/slamd_client-${build.id}.zip"
+          tofile="${package.dir}/slamd_client-${build.id}.zip" />
+
+    <zip destfile="${package.dir}/slamd/slamd_monitor_client-${build.id}.zip">
+      <zipfileset dir="${package.dir}/slamd"
+                  includes="slamd_monitor_client/**/*"
+                  excludes="slamd_monitor_client/**/*.sh" filemode="644"
+                  dirmode="755" />
+      <zipfileset dir="${package.dir}/slamd"
+                  includes="slamd_monitor_client/**/*.sh" filemode="755"
+                  dirmode="755" />
+    </zip>
+
+    <delete dir="${package.dir}/slamd/slamd_monitor_client" />
+    <copy file="${package.dir}/slamd/slamd_monitor_client-${build.id}.zip"
+          tofile="${package.dir}/slamd_monitor_client-${build.id}.zip" />
+
+    <zip destfile="${package.dir}/slamd-${build.id}.zip">
+      <zipfileset dir="${package.dir}" includes="slamd/**/*"
+                  excludes="slamd/**/*.sh" filemode="644" dirmode="755" />
+      <zipfileset dir="${package.dir}" includes="slamd/**/*.sh" filemode="755"
+                  dirmode="755" />
+    </zip>
+  </target>
+
+
+
+  <!-- Rebuild the SLAMD server, preserving configuration and data -->
+  <target name="rebuild" depends="init,build"
+          description="Rebuild SLAMD without destroying config and data">
+    <echo message="Regenerating the SLAMD Server JAR file...." />
+
+    <delete file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar" />
+    <jar destfile="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+         index="true">
+      <fileset dir="${classes.dir}" />
+    </jar>
+
+    <delete file="${package.dir}/slamd/server/lib/slamd.jar" />
+    <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
+          todir="${package.dir}/slamd/server/lib" />
+  </target>
+
+
+
+  <!-- Generate JavaDoc documentation -->
+  <target name="javadoc" depends="init"
+          description="Generate JavaDoc documentation for SLAMD">
+    <echo message="Generating JavaDoc documentation...." />
+
+    <delete dir="${javadoc.dir}" />
+    <mkdir  dir="${javadoc.dir}" />
+
+    <javadoc destdir="${javadoc.dir}" source="1.5" additionalparam="-quiet"
+             windowtitle="SLAMD ${build.id} JavaDoc Documentation"
+             maxmemory="${MEM}">
+      <classpath>
+        <fileset dir="${ext.dir}">
+          <include name="**/*.jar" />
+        </fileset>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar" />
+        </fileset>
+      </classpath>
+
+      <fileset dir="${source.dir}" />
+    </javadoc>
+  </target>
+
+
+
+  <!-- Perform Basic Code Style Checks -->
+  <target name="checkstyle" description="Perform basic code style checks">
+    <echo message="Checking source code style characteristics...." />
+    <taskdef resource="checkstyletask.properties"
+             classpath="${checkstyle.dir}/checkstyle-all-4.1.jar" />
+
+    <checkstyle config="${checkstyle.dir}/slamd-checkstyle.xml"
+                failOnViolation="true">
+      <fileset dir="${source.dir}" includes="**/*.java" />
+    </checkstyle>
+  </target>
+
+
+
+  <!-- Build All SLAMD Components -->
+  <target name="all" depends="package,package-war,javadoc"
+          description="Build all SLAMD components" />
+</project>
+

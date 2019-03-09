@@ -1,0 +1,42 @@
+<!--
+ *                             Sun Public License
+ *
+ * The contents of this file are subject to the Sun Public License Version
+ * 1.0 (the "License").  You may not use this file except in compliance with
+ * the License.  A copy of the License is available at http://www.sun.com/
+ *
+ * The Original Code is the SLAMD Distributed Load Generation Engine.
+ * The Initial Developer of the Original Code is Neil A. Wilson.
+ * Portions created by Neil A. Wilson are Copyright (C) 2004-2010.
+ * Some preexisting portions Copyright (C) 2002-2006 Sun Microsystems, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):  Neil A. Wilson
+ -->
+
+<HTML>
+  <BODY>
+    The <CODE>com.slamd.asn1</CODE> package contains code for encoding and
+    decoding ASN.1 data using the Basic Encoding Rules (BER) format.  This
+    encoding is used for communication between the SLAMD server and the
+    various clients, as well as storing certain kinds of data (e.g., job
+    statistics) in the configuration directory.
+
+    Note that this is not a complete ASN.1 implementation -- most elements are
+    included, but those elements not used by either SLAMD or the LDAP protocol
+    (e.g., OIDs, time values, etc.) are not implemented.  The following ASN.1
+    elements are supported:
+
+    <UL>
+      <LI>Generic ASN.1 elements</LI>
+      <LI>Boolean elements (type 0x01)</LI>
+      <LI>Integer elements (type 0x02)</LI>
+      <LI>Octet string elements (type 0x04)</LI>
+      <LI>Null elements (type 0x05)</LI>
+      <LI>Enumerated elements (type 0x0A)</LI>
+      <LI>Sequence elements (type 0x30)</LI>
+      <LI>Set elements (type 0x31)</LI>
+    </UL>
+  </BODY>
+</HTML>
+

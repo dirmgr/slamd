@@ -1,0 +1,55 @@
+<!--
+ *                             Sun Public License
+ *
+ * The contents of this file are subject to the Sun Public License Version
+ * 1.0 (the "License").  You may not use this file except in compliance with
+ * the License.  A copy of the License is available at http://www.sun.com/
+ *
+ * The Original Code is the SLAMD Distributed Load Generation Engine.
+ * The Initial Developer of the Original Code is Neil A. Wilson.
+ * Portions created by Neil A. Wilson are Copyright (C) 2004-2010.
+ * Some preexisting portions Copyright (C) 2002-2006 Sun Microsystems, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):  Neil A. Wilson
+ -->
+
+<HTML>
+  <BODY>
+    The <CODE>com.slamd.server</CODE> package contains the code that is used
+    by the core SLAMD server.  There are many components in this package:
+
+    <UL>
+      <LI>
+        The core SLAMD server itself
+      </LI>
+      <LI>
+        The configuration handler used to store configuration information as
+        well as data about jobs, optimizing jobs, real and virtual job folders,
+        and uploaded files.
+      </LI>
+      <LI>
+        The server-side code for interacting with SLAMD clients, client
+        managers, resource monitor clients, and real-time statistics reporting
+        clients.
+      </LI>
+      <LI>
+        The job caching code, which is used to reduce the amount of interaction
+        necessary within the configuration directory.
+      </LI>
+      <LI>
+        The code used to perform logging about the various processing that
+        occurs within SLAMD.
+      </LI>
+      <LI>
+        The SLAMD scheduler, which is responsible for ensuring that all
+        scheduled jobs are executed properly according to their configuration.
+      </LI>
+      <LI>
+        The SLAMD mailer, which provides a means of sending e-mail notifications
+        whenever a job or optimizing job completes.
+      </LI>
+    </UL>
+  </BODY>
+</HTML>
+

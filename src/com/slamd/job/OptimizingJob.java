@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import com.sleepycat.je.DatabaseException;
@@ -316,9 +317,6 @@ public final class OptimizingJob
 
 
 
-  // The set of job iterations associated with this optimizing job.
-  private ArrayList<Job> jobList;
-
   // Indicates whether a request has been received to cancel this job.
   private boolean cancelRequested;
 
@@ -399,6 +397,9 @@ public final class OptimizingJob
 
   // The job class associated with this optimizing job.
   private JobClass jobClass;
+
+  // The set of job iterations associated with this optimizing job.
+  private List<Job> jobList;
 
   // The optimization algorithm to use for this optimizing job.
   private OptimizationAlgorithm optimizationAlgorithm;

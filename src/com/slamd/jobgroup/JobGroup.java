@@ -20,6 +20,8 @@ package com.slamd.jobgroup;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.slamd.asn1.ASN1Element;
 import com.slamd.asn1.ASN1OctetString;
@@ -47,40 +49,40 @@ import com.slamd.server.SLAMDServer;
  *
  * @author   Neil A. Wilson
  */
-public class JobGroup
+public final class JobGroup
 {
   /**
    * The name of the encoded element that holds the job group name.
    */
-  public static final String ELEMENT_NAME = "job_group_name";
+  private static final String ELEMENT_NAME = "job_group_name";
 
 
 
   /**
    * The name of the encoded element that holds the job group description.
    */
-  public static final String ELEMENT_DESCRIPTION = "job_group_description";
+  private static final String ELEMENT_DESCRIPTION = "job_group_description";
 
 
 
   /**
    * The name of the encoded element that holds the job group parameter list.
    */
-  public static final String ELEMENT_PARAMETERS = "job_group_parameters";
+  private static final String ELEMENT_PARAMETERS = "job_group_parameters";
 
 
 
   /**
    * The name of the encoded element that holds the job list.
    */
-  public static final String ELEMENT_JOB_LIST = "job_list";
+  private static final String ELEMENT_JOB_LIST = "job_list";
 
 
 
   /**
    * The name of the encoded element that holds a job in the job list.
    */
-  public static final String ELEMENT_JOB_GROUP_JOB = "job_group_job";
+  private static final String ELEMENT_JOB_GROUP_JOB = "job_group_job";
 
 
 
@@ -88,13 +90,13 @@ public class JobGroup
    * The name of the encoded element that holds an optimizing job in the job
    * list.
    */
-  public static final String ELEMENT_JOB_GROUP_OPTIMIZING_JOB =
+  private static final String ELEMENT_JOB_GROUP_OPTIMIZING_JOB =
        "job_group_optimizing_job";
 
 
 
   // The set of jobs and optimizing jobs contained in this job group.
-  private ArrayList<JobGroupItem> jobList;
+  private List<JobGroupItem> jobList;
 
   // The set of parameters associated with this job group.
   private ParameterList parameters;
@@ -113,12 +115,12 @@ public class JobGroup
    * @param  name         The human-readable name for this job group.
    * @param  description  The human-readable description for this job group.
    */
-  public JobGroup(String name, String description)
+  public JobGroup(final String name, final String description)
   {
     this.name        = name;
     this.description = description;
 
-    jobList    = new ArrayList<JobGroupItem>();
+    jobList    = new ArrayList<>();
     parameters = new ParameterList();
   }
 
@@ -141,7 +143,7 @@ public class JobGroup
    *
    * @param  name  The human-readable name for this job group.
    */
-  public void setName(String name)
+  public void setName(final String name)
   {
     this.name = name;
   }
@@ -165,7 +167,7 @@ public class JobGroup
    *
    * @param  description  The human-readable description for this job group.
    */
-  public void setDescription(String description)
+  public void setDescription(final String description)
   {
     this.description = description;
   }
@@ -192,7 +194,7 @@ public class JobGroup
    *
    * @param  parameters  The set of parameters for this job group.
    */
-  public void setParameters(ParameterList parameters)
+  public void setParameters(final ParameterList parameters)
   {
     this.parameters = parameters;
   }
@@ -207,7 +209,7 @@ public class JobGroup
    *
    * @return  The set of jobs and optimizing jobs for this job group.
    */
-  public ArrayList<JobGroupItem> getJobList()
+  public List<JobGroupItem> getJobList()
   {
     return jobList;
   }
@@ -249,34 +251,32 @@ public class JobGroup
    *                          group.  Any jobs or optimizing jobs that had been
    *                          scheduled will remain scheduled.
    */
-  public void schedule(SLAMDServer slamdServer, Date startTime,
-                       String folderName, String[] requestedClients,
-                       String[] requestedMonitorClients,
-                       boolean monitorClientsIfAvailable, String[] dependencies,
-                       ParameterList parameters, ArrayList<String> messages)
+  public void schedule(final SLAMDServer slamdServer, final Date startTime,
+                       final String folderName,
+                       final String[] requestedClients,
+                       final String[] requestedMonitorClients,
+                       final boolean monitorClientsIfAvailable,
+                       final String[] dependencies,
+                       final ParameterList parameters,
+                       final List<String> messages)
          throws SLAMDException
   {
-    LinkedHashMap<String,JobItem> scheduledJobs =
-         new LinkedHashMap<String,JobItem>();
-
-    for (int i=0; i < jobList.size(); i++)
+    Map<String,JobItem> scheduledJobs = new LinkedHashMap<>();
+    for (final JobGroupItem item : jobList)
     {
-      Object o = jobList.get(i);
-      if (o instanceof JobGroupJob)
+      if (item instanceof JobGroupJob)
       {
-        ((JobGroupJob) o).schedule(slamdServer, startTime, folderName,
-                                   requestedClients, requestedMonitorClients,
-                                   monitorClientsIfAvailable, dependencies,
-                                   parameters, scheduledJobs, messages);
+        ((JobGroupJob) item).schedule(slamdServer, startTime, folderName,
+             requestedClients, requestedMonitorClients,
+             monitorClientsIfAvailable, dependencies, parameters, scheduledJobs,
+             messages);
       }
-      else if (o instanceof JobGroupOptimizingJob)
+      else if (item instanceof JobGroupOptimizingJob)
       {
-        ((JobGroupOptimizingJob) o).schedule(slamdServer, startTime, folderName,
-                                             requestedClients,
-                                             requestedMonitorClients,
-                                             monitorClientsIfAvailable,
-                                             dependencies, parameters,
-                                             scheduledJobs, messages);
+        ((JobGroupOptimizingJob) item).schedule(slamdServer, startTime,
+             folderName, requestedClients, requestedMonitorClients,
+             monitorClientsIfAvailable, dependencies, parameters, scheduledJobs,
+             messages);
       }
     }
   }
@@ -291,7 +291,7 @@ public class JobGroup
    */
   public byte[] encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(new ASN1OctetString(ELEMENT_NAME));
     elementList.add(new ASN1OctetString(name));
@@ -310,20 +310,19 @@ public class JobGroup
 
     if ((jobList != null) && (! jobList.isEmpty()))
     {
-      ArrayList<ASN1Element> jobElements = new ArrayList<ASN1Element>();
-      for (int i=0; i < jobList.size(); i++)
+      final ArrayList<ASN1Element> jobElements = new ArrayList<>();
+      for (final JobGroupItem item : jobList)
       {
-        Object o = jobList.get(i);
-        if (o instanceof JobGroupJob)
+        if (item instanceof JobGroupJob)
         {
           jobElements.add(new ASN1OctetString(ELEMENT_JOB_GROUP_JOB));
-          jobElements.add(((JobGroupJob) o).encode());
+          jobElements.add(item.encode());
         }
-        else if (o instanceof JobGroupOptimizingJob)
+        else if (item instanceof JobGroupOptimizingJob)
         {
           jobElements.add(new ASN1OctetString(
                                    ELEMENT_JOB_GROUP_OPTIMIZING_JOB));
-          jobElements.add(((JobGroupOptimizingJob) o).encode());
+          jobElements.add(item.encode());
         }
       }
 
@@ -332,7 +331,7 @@ public class JobGroup
     }
 
 
-    ASN1Element[] elements = new ASN1Element[elementList.size()];
+    final ASN1Element[] elements = new ASN1Element[elementList.size()];
     elementList.toArray(elements);
     return new ASN1Sequence(elements).encode();
   }
@@ -352,20 +351,22 @@ public class JobGroup
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the job group data.
    */
-  public static JobGroup decode(SLAMDServer slamdServer, byte[] encodedJobGroup)
+  public static JobGroup decode(final SLAMDServer slamdServer,
+                                final byte[] encodedJobGroup)
          throws DecodeException
   {
     try
     {
-      JobGroup jobGroup = new JobGroup(null, null);
-      ArrayList<JobGroupItem> jobList = new ArrayList<JobGroupItem>();
+      final JobGroup jobGroup = new JobGroup(null, null);
+      final ArrayList<JobGroupItem> jobList = new ArrayList<>();
 
-      ASN1Element   element  = ASN1Element.decode(encodedJobGroup);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element   element  = ASN1Element.decode(encodedJobGroup);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
@@ -383,32 +384,32 @@ public class JobGroup
         }
         else if (elementName.equals(ELEMENT_JOB_LIST))
         {
-          ASN1Element[] listElements =
+          final ASN1Element[] listElements =
                elements[i+1].decodeAsSequence().getElements();
           for (int j=0; j < listElements.length; j += 2)
           {
-            String elementName2 =
+            final String elementName2 =
                  listElements[j].decodeAsOctetString().getStringValue();
 
             if (elementName2.equals(ELEMENT_JOB_GROUP_JOB))
             {
               jobList.add(JobGroupJob.decode(slamdServer, jobGroup,
-                                             listElements[j+1]));
+                   listElements[j+1]));
             }
             else if (elementName2.equals(ELEMENT_JOB_GROUP_OPTIMIZING_JOB))
             {
               jobList.add(JobGroupOptimizingJob.decode(slamdServer, jobGroup,
-                                                       listElements[j+1]));
+                   listElements[j+1]));
             }
           }
         }
       }
 
-      jobGroup.jobList    = jobList;
+      jobGroup.jobList = jobList;
 
       return jobGroup;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode job group:  " + e, e);
     }
@@ -428,20 +429,21 @@ public class JobGroup
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the job group summary data.
    */
-  public static JobGroup decodeSummary(byte[] encodedJobGroup)
+  public static JobGroup decodeSummary(final byte[] encodedJobGroup)
          throws DecodeException
   {
     try
     {
-      String       name         = null;
-      String        description = null;
+      String name = null;
+      String description = null;
 
-      ASN1Element   element  = ASN1Element.decode(encodedJobGroup);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedJobGroup);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
@@ -455,7 +457,7 @@ public class JobGroup
 
       return new JobGroup(name, description);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode job group:  " + e, e);
     }

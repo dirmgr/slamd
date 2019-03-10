@@ -18,9 +18,11 @@ package com.slamd.jobgroup;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.slamd.asn1.ASN1Boolean;
 import com.slamd.asn1.ASN1Element;
@@ -51,34 +53,34 @@ import com.slamd.server.Scheduler;
  *
  * @author   Neil A. Wilson
  */
-public class JobGroupOptimizingJob
+public final class JobGroupOptimizingJob
        implements JobGroupItem
 {
   /**
    * The name of the encoded element that holds the optimizing job name.
    */
-  public static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_NAME = "name";
 
 
 
   /**
    * The name of the encoded element that holds the job class name.
    */
-  public static final String ELEMENT_JOB_CLASS = "job_class";
+  private static final String ELEMENT_JOB_CLASS = "job_class";
 
 
 
   /**
    * The name of the encoded element that holds the duration.
    */
-  public static final String ELEMENT_DURATION = "duration";
+  private static final String ELEMENT_DURATION = "duration";
 
 
 
   /**
    * The name of the encoded element that holds the delay between iterations.
    */
-  public static final String ELEMENT_DELAY_BETWEEN_ITERATIONS =
+  private static final String ELEMENT_DELAY_BETWEEN_ITERATIONS =
        "delay_between_iterations";
 
 
@@ -86,7 +88,7 @@ public class JobGroupOptimizingJob
   /**
    * The name of the encoded element that holds the number of clients.
    */
-  public static final String ELEMENT_NUM_CLIENTS = "num_clients";
+  private static final String ELEMENT_NUM_CLIENTS = "num_clients";
 
 
 
@@ -94,7 +96,7 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the minimum number of threads
    * per client.
    */
-  public static final String ELEMENT_MIN_THREADS = "min_threads";
+  private static final String ELEMENT_MIN_THREADS = "min_threads";
 
 
 
@@ -102,14 +104,14 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the maximum number of threads
    * per client.
    */
-  public static final String ELEMENT_MAX_THREADS = "max_threads";
+  private static final String ELEMENT_MAX_THREADS = "max_threads";
 
 
 
   /**
    * The name of the encoded element that holds the thread increment.
    */
-  public static final String ELEMENT_THREAD_INCREMENT = "thread_increment";
+  private static final String ELEMENT_THREAD_INCREMENT = "thread_increment";
 
 
 
@@ -117,7 +119,7 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the statistics collection
    * interval.
    */
-  public static final String ELEMENT_COLLECTION_INTERVAL =
+  private static final String ELEMENT_COLLECTION_INTERVAL =
        "collection_interval";
 
 
@@ -126,14 +128,14 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the maximum number of
    * non-improving iterations.
    */
-  public static final String ELEMENT_MAX_NONIMPROVING = "max_nonimproving";
+  private static final String ELEMENT_MAX_NONIMPROVING = "max_nonimproving";
 
 
 
   /**
    * The name of the encoded element that holds the thread startup delay.
    */
-  public static final String ELEMENT_THREAD_STARTUP_DELAY =
+  private static final String ELEMENT_THREAD_STARTUP_DELAY =
        "thread_startup_delay";
 
 
@@ -142,7 +144,7 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the flag indicating whether to
    * re-run the best iteration.
    */
-  public static final String ELEMENT_RERUN_BEST_ITERATION =
+  private static final String ELEMENT_RERUN_BEST_ITERATION =
        "rerun_best_iteration";
 
 
@@ -150,7 +152,7 @@ public class JobGroupOptimizingJob
   /**
    * The name of the encoded element that holds the re-run duration.
    */
-  public static final String ELEMENT_RERUN_DURATION = "rerun_duration";
+  private static final String ELEMENT_RERUN_DURATION = "rerun_duration";
 
 
 
@@ -158,14 +160,14 @@ public class JobGroupOptimizingJob
    * The name of the encoded element that holds the set of dependencies for the
    * optimizing job.
    */
-  public static final String ELEMENT_DEPENDENCIES = "dependencies";
+  private static final String ELEMENT_DEPENDENCIES = "dependencies";
 
 
 
   /**
    * The name of the encoded element that holds the optimization algorithm.
    */
-  public static final String ELEMENT_OPTIMIZATION_ALGORITHM =
+  private static final String ELEMENT_OPTIMIZATION_ALGORITHM =
        "optimization_algorithm";
 
 
@@ -173,29 +175,19 @@ public class JobGroupOptimizingJob
   /**
    * The name of the encoded element that holds the set of mapped parameters.
    */
-  public static final String ELEMENT_MAPPED_PARAMS = "mapped_parameters";
+  private static final String ELEMENT_MAPPED_PARAMS = "mapped_parameters";
 
 
 
   /**
    * The name of the encoded element that holds the set of fixed parameters.
    */
-  public static final String ELEMENT_FIXED_PARAMS = "fixed_parameters";
+  private static final String ELEMENT_FIXED_PARAMS = "fixed_parameters";
 
 
-
-  // The set of dependencies for this optimizing job.  They will be the names of
-  // other jobs or optimizing jobs in the job group on which this job is
-  // dependent.
-  private ArrayList<String> dependencies;
 
   // Indicates whether to re-run the best iteration for this optimizing job.
   private boolean reRunBestIteration;
-
-  // The optimizing job parameters that will be requested from the user, mapped
-  // from the names used in the job group to the parameter stub for this
-  // optimizing job.
-  private LinkedHashMap<String,String> mappedParameters;
 
   // The statistics collection interval for this optimizing job.
   private int collectionInterval;
@@ -234,6 +226,16 @@ public class JobGroupOptimizingJob
 
   // The job group with which this optimizing job is associated.
   private JobGroup jobGroup;
+
+  // The set of dependencies for this optimizing job.  They will be the names of
+  // other jobs or optimizing jobs in the job group on which this job is
+  // dependent.
+  private List<String> dependencies;
+
+  // The optimizing job parameters that will be requested from the user, mapped
+  // from the names used in the job group to the parameter stub for this
+  // optimizing job.
+  private Map<String,String> mappedParameters;
 
   // The optimization algorithm for this optimizing job.
   private OptimizationAlgorithm optimizationAlgorithm;
@@ -293,18 +295,21 @@ public class JobGroupOptimizingJob
    * @param  fixedParameters         The set of fixed parameters for this
    *                                 optimizing job.
    */
-  public JobGroupOptimizingJob(String name, JobGroup jobGroup,
-                               JobClass jobClass, int duration,
-                               int delayBetweenIterations, int numClients,
-                               int minThreads, int maxThreads,
-                               int threadIncrement, int collectionInterval,
-                               int maxNonImproving, int threadStartupDelay,
-                               boolean reRunBestIteration, int reRunDuration,
-                               ArrayList<String> dependencies,
-                               OptimizationAlgorithm optimizationAlgorithm,
-                               ParameterList optimizationParameters,
-                               LinkedHashMap<String,String> mappedParameters,
-                               ParameterList fixedParameters)
+  public JobGroupOptimizingJob(final String name, final JobGroup jobGroup,
+                               final JobClass jobClass, final int duration,
+                               final int delayBetweenIterations,
+                               final int numClients, final int minThreads,
+                               final int maxThreads, final int threadIncrement,
+                               final int collectionInterval,
+                               final int maxNonImproving,
+                               final int threadStartupDelay,
+                               final boolean reRunBestIteration,
+                               final int reRunDuration,
+                               final List<String> dependencies,
+                               final OptimizationAlgorithm optimizationAlgorithm,
+                               final ParameterList optimizationParameters,
+                               final Map<String,String> mappedParameters,
+                               final ParameterList fixedParameters)
   {
     this.name                   = name;
     this.jobGroup               = jobGroup;
@@ -334,6 +339,7 @@ public class JobGroupOptimizingJob
    *
    * @return  The human-readable name for this optimizing job.
    */
+  @Override()
   public String getName()
   {
     return name;
@@ -346,7 +352,7 @@ public class JobGroupOptimizingJob
    *
    * @param  name  The human-readable name for this optimizing job.
    */
-  public void setName(String name)
+  public void setName(final String name)
   {
     this.name = name;
   }
@@ -358,6 +364,7 @@ public class JobGroupOptimizingJob
    *
    * @return  The job group for this optimizing job.
    */
+  @Override()
   public JobGroup getJobGroup()
   {
     return jobGroup;
@@ -370,7 +377,7 @@ public class JobGroupOptimizingJob
    *
    * @param  jobGroup  The job group for this optimizing job.
    */
-  public void setJobGroup(JobGroup jobGroup)
+  public void setJobGroup(final JobGroup jobGroup)
   {
     this.jobGroup = jobGroup;
   }
@@ -382,6 +389,7 @@ public class JobGroupOptimizingJob
    *
    * @return  The job class for this optimizing job.
    */
+  @Override()
   public JobClass getJobClass()
   {
     return jobClass;
@@ -394,7 +402,7 @@ public class JobGroupOptimizingJob
    *
    * @param  jobClass  The job class for this optimizing job.
    */
-  public void setJobClass(JobClass jobClass)
+  public void setJobClass(final JobClass jobClass)
   {
     this.jobClass = jobClass;
   }
@@ -418,7 +426,7 @@ public class JobGroupOptimizingJob
    *
    * @param  duration  The duration for iterations of this optimizing job.
    */
-  public void setDuration(int duration)
+  public void setDuration(final int duration)
   {
     this.duration = duration;
   }
@@ -443,7 +451,7 @@ public class JobGroupOptimizingJob
    * @param  delayBetweenIterations  The delay between iterations for this
    *                                 optimizing job.
    */
-  public void setDelayBetweenIterations(int delayBetweenIterations)
+  public void setDelayBetweenIterations(final int delayBetweenIterations)
   {
     this.delayBetweenIterations = delayBetweenIterations;
   }
@@ -467,7 +475,7 @@ public class JobGroupOptimizingJob
    *
    * @param  numClients  The number of clients for this optimizing job.
    */
-  public void setNumClients(int numClients)
+  public void setNumClients(final int numClients)
   {
     this.numClients = numClients;
   }
@@ -492,7 +500,7 @@ public class JobGroupOptimizingJob
    * @param  minThreads  The minimum number of threads per client for this
    *                     optimizing job.
    */
-  public void setMinThreads(int minThreads)
+  public void setMinThreads(final int minThreads)
   {
     this.minThreads = minThreads;
   }
@@ -517,7 +525,7 @@ public class JobGroupOptimizingJob
    * @param  maxThreads  The maximum number of threads per client for this
    *                     optimizing job.
    */
-  public void setMaxThreads(int maxThreads)
+  public void setMaxThreads(final int maxThreads)
   {
     this.maxThreads = maxThreads;
   }
@@ -545,7 +553,7 @@ public class JobGroupOptimizingJob
    * @param  threadIncrement  The increment in the number of threads per client
    *                          between iterations of this optimizing job.
    */
-  public void setThreadIncrement(int threadIncrement)
+  public void setThreadIncrement(final int threadIncrement)
   {
     this.threadIncrement = threadIncrement;
   }
@@ -570,7 +578,7 @@ public class JobGroupOptimizingJob
    * @param  collectionInterval  The statistics collection interval for this
    *                             optimizing job.
    */
-  public void setCollectionInterval(int collectionInterval)
+  public void setCollectionInterval(final int collectionInterval)
   {
     this.collectionInterval = collectionInterval;
   }
@@ -598,7 +606,7 @@ public class JobGroupOptimizingJob
    * @param  maxNonImproving  The maximum number of non-improving iterations
    *                          that will be allowed for this optimizing job.
    */
-  public void setMaxNonImprovingIterations(int maxNonImproving)
+  public void setMaxNonImprovingIterations(final int maxNonImproving)
   {
     this.maxNonImproving = maxNonImproving;
   }
@@ -626,7 +634,7 @@ public class JobGroupOptimizingJob
    * @param  threadStartupDelay  The delay in milliseconds that should be used
    *                             when creating threads for this optimizing job.
    */
-  public void setThreadStartupDelay(int threadStartupDelay)
+  public void setThreadStartupDelay(final int threadStartupDelay)
   {
     this.threadStartupDelay = threadStartupDelay;
   }
@@ -652,7 +660,7 @@ public class JobGroupOptimizingJob
    * @param  reRunBestIteration  Specifies whether to re-run the best iteration
    *                             of this optimizing job.
    */
-  public void setReRunBestIteration(boolean reRunBestIteration)
+  public void setReRunBestIteration(final boolean reRunBestIteration)
   {
     this.reRunBestIteration = reRunBestIteration;
   }
@@ -680,7 +688,7 @@ public class JobGroupOptimizingJob
    * @param  reRunDuration  The duration in seconds for the re-run iteration of
    *                        this optimizing job.
    */
-  public void setReRunDuration(int reRunDuration)
+  public void setReRunDuration(final int reRunDuration)
   {
     this.reRunDuration = reRunDuration;
   }
@@ -695,7 +703,7 @@ public class JobGroupOptimizingJob
    * @return  The names of the jobs and/or optimizing jobs on which this
    *          optimizing job is dependent.
    */
-  public ArrayList<String> getDependencies()
+  public List<String> getDependencies()
   {
     return dependencies;
   }
@@ -720,8 +728,8 @@ public class JobGroupOptimizingJob
    * @param  optimizationAlgorithm  The optimization algorithm for this
    *                                optimizing job.
    */
-  public void setOptimizationAlgorithm(OptimizationAlgorithm
-                                            optimizationAlgorithm)
+  public void setOptimizationAlgorithm(
+                   final OptimizationAlgorithm optimizationAlgorithm)
   {
     this.optimizationAlgorithm = optimizationAlgorithm;
   }
@@ -746,7 +754,8 @@ public class JobGroupOptimizingJob
    * @param  optimizationParameters  The set of parameters for use with the
    *                                 optimization algorithm.
    */
-  public void setOptimizationParameters(ParameterList optimizationParameters)
+  public void setOptimizationParameters(
+                   final ParameterList optimizationParameters)
   {
     this.optimizationParameters = optimizationParameters;
   }
@@ -761,7 +770,7 @@ public class JobGroupOptimizingJob
    *
    * @return  The set of mapped parameters for this optimizing job.
    */
-  public LinkedHashMap<String,String> getMappedParameters()
+  public Map<String,String> getMappedParameters()
   {
     return mappedParameters;
   }
@@ -817,28 +826,30 @@ public class JobGroupOptimizingJob
    * @throws  SLAMDException  If a problem occurs while attempting to schedule
    *                          the optimizing job.
    */
-  public void schedule(SLAMDServer slamdServer, Date startTime,
-                       String folderName, String[] requestedClients,
-                       String[] requestedMonitorClients,
-                       boolean monitorClientsIfAvailable,
-                       String[] externalDependencies, ParameterList parameters,
-                       LinkedHashMap<String,JobItem> scheduledJobs,
-                       ArrayList<String> messages)
+  public void schedule(final SLAMDServer slamdServer, final Date startTime,
+                       final String folderName, final String[] requestedClients,
+                       final String[] requestedMonitorClients,
+                       final boolean monitorClientsIfAvailable,
+                       final String[] externalDependencies,
+                       final ParameterList parameters,
+                       final Map<String,JobItem> scheduledJobs,
+                       final List<String> messages)
          throws SLAMDException
   {
     // Create a new parameter list that combines the mapped parameters and the
     // fixed parameters.
-    Parameter[] params = jobClass.getParameterStubs().clone().getParameters();
-    for (int i=0; i < params.length; i++)
+    final Parameter[] params =
+         jobClass.getParameterStubs().clone().getParameters();
+    for (final Parameter param : params)
     {
-      String paramName  = params[i].getName();
-      String mappedName = mappedParameters.get(paramName);
+      final String paramName = param.getName();
+      final String mappedName = mappedParameters.get(paramName);
       if (mappedName == null)
       {
-        Parameter p = fixedParameters.getParameter(paramName);
+        final Parameter p = fixedParameters.getParameter(paramName);
         if (p != null)
         {
-          params[i].setValueFrom(p);
+          param.setValueFrom(p);
         }
       }
       else
@@ -846,29 +857,24 @@ public class JobGroupOptimizingJob
         Parameter p = parameters.getParameter(mappedName);
         if (p != null)
         {
-          params[i].setValueFrom(p);
+          param.setValueFrom(p);
         }
       }
     }
 
-    ParameterList jobParameters = new ParameterList(params);
+    final ParameterList jobParameters = new ParameterList(params);
 
 
     // Create the set of dependencies for the optimizing job.
-    ArrayList<String> depList = new ArrayList<String>(dependencies.size());
+    final ArrayList<String> depList = new ArrayList<>(dependencies.size());
     if ((externalDependencies != null) && (externalDependencies.length > 0))
     {
-      for (int i=0; i < externalDependencies.length; i++)
-      {
-        depList.add(externalDependencies[i]);
-      }
+      depList.addAll(Arrays.asList(externalDependencies));
     }
 
-    for (int i=0; i < dependencies.size(); i++)
+    for (final String dependencyName : dependencies)
     {
-      String dependencyName = dependencies.get(i);
-
-      Object o = scheduledJobs.get(dependencyName);
+      final Object o = scheduledJobs.get(dependencyName);
       if (o == null)
       {
         continue;
@@ -883,7 +889,7 @@ public class JobGroupOptimizingJob
       }
     }
 
-    String[] dependencyArray = new String[depList.size()];
+    final String[] dependencyArray = new String[depList.size()];
     depList.toArray(dependencyArray);
 
 
@@ -894,11 +900,8 @@ public class JobGroupOptimizingJob
       // FIXME -- Do we need to worry about the possibility of jobs running in
       // parallel within this job group?
 
-      ArrayList<String> clientList = new ArrayList<String>(numClients);
-      for (int i=0; ((i < numClients) && (i < requestedClients.length)); i++)
-      {
-        clientList.add(requestedClients[i]);
-      }
+      final ArrayList<String> clientList = new ArrayList<>(numClients);
+      clientList.addAll(Arrays.asList(requestedClients));
 
       clientArray = new String[clientList.size()];
       clientList.toArray(clientArray);
@@ -906,20 +909,18 @@ public class JobGroupOptimizingJob
 
 
     // Get a reference to the scheduler and create the optimizing job ID.
-    Scheduler scheduler       = slamdServer.getScheduler();
-    String    optimizingJobID = scheduler.generateUniqueID();
+    final Scheduler scheduler = slamdServer.getScheduler();
+    final String optimizingJobID = scheduler.generateUniqueID();
 
 
     // Create the optimizing job using the information available.
-    OptimizingJob optimizingJob =
-         new OptimizingJob(slamdServer, optimizingJobID, optimizationAlgorithm,
-                           jobClass, folderName, name, true, startTime,
-                           duration, delayBetweenIterations, numClients,
-                           clientArray, requestedMonitorClients,
-                           monitorClientsIfAvailable, minThreads, maxThreads,
-                           threadIncrement, collectionInterval, maxNonImproving,
-                           null, reRunBestIteration, reRunDuration,
-                           jobParameters, false);
+    final OptimizingJob optimizingJob = new OptimizingJob(slamdServer,
+         optimizingJobID, optimizationAlgorithm, jobClass, folderName, name,
+         true, startTime, duration, delayBetweenIterations, numClients,
+         clientArray, requestedMonitorClients, monitorClientsIfAvailable,
+         minThreads, maxThreads, threadIncrement, collectionInterval,
+         maxNonImproving, null, reRunBestIteration, reRunDuration,
+         jobParameters, false);
 
     optimizingJob.setJobGroup(jobGroup.getName());
     optimizingJob.setDependencies(dependencyArray);
@@ -930,20 +931,20 @@ public class JobGroupOptimizingJob
     try
     {
       optimizationAlgorithm.initializeOptimizationAlgorithm(optimizingJob,
-                                 optimizationParameters);
+           optimizationParameters);
     }
     catch (InvalidValueException ive)
     {
       throw new SLAMDException("ERROR:  Failure while initializing the " +
-                               "optimization algorithm for optimizing job " +
-                               name + ":  " +  ive.getMessage());
+           "optimization algorithm for optimizing job " + name + ":  " +
+           ive.getMessage());
     }
 
 
     // Schedule the optimizing job for execution.
     scheduler.scheduleOptimizingJob(optimizingJob, folderName);
     messages.add("Successfully scheduled optimizing job " + name +
-                 " with optimizing job ID " + optimizingJobID);
+         " with optimizing job ID " + optimizingJobID);
 
 
     // Add the optimizing job to the job hash so it can be used as a dependency
@@ -960,9 +961,10 @@ public class JobGroupOptimizingJob
    * @return  The ASN.1 element containing the encoded optimizing job
    *          information.
    */
+  @Override()
   public ASN1Element encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(new ASN1OctetString(ELEMENT_NAME));
     elementList.add(new ASN1OctetString(name));
@@ -1020,11 +1022,11 @@ public class JobGroupOptimizingJob
 
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
-      ArrayList<ASN1Element> depElements =
+      final ArrayList<ASN1Element> depElements =
            new ArrayList<ASN1Element>(dependencies.size());
-      for (int i=0; i < dependencies.size(); i++)
+      for (final String dependency : dependencies)
       {
-        depElements.add(new ASN1OctetString(dependencies.get(i)));
+        depElements.add(new ASN1OctetString(dependency));
       }
 
       elementList.add(new ASN1OctetString(ELEMENT_DEPENDENCIES));
@@ -1033,7 +1035,7 @@ public class JobGroupOptimizingJob
 
     if (jobClass instanceof UnknownJobClass)
     {
-      ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
+      final ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
       {
         new ASN1OctetString(optimizationAlgorithm.getClass().getName()),
         new ASN1Sequence()
@@ -1043,13 +1045,13 @@ public class JobGroupOptimizingJob
     }
     else
     {
-      Parameter[] optimizationParams =
+      final Parameter[] optimizationParams =
            optimizationParameters.getParameters();
-      ASN1Element[] optParamsElements =
+      final ASN1Element[] optParamsElements =
            new ASN1Element[optimizationParams.length];
       for (int i=0; i < optimizationParams.length; i++)
       {
-        ASN1Element[] optParamElements = new ASN1Element[]
+        final ASN1Element[] optParamElements = new ASN1Element[]
         {
           new ASN1OctetString(optimizationParams[i].getName()),
           new ASN1OctetString(optimizationParams[i].getValueString())
@@ -1057,7 +1059,7 @@ public class JobGroupOptimizingJob
 
         optParamsElements[i] = new ASN1Sequence(optParamElements);
       }
-      ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
+      final ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
       {
         new ASN1OctetString(optimizationAlgorithm.getClass().getName()),
         new ASN1Sequence(optParamsElements)
@@ -1068,14 +1070,12 @@ public class JobGroupOptimizingJob
 
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
-      ArrayList<ASN1Element> paramElements = new ArrayList<ASN1Element>();
-      Iterator<String> iterator = mappedParameters.keySet().iterator();
-      while (iterator.hasNext())
+      final ArrayList<ASN1Element> paramElements = new ArrayList<>();
+      for (final String jobName : mappedParameters.keySet())
       {
-        String jobName   = iterator.next();
-        String groupName = mappedParameters.get(jobName);
+        final String groupName = mappedParameters.get(jobName);
 
-        ASN1Element[] paramElementArray =
+        final ASN1Element[] paramElementArray =
         {
           new ASN1OctetString(jobName),
           new ASN1OctetString(groupName)
@@ -1115,16 +1115,16 @@ public class JobGroupOptimizingJob
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the optimizing job information.
    */
-  public static JobGroupOptimizingJob decode(SLAMDServer slamdServer,
-                                             JobGroup jobGroup,
-                                             ASN1Element encodedOptimizingJob)
+  public static JobGroupOptimizingJob decode(final SLAMDServer slamdServer,
+                     final JobGroup jobGroup,
+                     final ASN1Element encodedOptimizingJob)
          throws DecodeException
   {
     try
     {
-      ArrayList<String> dependencies = new ArrayList<String>();
-      LinkedHashMap<String,String> mappedParameters =
-           new LinkedHashMap<String,String>();
+      final ArrayList<String> dependencies = new ArrayList<>();
+      final LinkedHashMap<String,String> mappedParameters =
+           new LinkedHashMap<>();
       boolean               reRunBestIteration     = false;
       int                   collectionInterval     =
                                  Constants.DEFAULT_COLLECTION_INTERVAL;
@@ -1143,12 +1143,13 @@ public class JobGroupOptimizingJob
       ParameterList         optimizationParameters = new ParameterList();
       String                name                   = null;
 
-      ASN1Element[] elements =
+      final ASN1Element[] elements =
            encodedOptimizingJob.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
@@ -1158,7 +1159,7 @@ public class JobGroupOptimizingJob
         {
           // FIXME -- Does this need to be able to handle classes that aren't
           // registered?
-          String jobClassName =
+          final String jobClassName =
                elements[i+1].decodeAsOctetString().getStringValue();
           jobClass = slamdServer.getJobClass(jobClassName);
         }
@@ -1210,12 +1211,11 @@ public class JobGroupOptimizingJob
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
-          ASN1Element[] depElements =
+          final ASN1Element[] depElements =
                elements[i+1].decodeAsSequence().getElements();
-          for (int j=0; j < depElements.length; j++)
+          for (final ASN1Element depElement : depElements)
           {
-            dependencies.add(
-                 depElements[j].decodeAsOctetString().getStringValue());
+            dependencies.add(depElement.decodeAsOctetString().getStringValue());
           }
         }
         else if (elementName.equals(ELEMENT_OPTIMIZATION_ALGORITHM))
@@ -1224,11 +1224,11 @@ public class JobGroupOptimizingJob
           {
             for (int j=i+2; j < elements.length; j += 2)
             {
-              String elementName2 =
+              final String elementName2 =
                    elements[j].decodeAsOctetString().getStringValue();
               if (elementName2.equals(ELEMENT_JOB_CLASS))
               {
-                String className =
+                final String className =
                      elements[j+1].decodeAsOctetString().getStringValue();
                 jobClass = slamdServer.getOrLoadJobClass(className);
                 break;
@@ -1236,27 +1236,27 @@ public class JobGroupOptimizingJob
             }
           }
 
-          ASN1Element[] algorithmElements =
+          final ASN1Element[] algorithmElements =
                elements[i+1].decodeAsSequence().getElements();
-          String algorithmName =
+          final String algorithmName =
                algorithmElements[0].decodeAsOctetString().getStringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
                Constants.classForName(algorithmName).newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();
-          ASN1Element[] paramsElements =
+          final ASN1Element[] paramsElements =
                algorithmElements[1].decodeAsSequence().getElements();
-          for (int j=0; j < paramsElements.length; j++)
+          for (final ASN1Element paramsElement : paramsElements)
           {
-            ASN1Element[] paramElements =
-                 paramsElements[j].decodeAsSequence().getElements();
-            String paramName =
+            final ASN1Element[] paramElements =
+                 paramsElement.decodeAsSequence().getElements();
+            final String paramName =
                  paramElements[0].decodeAsOctetString().getStringValue();
-            String paramValue =
+            final String paramValue =
                  paramElements[1].decodeAsOctetString().getStringValue();
 
-            Parameter p = optimizationParameters.getParameter(paramName);
+            final Parameter p = optimizationParameters.getParameter(paramName);
             if (p != null)
             {
               p.setValueFromString(paramValue);
@@ -1265,12 +1265,12 @@ public class JobGroupOptimizingJob
         }
         else if (elementName.equals(ELEMENT_MAPPED_PARAMS))
         {
-          ASN1Element[] paramElements =
+          final ASN1Element[] paramElements =
                elements[i+1].decodeAsSequence().getElements();
-          for (int j=0; j < paramElements.length; j++)
+          for (final ASN1Element paramElement : paramElements)
           {
-            ASN1Element[] pElements =
-                 paramElements[j].decodeAsSequence().getElements();
+            final ASN1Element[] pElements =
+                 paramElement.decodeAsSequence().getElements();
             mappedParameters.put(
                  pElements[0].decodeAsOctetString().getStringValue(),
                  pElements[1].decodeAsOctetString().getStringValue());
@@ -1283,19 +1283,16 @@ public class JobGroupOptimizingJob
       }
 
       return new JobGroupOptimizingJob(name, jobGroup, jobClass, duration,
-                                       delayBetweenIterations, numClients,
-                                       minThreads, maxThreads, threadIncrement,
-                                       collectionInterval, maxNonImproving,
-                                       threadStartupDelay, reRunBestIteration,
-                                       reRunDuration, dependencies,
-                                       optimizationAlgorithm,
-                                       optimizationParameters, mappedParameters,
-                                       fixedParameters);
+           delayBetweenIterations, numClients, minThreads, maxThreads,
+           threadIncrement, collectionInterval, maxNonImproving,
+           threadStartupDelay, reRunBestIteration, reRunDuration, dependencies,
+           optimizationAlgorithm, optimizationParameters, mappedParameters,
+           fixedParameters);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new DecodeException("Unable to decode the job group optimizing " +
-                                "job:  " + e, e);
+      throw new DecodeException(
+           "Unable to decode the job group optimizing " + "job:  " + e, e);
     }
   }
 }

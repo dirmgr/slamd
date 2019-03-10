@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 
@@ -297,7 +299,7 @@ public class AdminJobGroup
                     "\">View Job Group " + jobGroupName + "</SPAN>" + EOL);
     htmlBody.append("<BR><BR>" + EOL);
 
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     if (requestInfo.mayScheduleJob)
     {
       htmlBody.append("<TABLE BORDER=\"0\">" + EOL);
@@ -767,7 +769,7 @@ public class AdminJobGroup
 
     // Get the job to view from the job group.
     JobGroupJob job = null;
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -913,7 +915,7 @@ public class AdminJobGroup
          EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    ArrayList<String> dependencies = job.getDependencies();
+    final List<String> dependencies = job.getDependencies();
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
       htmlBody.append("  <TR CLASS=\"" + Constants.STYLE_JOB_SUMMARY_LINE_B +
@@ -932,7 +934,7 @@ public class AdminJobGroup
     }
 
 
-    LinkedHashMap<String,String> mappedParameters = job.getMappedParameters();
+    final Map<String,String> mappedParameters = job.getMappedParameters();
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
       htmlBody.append("  <TR>" + EOL);
@@ -1059,7 +1061,7 @@ public class AdminJobGroup
 
     // Get the optimizing job to view from the job group.
     JobGroupOptimizingJob optimizingJob = null;
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -1275,7 +1277,7 @@ public class AdminJobGroup
     htmlBody.append("    <TD>" + durationStr + "</TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    ArrayList<String> dependencies = optimizingJob.getDependencies();
+    final List<String> dependencies = optimizingJob.getDependencies();
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
       htmlBody.append("  <TR CLASS=\"" + Constants.STYLE_JOB_SUMMARY_LINE_B +
@@ -1329,7 +1331,7 @@ public class AdminJobGroup
     }
 
 
-    LinkedHashMap<String,String> mappedParameters =
+    final Map<String,String> mappedParameters =
          optimizingJob.getMappedParameters();
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
@@ -1717,7 +1719,7 @@ public class AdminJobGroup
 
 
     // Get the sets of jobs and optimizing jobs associated with this group.
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     ArrayList<JobGroupJob> jobs = new ArrayList<JobGroupJob>(jobList.size());
     ArrayList<JobGroupOptimizingJob> optimizingJobs =
          new ArrayList<JobGroupOptimizingJob>(jobList.size());
@@ -2904,7 +2906,7 @@ public class AdminJobGroup
     }
 
     JobGroupJob job = null;
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -3756,7 +3758,7 @@ public class AdminJobGroup
     }
 
     JobGroupOptimizingJob optimizingJob = null;
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -5038,7 +5040,7 @@ public class AdminJobGroup
       return;
     }
 
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     String link = generateLink(requestInfo, Constants.SERVLET_SECTION_JOB,
                                Constants.SERVLET_SECTION_JOB_VIEW_GROUP,
                                Constants.SERVLET_PARAM_JOB_GROUP_NAME,
@@ -6008,7 +6010,7 @@ public class AdminJobGroup
       return;
     }
 
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     String link = generateLink(requestInfo, Constants.SERVLET_SECTION_JOB,
                                Constants.SERVLET_SECTION_JOB_VIEW_GROUP,
                                Constants.SERVLET_PARAM_JOB_GROUP_NAME,
@@ -7421,7 +7423,7 @@ public class AdminJobGroup
     // Right now, we only support removing the last job in the group so that we
     // don't cause problems with dependencies.  Make sure the specified job is
     // the last one.
-    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
+    final List<JobGroupItem> jobList = jobGroup.getJobList();
     if (jobList.isEmpty())
     {
       infoMessage.append("ERROR:  There are no jobs or optimizing jobs " +

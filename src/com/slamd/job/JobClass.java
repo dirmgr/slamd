@@ -50,6 +50,9 @@ public abstract class JobClass
   // Indicates whether a request has been made to stop the job
   private boolean stopRequested;
 
+  // The parent job that is controlling this thread
+  private ClientSideJob job;
+
   // The client number associated with this job class.
   private int clientNumber;
 
@@ -80,9 +83,6 @@ public abstract class JobClass
 
   // The list of parameters that customize the way that this job is to work
   private ParameterList parameters;
-
-  // The parent job that is controlling this thread
-  private ClientSideJob job;
 
   // The client ID that indicates the client running this job.
   private String clientID;

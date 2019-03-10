@@ -18,9 +18,11 @@ package com.slamd.jobgroup;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.slamd.asn1.ASN1Element;
 import com.slamd.asn1.ASN1Integer;
@@ -47,20 +49,20 @@ import com.slamd.server.SLAMDServer;
  *
  * @author   Neil A. Wilson
  */
-public class JobGroupJob
+public final class JobGroupJob
        implements JobGroupItem
 {
   /**
    * The name of the encoded element that holds the job name.
    */
-  public static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_NAME = "name";
 
 
 
   /**
    * The name of the encoded element that holds the job class name.
    */
-  public static final String ELEMENT_JOB_CLASS = "job_class";
+  private static final String ELEMENT_JOB_CLASS = "job_class";
 
 
 
@@ -68,7 +70,7 @@ public class JobGroupJob
    * The name of the encoded element that holds the statistics collection
    * interval.
    */
-  public static final String ELEMENT_COLLECTION_INTERVAL =
+  private static final String ELEMENT_COLLECTION_INTERVAL =
        "collection_interval";
 
 
@@ -76,14 +78,14 @@ public class JobGroupJob
   /**
    * The name of the encoded element that holds the job duration.
    */
-  public static final String ELEMENT_DURATION = "duration";
+  private static final String ELEMENT_DURATION = "duration";
 
 
 
   /**
    * The name of the encoded element that holds the number of clients.
    */
-  public static final String ELEMENT_NUM_CLIENTS = "num_clients";
+  private static final String ELEMENT_NUM_CLIENTS = "num_clients";
 
 
 
@@ -91,14 +93,14 @@ public class JobGroupJob
    * The name of the encoded element that holds the number of threads per
    * client.
    */
-  public static final String ELEMENT_THREADS_PER_CLIENT = "threads_per_client";
+  private static final String ELEMENT_THREADS_PER_CLIENT = "threads_per_client";
 
 
 
   /**
    * The name of the encoded element that holds the thread startup delay.
    */
-  public static final String ELEMENT_THREAD_STARTUP_DELAY =
+  private static final String ELEMENT_THREAD_STARTUP_DELAY =
        "thread_startup_delay";
 
 
@@ -106,31 +108,31 @@ public class JobGroupJob
   /**
    * The name of the encoded element that holds the job dependencies.
    */
-  public static final String ELEMENT_DEPENDENCIES = "dependencies";
+  private static final String ELEMENT_DEPENDENCIES = "dependencies";
 
 
 
   /**
    * The name of the encoded element that holds the set of mapped parameters.
    */
-  public static final String ELEMENT_MAPPED_PARAMS = "mapped_parameters";
+  private static final String ELEMENT_MAPPED_PARAMS = "mapped_parameters";
 
 
 
   /**
    * The name of the encoded element that holds the set of fixed parameters.
    */
-  public static final String ELEMENT_FIXED_PARAMS = "fixed_parameters";
+  private static final String ELEMENT_FIXED_PARAMS = "fixed_parameters";
 
 
 
   // The set of dependencies for this job.  They will be the names of other jobs
   // or optimizing jobs in the job group on which this job is dependent.
-  private ArrayList<String> dependencies;
+  private List<String> dependencies;
 
   // The job parameters that will be requested from the user, mapped from the
   // names used in this job class to their names in the job group.
-  private LinkedHashMap<String,String> mappedParameters;
+  private Map<String,String> mappedParameters;
 
   // The statistics collection interval for this job.
   private int collectionInterval;
@@ -182,12 +184,13 @@ public class JobGroupJob
    *                             job class to the names used in the job group.
    * @param  fixedParameters     The set of fixed parameters for this job.
    */
-  public JobGroupJob(JobGroup jobGroup, String name, JobClass jobClass,
-                     int duration, int collectionInterval, int numClients,
-                     int threadsPerClient, int threadStartupDelay,
-                     ArrayList<String> dependencies,
-                     LinkedHashMap<String,String> mappedParameters,
-                     ParameterList fixedParameters)
+  public JobGroupJob(final JobGroup jobGroup, final String name,
+                     final JobClass jobClass, final int duration,
+                     final int collectionInterval, final int numClients,
+                     final int threadsPerClient, final int threadStartupDelay,
+                     final List<String> dependencies,
+                     final Map<String,String> mappedParameters,
+                     final ParameterList fixedParameters)
   {
     this.jobGroup           = jobGroup;
     this.name               = name;
@@ -209,6 +212,7 @@ public class JobGroupJob
    *
    * @return  The job group with which this job is associated.
    */
+  @Override()
   public JobGroup getJobGroup()
   {
     return jobGroup;
@@ -221,6 +225,7 @@ public class JobGroupJob
    *
    * @return  The human-readable name for this job.
    */
+  @Override()
   public String getName()
   {
     return name;
@@ -233,7 +238,7 @@ public class JobGroupJob
    *
    * @param  name  The human-readable name for this job.
    */
-  public void setName(String name)
+  public void setName(final String name)
   {
     this.name = name;
   }
@@ -245,6 +250,7 @@ public class JobGroupJob
    *
    * @return  The job class for this job.
    */
+  @Override()
   public JobClass getJobClass()
   {
     return jobClass;
@@ -257,7 +263,7 @@ public class JobGroupJob
    *
    * @param  jobClass  The job class for this job.
    */
-  public void setJobClass(JobClass jobClass)
+  public void setJobClass(final JobClass jobClass)
   {
     this.jobClass = jobClass;
   }
@@ -281,7 +287,7 @@ public class JobGroupJob
    *
    * @param  duration  The duration for this job.
    */
-  public void setDuration(int duration)
+  public void setDuration(final int duration)
   {
     this.duration = duration;
   }
@@ -305,7 +311,7 @@ public class JobGroupJob
    *
    * @param  collectionInterval  The collection interval for this job.
    */
-  public void setCollectionInterval(int collectionInterval)
+  public void setCollectionInterval(final int collectionInterval)
   {
     this.collectionInterval = collectionInterval;
   }
@@ -329,7 +335,7 @@ public class JobGroupJob
    *
    * @param  numClients  The number of clients for this job.
    */
-  public void setNumClients(int numClients)
+  public void setNumClients(final int numClients)
   {
     this.numClients = numClients;
   }
@@ -353,7 +359,7 @@ public class JobGroupJob
    *
    * @param  threadsPerClient  The number of threads per client for this job.
    */
-  public void setThreadsPerClient(int threadsPerClient)
+  public void setThreadsPerClient(final int threadsPerClient)
   {
     this.threadsPerClient = threadsPerClient;
   }
@@ -377,7 +383,7 @@ public class JobGroupJob
    *
    * @param  threadStartupDelay  The thread startup delay for this job.
    */
-  public void setThreadStartupDelay(int threadStartupDelay)
+  public void setThreadStartupDelay(final int threadStartupDelay)
   {
     this.threadStartupDelay = threadStartupDelay;
   }
@@ -390,7 +396,7 @@ public class JobGroupJob
    *
    * @return  The set of dependencies for this job.
    */
-  public ArrayList<String> getDependencies()
+  public List<String> getDependencies()
   {
     return dependencies;
   }
@@ -404,7 +410,7 @@ public class JobGroupJob
    *
    * @return  The set of mapped parameters for this job.
    */
-  public LinkedHashMap<String,String> getMappedParameters()
+  public Map<String,String> getMappedParameters()
   {
     return mappedParameters;
   }
@@ -460,58 +466,55 @@ public class JobGroupJob
    * @throws  SLAMDException  If a problem occurs while attempting to schedule
    *                          the job.
    */
-  public void schedule(SLAMDServer slamdServer, Date startTime,
-                       String folderName, String[] requestedClients,
-                       String[] requestedMonitorClients,
-                       boolean monitorClientsIfAvailable,
-                       String[] externalDependencies, ParameterList parameters,
-                       LinkedHashMap<String,JobItem> scheduledJobs,
-                       ArrayList<String> messages)
+  public void schedule(final SLAMDServer slamdServer, final Date startTime,
+                       final String folderName, final String[] requestedClients,
+                       final String[] requestedMonitorClients,
+                       final boolean monitorClientsIfAvailable,
+                       final String[] externalDependencies,
+                       final ParameterList parameters,
+                       final Map<String,JobItem> scheduledJobs,
+                       final List<String> messages)
          throws SLAMDException
   {
     // Create a new parameter list that combines the mapped parameters and the
     // fixed parameters.
-    Parameter[] params = jobClass.getParameterStubs().clone().getParameters();
-    for (int i=0; i < params.length; i++)
+    final Parameter[] params =
+         jobClass.getParameterStubs().clone().getParameters();
+    for (final Parameter param : params)
     {
-      String paramName  = params[i].getName();
-      String mappedName = mappedParameters.get(paramName);
+      final String paramName  = param.getName();
+      final String mappedName = mappedParameters.get(paramName);
       if (mappedName == null)
       {
-        Parameter p = fixedParameters.getParameter(paramName);
+        final Parameter p = fixedParameters.getParameter(paramName);
         if (p != null)
         {
-          params[i].setValueFrom(p);
+          param.setValueFrom(p);
         }
       }
       else
       {
-        Parameter p = parameters.getParameter(mappedName);
+        final Parameter p = parameters.getParameter(mappedName);
         if (p != null)
         {
-          params[i].setValueFrom(p);
+          param.setValueFrom(p);
         }
       }
     }
 
-    ParameterList jobParameters = new ParameterList(params);
+    final ParameterList jobParameters = new ParameterList(params);
 
 
     // Create the set of dependencies for the job.
-    ArrayList<String> depList = new ArrayList<String>(dependencies.size());
+    final ArrayList<String> depList = new ArrayList<>(dependencies.size());
     if ((externalDependencies != null) && (externalDependencies.length > 0))
     {
-      for (int i=0; i < externalDependencies.length; i++)
-      {
-        depList.add(externalDependencies[i]);
-      }
+      depList.addAll(Arrays.asList(externalDependencies));
     }
 
-    for (int i=0; i < dependencies.size(); i++)
+    for (final String dependencyName : dependencies)
     {
-      String dependencyName = dependencies.get(i);
-
-      Object o = scheduledJobs.get(dependencyName);
+      final Object o = scheduledJobs.get(dependencyName);
       if (o == null)
       {
         continue;
@@ -526,7 +529,7 @@ public class JobGroupJob
       }
     }
 
-    String[] dependencyArray = new String[depList.size()];
+    final String[] dependencyArray = new String[depList.size()];
     depList.toArray(dependencyArray);
 
 
@@ -536,23 +539,22 @@ public class JobGroupJob
     try
     {
       jobClass.validateJobInfo(numClients, threadsPerClient, threadStartupDelay,
-                               startTime, null, duration, collectionInterval,
-                               jobParameters);
+           startTime, null, duration, collectionInterval, jobParameters);
     }
     catch (InvalidValueException ive)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(ive));
+           JobClass.stackTraceToString(ive));
 
       messages.add("WARNING:  validateJobInfo for job " + name +
-                   " failed with message:  " + ive.getMessage());
+           " failed with message:  " + ive.getMessage());
     }
 
 
     // Create the job using the information available.
-    Job job = new Job(slamdServer, jobClass.getClass().getName(), numClients,
-                      threadsPerClient, threadStartupDelay, startTime, null,
-                      duration, collectionInterval, jobParameters, false);
+    final Job job = new Job(slamdServer, jobClass.getClass().getName(),
+         numClients, threadsPerClient, threadStartupDelay, startTime, null,
+         duration, collectionInterval, jobParameters, false);
 
     job.setJobDescription(name);
     job.setJobGroup(jobGroup.getName());
@@ -566,13 +568,13 @@ public class JobGroupJob
       // FIXME -- Do we need to worry about the possibility of jobs running in
       // parallel within this job group?
 
-      ArrayList<String> clientList = new ArrayList<String>(numClients);
+      final ArrayList<String> clientList = new ArrayList<>(numClients);
       for (int i=0; ((i < numClients) && (i < requestedClients.length)); i++)
       {
         clientList.add(requestedClients[i]);
       }
 
-      String[] clientArray = new String[clientList.size()];
+      final String[] clientArray = new String[clientList.size()];
       clientList.toArray(clientArray);
       job.setRequestedClients(clientArray);
     }
@@ -587,7 +589,7 @@ public class JobGroupJob
     // Schedule the job for execution.
     slamdServer.getScheduler().scheduleJob(job, folderName);
     messages.add("Successfully scheduled job " + name + " with job ID " +
-                 job.getJobID());
+         job.getJobID());
 
 
     // Add the job to the job hash so it can be used as a dependency for other
@@ -603,9 +605,10 @@ public class JobGroupJob
    *
    * @return  The ASN.1 element containing the encoded job information.
    */
+  @Override()
   public ASN1Element encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(new ASN1OctetString(ELEMENT_NAME));
     elementList.add(new ASN1OctetString(name));
@@ -636,8 +639,8 @@ public class JobGroupJob
 
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
-      ArrayList<ASN1Element> depElements =
-           new ArrayList<ASN1Element>(dependencies.size());
+      final ArrayList<ASN1Element> depElements =
+           new ArrayList<>(dependencies.size());
       for (int i=0; i < dependencies.size(); i++)
       {
         depElements.add(new ASN1OctetString(dependencies.get(i)));
@@ -649,14 +652,11 @@ public class JobGroupJob
 
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
-      ArrayList<ASN1Element> paramElements = new ArrayList<ASN1Element>();
-      Iterator<String> iterator = mappedParameters.keySet().iterator();
-      while (iterator.hasNext())
+      final ArrayList<ASN1Element> paramElements = new ArrayList<>();
+      for (final String jobName : mappedParameters.keySet())
       {
-        String jobName   = iterator.next();
-        String groupName = mappedParameters.get(jobName);
-
-        ASN1Element[] paramElementArray =
+        final String groupName = mappedParameters.get(jobName);
+        final ASN1Element[] paramElementArray =
         {
           new ASN1OctetString(jobName),
           new ASN1OctetString(groupName)
@@ -693,15 +693,16 @@ public class JobGroupJob
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the job information.
    */
-  public static JobGroupJob decode(SLAMDServer slamdServer, JobGroup jobGroup,
-                                   ASN1Element encodedJob)
+  public static JobGroupJob decode(final SLAMDServer slamdServer,
+                                   final JobGroup jobGroup,
+                                   final ASN1Element encodedJob)
          throws DecodeException
   {
     try
     {
-      ArrayList<String> dependencies = new ArrayList<String>();
-      LinkedHashMap<String,String> mappedParameters =
-           new LinkedHashMap<String,String>();
+      final ArrayList<String> dependencies = new ArrayList<>();
+      final LinkedHashMap<String,String> mappedParameters =
+           new LinkedHashMap<>();
       int           collectionInterval = Constants.DEFAULT_COLLECTION_INTERVAL;
       int           duration           = -1;
       int           numClients         = -1;
@@ -711,11 +712,13 @@ public class JobGroupJob
       ParameterList fixedParameters    = new ParameterList();
       String        name               = null;
 
-      ASN1Element[] elements = encodedJob.decodeAsSequence().getElements();
+      final ASN1Element[] elements =
+           encodedJob.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
@@ -725,7 +728,7 @@ public class JobGroupJob
         {
           // FIXME -- Does this need to be able to handle classes that aren't
           // registered?
-          String jobClassName =
+          final String jobClassName =
                elements[i+1].decodeAsOctetString().getStringValue();
           jobClass = slamdServer.getJobClass(jobClassName);
         }
@@ -751,22 +754,21 @@ public class JobGroupJob
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
-          ASN1Element[] depElements =
+          final ASN1Element[] depElements =
                elements[i+1].decodeAsSequence().getElements();
-          for (int j=0; j < depElements.length; j++)
+          for (final ASN1Element depElement : depElements)
           {
-            dependencies.add(
-                 depElements[j].decodeAsOctetString().getStringValue());
+            dependencies.add(depElement.decodeAsOctetString().getStringValue());
           }
         }
         else if (elementName.equals(ELEMENT_MAPPED_PARAMS))
         {
-          ASN1Element[] paramElements =
+          final ASN1Element[] paramElements =
                elements[i+1].decodeAsSequence().getElements();
-          for (int j=0; j < paramElements.length; j++)
+          for (final ASN1Element paramElement : paramElements)
           {
-            ASN1Element[] pElements =
-                 paramElements[j].decodeAsSequence().getElements();
+            final ASN1Element[] pElements =
+                 paramElement.decodeAsSequence().getElements();
             mappedParameters.put(
                  pElements[0].decodeAsOctetString().getStringValue(),
                  pElements[1].decodeAsOctetString().getStringValue());
@@ -779,11 +781,10 @@ public class JobGroupJob
       }
 
       return new JobGroupJob(jobGroup, name, jobClass, duration,
-                             collectionInterval, numClients, threadsPerClient,
-                             threadStartupDelay, dependencies, mappedParameters,
-                             fixedParameters);
+           collectionInterval, numClients, threadsPerClient, threadStartupDelay,
+           dependencies, mappedParameters, fixedParameters);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode the job group job:  " + e, e);
     }

@@ -45,9 +45,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import netscape.ldap.LDAPException;
 
-import org.apache.commons.fileupload.DefaultFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.sleepycat.je.DatabaseException;
 
@@ -1603,7 +1604,7 @@ public class AdminServlet
 
     // First, see if the request is multi-part content.  If it is, then we can
     // be pretty confident that the user is uploading a file.
-    if (FileUpload.isMultipartContent(requestInfo.request))
+    if (ServletFileUpload.isMultipartContent(requestInfo.request))
     {
       handleFileUpload(requestInfo);
       return;
@@ -2290,7 +2291,7 @@ public class AdminServlet
 
     StringBuilder infoMessage = requestInfo.infoMessage;
 
-    FileUpload fileUpload = new FileUpload(new DefaultFileItemFactory());
+    FileUpload fileUpload = new FileUpload(new DiskFileItemFactory());
     fileUpload.setSizeMax(maxUploadSize);
 
     boolean inOptimizing = false;
@@ -2304,10 +2305,10 @@ public class AdminServlet
       int     fileSize     = -1;
       byte[]  fileData     = null;
 
-      Iterator iterator = requestInfo.multipartFieldList.iterator();
+      Iterator<FileItem> iterator = requestInfo.multipartFieldList.iterator();
       while (iterator.hasNext())
       {
-        FileItem fileItem = (FileItem) iterator.next();
+        FileItem fileItem = iterator.next();
         String fieldName = fileItem.getFieldName();
 
         if (fieldName.equals(Constants.SERVLET_PARAM_FILE_DESCRIPTION))
@@ -9040,7 +9041,7 @@ public class AdminServlet
                 request.getParameter(Constants.SERVLET_PARAM_JOB_PACK_PATH);
 
     // Determine whether the request contains uploaded file data.
-    if (FileUpload.isMultipartContent(request))
+    if (ServletFileUpload.isMultipartContent(request))
     {
       // This request contains the file data, so process it.
       JobPack jobPack = new JobPack(requestInfo);

@@ -890,7 +890,7 @@ public class SMTPConnectionVariable
             return new BooleanVariable(false);
           }
 
-          ArrayList headerLines = mmv.getHeaderLines();
+          ArrayList<String> headerLines = mmv.getHeaderLines();
           if ((headerLines != null) && (! headerLines.isEmpty()))
           {
             for (int i=0; i < headerLines.size(); i++)
@@ -901,12 +901,12 @@ public class SMTPConnectionVariable
             writer.write(EOL);
           }
 
-          ArrayList bodyLines   = mmv.getBodyLines();
+          ArrayList<String> bodyLines   = mmv.getBodyLines();
           if ((bodyLines != null) && (! bodyLines.isEmpty()))
           {
             for (int i=0; i < bodyLines.size(); i++)
             {
-              line = (String) bodyLines.get(i);
+              line = bodyLines.get(i);
               if (line.startsWith("."))
               {
                 writer.write(".");

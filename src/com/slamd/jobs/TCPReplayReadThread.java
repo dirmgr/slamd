@@ -175,10 +175,10 @@ public class TCPReplayReadThread
         int selectedKeys = selector.select(100);
         if (selectedKeys > 0)
         {
-          Iterator iterator = selector.selectedKeys().iterator();
+          Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
           while (iterator.hasNext())
           {
-            SelectionKey key = (SelectionKey) iterator.next();
+            SelectionKey key = iterator.next();
 
             if (key.isReadable())
             {
@@ -215,10 +215,10 @@ public class TCPReplayReadThread
         {
           if (! pendingConnectionList.isEmpty())
           {
-            Iterator iterator = pendingConnectionList.iterator();
+            Iterator<SocketChannel> iterator = pendingConnectionList.iterator();
             while (iterator.hasNext())
             {
-              SocketChannel channel = (SocketChannel) iterator.next();
+              SocketChannel channel = iterator.next();
               channel.register(selector, SelectionKey.OP_READ);
             }
 
@@ -262,12 +262,12 @@ public class TCPReplayReadThread
 
     synchronized (threadMutex)
     {
-      Iterator iterator = selector.keys().iterator();
+      Iterator<SelectionKey> iterator = selector.keys().iterator();
       while (iterator.hasNext())
       {
         try
         {
-          SelectionKey key = (SelectionKey) iterator.next();
+          SelectionKey key = iterator.next();
           key.channel().close();
           key.cancel();
         } catch (Exception e) {}

@@ -174,7 +174,8 @@ public class DynamicConstants
 
     <javac srcdir="${source.dir}" destdir="${classes.dir}" optimize="true"
            debug="on" debuglevel="lines,source" source="1.8" target="1.8"
-           fork="true" memoryInitialSize="${MEM}" memoryMaximumSize="${MEM}">
+           fork="true" memoryInitialSize="${MEM}" memoryMaximumSize="${MEM}"
+           includeantruntime="false">
       <compilerarg value="-Xlint:all" />
       <classpath>
         <fileset dir="${ext.dir}">

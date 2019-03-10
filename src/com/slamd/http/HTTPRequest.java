@@ -218,7 +218,7 @@ public class HTTPRequest
    * @return  An array list whose string elements are the names of the
    *          parameters associated with this request.
    */
-  public ArrayList getParameterNameList()
+  public ArrayList<String> getParameterNameList()
   {
     return parameterNames;
   }
@@ -247,7 +247,7 @@ public class HTTPRequest
    * @return  An array list whose string elements are the values of the
    *          parameters associated with this request.
    */
-  public ArrayList getParameterValueList()
+  public ArrayList<String> getParameterValueList()
   {
     return parameterValues;
   }
@@ -659,10 +659,10 @@ public class HTTPRequest
 
     boolean hasContentType = false;
 
-    Iterator iterator = client.commonHeaderMap.keySet().iterator();
+    Iterator<String> iterator = client.commonHeaderMap.keySet().iterator();
     while (iterator.hasNext())
     {
-      String headerName = (String) iterator.next();
+      String headerName = iterator.next();
       if (headerName.equalsIgnoreCase("content-type"))
       {
         hasContentType = true;
@@ -680,7 +680,7 @@ public class HTTPRequest
     iterator = headerMap.keySet().iterator();
     while (iterator.hasNext())
     {
-      String headerName = (String) iterator.next();
+      String headerName = iterator.next();
       if (headerName.equalsIgnoreCase("content-type"))
       {
         hasContentType = true;

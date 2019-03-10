@@ -26,6 +26,8 @@ import netscape.ldap.LDAPEntry;
 import netscape.ldap.LDAPException;
 import netscape.ldap.LDAPSearchResults;
 
+import com.unboundid.util.StaticUtils;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.stat.IntegerValueTracker;
@@ -834,10 +836,10 @@ public class SunONEDirectoryServerResourceMonitor
 
 
   /**
-   * Initializses arrays of lists.  Suppress warnings since an array cannot be
+   * Initializes arrays of lists.  Suppress warnings since an array cannot be
    * created with a type.
    */
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   private void initializeListArrays()
   {
     dbCountList             = new ArrayList[backendMonitorDNs.length];
@@ -850,13 +852,13 @@ public class SunONEDirectoryServerResourceMonitor
 
     for (int i=0; i < backendMonitorDNs.length; i++)
     {
-      dbCountList[i]             = new ArrayList<Integer>();
-      entryCountList[i]          = new ArrayList<Integer>();
-      cacheSizeList[i]           = new ArrayList<Long>();
-      cacheEntriesList[i]        = new ArrayList<Integer>();
-      cachePercentFullList[i]    = new ArrayList<Integer>();
-      cachePercentEntriesList[i] = new ArrayList<Integer>();
-      cacheHitRatioList[i]       = new ArrayList<Integer>();
+      dbCountList[i]             = new ArrayList<>();
+      entryCountList[i]          = new ArrayList<>();
+      cacheSizeList[i]           = new ArrayList<>();
+      cacheEntriesList[i]        = new ArrayList<>();
+      cachePercentFullList[i]    = new ArrayList<>();
+      cachePercentEntriesList[i] = new ArrayList<>();
+      cacheHitRatioList[i]       = new ArrayList<>();
     }
   }
 

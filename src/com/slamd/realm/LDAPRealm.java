@@ -1290,10 +1290,10 @@ public class LDAPRealm
   {
     long now = System.currentTimeMillis();
 
-    Enumeration keys = userCache.keys();
+    Enumeration<String> keys = userCache.keys();
     while (keys.hasMoreElements())
     {
-      String key = (String) keys.nextElement();
+      String key = keys.nextElement();
       CachedUser user = userCache.get(key);
       if (user.getExpirationTime() < now)
       {

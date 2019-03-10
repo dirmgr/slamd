@@ -297,7 +297,7 @@ public class AdminJobGroup
                     "\">View Job Group " + jobGroupName + "</SPAN>" + EOL);
     htmlBody.append("<BR><BR>" + EOL);
 
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     if (requestInfo.mayScheduleJob)
     {
       htmlBody.append("<TABLE BORDER=\"0\">" + EOL);
@@ -913,7 +913,7 @@ public class AdminJobGroup
          EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    ArrayList dependencies = job.getDependencies();
+    ArrayList<String> dependencies = job.getDependencies();
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
       htmlBody.append("  <TR CLASS=\"" + Constants.STYLE_JOB_SUMMARY_LINE_B +
@@ -932,7 +932,7 @@ public class AdminJobGroup
     }
 
 
-    LinkedHashMap mappedParameters = job.getMappedParameters();
+    LinkedHashMap<String,String> mappedParameters = job.getMappedParameters();
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
       htmlBody.append("  <TR>" + EOL);
@@ -944,11 +944,11 @@ public class AdminJobGroup
       htmlBody.append("  </TR>" + EOL);
 
       int i=0;
-      Iterator iterator = mappedParameters.keySet().iterator();
+      Iterator<String> iterator = mappedParameters.keySet().iterator();
       while (iterator.hasNext())
       {
-        String jobParamName   = (String) iterator.next();
-        String groupParamName = (String) mappedParameters.get(jobParamName);
+        String jobParamName   = iterator.next();
+        String groupParamName = mappedParameters.get(jobParamName);
 
         Parameter jobParam =
              job.getJobClass().getParameterStubs().getParameter(jobParamName);
@@ -1275,7 +1275,7 @@ public class AdminJobGroup
     htmlBody.append("    <TD>" + durationStr + "</TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    ArrayList dependencies = optimizingJob.getDependencies();
+    ArrayList<String> dependencies = optimizingJob.getDependencies();
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
       htmlBody.append("  <TR CLASS=\"" + Constants.STYLE_JOB_SUMMARY_LINE_B +
@@ -1329,7 +1329,8 @@ public class AdminJobGroup
     }
 
 
-    LinkedHashMap mappedParameters = optimizingJob.getMappedParameters();
+    LinkedHashMap<String,String> mappedParameters =
+         optimizingJob.getMappedParameters();
     if ((mappedParameters != null) && (! mappedParameters.isEmpty()))
     {
       htmlBody.append("  <TR>" + EOL);
@@ -1341,11 +1342,11 @@ public class AdminJobGroup
       htmlBody.append("  </TR>" + EOL);
 
       int i=0;
-      Iterator iterator = mappedParameters.keySet().iterator();
+      Iterator<String> iterator = mappedParameters.keySet().iterator();
       while (iterator.hasNext())
       {
-        String jobParamName   = (String) iterator.next();
-        String groupParamName = (String) mappedParameters.get(jobParamName);
+        String jobParamName   = iterator.next();
+        String groupParamName = mappedParameters.get(jobParamName);
 
         Parameter jobParam =
              optimizingJob.getJobClass().getParameterStubs().getParameter(
@@ -2756,7 +2757,8 @@ public class AdminJobGroup
         for (int j=0; (unused && (j < jobs.size())); j++)
         {
           JobGroupJob job = jobs.get(j);
-          Iterator iterator = job.getMappedParameters().values().iterator();
+          Iterator<String> iterator =
+               job.getMappedParameters().values().iterator();
           while (iterator.hasNext())
           {
             if (params[i].getName().equals(iterator.next()))
@@ -2769,7 +2771,7 @@ public class AdminJobGroup
         for (int j=0; (unused && (j < optimizingJobs.size())); j++)
         {
           JobGroupOptimizingJob optimizingJob = optimizingJobs.get(j);
-          Iterator iterator =
+          Iterator<String> iterator =
                optimizingJob.getMappedParameters().values().iterator();
           while (iterator.hasNext())
           {
@@ -2902,7 +2904,7 @@ public class AdminJobGroup
     }
 
     JobGroupJob job = null;
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -3754,7 +3756,7 @@ public class AdminJobGroup
     }
 
     JobGroupOptimizingJob optimizingJob = null;
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     for (int i=0; i < jobList.size(); i++)
     {
       Object o = jobList.get(i);
@@ -5036,7 +5038,7 @@ public class AdminJobGroup
       return;
     }
 
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     String link = generateLink(requestInfo, Constants.SERVLET_SECTION_JOB,
                                Constants.SERVLET_SECTION_JOB_VIEW_GROUP,
                                Constants.SERVLET_PARAM_JOB_GROUP_NAME,
@@ -6006,7 +6008,7 @@ public class AdminJobGroup
       return;
     }
 
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     String link = generateLink(requestInfo, Constants.SERVLET_SECTION_JOB,
                                Constants.SERVLET_SECTION_JOB_VIEW_GROUP,
                                Constants.SERVLET_PARAM_JOB_GROUP_NAME,
@@ -7419,7 +7421,7 @@ public class AdminJobGroup
     // Right now, we only support removing the last job in the group so that we
     // don't cause problems with dependencies.  Make sure the specified job is
     // the last one.
-    ArrayList jobList = jobGroup.getJobList();
+    ArrayList<JobGroupItem> jobList = jobGroup.getJobList();
     if (jobList.isEmpty())
     {
       infoMessage.append("ERROR:  There are no jobs or optimizing jobs " +

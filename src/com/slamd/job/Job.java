@@ -62,7 +62,7 @@ import com.slamd.stat.StatTracker;
  * @author   Neil A. Wilson
  */
 public class Job
-       implements Comparable, JobItem
+       implements Comparable<Job>, JobItem
 {
   /**
    * The name of the encoded element that holds the job ID.
@@ -1474,10 +1474,9 @@ public class Job
    *          associated with this job, in a map that links those names to the
    *          names of the associated resource monitor class.
    */
-  public LinkedHashMap getResourceStatTrackerNamesAndClasses()
+  public LinkedHashMap<String,String> getResourceStatTrackerNamesAndClasses()
   {
-    LinkedHashMap<String,String> trackerMap =
-         new LinkedHashMap<String,String>();
+    LinkedHashMap<String,String> trackerMap = new LinkedHashMap<>();
 
     for (int i=0; i < resourceStatTrackers.size(); i++)
     {
@@ -1925,12 +1924,12 @@ public class Job
    */
   public String[] getLogMessages()
   {
-    ArrayList clone = (ArrayList) logMessages.clone();
+    ArrayList<String> clone = new ArrayList<>(logMessages);
     String[] messageArray = new String[clone.size()];
 
     for (int i=0; i < messageArray.length; i++)
     {
-      messageArray[i] = (String) clone.get(i);
+      messageArray[i] = clone.get(i);
     }
 
     return messageArray;
@@ -2327,7 +2326,7 @@ public class Job
    *
    * @return  The set of clients that are currently being used to run this job.
    */
-  public ArrayList getActiveClients()
+  public ArrayList<ClientConnection> getActiveClients()
   {
     return activeClients;
   }
@@ -2342,7 +2341,7 @@ public class Job
    * @return  The set of resource monitor clients that are currently being used
    *          to run this job.
    */
-  public ArrayList getActiveMonitorClients()
+  public ArrayList<ResourceMonitorClientConnection> getActiveMonitorClients()
   {
     return activeMonitorClients;
   }
@@ -3285,7 +3284,7 @@ public class Job
    * they're all the same, then the iteration and rerun segments will be taken
    * into account if appropriate.
    *
-   * @param  o  The object to compare with this job.  It must be a Job.
+   * @param  j  The job to cmpare with this job.
    *
    * @return  A negative value if this job should be ordered before the provided
    *          object, a positive value if this job should be ordered after the
@@ -3293,10 +3292,10 @@ public class Job
    *
    * @throws  ClassCastException  If the provided object is not a Job.
    */
-  public int compareTo(Object o)
+  public int compareTo(Job j)
           throws ClassCastException
   {
-    if (o == null)
+    if (j == null)
     {
       return -1;
     }
@@ -3305,7 +3304,6 @@ public class Job
 
     try
     {
-      Job j = (Job) o;
       jobID2 = j.getJobID();
 
       StringTokenizer t1 = new StringTokenizer(jobID, "-");

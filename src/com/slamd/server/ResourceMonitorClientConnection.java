@@ -60,7 +60,7 @@ import com.slamd.message.StatusResponseMessage;
  */
 public class ResourceMonitorClientConnection
        extends Thread
-       implements Comparable
+       implements Comparable<ResourceMonitorClientConnection>
 {
   // The list used to hold responses to solicited messages
   private ArrayList<Message> messageList;
@@ -448,10 +448,10 @@ public class ResourceMonitorClientConnection
       Job[] jobs = new Job[jobHash.size()];
 
       int i=0;
-      Iterator iterator = jobHash.values().iterator();
+      Iterator<Job> iterator = jobHash.values().iterator();
       while (iterator.hasNext())
       {
-        jobs[i++] = (Job) iterator.next();
+        jobs[i++] = iterator.next();
       }
 
       return jobs;
@@ -474,10 +474,10 @@ public class ResourceMonitorClientConnection
       String[] jobIDs = new String[jobHash.size()];
 
       int i=0;
-      Iterator iterator = jobHash.values().iterator();
+      Iterator<Job> iterator = jobHash.values().iterator();
       while (iterator.hasNext())
       {
-        jobIDs[i++] = ((Job) iterator.next()).getJobID();
+        jobIDs[i++] = iterator.next().getJobID();
       }
 
       return jobIDs;
@@ -1284,7 +1284,7 @@ public class ResourceMonitorClientConnection
    * the comparison will be made based on the lexicographic ordering of the
    * associated client IDs.
    *
-   * @param  o  The resource monitor client connection object to compare against
+   * @param  c  The resource monitor client connection object to compare against
    *            this resource monitor client connection.
    *
    * @return  A negative value if this resource monitor client connection should
@@ -1297,10 +1297,9 @@ public class ResourceMonitorClientConnection
    * @throws  ClassCastException  If the provided object is not a resource
    *                              monitor client connection object.
    */
-  public int compareTo(Object o)
+  public int compareTo(ResourceMonitorClientConnection c)
          throws ClassCastException
   {
-    ResourceMonitorClientConnection c = (ResourceMonitorClientConnection) o;
     return clientID.compareTo(c.clientID);
   }
 }

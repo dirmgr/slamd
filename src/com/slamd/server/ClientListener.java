@@ -679,7 +679,7 @@ public class ClientListener
 
       if ((jobConnections.size() + numAvailable) >= numConnections)
       {
-        Iterator iterator = connHash.keySet().iterator();
+        Iterator<String> iterator = connHash.keySet().iterator();
         while (jobConnections.size() < numConnections)
         {
           String clientIP;
@@ -688,7 +688,7 @@ public class ClientListener
             iterator = connHash.keySet().iterator();
           }
 
-          clientIP = (String) iterator.next();
+          clientIP = iterator.next();
           LinkedList<ClientConnection> clientList = connHash.get(clientIP);
 
           ClientConnection connection = clientList.removeFirst();

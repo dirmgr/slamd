@@ -38,6 +38,7 @@ import com.sleepycat.je.DatabaseConfig;
 import com.sleepycat.je.DatabaseEntry;
 import com.sleepycat.je.DatabaseException;
 import com.sleepycat.je.DatabaseNotFoundException;
+import com.sleepycat.je.Durability;
 import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
@@ -262,7 +263,7 @@ public class SLAMDDB
     config.setAllowCreate(createIfNecessary);
     config.setReadOnly(readOnly);
     config.setTransactional(true);
-    config.setTxnNoSync(readOnly);
+    config.setDurability(Durability.COMMIT_WRITE_NO_SYNC);
     config.setCachePercent(25);
 
 
@@ -499,7 +500,7 @@ public class SLAMDDB
     config.setAllowCreate(true);
     config.setReadOnly(false);
     config.setTransactional(true);
-    config.setTxnNoSync(true);
+    config.setDurability(Durability.COMMIT_WRITE_NO_SYNC);
 
 
     // Open the database environment with the specified configuration.
@@ -2933,13 +2934,13 @@ public class SLAMDDB
     StringBuilder buffer = new StringBuilder();
     if (! disabledJobs.isEmpty())
     {
-      Iterator iterator = disabledJobs.iterator();
-      buffer.append((String) iterator.next());
+      Iterator<String> iterator = disabledJobs.iterator();
+      buffer.append(iterator.next());
 
       while (iterator.hasNext())
       {
         buffer.append('\n');
-        buffer.append((String) iterator.next());
+        buffer.append(iterator.next());
       }
     }
 
@@ -2980,11 +2981,11 @@ public class SLAMDDB
   {
     synchronized (disabledJobs)
     {
-      ArrayList<Job> disabledJobList = new ArrayList<Job>();
-      Iterator iterator = disabledJobs.iterator();
+      ArrayList<Job> disabledJobList = new ArrayList<>();
+      Iterator<String> iterator = disabledJobs.iterator();
       while (iterator.hasNext())
       {
-        String jobID = (String) iterator.next();
+        String jobID = iterator.next();
         byte[] jobBytes = get(null, jobDB, jobID, false);
         if (jobBytes == null)
         {

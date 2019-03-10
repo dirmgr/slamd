@@ -134,7 +134,7 @@ public class LoggerThread
     {
       // Define a list that we will use if there is actually something to be
       // logged.
-      ArrayList messagesToLog = null;
+      ArrayList<String> messagesToLog = null;
 
 
       // Get the current time so that we can figure out how long to sleep when
@@ -153,7 +153,7 @@ public class LoggerThread
           // There are messages to be logged, so steal that buffer away for
           // ourselves and replace it with a new empty one.
           messagesToLog = logger.logBuffer;
-          logger.logBuffer = new ArrayList<String>();
+          logger.logBuffer = new ArrayList<>();
         }
       }
 
@@ -165,7 +165,7 @@ public class LoggerThread
         {
           for (int i=0; i < messagesToLog.size(); i++)
           {
-            String message = (String) messagesToLog.get(i);
+            String message = messagesToLog.get(i);
             try
             {
               logger.logWriter.write(message);

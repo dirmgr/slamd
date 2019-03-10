@@ -34,7 +34,7 @@ import java.util.jar.Manifest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUpload;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.slamd.common.Constants;
 import com.slamd.job.JobClass;
@@ -54,7 +54,7 @@ import com.slamd.server.SLAMDServerException;
 public class JobPack
 {
   // The list of fields in the multipart form content.
-  private List fieldList;
+  private List<FileItem> fieldList;
 
   // Information about the request from the client, including the file data.
   private RequestInfo requestInfo;
@@ -125,7 +125,7 @@ public class JobPack
     {
       // First, get the request and ensure it is multipart content.
       HttpServletRequest request = requestInfo.request;
-      if (! FileUpload.isMultipartContent(request))
+      if (! ServletFileUpload.isMultipartContent(request))
       {
         throw new SLAMDServerException("Request does not contain multipart " +
                                        "content");
@@ -133,10 +133,10 @@ public class JobPack
 
 
       // Iterate through the request fields to get to the file data.
-      Iterator iterator = fieldList.iterator();
+      Iterator<FileItem> iterator = fieldList.iterator();
       while (iterator.hasNext())
       {
-        FileItem fileItem  = (FileItem) iterator.next();
+        FileItem fileItem  = iterator.next();
         String   fieldName = fileItem.getFieldName();
 
         if (fieldName.equals(Constants.SERVLET_PARAM_JOB_PACK_FILE))
@@ -223,7 +223,7 @@ public class JobPack
     // Parse the jar file
     JarFile     jarFile    = null;
     Manifest    manifest   = null;
-    Enumeration jarEntries = null;
+    Enumeration<JarEntry> jarEntries = null;
     try
     {
       jarFile    = new JarFile(tempFile, true);
@@ -248,12 +248,12 @@ public class JobPack
     }
 
 
-    ArrayList<String> dirList = new ArrayList<String>();
-    ArrayList<String> fileNameList = new ArrayList<String>();
-    ArrayList<byte[]> fileDataList = new ArrayList<byte[]>();
+    ArrayList<String> dirList = new ArrayList<>();
+    ArrayList<String> fileNameList = new ArrayList<>();
+    ArrayList<byte[]> fileDataList = new ArrayList<>();
     while (jarEntries.hasMoreElements())
     {
-      JarEntry jarEntry = (JarEntry) jarEntries.nextElement();
+      JarEntry jarEntry = jarEntries.nextElement();
       String entryName = jarEntry.getName();
       if (jarEntry.isDirectory())
       {

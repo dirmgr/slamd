@@ -171,7 +171,7 @@ public class DBDump
 
 
     // Get a list of the databases contained in the DB environment.
-    List dbList = null;
+    List<String> dbList = null;
     try
     {
       if (verboseMode)
@@ -184,7 +184,7 @@ public class DBDump
       if (verboseMode)
       {
         System.err.println("     Successfully obtained the DB list:");
-        Iterator iterator = dbList.iterator();
+        Iterator<String> iterator = dbList.iterator();
         while (iterator.hasNext())
         {
           System.err.println("          " + iterator.next());
@@ -209,7 +209,7 @@ public class DBDump
     if (listDBs)
     {
       System.out.println("Databases available in the DB environment:");
-      Iterator iterator = dbList.iterator();
+      Iterator<String> iterator = dbList.iterator();
       while (iterator.hasNext())
       {
         System.out.println("- " + iterator.next());
@@ -259,11 +259,11 @@ public class DBDump
 
 
     // Iterate through the DBs and print out the debug information from them.
-    Iterator iterator = dbList.iterator();
+    Iterator<String> iterator = dbList.iterator();
     while (iterator.hasNext())
     {
       // Check to see if this DB is one that we should investigate.
-      String name = (String) iterator.next();
+      String name = iterator.next();
       if ((dbName != null) && (! dbName.equals(name)))
       {
         continue;

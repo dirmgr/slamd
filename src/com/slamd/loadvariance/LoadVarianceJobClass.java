@@ -375,7 +375,7 @@ public abstract class LoadVarianceJobClass
    */
   public void setIdleSleepDuration(int idleSleepDuration)
   {
-    this.idleSleepDuration = idleSleepDuration;
+    LoadVarianceJobClass.idleSleepDuration = idleSleepDuration;
   }
 
 
@@ -407,7 +407,7 @@ public abstract class LoadVarianceJobClass
    */
   public void setLoopVarianceDefinition(boolean loopVarianceDefinition)
   {
-    this.loopVarianceDefinition = loopVarianceDefinition;
+    LoadVarianceJobClass.loopVarianceDefinition = loopVarianceDefinition;
   }
 
 

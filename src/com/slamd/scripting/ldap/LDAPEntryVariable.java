@@ -473,11 +473,11 @@ public class LDAPEntryVariable
     entryDN = entry.getDN();
     attributes = new ArrayList<LDAPAttributeVariable>();
 
-    Enumeration attrs = entry.getAttributeSet().getAttributes();
+    Enumeration<?> attrs = entry.getAttributeSet().getAttributes();
     while (attrs.hasMoreElements())
     {
-      attributes.add(new LDAPAttributeVariable((LDAPAttribute)
-                                               attrs.nextElement()));
+      attributes.add(new LDAPAttributeVariable(
+           (LDAPAttribute) attrs.nextElement()));
     }
   }
 

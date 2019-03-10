@@ -101,7 +101,7 @@ public class LDIFAttribute
    *
    * @return  The set of values for this attribute.
    */
-  public ArrayList getValues()
+  public ArrayList<String> getValues()
   {
     return values;
   }

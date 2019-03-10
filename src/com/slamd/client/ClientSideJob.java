@@ -956,12 +956,12 @@ public class ClientSideJob
    */
   public String[] getLogMessages()
   {
-    ArrayList clone = (ArrayList) logMessages.clone();
+    ArrayList<String> clone = new ArrayList<>(logMessages);
     String[] messageArray = new String[clone.size()];
 
     for (int i=0; i < messageArray.length; i++)
     {
-      messageArray[i] = (String) clone.get(i);
+      messageArray[i] = clone.get(i);
     }
 
     return messageArray;

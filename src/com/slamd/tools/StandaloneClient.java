@@ -318,7 +318,7 @@ public class StandaloneClient
     {
       try
       {
-        Class jobClass = Constants.classForName(jobClassName);
+        Class<?> jobClass = Constants.classForName(jobClassName);
         jobInstance = (JobClass) jobClass.newInstance();
       }
       catch (Exception e)
@@ -445,7 +445,7 @@ public class StandaloneClient
     {
       try
       {
-        Class jobClass = Constants.classForName(jobClassName);
+        Class<?> jobClass = Constants.classForName(jobClassName);
         jobInstance = (JobClass) jobClass.newInstance();
       }
       catch (Exception e)

@@ -206,10 +206,10 @@ public class StatListener
     // the connections.
     synchronized (connectionListMutex)
     {
-      Iterator i = connectionList.iterator();
+      Iterator<StatClientConnection> i = connectionList.iterator();
       while (i.hasNext())
       {
-        StatClientConnection connection = (StatClientConnection) i.next();
+        StatClientConnection connection = i.next();
         connection.sendServerShutdownMessage(true);
       }
 

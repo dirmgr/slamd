@@ -112,7 +112,7 @@ public class JobClassLoader
                                " for job class " + className + ":  " + e, e);
     }
 
-    Class jobClass;
+    Class<?> jobClass;
     try
     {
       jobClass = defineClass(className, fileBytes, 0, fileBytes.length);

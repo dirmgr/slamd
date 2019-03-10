@@ -382,7 +382,7 @@ public class HTTPCookie
    *
    * @return  The set of "extra" unrecognized properties for this cookie.
    */
-  public HashMap getProperties()
+  public HashMap<String,String> getProperties()
   {
     return extraProperties;
   }

@@ -272,10 +272,10 @@ public class ReplayCapture
         int numKeys = selector.select(100);
         if (numKeys > 0)
         {
-          Iterator iterator = selector.selectedKeys().iterator();
+          Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
           while (iterator.hasNext())
           {
-            SelectionKey selectionKey = (SelectionKey) iterator.next();
+            SelectionKey selectionKey = iterator.next();
 
             if (selectionKey.isReadable())
             {

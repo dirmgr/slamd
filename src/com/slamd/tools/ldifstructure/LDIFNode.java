@@ -137,7 +137,7 @@ public class LDIFNode
    *
    * @return  The set of entry types for the child entries.
    */
-  public TreeMap getChildEntryTypes()
+  public TreeMap<String,LDIFEntryType> getChildEntryTypes()
   {
     return childEntryTypes;
   }
@@ -194,10 +194,10 @@ public class LDIFNode
     }
 
     LDIFEntryType aggregateType = new LDIFEntryType();
-    Iterator iterator = childEntryTypes.values().iterator();
+    Iterator<LDIFEntryType> iterator = childEntryTypes.values().iterator();
     while (iterator.hasNext())
     {
-      aggregateType.aggregate((LDIFEntryType) iterator.next());
+      aggregateType.aggregate(iterator.next());
     }
 
     return aggregateType;
@@ -221,7 +221,7 @@ public class LDIFNode
       return;
     }
 
-    ArrayList values = attr.getValues();
+    ArrayList<String> values = attr.getValues();
     String[] objectClasses = new String[values.size()];
     if (objectClasses.length == 0)
     {
@@ -230,7 +230,7 @@ public class LDIFNode
 
     for (int i=0; i < objectClasses.length; i++)
     {
-      objectClasses[i] = LDIFReader.toLowerCase((String) values.get(i));
+      objectClasses[i] = LDIFReader.toLowerCase(values.get(i));
     }
     Arrays.sort(objectClasses);
     StringBuilder keyStr = new StringBuilder();
@@ -263,7 +263,7 @@ public class LDIFNode
    *
    * @return  The set of child nodes for this LDIF node.
    */
-  public ArrayList getChildNodes()
+  public ArrayList<LDIFNode> getChildNodes()
   {
     return childNodes;
   }

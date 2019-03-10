@@ -130,10 +130,10 @@ public class RealTimeJobStats
     String[] statNames = new String[statHash.size()];
 
     int i =0;
-    Iterator iterator = statHash.keySet().iterator();
+    Iterator<String> iterator = statHash.keySet().iterator();
     while (iterator.hasNext())
     {
-      statNames[i++] = (String) iterator.next();
+      statNames[i++] = iterator.next();
     }
 
     return statNames;

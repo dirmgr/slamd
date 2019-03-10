@@ -61,7 +61,7 @@ import com.slamd.message.StatusResponseMessage;
  */
 public class ClientConnection
        extends Thread
-       implements Comparable
+       implements Comparable<ClientConnection>
 {
   // The list used to hold responses to solicited messages
   private ArrayList<Message> messageList;
@@ -1201,7 +1201,7 @@ public class ClientConnection
    * must be a client connection object, and the comparison will be made based
    * on the lexicographic ordering of the associated client IDs.
    *
-   * @param  o  The client connection object to compare against this client
+   * @param  c  The client connection object to compare against this client
    *            connection.
    *
    * @return  A negative value if this client connection should come before the
@@ -1213,10 +1213,9 @@ public class ClientConnection
    * @throws  ClassCastException  If the provided object is not a client
    *                              connection object.
    */
-  public int compareTo(Object o)
+  public int compareTo(ClientConnection c)
          throws ClassCastException
   {
-    ClientConnection c = (ClientConnection) o;
     return clientID.compareTo(c.clientID);
   }
 }

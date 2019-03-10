@@ -3148,10 +3148,10 @@ public class AdminUI
 
       if (! showAll)
       {
-        Iterator iterator = lineList.iterator();
+        final Iterator<String> iterator = lineList.iterator();
         while (iterator.hasNext())
         {
-          htmlBody.append((String) iterator.next());
+          htmlBody.append(iterator.next());
         }
       }
 

@@ -149,24 +149,21 @@ public class AdminDebug
     StringBuilder htmlBody    = requestInfo.htmlBody;
     StringBuilder infoMessage = requestInfo.infoMessage;
 
-    Map threadMap = null;
     try
     {
-      Class<?> threadClass = Constants.classForName("java.lang.Thread");
-      Method stackTracesMethod = threadClass.getMethod("getAllStackTraces");
-      threadMap = (Map) stackTracesMethod.invoke(null);
-
+      Map<Thread,StackTraceElement[]> threadMap = Thread.getAllStackTraces();
       htmlBody.append("<SPAN CLASS=\"" + Constants.STYLE_MAIN_HEADER +
                       "\">SLAMD Server JVM Stack Trace</SPAN>" + EOL);
       htmlBody.append("<BR><BR>" + EOL);
 
-      Iterator iterator = threadMap.entrySet().iterator();
+      Iterator<Map.Entry<Thread,StackTraceElement[]>> iterator =
+           threadMap.entrySet().iterator();
       while (iterator.hasNext())
       {
-        Map.Entry entry = (Map.Entry) iterator.next();
+        Map.Entry<Thread,StackTraceElement[]> entry = iterator.next();
 
-        Thread              thread = (Thread) entry.getKey();
-        StackTraceElement[] stack  = (StackTraceElement[]) entry.getValue();
+        Thread              thread = entry.getKey();
+        StackTraceElement[] stack  = entry.getValue();
 
         htmlBody.append("Thread \"" + thread.getName() + "\" Stack:" + EOL);
         htmlBody.append("<PRE>" + EOL);
@@ -239,7 +236,7 @@ public class AdminDebug
 
     // Get the set of system properties defined in the JVM.
     Properties  systemProperties = System.getProperties();
-    Enumeration propertyNames    = systemProperties.propertyNames();
+    Enumeration<?> propertyNames = systemProperties.propertyNames();
 
 
     // Display this information to the user.
@@ -367,17 +364,17 @@ public class AdminDebug
     htmlBody.append("    <TD><B>Header Value</B></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    Enumeration headerNames = request.getHeaderNames();
+    Enumeration<String> headerNames = request.getHeaderNames();
     while (headerNames.hasMoreElements())
     {
-      String      name   = (String) headerNames.nextElement();
-      Enumeration values = request.getHeaders(name);
+      String      name   = headerNames.nextElement();
+      Enumeration<String> values = request.getHeaders(name);
 
       if ((values != null) && (values.hasMoreElements()))
       {
         while (values.hasMoreElements())
         {
-          String value = (String) values.nextElement();
+          String value = values.nextElement();
           htmlBody.append("  <TR>" + EOL);
           htmlBody.append("    <TD>" + name + "</TD>" + EOL);
           htmlBody.append("    <TD>" + value + "</TD>" + EOL);
@@ -405,10 +402,10 @@ public class AdminDebug
     htmlBody.append("    <TD><B>Parameter Value</B></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    Enumeration parameterNames = request.getParameterNames();
+    Enumeration<String> parameterNames = request.getParameterNames();
     while (parameterNames.hasMoreElements())
     {
-      String   name   = (String) parameterNames.nextElement();
+      String   name   = parameterNames.nextElement();
       String[] values = request.getParameterValues(name);
 
       if ((values == null) || (values.length == 0))
@@ -444,10 +441,10 @@ public class AdminDebug
     htmlBody.append("    <TD><B>String Representation</B></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
-    Enumeration attributeNames = request.getAttributeNames();
+    Enumeration<String> attributeNames = request.getAttributeNames();
     while (attributeNames.hasMoreElements())
     {
-      String name  = (String) attributeNames.nextElement();
+      String name  = attributeNames.nextElement();
       Object value = request.getAttribute(name);
 
       if (value == null)
@@ -967,19 +964,19 @@ public class AdminDebug
 
     buf.append("<!-- Begin Request Headers -->");
     buf.append(EOL);
-    Enumeration headerNames = request.getHeaderNames();
+    Enumeration<String> headerNames = request.getHeaderNames();
     while (headerNames.hasMoreElements())
     {
-      String headerName = (String) headerNames.nextElement();
+      String headerName = headerNames.nextElement();
       buf.append("<!--   ");
       buf.append(headerName);
       buf.append(" -->");
       buf.append(EOL);
-      Enumeration headerValues = request.getHeaders(headerName);
+      Enumeration<String> headerValues = request.getHeaders(headerName);
       while (headerValues.hasMoreElements())
       {
         buf.append("<!--     ");
-        buf.append((String) headerValues.nextElement());
+        buf.append(headerValues.nextElement());
         buf.append(" -->");
         buf.append(EOL);
       }
@@ -992,10 +989,10 @@ public class AdminDebug
 
     buf.append("<!-- Begin Request Parameters -->");
     buf.append(EOL);
-    Enumeration parameterNames = request.getParameterNames();
+    Enumeration<String> parameterNames = request.getParameterNames();
     while (parameterNames.hasMoreElements())
     {
-      String parameterName = (String) parameterNames.nextElement();
+      String parameterName = parameterNames.nextElement();
       if (parameterName.equals(Constants.SERVLET_PARAM_HTML_DEBUG))
       {
         continue;

@@ -845,7 +845,7 @@ public class HTTPClient
    */
   public String[][] getCommonHeaders()
   {
-    Set        keySet        = commonHeaderMap.keySet();
+    Set<String> keySet = commonHeaderMap.keySet();
     String[][] commonHeaders = new String[keySet.size()][2];
 
     int i = 0;
@@ -2709,12 +2709,12 @@ public class HTTPClient
    */
   public void closeAll()
   {
-    Iterator sockets = socketHash.values().iterator();
+    Iterator<Socket> sockets = socketHash.values().iterator();
     while (sockets.hasNext())
     {
       try
       {
-        ((Socket) sockets.next()).close();
+        sockets.next().close();
       }
       catch (Exception e) {}
     }
@@ -2732,13 +2732,13 @@ public class HTTPClient
    */
   public void invalidateSSLSessions()
   {
-    Iterator sockets = socketHash.values().iterator();
+    Iterator<Socket> sockets = socketHash.values().iterator();
     while (sockets.hasNext())
     {
-      Object o = sockets.next();
-      if (o instanceof SSLSocket)
+      Socket s = sockets.next();
+      if (s instanceof SSLSocket)
       {
-        ((SSLSocket) o).getSession().invalidate();
+        ((SSLSocket) s).getSession().invalidate();
       }
     }
   }

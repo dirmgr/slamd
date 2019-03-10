@@ -51,7 +51,7 @@ import com.slamd.message.ServerShutdownMessage;
  */
 public class StatClientConnection
        extends Thread
-       implements Comparable
+       implements Comparable<StatClientConnection>
 {
   // The queue that will be used to hold messages received from the client.
   private ArrayList<Message> messageQueue;
@@ -638,7 +638,7 @@ public class StatClientConnection
    * object must be a stat client connection object, and the comparison will be
    * made based on the lexicographic ordering of the associated client IDs.
    *
-   * @param  o  The stat client connection object to compare against this stat
+   * @param  c  The stat client connection object to compare against this stat
    *            client connection.
    *
    * @return  A negative value if this stat client connection should come before
@@ -651,10 +651,9 @@ public class StatClientConnection
    * @throws  ClassCastException  If the provided object is not a stat client
    *                              connection object.
    */
-  public int compareTo(Object o)
+  public int compareTo(StatClientConnection c)
          throws ClassCastException
   {
-    StatClientConnection c = (StatClientConnection) o;
     return clientID.compareTo(c.clientID);
   }
 }

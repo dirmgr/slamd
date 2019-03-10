@@ -81,7 +81,7 @@ public class LoadVarianceControlThread
     stopRequested = true;
 
     // Make sure to signal any the remaining threads that they should stop.
-    Arrays.fill(jobClass.threadsActive, false);
+    Arrays.fill(LoadVarianceJobClass.threadsActive, false);
   }
 
 
@@ -94,9 +94,10 @@ public class LoadVarianceControlThread
   {
     // If there are no lines in the load distribution file, then we can simply
     // turn on all the threads and exit right away.
-    if ((jobClass.varianceData == null) || (jobClass.varianceData.length == 0))
+    if ((LoadVarianceJobClass.varianceData == null) ||
+         (LoadVarianceJobClass.varianceData.length == 0))
     {
-      Arrays.fill(jobClass.threadsActive, true);
+      Arrays.fill(LoadVarianceJobClass.threadsActive, true);
       return;
     }
 
@@ -116,20 +117,20 @@ public class LoadVarianceControlThread
     int  maxThreads    = jobClass.getClientSideJob().getThreadsPerClient();
     int  slotPos       = 0;
     long jobStartTime  = System.currentTimeMillis();
-    long nextOpTime    = jobStartTime + jobClass.varianceData[0][0];
+    long nextOpTime    = jobStartTime + LoadVarianceJobClass.varianceData[0][0];
     while (! (stopRequested || jobClass.shouldStop()))
     {
       long now = System.currentTimeMillis();
       if (now >= nextOpTime)
       {
         // It is time to start or stop the next thread or set of threads.
-        int numThreads = jobClass.varianceData[slotPos++][1];
+        int numThreads = LoadVarianceJobClass.varianceData[slotPos++][1];
         if (numThreads > 0)
         {
           // We need to start one or more threads.
           for (int i=0; ((i < numThreads) && (activeThreads < maxThreads)); i++)
           {
-            jobClass.threadsActive[activeThreads++] = true;
+            LoadVarianceJobClass.threadsActive[activeThreads++] = true;
           }
         }
         else
@@ -137,20 +138,21 @@ public class LoadVarianceControlThread
           // We need to stop one or more threads.
           for (int i=numThreads; ((i < 0) && (activeThreads > 0)); i++)
           {
-            jobClass.threadsActive[--activeThreads] = false;
+            LoadVarianceJobClass.threadsActive[--activeThreads] = false;
           }
         }
 
 
         // Now figure out how long it should be before we do the next round of
         // start/stop.  If there is no more work to do, then exit.
-        if (slotPos >= jobClass.varianceData.length)
+        if (slotPos >= LoadVarianceJobClass.varianceData.length)
         {
-          if (jobClass.loopVarianceDefinition)
+          if (LoadVarianceJobClass.loopVarianceDefinition)
           {
             slotPos      = 0;
             jobStartTime = System.currentTimeMillis();
-            nextOpTime   = jobStartTime + jobClass.varianceData[0][0];
+            nextOpTime   = jobStartTime +
+                 LoadVarianceJobClass.varianceData[0][0];
           }
           else
           {
@@ -159,7 +161,8 @@ public class LoadVarianceControlThread
         }
         else
         {
-          nextOpTime = jobStartTime + jobClass.varianceData[slotPos][0];
+          nextOpTime = jobStartTime +
+               LoadVarianceJobClass.varianceData[slotPos][0];
         }
       }
       else if ((nextOpTime + 100) > now)
@@ -186,7 +189,7 @@ public class LoadVarianceControlThread
 
 
     // Make sure to signal any the remaining threads that they should stop.
-    Arrays.fill(jobClass.threadsActive, false);
+    Arrays.fill(LoadVarianceJobClass.threadsActive, false);
   }
 }
 

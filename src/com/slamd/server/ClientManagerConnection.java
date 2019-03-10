@@ -51,7 +51,7 @@ import com.slamd.message.StopClientResponseMessage;
  */
 public class ClientManagerConnection
        extends Thread
-       implements Comparable
+       implements Comparable<ClientManagerConnection>
 {
   // The queue that will be used to hold messages received from the client
   // manager.
@@ -740,7 +740,7 @@ public class ClientManagerConnection
    * will be made based on the lexicographic ordering of the associated client
    * IDs.
    *
-   * @param  o  The client manager connection object to compare against this
+   * @param  c  The client manager connection object to compare against this
    *            client manager connection.
    *
    * @return  A negative value if this client manager connection should come
@@ -753,10 +753,9 @@ public class ClientManagerConnection
    * @throws  ClassCastException  If the provided object is not a client manager
    *                              connection object.
    */
-  public int compareTo(Object o)
+  public int compareTo(ClientManagerConnection c)
          throws ClassCastException
   {
-    ClientManagerConnection c = (ClientManagerConnection) o;
     return clientID.compareTo(c.clientID);
   }
 }

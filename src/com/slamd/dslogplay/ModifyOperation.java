@@ -98,7 +98,7 @@ public class ModifyOperation
   {
     String resultCode = DEFAULT_RESULT_CODE;
     Modification mod = new Modification(ModificationType.REPLACE,
-         jobThread.modifyAttribute, jobThread.getRandomString(8));
+         LogPlaybackJobClass.modifyAttribute, jobThread.getRandomString(8));
 
     try
     {

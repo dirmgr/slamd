@@ -93,7 +93,7 @@ public class LDIFStructure
 
   // The list box used to display the entry types for the children immediately
   // below a given entry.
-  private JList childTypeList;
+  private JList<String> childTypeList;
 
   // The text area used to display information about a particular entry type.
   private JTextArea entryTypeArea;
@@ -383,10 +383,10 @@ public class LDIFStructure
 
       LinkedHashMap<String,Integer> objectClassCounts =
            t.getAggregateObjectClassCounts();
-      Iterator iterator = objectClassCounts.keySet().iterator();
+      Iterator<String> iterator = objectClassCounts.keySet().iterator();
       while (iterator.hasNext())
       {
-        String s = (String) iterator.next();
+        String s = iterator.next();
         int count = objectClassCounts.get(s);
         double percent = 100.0 * count / node.getNumChildren();
 
@@ -398,7 +398,7 @@ public class LDIFStructure
       iterator = t.getAttributes().keySet().iterator();
       while (iterator.hasNext())
       {
-        String s = (String) iterator.next();
+        String s = iterator.next();
         LDIFAttributeInfo i = t.getAttributes().get(s);
 
         double percentOfEntries = 100.0 * i.getNumEntries() /
@@ -415,15 +415,15 @@ public class LDIFStructure
 
         if (i.getNumUniqueValues() > 0)
         {
-          TreeMap valueCounts = i.getUniqueValues();
+          TreeMap<String,Integer> valueCounts = i.getUniqueValues();
           String separator="";
 
           writer.print("        <");
 
-          Iterator iterator2 = valueCounts.keySet().iterator();
+          Iterator<String> iterator2 = valueCounts.keySet().iterator();
           while (iterator2.hasNext())
           {
-            String value = (String) iterator2.next();
+            String value = iterator2.next();
             writer.print(separator + value + ':' + valueCounts.get(value));
             separator = ",";
           }
@@ -460,10 +460,11 @@ public class LDIFStructure
           writer.println("    objectClass: " + objectClasses[j]);
         }
 
-        Iterator iterator = entryTypes[i].getAttributes().keySet().iterator();
+        Iterator<String> iterator =
+             entryTypes[i].getAttributes().keySet().iterator();
         while (iterator.hasNext())
         {
-          String s = (String) iterator.next();
+          String s = iterator.next();
           LDIFAttributeInfo ai = entryTypes[i].getAttributes().get(s);
 
           double percentOfEntries = 100.0 * ai.getNumEntries() /
@@ -480,15 +481,15 @@ public class LDIFStructure
 
           if (ai.getNumUniqueValues() > 0)
           {
-            TreeMap valueCounts = ai.getUniqueValues();
+            TreeMap<String,Integer> valueCounts = ai.getUniqueValues();
             String separator="";
 
             writer.print("        <");
 
-            Iterator iterator2 = valueCounts.keySet().iterator();
+            Iterator<String> iterator2 = valueCounts.keySet().iterator();
             while (iterator2.hasNext())
             {
-              String value = (String) iterator2.next();
+              String value = iterator2.next();
               writer.print(separator + value + ':' + valueCounts.get(value));
               separator = ",";
             }
@@ -508,7 +509,7 @@ public class LDIFStructure
 
     for (int i=0; i < node.getChildNodes().size(); i++)
     {
-      LDIFNode n = (LDIFNode) node.getChildNodes().get(i);
+      LDIFNode n = node.getChildNodes().get(i);
       writeNode(n, writer, aggregateOnly);
     }
   }
@@ -563,7 +564,7 @@ public class LDIFStructure
 
     // Create the child node list and put it and the label panel on another
     // panel with a border layout.  Then add that panel to the main window.
-    childTypeList = new JList();
+    childTypeList = new JList<>();
     childTypeList.setVisibleRowCount(10);
     childTypeList.addListSelectionListener(this);
     scrollPane = new JScrollPane();
@@ -614,7 +615,7 @@ public class LDIFStructure
 
     for (int i=0; i < childLDIFNode.getChildNodes().size(); i++)
     {
-      LDIFNode n = (LDIFNode) childLDIFNode.getChildNodes().get(i);
+      LDIFNode n = childLDIFNode.getChildNodes().get(i);
       addChildNode(childTreeNode, n);
     }
 
@@ -719,7 +720,7 @@ public class LDIFStructure
       return;
     }
 
-    String valueStr = (String) childTypeList.getSelectedValue();
+    String valueStr = childTypeList.getSelectedValue();
     if (valueStr == null)
     {
       return;
@@ -742,7 +743,7 @@ public class LDIFStructure
     else
     {
       isAggregate = false;
-      entryType = (LDIFEntryType) selectedNode.getChildEntryTypes().get(key);
+      entryType = selectedNode.getChildEntryTypes().get(key);
     }
 
     if (entryType == null)
@@ -768,10 +769,10 @@ public class LDIFStructure
       LinkedHashMap<String,Integer> objectClassCounts =
            entryType.getAggregateObjectClassCounts();
 
-      Iterator iterator = objectClassCounts.keySet().iterator();
+      Iterator<String> iterator = objectClassCounts.keySet().iterator();
       while (iterator.hasNext())
       {
-        String s = (String) iterator.next();
+        String s = iterator.next();
         int count = objectClassCounts.get(s);
         percentOfEntries = 100.0 * count / matchingEntries;
 
@@ -793,10 +794,11 @@ public class LDIFStructure
       }
     }
 
-    Iterator iterator = entryType.getAttributes().values().iterator();
+    Iterator<LDIFAttributeInfo> iterator =
+         entryType.getAttributes().values().iterator();
     while (iterator.hasNext())
     {
-      LDIFAttributeInfo ai = (LDIFAttributeInfo) iterator.next();
+      LDIFAttributeInfo ai = iterator.next();
       percentOfEntries = 100.0 * ai.getNumEntries() / matchingEntries;
 
       b.append(ai.getAttributeName());
@@ -815,10 +817,10 @@ public class LDIFStructure
 
         b.append("     <");
 
-        Iterator iterator2 = ai.getUniqueValues().keySet().iterator();
+        Iterator<String> iterator2 = ai.getUniqueValues().keySet().iterator();
         while (iterator2.hasNext())
         {
-          String s = (String) iterator2.next();
+          String s = iterator2.next();
           b.append(separator);
           b.append(s);
           b.append(':');

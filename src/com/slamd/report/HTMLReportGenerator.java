@@ -1298,10 +1298,10 @@ public class HTMLReportGenerator
     zipStream.write(buffer.toString().getBytes());
     zipStream.closeEntry();
 
-    Iterator iterator = graphMap.keySet().iterator();
+    Iterator<String> iterator = graphMap.keySet().iterator();
     while (iterator.hasNext())
     {
-      String        imageName = (String) iterator.next();
+      String        imageName = iterator.next();
       BufferedImage graph     = graphMap.get(imageName);
 
       zipStream.putNextEntry(new ZipEntry(imageName));

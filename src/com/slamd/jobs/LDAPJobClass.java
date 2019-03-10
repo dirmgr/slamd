@@ -658,7 +658,6 @@ public abstract class LDAPJobClass
     }
 
     LDAPConnectionOptions options = new LDAPConnectionOptions();
-    options.setAutoReconnect(true);
     options.setUseSynchronousMode(useSynchronousMode());
 
     serverSet = new RoundRobinServerSet(hosts, ports, socketFactory, options);

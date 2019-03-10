@@ -517,12 +517,12 @@ public class MPStatResourceMonitor
     int[]      categoryCounts  = new int[numIterations];
     int        categorySlot    = 0;
 
-    Iterator iterator = userMap.keySet().iterator();
+    Iterator<Integer> iterator = userMap.keySet().iterator();
     while (iterator.hasNext())
     {
       int slot= categorySlot++;
 
-      Integer cpuID = (Integer) iterator.next();
+      Integer cpuID = iterator.next();
 
       ArrayList<Integer> userList   = userMap.get(cpuID);
       ArrayList<Integer> systemList = systemMap.get(cpuID);

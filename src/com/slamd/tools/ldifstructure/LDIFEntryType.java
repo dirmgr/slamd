@@ -80,10 +80,11 @@ public class LDIFEntryType
     objectClassCounts = new LinkedHashMap<String,Integer>();
 
     attributes = new TreeMap<String,LDIFAttributeInfo>();
-    Iterator iterator = entry.getAttributes().values().iterator();
+    Iterator<LDIFAttribute> iterator =
+         entry.getAttributes().values().iterator();
     while (iterator.hasNext())
     {
-      LDIFAttribute a = (LDIFAttribute) iterator.next();
+      LDIFAttribute a = iterator.next();
       String lowerName = a.getLowerName();
       if (lowerName.equals("objectclass"))
       {
@@ -115,10 +116,11 @@ public class LDIFEntryType
   {
     numEntries++;
 
-    Iterator iterator = entry.getAttributes().values().iterator();
+    Iterator<LDIFAttribute> iterator =
+         entry.getAttributes().values().iterator();
     while (iterator.hasNext())
     {
-      LDIFAttribute a = (LDIFAttribute) iterator.next();
+      LDIFAttribute a = iterator.next();
       String lowerName = a.getLowerName();
       if (lowerName.equals("objectclass"))
       {
@@ -204,10 +206,10 @@ public class LDIFEntryType
       }
     }
 
-    Iterator iterator = entryType.attributes.keySet().iterator();
+    Iterator<String> iterator = entryType.attributes.keySet().iterator();
     while (iterator.hasNext())
     {
-      String s = (String) iterator.next();
+      String s = iterator.next();
       LDIFAttributeInfo currentInfo  = attributes.get(s);
       LDIFAttributeInfo providedInfo = entryType.attributes.get(s);
 

@@ -2494,7 +2494,7 @@ public class MakeLDIF
         {
           try
           {
-            Class tagClass = Constants.classForName(className);
+            Class<?> tagClass = Constants.classForName(className);
             customTag = (CustomTag) tagClass.newInstance();
 
             customTag.initialize();

@@ -967,12 +967,9 @@ public class LDAPSearchAndModRateJobClass
       catch (LDAPSearchException lse)
       {
         entries = lse.getSearchEntries();
-      }
-      catch (LDAPException le)
-      {
         if (collectingStats)
         {
-          searchResultCodes.increment(le.getResultCode().toString());
+          searchResultCodes.increment(lse.getResultCode().toString());
         }
       }
       finally

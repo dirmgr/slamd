@@ -22,10 +22,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.DefaultFileItemFactory;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.slamd.common.Constants;
 
@@ -121,7 +121,7 @@ public class RequestInfo
 
   // The list of fields provided in the multipart request form, if it was a
   // multipart request.
-  protected List multipartFieldList;
+  protected List<FileItem> multipartFieldList;
 
   // The string representation of the URL that may be used to generate the
   // current page using an HTTP GET.
@@ -177,17 +177,18 @@ public class RequestInfo
       servletBaseURI = request.getRequestURI();
       userIdentifier = request.getRemoteUser();
 
-      if (FileUpload.isMultipartContent(request))
+      if (ServletFileUpload.isMultipartContent(request))
       {
         try
         {
-          FileUpload fileUpload = new FileUpload(new DefaultFileItemFactory());
+          ServletFileUpload fileUpload =
+               new ServletFileUpload(new DiskFileItemFactory());
           multipartFieldList = fileUpload.parseRequest(request);
-          Iterator iterator = multipartFieldList.iterator();
+          Iterator<FileItem> iterator = multipartFieldList.iterator();
 
           while (iterator.hasNext())
           {
-            FileItem fileItem = (FileItem) iterator.next();
+            FileItem fileItem = iterator.next();
             String name = fileItem.getFieldName();
             if (name.equals(Constants.SERVLET_PARAM_SECTION))
             {

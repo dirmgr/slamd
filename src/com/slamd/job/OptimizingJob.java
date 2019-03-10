@@ -54,7 +54,7 @@ import com.slamd.server.Scheduler;
  * @author   Neil A. Wilson
  */
 public class OptimizingJob
-       implements Comparable, JobItem
+       implements Comparable<OptimizingJob>, JobItem
 {
   /**
    * The name of the encoded element that holds the optimizing job ID.
@@ -3009,8 +3009,7 @@ public class OptimizingJob
    * relative order of the two in a sorted list.  The comparison will be based
    * first by start time, then by optimizing job ID.
    *
-   * @param  o  The object to compare with this optimizing job.  It must be an
-   *            OptimizingJob.
+   * @param  oj  The optimizing job to compare with this optimizing job.
    *
    * @return  A negative value if this optimizing job should be ordered before
    *          the provided object, a positive value if this optimizing job
@@ -3020,10 +3019,10 @@ public class OptimizingJob
    * @throws  ClassCastException  If the provided object is not an
    *                              OptimizingJob.
    */
-  public int compareTo(Object o)
+  public int compareTo(OptimizingJob oj)
           throws ClassCastException
   {
-    if (o == null)
+    if (oj == null)
     {
       return -1;
     }
@@ -3032,7 +3031,6 @@ public class OptimizingJob
 
     try
     {
-      OptimizingJob oj = (OptimizingJob) o;
       optimizingJobID2 = oj.getOptimizingJobID();
 
       StringTokenizer t1 = new StringTokenizer(optimizingJobID, "-");

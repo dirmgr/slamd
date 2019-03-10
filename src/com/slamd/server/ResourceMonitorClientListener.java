@@ -226,11 +226,11 @@ public class ResourceMonitorClientListener
     // the connections.
     synchronized (connectionHashMutex)
     {
-      Iterator iterator = connectionHash.values().iterator();
+      Iterator<ResourceMonitorClientConnection> iterator =
+           connectionHash.values().iterator();
       while (iterator.hasNext())
       {
-        ResourceMonitorClientConnection clientConnection =
-             (ResourceMonitorClientConnection) iterator.next();
+        ResourceMonitorClientConnection clientConnection = iterator.next();
         clientConnection.sendServerShutdownMessage(true);
       }
 
@@ -487,10 +487,11 @@ public class ResourceMonitorClientListener
            new ResourceMonitorClientConnection[connectionHash.size()];
 
       int i=0;
-      Iterator iterator = connectionHash.values().iterator();
+      Iterator<ResourceMonitorClientConnection> iterator =
+           connectionHash.values().iterator();
       while (iterator.hasNext())
       {
-        conns[i++] = (ResourceMonitorClientConnection) iterator.next();
+        conns[i++] = iterator.next();
       }
 
       return conns;
@@ -514,10 +515,11 @@ public class ResourceMonitorClientListener
            new ResourceMonitorClientConnection[connectionHash.size()];
 
       int i=0;
-      Iterator iterator = connectionHash.values().iterator();
+      Iterator<ResourceMonitorClientConnection> iterator =
+           connectionHash.values().iterator();
       while (iterator.hasNext())
       {
-        conns[i++] = (ResourceMonitorClientConnection) iterator.next();
+        conns[i++] = iterator.next();
       }
 
       Arrays.sort(conns);
@@ -611,11 +613,11 @@ public class ResourceMonitorClientListener
 
     synchronized (connectionHashMutex)
     {
-      Iterator iterator = connectionHash.values().iterator();
+      Iterator<ResourceMonitorClientConnection> iterator =
+           connectionHash.values().iterator();
       while (iterator.hasNext())
       {
-        ((ResourceMonitorClientConnection)
-         iterator.next()).sendServerShutdownMessage(false);
+        iterator.next().sendServerShutdownMessage(false);
       }
     }
   }
@@ -674,10 +676,11 @@ public class ResourceMonitorClientListener
     synchronized (connectionHashMutex)
     {
       ResourceMonitorClientConnection client;
-      Iterator iterator = connectionHash.values().iterator();
+      Iterator<ResourceMonitorClientConnection> iterator =
+           connectionHash.values().iterator();
       while (iterator.hasNext())
       {
-        client = (ResourceMonitorClientConnection) iterator.next();
+        client = iterator.next();
         client.sendServerShutdownMessage(true);
         connectionLostUnlocked(client);
       }

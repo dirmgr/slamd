@@ -140,12 +140,12 @@ public class CaptureDaemon
       int selectedKeys = selector.select(100);
       if (selectedKeys > 0)
       {
-        Iterator iterator = selector.selectedKeys().iterator();
+        Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
         while (iterator.hasNext())
         {
           try
           {
-            SelectionKey key = (SelectionKey) iterator.next();
+            SelectionKey key = iterator.next();
 
             if (key.isAcceptable())
             {
@@ -247,10 +247,10 @@ public class CaptureDaemon
 
 
     // Close and cancel all the channels associated with the selector.
-    Iterator iterator = selector.keys().iterator();
+    Iterator<SelectionKey> iterator = selector.keys().iterator();
     while (iterator.hasNext())
     {
-      SelectionKey key = (SelectionKey) iterator.next();
+      SelectionKey key = iterator.next();
       key.channel().close();
       key.cancel();
     }

@@ -600,7 +600,7 @@ public class MailMessageVariable
    *
    * @return  The list of CC recipients for this message.
    */
-  public ArrayList getCCList()
+  public ArrayList<String> getCCList()
   {
     return ccList;
   }
@@ -643,7 +643,7 @@ public class MailMessageVariable
    *
    * @return  The list of To recipients for this message.
    */
-  public ArrayList getToList()
+  public ArrayList<String> getToList()
   {
     return toList;
   }
@@ -798,7 +798,7 @@ public class MailMessageVariable
    *
    * @return  The lines that make up the header of this message.
    */
-  public ArrayList getHeaderLines()
+  public ArrayList<String> getHeaderLines()
   {
     return headerLines;
   }
@@ -810,7 +810,7 @@ public class MailMessageVariable
    *
    * @return  The lines that make up the body of this message.
    */
-  public ArrayList getBodyLines()
+  public ArrayList<String> getBodyLines()
   {
     return bodyLines;
   }

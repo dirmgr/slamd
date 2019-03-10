@@ -52,7 +52,7 @@ public class PersistentStatViewer
   protected StatTracker[] statTrackers;
 
   // The variables related to the GUI.
-  protected JComboBox statListBox;
+  protected JComboBox<String> statListBox;
   private   JFrame    appWindow;
   private   JPanel    graphPanel;
 
@@ -253,7 +253,7 @@ public class PersistentStatViewer
     appWindow.getContentPane().setLayout(new BorderLayout());
     appWindow.setResizable(false);
 
-    statListBox = new JComboBox(statNames);
+    statListBox = new JComboBox<>(statNames);
     statListBox.setEditable(false);
     statListBox.addItemListener(this);
     appWindow.getContentPane().add(statListBox, BorderLayout.NORTH);

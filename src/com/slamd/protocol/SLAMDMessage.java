@@ -137,7 +137,7 @@ public abstract class SLAMDMessage
    *
    * @return  The set of "extra" properties for this SLAMD message.
    */
-  public HashMap getExtraProperties()
+  public HashMap<String,String> getExtraProperties()
   {
     return extraProperties;
   }
@@ -419,10 +419,10 @@ public abstract class SLAMDMessage
       buffer.append("     Extra Properties:");
       buffer.append(EOL);
 
-      Iterator iterator = extraProperties.keySet().iterator();
+      Iterator<String> iterator = extraProperties.keySet().iterator();
       while (iterator.hasNext())
       {
-        String name = (String) iterator.next();
+        String name = iterator.next();
 
         String value;
         Object valueObj = extraProperties.get(name);

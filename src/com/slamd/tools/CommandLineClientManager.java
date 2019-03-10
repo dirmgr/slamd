@@ -361,7 +361,7 @@ public class CommandLineClientManager
     }
 
 
-    Iterator keys = properties.keySet().iterator();
+    Iterator<?> keys = properties.keySet().iterator();
     while (keys.hasNext())
     {
       String name  = (String) keys.next();

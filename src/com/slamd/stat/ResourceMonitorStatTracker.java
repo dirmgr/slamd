@@ -232,12 +232,13 @@ public class ResourceMonitorStatTracker
    * @return  The ASN.1 sequence containing the encoded resource monitor stat
    *          tracker information.
    */
-  public static ASN1Sequence trackersToSequence(ArrayList trackerList)
+  public static ASN1Sequence trackersToSequence(
+                     ArrayList<ResourceMonitorStatTracker> trackerList)
   {
     ASN1Element[] elements = new ASN1Element[trackerList.size()];
     for (int i=0; i < elements.length; i++)
     {
-      elements[i] = ((ResourceMonitorStatTracker) trackerList.get(i)).encode();
+      elements[i] = trackerList.get(i).encode();
     }
 
     return new ASN1Sequence(elements);

@@ -83,10 +83,10 @@ public class LDIFAttributeInfo
     numUniqueValues = 0;
     numCharacters   = 0;
 
-    Iterator iterator = attribute.getValues().iterator();
+    Iterator<String> iterator = attribute.getValues().iterator();
     while (iterator.hasNext())
     {
-      String s = (String) iterator.next();
+      String s = iterator.next();
       String lowerValue = LDIFReader.toLowerCase(s);
 
       numValues++;
@@ -155,10 +155,10 @@ public class LDIFAttributeInfo
   {
     numEntries++;
 
-    Iterator iterator = attribute.getValues().iterator();
+    Iterator<String> iterator = attribute.getValues().iterator();
     while (iterator.hasNext())
     {
-      String s = (String) iterator.next();
+      String s = iterator.next();
       if (s.length() > MAX_UNIQUE_VALUE_LENGTH)
       {
         numUniqueValues = -1;
@@ -341,10 +341,10 @@ public class LDIFAttributeInfo
 
     if (numUniqueValues > 0)
     {
-      Iterator iterator = attributeInfo.valueCounts.keySet().iterator();
+      Iterator<String> iterator = attributeInfo.valueCounts.keySet().iterator();
       while (iterator.hasNext())
       {
-        String  s             = (String) iterator.next();
+        String  s             = iterator.next();
         Integer currentCount  = valueCounts.get(s);
         Integer providedCount = attributeInfo.valueCounts.get(s);
 

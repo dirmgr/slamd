@@ -948,10 +948,10 @@ public class ResourceMonitorClient
     shutdownRequested = true;
     synchronized (jobHashMutex)
     {
-      Iterator i = jobHash.values().iterator();
+      Iterator<ResourceMonitorJob> i = jobHash.values().iterator();
       while (i.hasNext())
       {
-        ResourceMonitorJob monitorJob = (ResourceMonitorJob) i.next();
+        ResourceMonitorJob monitorJob = i.next();
         monitorJob.stopCollecting();
       }
     }

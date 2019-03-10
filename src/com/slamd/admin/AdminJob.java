@@ -2439,7 +2439,7 @@ public class AdminJob
     {
       int styleValue = 0;
 
-      ArrayList clientList = job.getActiveClients();
+      ArrayList<ClientConnection> clientList = job.getActiveClients();
       if ((clientList != null) && (! clientList.isEmpty()))
       {
         String style = ((styleValue++ % 2) == 0)
@@ -2451,9 +2451,8 @@ public class AdminJob
         htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
         htmlBody.append("    <TD>" + EOL);
 
-        for (int i=0; i < clientList.size(); i++)
+        for (final ClientConnection conn : clientList)
         {
-          ClientConnection conn = (ClientConnection) clientList.get(i);
           htmlBody.append("      " + conn.getClientID() + "<BR>" + EOL);
         }
 
@@ -2461,7 +2460,8 @@ public class AdminJob
         htmlBody.append("  </TR>" + EOL);
       }
 
-      ArrayList monitorClientList = job.getActiveMonitorClients();
+      ArrayList<ResourceMonitorClientConnection> monitorClientList =
+           job.getActiveMonitorClients();
       if ((monitorClientList != null) && (! monitorClientList.isEmpty()))
       {
         String style = ((styleValue++ % 2) == 0)
@@ -2473,10 +2473,8 @@ public class AdminJob
         htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
         htmlBody.append("    <TD>" + EOL);
 
-        for (int i=0; i < monitorClientList.size(); i++)
+        for (final ResourceMonitorClientConnection conn : monitorClientList)
         {
-          ResourceMonitorClientConnection conn =
-               (ResourceMonitorClientConnection) monitorClientList.get(i);
           htmlBody.append("      " + conn.getClientID() + "<BR>" + EOL);
         }
 

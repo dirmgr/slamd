@@ -557,10 +557,10 @@ public class ClientManager
 
       // Iterate through all the clients.  Make sure they are still connected
       // and read anything they may have output.
-      Iterator iterator = processList.iterator();
+      Iterator<Process> iterator = processList.iterator();
       while (iterator.hasNext())
       {
-        Process process = (Process) iterator.next();
+        Process process = iterator.next();
 
         // First, see if the process has exited.
         try
@@ -734,10 +734,10 @@ public class ClientManager
     }
 
     int      numKilled = 0;
-    Iterator iterator  = processList.iterator();
+    Iterator<Process> iterator  = processList.iterator();
     while ((numKilled < numClients) && iterator.hasNext())
     {
-      Process process = (Process) iterator.next();
+      Process process = iterator.next();
       try
       {
         process.destroy();

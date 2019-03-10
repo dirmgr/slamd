@@ -393,7 +393,7 @@ public class CommandLineJobScheduler
         String algorithmClassName = args[++i];
         try
         {
-          Class algorithmClass = Constants.classForName(algorithmClassName);
+          Class<?> algorithmClass = Constants.classForName(algorithmClassName);
           optimizationAlgorithm =
                (OptimizationAlgorithm) algorithmClass.newInstance();
         }
@@ -1004,7 +1004,7 @@ public class CommandLineJobScheduler
     {
       try
       {
-        Class algorithmClass = Constants.classForName(algorithmStr);
+        Class<?> algorithmClass = Constants.classForName(algorithmStr);
         optimizationAlgorithm =
              (OptimizationAlgorithm) algorithmClass.newInstance();
       }

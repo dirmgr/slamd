@@ -851,7 +851,7 @@ public class SLAMDServer
       {
         JobClassLoader classLoader =
              new JobClassLoader(this.getClass().getClassLoader(),
-                                adminServlet.getClassPath());
+                                AdminServlet.getClassPath());
         return classLoader.getJobClass(className);
       }
       else

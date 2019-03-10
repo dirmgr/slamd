@@ -31,7 +31,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class UnknownJobClass
+public final class UnknownJobClass
        extends JobClass
 {
   // The name of the class that was supposed to have been loaded.
@@ -48,7 +48,7 @@ public class UnknownJobClass
    * @param  intendedClassName  The name of the class that was supposed to have
    *                            been loaded.
    */
-  public UnknownJobClass(String intendedClassName)
+  public UnknownJobClass(final String intendedClassName)
   {
     super();
 
@@ -121,8 +121,9 @@ public class UnknownJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[0];
   }
@@ -144,8 +145,9 @@ public class UnknownJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
   throws UnableToRunException
   {
     // No implementation necessary

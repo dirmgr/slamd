@@ -49,14 +49,14 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class SingleStatisticOptimizationAlgorithm
+public final class SingleStatisticOptimizationAlgorithm
        extends OptimizationAlgorithm
 {
   /**
    * The name of the parameter that is used to specify the minimum required
    * percent improvement needed for a new best iteration.
    */
-  public static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
+  private static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
 
 
 
@@ -64,7 +64,7 @@ public class SingleStatisticOptimizationAlgorithm
    * The name of the parameter that is used to specify the statistic to
    * optimize.
    */
-  public static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
+  private static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
 
 
 
@@ -72,7 +72,7 @@ public class SingleStatisticOptimizationAlgorithm
    * The name of the parameter that is used to specify the type of optimization
    * to perform.
    */
-  public static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
+  private static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
 
 
 
@@ -181,17 +181,17 @@ public class SingleStatisticOptimizationAlgorithm
    *          the provided job class, or {@code false} if not.
    */
   @Override()
-  public boolean availableWithJobClass(JobClass jobClass)
+  public boolean availableWithJobClass(final JobClass jobClass)
   {
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
     if ((jobStats == null) || (jobStats.length == 0))
     {
       return false;
     }
 
-    for (int i=0; i < jobStats.length; i++)
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
         return true;
       }
@@ -227,39 +227,40 @@ public class SingleStatisticOptimizationAlgorithm
    *          user for the settings to use when executing the optimizing job.
    */
   @Override()
-  public ParameterList getOptimizationAlgorithmParameterStubs(JobClass jobClass)
+  public ParameterList getOptimizationAlgorithmParameterStubs(
+                            final JobClass jobClass)
   {
     // First, compile a list of all the "searchable" statistics that this job
     // reports it collects.
-    ArrayList<String> availableStatList = new ArrayList<String>();
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
-    for (int i=0; i < jobStats.length; i++)
+    final ArrayList<String> availableStatList = new ArrayList<>();
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
-        availableStatList.add(jobStats[i].getDisplayName());
+        availableStatList.add(statTracker.getDisplayName());
       }
     }
 
-    int numAvailable = availableStatList.size();
+    final int numAvailable = availableStatList.size();
     if (numAvailable == 0)
     {
       return new ParameterList();
     }
 
-    String[] searchableStatNames = new String[numAvailable];
+    final String[] searchableStatNames = new String[numAvailable];
     availableStatList.toArray(searchableStatNames);
     if (optimizeStat == null)
     {
       optimizeStat = searchableStatNames[0];
     }
 
-    String[] optimizationTypes =
+    final String[] optimizationTypes =
     {
       Constants.OPTIMIZE_TYPE_MAXIMIZE,
       Constants.OPTIMIZE_TYPE_MINIMIZE
     };
-    String optimizeTypeStr;
+    final String optimizeTypeStr;
     switch (optimizeType)
     {
       case OPTIMIZE_TYPE_MAXIMIZE:
@@ -274,27 +275,24 @@ public class SingleStatisticOptimizationAlgorithm
     }
 
 
-    optimizeStatParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_STAT, "Statistic to Optimize",
-                                  "The name of the statistic for which to " +
-                                  "try to find the optimal value.",
-                                  searchableStatNames, optimizeStat);
-    optimizeTypeParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE, "Optimization Type",
-                                  "The type of optimization to perform for " +
-                                  "the statistic to optimize.",
-                                  optimizationTypes, optimizeTypeStr);
+    optimizeStatParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_STAT,
+         "Statistic to Optimize",
+         "The name of the statistic for which to try to find the optimal " +
+              "value.",
+         searchableStatNames, optimizeStat);
+    optimizeTypeParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE,
+         "Optimization Type",
+         "The type of optimization to perform for the statistic to optimize.",
+         optimizationTypes, optimizeTypeStr);
 
-    minPctImprovementParameter =
-         new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
-                            "Min. % Improvement for New Best Iteration",
-                            "The minimum percentage improvement in " +
-                            "performance that an iteration must have over " +
-                            "the previous best to be considered the new best " +
-                            "iteration.", false, minPctImprovement, true, 0.0F,
-                            false, 0.0F);
+    minPctImprovementParameter = new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
+         "Min. % Improvement for New Best Iteration",
+         "The minimum percentage improvement in performance that an " +
+              "iteration must have over the previous best to be considered " +
+              "the new best iteration.",
+         false, minPctImprovement, true, 0.0F, false, 0.0F);
 
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       new PlaceholderParameter(),
       optimizeStatParameter,
@@ -317,7 +315,7 @@ public class SingleStatisticOptimizationAlgorithm
   @Override()
   public ParameterList getOptimizationAlgorithmParameters()
   {
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       optimizeStatParameter,
       optimizeTypeParameter,
@@ -344,8 +342,8 @@ public class SingleStatisticOptimizationAlgorithm
    *                                 optimization algorithm.
    */
   @Override()
-  public void initializeOptimizationAlgorithm(OptimizingJob optimizingJob,
-                                              ParameterList parameters)
+  public void initializeOptimizationAlgorithm(final OptimizingJob optimizingJob,
+                                              final ParameterList parameters)
          throws InvalidValueException
   {
     this.optimizingJob = optimizingJob;
@@ -356,8 +354,8 @@ public class SingleStatisticOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_STAT);
     if ((optimizeStatParameter == null) || (! optimizeStatParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the statistic " +
-                                      "to optimize");
+      throw new InvalidValueException(
+           "No value provided for the statistic to optimize");
     }
     optimizeStat = optimizeStatParameter.getStringValue();
 
@@ -368,10 +366,10 @@ public class SingleStatisticOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_TYPE);
     if ((optimizeTypeParameter == null) || (! optimizeTypeParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the " +
-                                      "optimization type");
+      throw new InvalidValueException(
+           "No value provided for the optimization type");
     }
-    String optimizeTypeStr = optimizeTypeParameter.getStringValue();
+    final String optimizeTypeStr = optimizeTypeParameter.getStringValue();
     if (optimizeTypeStr.equalsIgnoreCase(Constants.OPTIMIZE_TYPE_MAXIMIZE))
     {
       optimizeType = OPTIMIZE_TYPE_MAXIMIZE;
@@ -383,8 +381,8 @@ public class SingleStatisticOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + optimizeTypeStr +
-                                      "\" for optimization type.");
+      throw new InvalidValueException(
+           "Invalid value \"" + optimizeTypeStr + "\" for optimization type.");
     }
 
 
@@ -402,48 +400,47 @@ public class SingleStatisticOptimizationAlgorithm
     // See If the provided optimizing job has run any iterations so far.  If so,
     // then look through them to determine the best value so far.
     bestValueSoFar = Double.NaN;
-    Job[] iterations = optimizingJob.getAssociatedJobs();
+    final Job[] iterations = optimizingJob.getAssociatedJobs();
     if (iterations != null)
     {
-      for (int i=0; i <iterations.length; i++)
+      for (final Job iteration : iterations)
       {
-        StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
+        StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
         if ((trackers != null) && (trackers.length > 0))
         {
-          StatTracker tracker = trackers[0].newInstance();
+          final StatTracker tracker = trackers[0].newInstance();
           tracker.aggregate(trackers);
           double value = tracker.getSummaryValue();
 
           if (Double.isNaN(bestValueSoFar))
           {
             bestValueSoFar = value;
-            optimizingJob.setOptimalIteration(iterations[i]);
+            optimizingJob.setOptimalIteration(iteration);
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MAXIMIZE) &&
                    (value > bestValueSoFar) &&
                    (value >= (bestValueSoFar+bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
-            optimizingJob.setOptimalIteration(iterations[i]);
+            optimizingJob.setOptimalIteration(iteration);
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MINIMIZE) &&
                    (value < bestValueSoFar) &&
                    (value <= (bestValueSoFar-bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
-            optimizingJob.setOptimalIteration(iterations[i]);
+            optimizingJob.setOptimalIteration(iteration);
           }
         }
       }
     }
 
-    SLAMDServer slamdServer = optimizingJob.slamdServer;
+    final SLAMDServer slamdServer = optimizingJob.slamdServer;
     slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                           "SingleStatisticOptimizationAlgorithm." +
-                           "initializeOptimizationAlgorith(" +
-                           optimizingJob.getOptimizingJobID() +
-                           ") best so far is " +
-                           String.valueOf(bestValueSoFar));
+         "SingleStatisticOptimizationAlgorithm." +
+              "initializeOptimizationAlgorith(" +
+              optimizingJob.getOptimizingJobID() + ") best so far is " +
+              String.valueOf(bestValueSoFar));
   }
 
 
@@ -459,56 +456,55 @@ public class SingleStatisticOptimizationAlgorithm
    * @param  optimizeStat   The statistic to optimize.
    * @param  optimizeType   The type of optimization to perform.
    */
-  public void initializeLegacyJob(OptimizingJob optimizingJob,
-                                  String optimizeStat, int optimizeType)
+  public void initializeLegacyJob(final OptimizingJob optimizingJob,
+                                  final String optimizeStat,
+                                  final int optimizeType)
   {
     this.optimizeStat = optimizeStat;
     this.optimizeType = optimizeType;
 
     minPctImprovement = 0.0F;
 
-    ArrayList<String> availableStatList = new ArrayList<String>();
-    StatTracker[] jobStats =
+    final ArrayList<String> availableStatList = new ArrayList<>();
+    final StatTracker[] jobStats =
          optimizingJob.getJobClass().getStatTrackerStubs("", "", 1);
-    for (int i=0; i < jobStats.length; i++)
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
-        availableStatList.add(jobStats[i].getDisplayName());
+        availableStatList.add(statTracker.getDisplayName());
       }
     }
-    String[] searchableStatNames = new String[availableStatList.size()];
+    final String[] searchableStatNames = new String[availableStatList.size()];
     availableStatList.toArray(searchableStatNames);
 
-    optimizeStatParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_STAT, "Statistic to Optimize",
-                                  searchableStatNames, optimizeStat);
+    optimizeStatParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_STAT,
+         "Statistic to Optimize", searchableStatNames, optimizeStat);
 
-    String[] optimizeTypes =
+    final String[] optimizeTypes =
     {
       Constants.OPTIMIZE_TYPE_MAXIMIZE,
       Constants.OPTIMIZE_TYPE_MINIMIZE
     };
-    String optimizeTypeStr = (optimizeType == OPTIMIZE_TYPE_MAXIMIZE
-                              ? Constants.OPTIMIZE_TYPE_MAXIMIZE
-                              : Constants.OPTIMIZE_TYPE_MINIMIZE);
-    optimizeTypeParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE, "Optimization Type",
-                                  optimizeTypes, optimizeTypeStr);
+    final String optimizeTypeStr = (optimizeType == OPTIMIZE_TYPE_MAXIMIZE
+         ? Constants.OPTIMIZE_TYPE_MAXIMIZE
+         : Constants.OPTIMIZE_TYPE_MINIMIZE);
+    optimizeTypeParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE,
+         "Optimization Type", optimizeTypes, optimizeTypeStr);
 
 
     // See If the provided optimizing job has run any iterations so far.  If so,
     // then look through them to determine the best value so far.
     bestValueSoFar = Double.NaN;
-    Job[] iterations = optimizingJob.getAssociatedJobs();
+    final Job[] iterations = optimizingJob.getAssociatedJobs();
     if (iterations != null)
     {
-      for (int i=0; i <iterations.length; i++)
+      for (final Job iteration : iterations)
       {
-        StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
+        final StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
         if ((trackers != null) && (trackers.length > 0))
         {
-          StatTracker tracker = trackers[0].newInstance();
+          final StatTracker tracker = trackers[0].newInstance();
           tracker.aggregate(trackers);
           double value = tracker.getSummaryValue();
           if (Double.isNaN(bestValueSoFar))
@@ -516,12 +512,12 @@ public class SingleStatisticOptimizationAlgorithm
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MAXIMIZE) &&
-                   (value > bestValueSoFar))
+               (value > bestValueSoFar))
           {
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MINIMIZE) &&
-                   (value < bestValueSoFar))
+               (value < bestValueSoFar))
           {
             bestValueSoFar = value;
           }
@@ -549,22 +545,21 @@ public class SingleStatisticOptimizationAlgorithm
    *                          immediately with no further iterations.
    */
   @Override()
-  public boolean isBestIterationSoFar(Job iteration)
+  public boolean isBestIterationSoFar(final Job iteration)
          throws SLAMDException
   {
-    SLAMDServer slamdServer = iteration.slamdServer;
+    final SLAMDServer slamdServer = iteration.slamdServer;
 
-    double iterationValue = getIterationOptimizationValue(iteration);
+    final double iterationValue = getIterationOptimizationValue(iteration);
 
     if (Double.isNaN(bestValueSoFar) && (! Double.isNaN(iterationValue)))
     {
       bestValueSoFar = iterationValue;
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticOptimizationAlgorithm." +
-                             "isBestIterationSoFar(" + iteration.getJobID() +
-                             ") returning true because iteration value " +
-                             iterationValue + " is not NaN but current best " +
-                             "is NaN.");
+           "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                iteration.getJobID() + ") returning true because iteration " +
+                "value " + iterationValue + " is not NaN but current best " +
+                "is NaN.");
       return true;
     }
 
@@ -576,41 +571,33 @@ public class SingleStatisticOptimizationAlgorithm
           if (iterationValue > bestValueSoFar+bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticOptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() +
-                                   ") returning true because iteration value " +
-                                   iterationValue + " is greater than " +
-                                   "previous best value " + bestValueSoFar +
-                                   " by at least " + (minPctImprovement*100) +
-                                   "%.");
+                 "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                      iteration.getJobID() + ") returning true because " +
+                      "iteration value " + iterationValue +
+                      " is greater than previous best value " + bestValueSoFar +
+                      " by at least " + (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticOptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() +
-                                   ") returning false because iteration " +
-                                   "value " + iterationValue + " is greater " +
-                                   "than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                      iteration.getJobID() + ") returning false because " +
+                      "iteration value " + iterationValue + " is greater " +
+                      "than previous best value " + bestValueSoFar +
+                      " but the margin of improvement is less than " +
+                      (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticOptimizationAlgorithm." +
-                                 "isBestIterationSoFar(" +
-                                 iteration.getJobID() +
-                                 ") returning false because iteration value " +
-                                 iterationValue + " is less than previous " +
-                                 "best value " + bestValueSoFar);
+               "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                    iteration.getJobID() + ") returning false because " +
+                    "iteration value " + iterationValue +
+                    " is less than previous best value " + bestValueSoFar);
           return false;
         }
       case OPTIMIZE_TYPE_MINIMIZE:
@@ -619,51 +606,41 @@ public class SingleStatisticOptimizationAlgorithm
           if (iterationValue < bestValueSoFar-bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticOptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() +
-                                   ") returning true because iteration value " +
-                                   iterationValue + " is less than " +
-                                   "previous best value " + bestValueSoFar +
-                                   " by at least " + (minPctImprovement*100) +
-                                   "%.");
+                 "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                      iteration.getJobID() + ") returning true because " +
+                      "iteration value " + iterationValue + " is less than " +
+                      "previous best value " + bestValueSoFar +
+                      " by at least " + (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticOptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() +
-                                   ") returning false because iteration " +
-                                   "value " + iterationValue + " is less " +
-                                   "than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                      iteration.getJobID() + ") returning false because " +
+                      "iteration value " + iterationValue + " is less " +
+                      "than previous best value " + bestValueSoFar +
+                      " but the margin of improvement is less than " +
+                      (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticOptimizationAlgorithm." +
-                                 "isBestIterationSoFar(" +
-                                 iteration.getJobID() +
-                                 ") returning false because iteration value " +
-                                 iterationValue + " is greater than previous " +
-                                 "best value " + bestValueSoFar);
+               "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                    iteration.getJobID() + ") returning false because " +
+                    "iteration value " + iterationValue + " is greater than " +
+                    "previous best value " + bestValueSoFar);
           return false;
         }
       default:
         slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                               "SingleStatisticOptimizationAlgorithm." +
-                               "isBestIterationSoFar(" +
-                               iteration.getJobID() +
-                               ") returning false because an unknown " +
-                               "optimization type of " + optimizeType +
-                               " is being used.");
+             "SingleStatisticOptimizationAlgorithm.isBestIterationSoFar(" +
+                  iteration.getJobID() + ") returning false because an " +
+                  "unknown optimization type of " + optimizeType +
+                  " is being used.");
         return false;
     }
   }
@@ -683,26 +660,24 @@ public class SingleStatisticOptimizationAlgorithm
    *                          value for the given optimizing job iteration.
    */
   @Override()
-  public double getIterationOptimizationValue(Job iteration)
+  public double getIterationOptimizationValue(final Job iteration)
        throws SLAMDException
   {
-    StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
+    final StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
     if ((trackers == null) || (trackers.length == 0))
     {
       throw new SLAMDException("The provided optimizing job iteration did " +
-                               "not include any values for the statistic to " +
-                               "optimize, \"" + optimizeStat + "\".");
+           "not include any values for the statistic to optimize, \"" +
+           optimizeStat + "\".");
     }
 
-    StatTracker tracker = trackers[0].newInstance();
+    final StatTracker tracker = trackers[0].newInstance();
     tracker.aggregate(trackers);
 
-    double summaryValue = tracker.getSummaryValue();
+    final double summaryValue = tracker.getSummaryValue();
     iteration.slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticOptimizationAlgorithm." +
-                                     "getIterationOptimizationValue(" +
-                                     iteration.getJobID() + ") returning " +
-                                     summaryValue);
+         "SingleStatisticOptimizationAlgorithm.getIterationOptimizationValue(" +
+              iteration.getJobID() + ") returning " + summaryValue);
 
     return summaryValue;
   }

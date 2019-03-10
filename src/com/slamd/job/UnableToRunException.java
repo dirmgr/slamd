@@ -28,7 +28,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class UnableToRunException
+public final class UnableToRunException
        extends SLAMDException
 {
   /**
@@ -44,7 +44,7 @@ public class UnableToRunException
    *
    * @param  message  A message providing information about the exception.
    */
-  public UnableToRunException(String message)
+  public UnableToRunException(final String message)
   {
     super(message);
   }
@@ -59,7 +59,7 @@ public class UnableToRunException
    * @param  cause    The parent exception that triggered this unable to run
    *                  exception.
    */
-  public UnableToRunException(String message, Throwable cause)
+  public UnableToRunException(final String message, final Throwable cause)
   {
     super(message, cause);
   }

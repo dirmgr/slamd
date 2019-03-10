@@ -259,9 +259,9 @@ public abstract class JobClass
    * @return  The set of stat trackers that will be maintained by this job
    *          class.
    */
-  public abstract StatTracker[] getStatTrackerStubs(String clientID,
-                                                    String threadID,
-                                                    int collectionInterval);
+  public abstract StatTracker[] getStatTrackerStubs(final String clientID,
+                                     final String threadID,
+                                     final int collectionInterval);
 
 
 
@@ -294,7 +294,7 @@ public abstract class JobClass
    *
    * @param  clientNumber  The client number to use for this job thread.
    */
-  public void setClientNumber(int clientNumber)
+  public void setClientNumber(final int clientNumber)
   {
     this.clientNumber = clientNumber;
   }
@@ -320,7 +320,7 @@ public abstract class JobClass
    *
    * @param  threadNumber  The thread number to use for this job thread.
    */
-  public void setThreadNumber(int threadNumber)
+  public void setThreadNumber(final int threadNumber)
   {
     this.threadNumber = threadNumber;
   }
@@ -349,10 +349,11 @@ public abstract class JobClass
    * @throws  InvalidValueException  If the provided information is not
    *                                 appropriate for running this job.
    */
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // No implementation required by default.
@@ -406,11 +407,11 @@ public abstract class JobClass
    *          be reached by the SLAMD server even though it could be by the
    *          clients).
    */
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final ArrayList<String> outputMessages)
   {
     outputMessages.add("No parameter tests have been defined for " +
-                       getJobName() + " jobs.");
+         getJobName() + " jobs.");
 
     return false;
   }
@@ -429,7 +430,7 @@ public abstract class JobClass
    * @return  {@code true} if this job class has been deprecated, or
    *          {@code false} if not.
    */
-  public boolean isDeprecated(StringBuilder message)
+  public boolean isDeprecated(final StringBuilder message)
   {
     return false;
   }
@@ -451,7 +452,7 @@ public abstract class JobClass
    *                                completed successfully and the job is unable
    *                                to run.
    */
-  public void initializeJob(ParameterList parameters)
+  public void initializeJob(final ParameterList parameters)
          throws UnableToRunException
   {
     // No implementation required by default.
@@ -473,7 +474,8 @@ public abstract class JobClass
    *                                completed successfully and the job is unable
    *                                to run.
    */
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // No implementation required by default.
@@ -499,9 +501,10 @@ public abstract class JobClass
    *                                completed successfully and the job is unable
    *                                to run.
    */
-  public abstract void initializeThread(String clientID, String threadID,
-                                        int collectionInterval,
-                                        ParameterList parameters)
+  public abstract void initializeThread(final String clientID,
+                                        final String threadID,
+                                        final int collectionInterval,
+                                        final ParameterList parameters)
          throws UnableToRunException;
 
 
@@ -589,11 +592,14 @@ public abstract class JobClass
    *
    * @throws  UnableToRunException  If a problem occurs during initialization.
    */
-  public final void initializeJobThread(String clientID, String threadID,
-                                        int collectionInterval,
-                                        ClientSideJob job, int duration,
-                                        Date stopTime, long startTimeMillis,
-                                        ParameterList parameters)
+  public final void initializeJobThread(final String clientID,
+                                        final String threadID,
+                                        final int collectionInterval,
+                                        final ClientSideJob job,
+                                        final int duration,
+                                        final Date stopTime,
+                                        final long startTimeMillis,
+                                        final ParameterList parameters)
          throws UnableToRunException
   {
     this.clientID           = clientID;
@@ -629,7 +635,7 @@ public abstract class JobClass
       shouldStopReason = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
       logMessage("Job thread initialization failed:  " + stackTraceToString(e));
       throw new UnableToRunException("Job thread initialization failed:  " +
-                                     stackTraceToString(e));
+           stackTraceToString(e));
     }
   }
 
@@ -653,7 +659,7 @@ public abstract class JobClass
    * @param  job  The client-side job that should be associated with this job
    *              class.
    */
-  public final void setClientSideJob(ClientSideJob job)
+  public final void setClientSideJob(final ClientSideJob job)
   {
     this.job = job;
   }
@@ -757,8 +763,8 @@ public abstract class JobClass
     // Make sure that the thread is not already running
     if (isRunning)
     {
-      throw new AlreadyRunningException("Thread " + threadID +
-                                             " is already running");
+      throw new AlreadyRunningException(
+           "Thread " + threadID + " is already running");
     }
     else
     {
@@ -781,7 +787,7 @@ public abstract class JobClass
    *
    * @param  stopReason  The reason that the job should stop running.
    */
-  public final void stopJob(int stopReason)
+  public final void stopJob(final int stopReason)
   {
     stopRequested = true;
     shouldStopReason = stopReason;
@@ -796,7 +802,7 @@ public abstract class JobClass
    *
    * @param  stopReason  The reason that the job should stop running.
    */
-  public final void stopAndWait(int stopReason)
+  public final void stopAndWait(final int stopReason)
   {
     stopRequested = true;
     shouldStopReason = stopReason;
@@ -975,7 +981,7 @@ public abstract class JobClass
    *
    * @param  message  The message to be written.
    */
-  public final void writeVerbose(String message)
+  public final void writeVerbose(final String message)
   {
     if (job == null)
     {
@@ -1008,7 +1014,7 @@ public abstract class JobClass
    *
    * @param  message  The message to be logged.
    */
-  public final void logMessage(String message)
+  public final void logMessage(final String message)
   {
     if (job == null)
     {
@@ -1115,36 +1121,36 @@ public abstract class JobClass
    *
    * @return  The string representation
    */
-  public static String stackTraceToString(Throwable t)
+  public static String stackTraceToString(final Throwable t)
   {
     if (t == null)
     {
       return null;
     }
 
-    String EOL = System.getProperty("line.separator");
+    final String EOL = System.getProperty("line.separator");
 
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     buffer.append(t.toString());
     buffer.append(EOL);
 
     String separator = "  ";
     StackTraceElement[] elements = t.getStackTrace();
-    for (int i=0; i < elements.length; i++)
+    for (final StackTraceElement element : elements)
     {
       buffer.append(separator);
-      buffer.append(elements[i].getClassName());
+      buffer.append(element.getClassName());
       buffer.append('.');
-      buffer.append(elements[i].getMethodName());
+      buffer.append(element.getMethodName());
       buffer.append('(');
-      buffer.append(elements[i].getFileName());
+      buffer.append(element.getFileName());
       buffer.append(':');
-      buffer.append(elements[i].getLineNumber());
+      buffer.append(element.getLineNumber());
       buffer.append(')');
       separator = EOL + "  ";
     }
 
-    Throwable cause = t.getCause();
+    final Throwable cause = t.getCause();
     if (cause != null)
     {
       buffer.append(EOL);
@@ -1152,16 +1158,16 @@ public abstract class JobClass
       buffer.append(cause.toString());
 
       elements = cause.getStackTrace();
-      for (int i=0; i < elements.length; i++)
+      for (final StackTraceElement element : elements)
       {
         buffer.append(separator);
-        buffer.append(elements[i].getClassName());
+        buffer.append(element.getClassName());
         buffer.append('.');
-        buffer.append(elements[i].getMethodName());
+        buffer.append(element.getMethodName());
         buffer.append('(');
-        buffer.append(elements[i].getFileName());
+        buffer.append(element.getFileName());
         buffer.append(':');
-        buffer.append(elements[i].getLineNumber());
+        buffer.append(element.getLineNumber());
         buffer.append(')');
         separator = EOL + "  ";
       }

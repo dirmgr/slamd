@@ -52,14 +52,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
+public final class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
        extends OptimizationAlgorithm
 {
   /**
    * The name of the parameter that is used to specify the minimum required
    * percent improvement needed for a new best iteration.
    */
-  public static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
+  private static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
 
 
 
@@ -67,7 +67,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * The name of the parameter that is used to specify the statistic to
    * optimize.
    */
-  public static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
+  private static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
 
 
 
@@ -75,7 +75,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * The name of the parameter that is used to specify the type of optimization
    * to perform.
    */
-  public static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
+  private static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
 
 
 
@@ -83,7 +83,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * The name of the parameter that is used to specify the maximum replication
    * latency that will be acceptable.
    */
-  public static final String PARAM_MAX_REPLICA_LATENCY = "max_replica_latency";
+  private static final String PARAM_MAX_REPLICA_LATENCY = "max_replica_latency";
 
 
 
@@ -92,7 +92,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * percentage of increase in latency between the beginning of the job and the
    * end of the job.
    */
-  public static final String PARAM_MAX_PERCENT_INCREASE =
+  private static final String PARAM_MAX_PERCENT_INCREASE =
        "max_percent_increase";
 
 
@@ -101,7 +101,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * highest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
+  private static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
 
 
 
@@ -109,7 +109,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * lowest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MINIMIZE = 2;
+  private static final int OPTIMIZE_TYPE_MINIMIZE = 2;
 
 
 
@@ -221,17 +221,17 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *          the provided job class, or {@code false} if not.
    */
   @Override()
-  public boolean availableWithJobClass(JobClass jobClass)
+  public boolean availableWithJobClass(final JobClass jobClass)
   {
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
     if ((jobStats == null) || (jobStats.length == 0))
     {
       return false;
     }
 
-    for (int i=0; i < jobStats.length; i++)
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
         return true;
       }
@@ -267,17 +267,18 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *          user for the settings to use when executing the optimizing job.
    */
   @Override()
-  public ParameterList getOptimizationAlgorithmParameterStubs(JobClass jobClass)
+  public ParameterList getOptimizationAlgorithmParameterStubs(
+                            final JobClass jobClass)
   {
     // First, compile a list of all the "searchable" statistics that this job
     // reports it collects.
-    ArrayList<String> availableStatList = new ArrayList<String>();
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
-    for (int i=0; i < jobStats.length; i++)
+    final ArrayList<String> availableStatList = new ArrayList<>();
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
-        availableStatList.add(jobStats[i].getDisplayName());
+        availableStatList.add(statTracker.getDisplayName());
       }
     }
 
@@ -287,19 +288,19 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
       return new ParameterList();
     }
 
-    String[] searchableStatNames = new String[numAvailable];
+    final String[] searchableStatNames = new String[numAvailable];
     availableStatList.toArray(searchableStatNames);
     if (optimizeStat == null)
     {
       optimizeStat = searchableStatNames[0];
     }
 
-    String[] optimizationTypes =
+    final String[] optimizationTypes =
     {
       Constants.OPTIMIZE_TYPE_MAXIMIZE,
       Constants.OPTIMIZE_TYPE_MINIMIZE
     };
-    String optimizeTypeStr;
+    final String optimizeTypeStr;
     switch (optimizeType)
     {
       case OPTIMIZE_TYPE_MAXIMIZE:
@@ -314,44 +315,36 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
     }
 
 
-    optimizeStatParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_STAT, "Statistic to Optimize",
-                                  "The name of the statistic for which to " +
-                                  "try to find the optimal value.",
-                                  searchableStatNames, optimizeStat);
-    optimizeTypeParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE, "Optimization Type",
-                                  "The type of optimization to perform for " +
-                                  "the statistic to optimize.",
-                                  optimizationTypes, optimizeTypeStr);
-    maxLatencyParameter =
-         new FloatParameter(PARAM_MAX_REPLICA_LATENCY,
-                            "Maximum Acceptable Replication Latency (ms)",
-                            "The maximum average replication latency in " +
-                            "milliseconds that will be allowed for an " +
-                            "iteration to be considered acceptable.  A " +
-                            "negative value indicates that there will be no " +
-                            "maximum latency.", false, (float) maxLatency);
-    maxIncreaseParameter =
-         new FloatParameter(PARAM_MAX_PERCENT_INCREASE,
-                            "Maximum Acceptable Percent Increase in Latency",
-                            "The maximum percentage of increase in " +
-                            "replication latency that will be allowed for an " +
-                            "iteration to be considered acceptable.", true,
-                            (float) maxIncrease, true, (float) 0.0, false,
-                            (float) 0.0);
+    optimizeStatParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_STAT,
+         "Statistic to Optimize",
+         "The name of the statistic for which to try to find the optimal " +
+              "value.",
+         searchableStatNames, optimizeStat);
+    optimizeTypeParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE,
+         "Optimization Type",
+         "The type of optimization to perform for the statistic to optimize.",
+         optimizationTypes, optimizeTypeStr);
+    maxLatencyParameter = new FloatParameter(PARAM_MAX_REPLICA_LATENCY,
+         "Maximum Acceptable Replication Latency (ms)",
+         "The maximum average replication latency in milliseconds that will " +
+              "be allowed for an iteration to be considered acceptable.  A " +
+              "negative value indicates that there will be no maximum latency.",
+         false, (float) maxLatency);
+    maxIncreaseParameter = new FloatParameter(PARAM_MAX_PERCENT_INCREASE,
+         "Maximum Acceptable Percent Increase in Latency",
+         "The maximum percentage of increase in replication latency that " +
+              "will be allowed for an iteration to be considered acceptable.",
+         true, (float) maxIncrease, true, (float) 0.0, false, (float) 0.0);
 
-    minPctImprovementParameter =
-         new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
-                            "Min. % Improvement for New Best Iteration",
-                            "The minimum percentage improvement in " +
-                            "performance that an iteration must have over " +
-                            "the previous best to be considered the new best " +
-                            "iteration.", false, minPctImprovement, true, 0.0F,
-                            false, 0.0F);
+    minPctImprovementParameter = new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
+         "Min. % Improvement for New Best Iteration",
+         "The minimum percentage improvement in performance that an " +
+              "iteration must have over the previous best to be considered " +
+              "the new best iteration.", false, minPctImprovement, true, 0.0F,
+         false, 0.0F);
 
 
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       new PlaceholderParameter(),
       optimizeStatParameter,
@@ -376,7 +369,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
   @Override()
   public ParameterList getOptimizationAlgorithmParameters()
   {
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       optimizeStatParameter,
       optimizeTypeParameter,
@@ -405,19 +398,18 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *                                 optimization algorithm.
    */
   @Override()
-  public void initializeOptimizationAlgorithm(OptimizingJob optimizingJob,
-                                              ParameterList parameters)
+  public void initializeOptimizationAlgorithm(final OptimizingJob optimizingJob,
+                                              final ParameterList parameters)
          throws InvalidValueException
   {
     this.optimizingJob = optimizingJob;
 
-    String[] monitorClients = optimizingJob.getResourceMonitorClients();
+    final String[] monitorClients = optimizingJob.getResourceMonitorClients();
     if ((monitorClients == null) || (monitorClients.length == 0))
     {
       throw new InvalidValueException("No resource monitor clients have been " +
-                                      "requested for this optimizing job.  " +
-                                      "At least one is required to provide " +
-                                      "replication latency data.");
+           "requested for this optimizing job.  At least one is required to " +
+           "provide replication latency data.");
     }
 
 
@@ -426,8 +418,8 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_STAT);
     if ((optimizeStatParameter == null) || (! optimizeStatParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the statistic " +
-                                      "to optimize");
+      throw new InvalidValueException(
+           "No value provided for the statistic to optimize");
     }
     optimizeStat = optimizeStatParameter.getStringValue();
 
@@ -437,10 +429,10 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_TYPE);
     if ((optimizeTypeParameter == null) || (! optimizeTypeParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the " +
-                                      "optimization type");
+      throw new InvalidValueException(
+           "No value provided for the optimization type");
     }
-    String optimizeTypeStr = optimizeTypeParameter.getStringValue();
+    final String optimizeTypeStr = optimizeTypeParameter.getStringValue();
     if (optimizeTypeStr.equalsIgnoreCase(Constants.OPTIMIZE_TYPE_MAXIMIZE))
     {
       optimizeType = OPTIMIZE_TYPE_MAXIMIZE;
@@ -452,8 +444,8 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + optimizeTypeStr +
-                                      "\" for optimization type.");
+      throw new InvalidValueException(
+           "Invalid value \"" + optimizeTypeStr + "\" for optimization type.");
     }
 
 
@@ -463,8 +455,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
     if ((maxIncreaseParameter == null) || (! maxIncreaseParameter.hasValue()))
     {
       throw new InvalidValueException("No value provided for the maximum " +
-                                      "allowed percentage increase in " +
-                                      "replication latency.");
+           "allowed percentage increase in replication latency.");
     }
     maxIncrease = maxIncreaseParameter.getFloatValue();
 
@@ -507,13 +498,13 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
           {
             continue;
           }
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
 
-        StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
+        final StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
         if ((trackers != null) && (trackers.length > 0))
         {
-          StatTracker tracker = trackers[0].newInstance();
+          final StatTracker tracker = trackers[0].newInstance();
           tracker.aggregate(trackers);
           double value = tracker.getSummaryValue();
           if (Double.isNaN(bestValueSoFar))
@@ -521,14 +512,14 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MAXIMIZE) &&
-                   (value > bestValueSoFar) &&
-                   (value >= (bestValueSoFar+bestValueSoFar*minPctImprovement)))
+               (value > bestValueSoFar) &&
+               (value >= (bestValueSoFar+bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MINIMIZE) &&
-                   (value < bestValueSoFar) &&
-                   (value <= (bestValueSoFar-bestValueSoFar*minPctImprovement)))
+               (value < bestValueSoFar) &&
+               (value <= (bestValueSoFar-bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
           }
@@ -536,13 +527,12 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
       }
     }
 
-    SLAMDServer slamdServer = optimizingJob.slamdServer;
+    final SLAMDServer slamdServer = optimizingJob.slamdServer;
     slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                           "SingleStatisticWithReplicationLatencyOptimization" +
-                           "Algorithm.initializeOptimizationAlgorith(" +
-                           optimizingJob.getOptimizingJobID() +
-                           ") best so far is " +
-                           String.valueOf(bestValueSoFar));
+         "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+              "initializeOptimizationAlgorith(" +
+              optimizingJob.getOptimizingJobID() + ") best so far is " +
+              String.valueOf(bestValueSoFar));
   }
 
 
@@ -564,19 +554,18 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *                          immediately with no further iterations.
    */
   @Override()
-  public boolean isBestIterationSoFar(Job iteration)
+  public boolean isBestIterationSoFar(final Job iteration)
          throws SLAMDException
   {
-    SLAMDServer slamdServer = iteration.slamdServer;
+    final SLAMDServer slamdServer = iteration.slamdServer;
 
     if (! isAcceptableReplicationLatency(iteration))
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithReplicationLatency" +
-                             "OptimizationAlgorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning false " +
-                             "because the iteration does not have acceptable " +
-                             "replication latency data.");
+           "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning false because the iteration does not have " +
+                "acceptable replication latency data.");
       return false;
     }
 
@@ -586,11 +575,10 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
     {
       bestValueSoFar = iterationValue;
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithReplicationLatency" +
-                             "OptimizationAlgorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning true " +
-                             "because iteration value " + iterationValue +
-                             " is not NaN but current best is NaN.");
+           "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning true because iteration value " + iterationValue +
+                " is not NaN but current best is NaN.");
       return true;
     }
 
@@ -602,41 +590,35 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
           if (iterationValue > bestValueSoFar+bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithReplicationLatency" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithReplicationLatency" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithReplicationLatency" +
-                                 "OptimizationAlgorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is less than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is less than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       case OPTIMIZE_TYPE_MINIMIZE:
@@ -645,50 +627,43 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
           if (iterationValue < bestValueSoFar-bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithReplicationLatency" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithReplicationLatency" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithReplicationLatency" +
-                                 "OptimizationAlgorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is greater than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is greater than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       default:
         slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                               "SingleStatisticWithReplicationLatency" +
-                               "OptimizationAlgorithm.isBestIterationSoFar(" +
-                               iteration.getJobID() + ") returning false " +
-                               "because an unknown optimization type of " +
-                               optimizeType + " is being used.");
+             "SingleStatisticWithReplicationLatencyOptimizationAlgorithm." +
+                  "isBestIterationSoFar(" + iteration.getJobID() +
+                  ") returning false because an unknown optimization type of " +
+                  optimizeType + " is being used.");
         return false;
     }
   }
@@ -748,19 +723,19 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *                          sufficient CPU utilization data to make the
    *                          determination.
    */
-  private boolean isAcceptableReplicationLatency(Job iteration)
+  private boolean isAcceptableReplicationLatency(final Job iteration)
           throws SLAMDException
   {
     boolean       latencyFound    = false;
 
-    String className = ReplicationLatencyResourceMonitor.class.getName();
-    ResourceMonitorStatTracker[] monitorTrackers =
+    final String className = ReplicationLatencyResourceMonitor.class.getName();
+    final ResourceMonitorStatTracker[] monitorTrackers =
          iteration.getResourceMonitorStatTrackersForClass(className);
 
-    for (int i=0; i < monitorTrackers.length; i++)
+    for (final ResourceMonitorStatTracker monitorTracker : monitorTrackers)
     {
-      StatTracker tracker = monitorTrackers[i].getStatTracker();
-      String      name    = tracker.getDisplayName();
+      final StatTracker tracker = monitorTracker.getStatTracker();
+      final String  name = tracker.getDisplayName();
 
       if ((tracker instanceof TimeTracker) &&
           name.endsWith(ReplicationLatencyResourceMonitor.
@@ -770,17 +745,17 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
 
         if (maxLatency > 0)
         {
-          TimeTracker latencyTimer = (TimeTracker) tracker;
-          double averageLatency = latencyTimer.getAverageDuration();
+          final TimeTracker latencyTimer = (TimeTracker) tracker;
+          final double averageLatency = latencyTimer.getAverageDuration();
           if (averageLatency > maxLatency)
           {
             return false;
           }
 
-          int[] intervalDurations  = latencyTimer.getIntervalDurations();
-          int[] intervalCounts     = latencyTimer.getIntervalCounts();
-          int   numIntervals       = intervalCounts.length;
-          int   quarterOfIntervals = numIntervals / 4;
+          final int[] intervalDurations  = latencyTimer.getIntervalDurations();
+          final int[] intervalCounts     = latencyTimer.getIntervalCounts();
+          final int   numIntervals       = intervalCounts.length;
+          final int   quarterOfIntervals = numIntervals / 4;
 
           int firstTotal = 0;
           int firstCount = 0;
@@ -799,11 +774,11 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
             return false;
           }
 
-          double firstAvg = 1.0 * firstTotal / firstCount;
-          double lastAvg  = 1.0 * lastTotal / lastCount;
+          final double firstAvg = 1.0 * firstTotal / firstCount;
+          final double lastAvg  = 1.0 * lastTotal / lastCount;
           if (lastAvg > firstAvg)
           {
-            double pctIncrease = (lastAvg - firstAvg) / firstAvg * 100.0;
+            final double pctIncrease = (lastAvg - firstAvg) / firstAvg * 100.0;
             if (pctIncrease > maxIncrease)
             {
               return false;
@@ -816,7 +791,7 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
     if (! latencyFound)
     {
       throw new SLAMDException("The provided job iteration did not include " +
-                               "any replication latency data.");
+           "any replication latency data.");
     }
 
     return true;

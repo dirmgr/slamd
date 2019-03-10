@@ -17,8 +17,8 @@ package com.slamd.stat;
 
 
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import com.slamd.asn1.ASN1Element;
 import com.slamd.asn1.ASN1OctetString;
@@ -233,7 +233,7 @@ public class ResourceMonitorStatTracker
    *          tracker information.
    */
   public static ASN1Sequence trackersToSequence(
-                     ArrayList<ResourceMonitorStatTracker> trackerList)
+                     List<ResourceMonitorStatTracker> trackerList)
   {
     ASN1Element[] elements = new ASN1Element[trackerList.size()];
     for (int i=0; i < elements.length; i++)

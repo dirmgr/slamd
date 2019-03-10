@@ -52,14 +52,14 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
+public final class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
        extends OptimizationAlgorithm
 {
   /**
    * The name of the parameter that is used to specify the minimum required
    * percent improvement needed for a new best iteration.
    */
-  public static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
+  private static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
 
 
 
@@ -67,7 +67,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The name of the parameter that is used to specify the statistic to
    * optimize.
    */
-  public static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
+  private static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
 
 
 
@@ -75,7 +75,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The name of the parameter that is used to specify the type of optimization
    * to perform.
    */
-  public static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
+  private static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
 
 
 
@@ -83,7 +83,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The name of the parameter that is used to specify the maximum CPU
    * utilization that will be acceptable.
    */
-  public static final String PARAM_MAX_CPU_UTILIZATION = "max_cpu_utilization";
+  private static final String PARAM_MAX_CPU_UTILIZATION = "max_cpu_utilization";
 
 
 
@@ -91,7 +91,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The name of the parameter that is used to specify the component of CPU
    * utilization that should be examined.
    */
-  public static final String PARAM_UTILIZATION_COMPONENT =
+  private static final String PARAM_UTILIZATION_COMPONENT =
        "utilization_component";
 
 
@@ -100,7 +100,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * highest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
+  private static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
 
 
 
@@ -108,7 +108,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * lowest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MINIMIZE = 2;
+  private static final int OPTIMIZE_TYPE_MINIMIZE = 2;
 
 
 
@@ -116,7 +116,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The utilization component that indicates that only user time should be
    * considered.
    */
-  public static final int UTILIZATION_COMPONENT_USER_TIME = 1;
+  private static final int UTILIZATION_COMPONENT_USER_TIME = 1;
 
 
 
@@ -124,7 +124,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The utilization component that indicates that only system time should be
    * considered.
    */
-  public static final int UTILIZATION_COMPONENT_SYSTEM_TIME = 2;
+  private static final int UTILIZATION_COMPONENT_SYSTEM_TIME = 2;
 
 
 
@@ -132,14 +132,14 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The utilization component that indicates that both user and system time
    * should be considered.
    */
-  public static final int UTILIZATION_COMPONENT_BUSY_TIME = 3;
+  private static final int UTILIZATION_COMPONENT_BUSY_TIME = 3;
 
 
 
   /**
    * The string that will be displayed for the user time utilization component.
    */
-  public static final String UTILIZATION_COMPONENT_USER_STRING = "User Time";
+  private static final String UTILIZATION_COMPONENT_USER_STRING = "User Time";
 
 
 
@@ -147,7 +147,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    * The string that will be displayed for the system time utilization
    * component.
    */
-  public static final String UTILIZATION_COMPONENT_SYSTEM_STRING =
+  private static final String UTILIZATION_COMPONENT_SYSTEM_STRING =
        "System Time";
 
 
@@ -155,7 +155,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
   /**
    * The string that will be displayed for the busy time utilization component.
    */
-  public static final String UTILIZATION_COMPONENT_BUSY_STRING =
+  private static final String UTILIZATION_COMPONENT_BUSY_STRING =
        "Busy Time (User + System)";
 
 
@@ -266,17 +266,17 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *          the provided job class, or {@code false} if not.
    */
   @Override()
-  public boolean availableWithJobClass(JobClass jobClass)
+  public boolean availableWithJobClass(final JobClass jobClass)
   {
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
     if ((jobStats == null) || (jobStats.length == 0))
     {
       return false;
     }
 
-    for (int i=0; i < jobStats.length; i++)
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
         return true;
       }
@@ -312,17 +312,18 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *          user for the settings to use when executing the optimizing job.
    */
   @Override()
-  public ParameterList getOptimizationAlgorithmParameterStubs(JobClass jobClass)
+  public ParameterList getOptimizationAlgorithmParameterStubs(
+                            final JobClass jobClass)
   {
     // First, compile a list of all the "searchable" statistics that this job
     // reports it collects.
-    ArrayList<String> availableStatList = new ArrayList<String>();
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
-    for (int i=0; i < jobStats.length; i++)
+    final ArrayList<String> availableStatList = new ArrayList<>();
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
-        availableStatList.add(jobStats[i].getDisplayName());
+        availableStatList.add(statTracker.getDisplayName());
       }
     }
 
@@ -332,19 +333,19 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
       return new ParameterList();
     }
 
-    String[] searchableStatNames = new String[numAvailable];
+    final String[] searchableStatNames = new String[numAvailable];
     availableStatList.toArray(searchableStatNames);
     if (optimizeStat == null)
     {
       optimizeStat = searchableStatNames[0];
     }
 
-    String[] optimizationTypes =
+    final String[] optimizationTypes =
     {
       Constants.OPTIMIZE_TYPE_MAXIMIZE,
       Constants.OPTIMIZE_TYPE_MINIMIZE
     };
-    String optimizeTypeStr;
+    final String optimizeTypeStr;
     switch (optimizeType)
     {
       case OPTIMIZE_TYPE_MAXIMIZE:
@@ -358,14 +359,14 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
         break;
     }
 
-    String[] utilizationComponents =
+    final String[] utilizationComponents =
     {
       UTILIZATION_COMPONENT_USER_STRING,
       UTILIZATION_COMPONENT_SYSTEM_STRING,
       UTILIZATION_COMPONENT_BUSY_STRING
     };
 
-    String componentStr;
+    final String componentStr;
     switch (utilizationComponent)
     {
       case UTILIZATION_COMPONENT_USER_TIME:
@@ -383,43 +384,35 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     }
 
 
-    optimizeStatParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_STAT, "Statistic to Optimize",
-                                  "The name of the statistic for which to " +
-                                  "try to find the optimal value.",
-                                  searchableStatNames, optimizeStat);
-    optimizeTypeParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE, "Optimization Type",
-                                  "The type of optimization to perform for " +
-                                  "the statistic to optimize.",
-                                  optimizationTypes, optimizeTypeStr);
-    maxUtilizationParameter =
-         new FloatParameter(PARAM_MAX_CPU_UTILIZATION,
-                            "Maximum Acceptable CPU Utilization",
-                            "The maximum CPU utilization that will be " +
-                            "allowed for the specified CPU component for " +
-                            "an iteration to be considered acceptable.", true,
-                            (float) maxUtilization, true, (float) 0.0, true,
-                            (float) 100.0);
-    utilizationComponentParameter =
-         new MultiChoiceParameter(PARAM_UTILIZATION_COMPONENT,
-                                  "Utilization Component to Consider",
-                                  "The CPU utilization component to consider " +
-                                  "when deciding whether an iteration is " +
-                                  "acceptable.", utilizationComponents,
-                                  componentStr);
+    optimizeStatParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_STAT,
+         "Statistic to Optimize",
+         "The name of the statistic for which to try to find the optimal " +
+              "value.",
+         searchableStatNames, optimizeStat);
+    optimizeTypeParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE,
+         "Optimization Type",
+         "The type of optimization to perform for the statistic to optimize.",
+         optimizationTypes, optimizeTypeStr);
+    maxUtilizationParameter = new FloatParameter(PARAM_MAX_CPU_UTILIZATION,
+         "Maximum Acceptable CPU Utilization",
+         "The maximum CPU utilization that will be allowed for the specified " +
+              "CPU component for an iteration to be considered acceptable.",
+         true, (float) maxUtilization, true, (float) 0.0, true, (float) 100.0);
+    utilizationComponentParameter = new MultiChoiceParameter(
+         PARAM_UTILIZATION_COMPONENT, "Utilization Component to Consider",
+         "The CPU utilization component to consider when deciding whether an " +
+              "iteration is acceptable.",
+         utilizationComponents, componentStr);
 
-    minPctImprovementParameter =
-         new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
-                            "Min. % Improvement for New Best Iteration",
-                            "The minimum percentage improvement in " +
-                            "performance that an iteration must have over " +
-                            "the previous best to be considered the new best " +
-                            "iteration.", false, minPctImprovement, true, 0.0F,
-                            false, 0.0F);
+    minPctImprovementParameter = new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
+         "Min. % Improvement for New Best Iteration",
+         "The minimum percentage improvement in performance that an " +
+              "iteration must have over the previous best to be considered " +
+              "the new best iteration.",
+         false, minPctImprovement, true, 0.0F, false, 0.0F);
 
 
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       new PlaceholderParameter(),
       optimizeStatParameter,
@@ -444,7 +437,7 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
   @Override()
   public ParameterList getOptimizationAlgorithmParameters()
   {
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       optimizeStatParameter,
       optimizeTypeParameter,
@@ -473,19 +466,18 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *                                 optimization algorithm.
    */
   @Override()
-  public void initializeOptimizationAlgorithm(OptimizingJob optimizingJob,
-                                              ParameterList parameters)
+  public void initializeOptimizationAlgorithm(final OptimizingJob optimizingJob,
+                                              final ParameterList parameters)
          throws InvalidValueException
   {
     this.optimizingJob = optimizingJob;
 
-    String[] monitorClients = optimizingJob.getResourceMonitorClients();
+    final String[] monitorClients = optimizingJob.getResourceMonitorClients();
     if ((monitorClients == null) || (monitorClients.length == 0))
     {
       throw new InvalidValueException("No resource monitor clients have been " +
-                                      "requested for this optimizing job.  " +
-                                      "At least one is required to provide " +
-                                      "CPU utilization data.");
+           "requested for this optimizing job.  At least one is required to " +
+           "provide CPU utilization data.");
     }
 
 
@@ -494,8 +486,8 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_STAT);
     if ((optimizeStatParameter == null) || (! optimizeStatParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the statistic " +
-                                      "to optimize");
+      throw new InvalidValueException(
+           "No value provided for the statistic to optimize");
     }
     optimizeStat = optimizeStatParameter.getStringValue();
 
@@ -505,10 +497,10 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_TYPE);
     if ((optimizeTypeParameter == null) || (! optimizeTypeParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the " +
-                                      "optimization type");
+      throw new InvalidValueException(
+           "No value provided for the optimization type");
     }
-    String optimizeTypeStr = optimizeTypeParameter.getStringValue();
+    final String optimizeTypeStr = optimizeTypeParameter.getStringValue();
     if (optimizeTypeStr.equalsIgnoreCase(Constants.OPTIMIZE_TYPE_MAXIMIZE))
     {
       optimizeType = OPTIMIZE_TYPE_MAXIMIZE;
@@ -520,8 +512,8 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + optimizeTypeStr +
-                                      "\" for optimization type.");
+      throw new InvalidValueException(
+           "Invalid value \"" + optimizeTypeStr + "\" for optimization type.");
     }
 
 
@@ -531,8 +523,8 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     if ((maxUtilizationParameter == null) ||
         (! maxUtilizationParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the maximum " +
-                                      "acceptable CPU utilization.");
+      throw new InvalidValueException(
+           "No value provided for the maximum acceptable CPU utilization.");
     }
     maxUtilization = maxUtilizationParameter.getFloatValue();
 
@@ -543,8 +535,8 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     if ((utilizationComponentParameter == null) ||
         (! utilizationComponentParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the CPU " +
-                                      "utilization component.");
+      throw new InvalidValueException(
+           "No value provided for the CPU utilization component.");
     }
     String componentStr = utilizationComponentParameter.getStringValue();
     if (componentStr.equalsIgnoreCase(UTILIZATION_COMPONENT_USER_STRING))
@@ -561,8 +553,9 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + componentStr +
-                                      "\" for CPU utilization component.");
+      throw new InvalidValueException(
+           "Invalid value \"" + componentStr +
+                "\" for CPU utilization component.");
     }
 
 
@@ -580,24 +573,24 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     // See If the provided optimizing job has run any iterations so far.  If so,
     // then look through them to determine the best value so far.
     bestValueSoFar = Double.NaN;
-    Job[] iterations = optimizingJob.getAssociatedJobs();
+    final Job[] iterations = optimizingJob.getAssociatedJobs();
     if (iterations != null)
     {
-      for (int i=0; i <iterations.length; i++)
+      for (final Job iteration : iterations)
       {
         try
         {
-          if (! isAcceptableCPUUtilization(iterations[i]))
+          if (! isAcceptableCPUUtilization(iteration))
           {
             continue;
           }
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
 
-        StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
+        StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
         if ((trackers != null) && (trackers.length > 0))
         {
-          StatTracker tracker = trackers[0].newInstance();
+          final StatTracker tracker = trackers[0].newInstance();
           tracker.aggregate(trackers);
           double value = tracker.getSummaryValue();
           if (Double.isNaN(bestValueSoFar))
@@ -605,14 +598,14 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MAXIMIZE) &&
-                   (value > bestValueSoFar) &&
-                   (value >= (bestValueSoFar+bestValueSoFar*minPctImprovement)))
+               (value > bestValueSoFar) &&
+               (value >= (bestValueSoFar+bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
           }
           else if ((optimizeType == OPTIMIZE_TYPE_MINIMIZE) &&
-                   (value < bestValueSoFar) &&
-                   (value <= (bestValueSoFar-bestValueSoFar*minPctImprovement)))
+               (value < bestValueSoFar) &&
+               (value <= (bestValueSoFar-bestValueSoFar*minPctImprovement)))
           {
             bestValueSoFar = value;
           }
@@ -620,13 +613,12 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
       }
     }
 
-    SLAMDServer slamdServer = optimizingJob.slamdServer;
+    final SLAMDServer slamdServer = optimizingJob.slamdServer;
     slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                           "SingleStatisticWithCPUUtilizationOptimization" +
-                           "Algorithm.initializeOptimizationAlgorith(" +
-                           optimizingJob.getOptimizingJobID() +
-                           ") best so far is " +
-                           String.valueOf(bestValueSoFar));
+         "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+              "initializeOptimizationAlgorith(" +
+              optimizingJob.getOptimizingJobID() + ") best so far is " +
+              String.valueOf(bestValueSoFar));
   }
 
 
@@ -648,33 +640,31 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *                          immediately with no further iterations.
    */
   @Override()
-  public boolean isBestIterationSoFar(Job iteration)
+  public boolean isBestIterationSoFar(final Job iteration)
          throws SLAMDException
   {
-    SLAMDServer slamdServer = iteration.slamdServer;
+    final SLAMDServer slamdServer = iteration.slamdServer;
 
     if (! isAcceptableCPUUtilization(iteration))
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithCPUUtilizationOptimization" +
-                             "Algorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning false " +
-                             "because the iteration does not have acceptable " +
-                             "CPU utilization data.");
+           "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning false because the iteration does not have " +
+                "acceptable CPU utilization data.");
       return false;
     }
 
-    double iterationValue = getIterationOptimizationValue(iteration);
+    final double iterationValue = getIterationOptimizationValue(iteration);
 
     if (Double.isNaN(bestValueSoFar) && (! Double.isNaN(iterationValue)))
     {
       bestValueSoFar = iterationValue;
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithCPUUtilizationOptimization" +
-                             "Algorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning true " +
-                             "because iteration value " + iterationValue +
-                             " is not NaN but current best is NaN.");
+           "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning true because iteration value " + iterationValue +
+                " is not NaN but current best is NaN.");
       return true;
     }
 
@@ -686,41 +676,35 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
           if (iterationValue > bestValueSoFar+bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithCPUUtilization" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithCPUUtilization" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithCPUUtilization" +
-                                 "OptimizationAlgorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is less than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is less than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       case OPTIMIZE_TYPE_MINIMIZE:
@@ -729,50 +713,43 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
           if (iterationValue < bestValueSoFar-bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithCPUUtilization" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithCPUUtilization" +
-                                   "OptimizationAlgorithm." +
-                                   "isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithCPUUtilization" +
-                                 "OptimizationAlgorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is greater than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is greater than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       default:
         slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                               "SingleStatisticWithCPUUtilization" +
-                               "OptimizationAlgorithm.isBestIterationSoFar(" +
-                               iteration.getJobID() + ") returning false " +
-                               "because an unknown optimization type of " +
-                               optimizeType + " is being used.");
+             "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                  "isBestIterationSoFar(" + iteration.getJobID() +
+                  ") returning false because an unknown optimization type of " +
+                  optimizeType + " is being used.");
         return false;
     }
   }
@@ -792,27 +769,25 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *                          value for the given optimizing job iteration.
    */
   @Override()
-  public double getIterationOptimizationValue(Job iteration)
+  public double getIterationOptimizationValue(final Job iteration)
        throws SLAMDException
   {
-    StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
+    final StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
     if ((trackers == null) || (trackers.length == 0))
     {
       throw new SLAMDException("The provided optimizing job iteration did " +
-                               "not include any values for the statistic to " +
-                               "optimize, \"" + optimizeStat + "\".");
+           "not include any values for the statistic to optimize, \"" +
+           optimizeStat + "\".");
     }
 
-    StatTracker tracker = trackers[0].newInstance();
+    final StatTracker tracker = trackers[0].newInstance();
     tracker.aggregate(trackers);
 
-    double summaryValue = tracker.getSummaryValue();
+    final double summaryValue = tracker.getSummaryValue();
     iteration.slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticWithCPUUtilization" +
-                                     "OptimizationAlgorithm." +
-                                     "getIterationOptimizationValue(" +
-                                     iteration.getJobID() + ") returning " +
-                                     summaryValue);
+         "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+              "getIterationOptimizationValue(" + iteration.getJobID() +
+              ") returning " + summaryValue);
 
     return summaryValue;
   }
@@ -832,32 +807,31 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
    *                          sufficient CPU utilization data to make the
    *                          determination.
    */
-  private boolean isAcceptableCPUUtilization(Job iteration)
+  private boolean isAcceptableCPUUtilization(final Job iteration)
           throws SLAMDException
   {
-    SLAMDServer slamdServer      = iteration.slamdServer;
-    boolean     utilizationFound = false;
+    final SLAMDServer slamdServer = iteration.slamdServer;
+    boolean  utilizationFound = false;
 
-    String className = VMStatResourceMonitor.class.getName();
-    ResourceMonitorStatTracker[] monitorTrackers =
+    final String className = VMStatResourceMonitor.class.getName();
+    final ResourceMonitorStatTracker[] monitorTrackers =
          iteration.getResourceMonitorStatTrackersForClass(className);
-    for (int i=0; i < monitorTrackers.length; i++)
+    for (final ResourceMonitorStatTracker monitorTracker : monitorTrackers)
     {
-      StatTracker tracker = monitorTrackers[i].getStatTracker();
-      String      name    = tracker.getDisplayName();
+      final StatTracker tracker = monitorTracker.getStatTracker();
+      final String      name    = tracker.getDisplayName();
 
       if ((tracker instanceof StackedValueTracker) &&
           name.endsWith(VMStatResourceMonitor.STAT_TRACKER_CPU_UTILIZATION))
       {
         utilizationFound = true;
-        StackedValueTracker utilizationTracker = (StackedValueTracker) tracker;
-        double userTime =
-             utilizationTracker.getAverageValue(
-                  VMStatResourceMonitor.UTILIZATION_CATEGORY_USER);
-        double systemTime =
-             utilizationTracker.getAverageValue(
-                  VMStatResourceMonitor.UTILIZATION_CATEGORY_SYSTEM);
-        double busyTime = userTime + systemTime;
+        final StackedValueTracker utilizationTracker =
+             (StackedValueTracker) tracker;
+        final double userTime = utilizationTracker.getAverageValue(
+             VMStatResourceMonitor.UTILIZATION_CATEGORY_USER);
+        final double systemTime = utilizationTracker.getAverageValue(
+             VMStatResourceMonitor.UTILIZATION_CATEGORY_SYSTEM);
+        final double busyTime = userTime + systemTime;
 
         switch (utilizationComponent)
         {
@@ -865,14 +839,11 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
             if (userTime > maxUtilization)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticWithCPUUtilization" +
-                                     "OptimizationAlgorithm.isAcceptableCPU" +
-                                     "Utilization(" + iteration.getJobID() +
-                                     ") returning false because user time of " +
-                                     userTime + " for stat " +
-                                     tracker.getDisplayName() +
-                                     " exceeded the maximum allowed of " +
-                                     maxUtilization);
+                   "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                        "isAcceptableCPUUtilization(" + iteration.getJobID() +
+                        ") returning false because user time of " + userTime +
+                        " for stat " + tracker.getDisplayName() +
+                        " exceeded the maximum allowed of " + maxUtilization);
               return false;
             }
             break;
@@ -880,14 +851,11 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
             if (systemTime > maxUtilization)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticWithCPUUtilization" +
-                                     "OptimizationAlgorithm.isAcceptableCPU" +
-                                     "Utilization(" + iteration.getJobID() +
-                                     ") returning false because system time " +
-                                     "of " + systemTime + " for stat " +
-                                     tracker.getDisplayName() +
-                                     " exceeded the maximum allowed of " +
-                                     maxUtilization);
+                   "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                        "isAcceptableCPUUtilization(" + iteration.getJobID() +
+                        ") returning false because system time of " +
+                        systemTime + " for stat " + tracker.getDisplayName() +
+                        " exceeded the maximum allowed of " + maxUtilization);
               return false;
             }
             break;
@@ -895,49 +863,41 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
             if (busyTime > maxUtilization)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticWithCPUUtilization" +
-                                     "OptimizationAlgorithm.isAcceptableCPU" +
-                                     "Utilization(" + iteration.getJobID() +
-                                     ") returning false because busy time of " +
-                                     busyTime + " for stat " +
-                                     tracker.getDisplayName() +
-                                     " exceeded the maximum allowed of " +
-                                     maxUtilization);
+                   "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                        "isAcceptableCPUUtilization(" + iteration.getJobID() +
+                        ") returning false because busy time of " + busyTime +
+                        " for stat " + tracker.getDisplayName() +
+                        " exceeded the maximum allowed of " + maxUtilization);
               return false;
             }
             break;
           default:
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithCPUUtilization" +
-                                   "OptimizationAlgorithm.isAcceptableCPU" +
-                                   "Utilization(" + iteration.getJobID() +
-                                   ") returning false because an unknown " +
-                                   "utilization component of " +
-                                   utilizationComponent + " is in use.");
+                 "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                      "isAcceptableCPUUtilization(" + iteration.getJobID() +
+                      ") returning false because an unknown utilization " +
+                      "component of " + utilizationComponent + " is in use.");
             return false;
         }
       }
       else if ((tracker instanceof IntegerValueTracker) &&
-               ((utilizationComponent == UTILIZATION_COMPONENT_USER_TIME) &&
+           ((utilizationComponent == UTILIZATION_COMPONENT_USER_TIME) &&
                 name.endsWith(VMStatResourceMonitor.STAT_TRACKER_CPU_USER)) ||
-               ((utilizationComponent == UTILIZATION_COMPONENT_SYSTEM_TIME) &&
+           ((utilizationComponent == UTILIZATION_COMPONENT_SYSTEM_TIME) &&
                 name.endsWith(VMStatResourceMonitor.STAT_TRACKER_CPU_SYSTEM)) ||
-               ((utilizationComponent == UTILIZATION_COMPONENT_BUSY_TIME) &&
+           ((utilizationComponent == UTILIZATION_COMPONENT_BUSY_TIME) &&
                 name.endsWith(VMStatResourceMonitor.STAT_TRACKER_CPU_BUSY)))
       {
         utilizationFound = true;
-        double value = ((IntegerValueTracker) tracker).getAverageValue();
+        final double value = ((IntegerValueTracker) tracker).getAverageValue();
         if (value > maxUtilization)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithCPUUtilization" +
-                                 "OptimizationAlgorithm.isAcceptableCPU" +
-                                 "Utilization(" + iteration.getJobID() +
-                                 ") returning false because value of " +
-                                 value + " for stat " +
-                                 tracker.getDisplayName() +
-                                 " exceeded the maximum allowed of " +
-                                 maxUtilization);
+               "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+                    "isAcceptableCPUUtilization(" + iteration.getJobID() +
+                    ") returning false because value of " + value +
+                    " for stat " + tracker.getDisplayName() +
+                    " exceeded the maximum allowed of " + maxUtilization);
           return false;
         }
       }
@@ -946,13 +906,13 @@ public class SingleStatisticWithCPUUtilizationOptimizationAlgorithm
     if (! utilizationFound)
     {
       throw new SLAMDException("The provided job iteration did not include " +
-                               "any CPU utilization data.");
+           "any CPU utilization data.");
     }
 
     slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                           "SingleStatisticWithCPUUtilizationOptimization" +
-                           "Algorithm.isAcceptableCPUUtilization(" +
-                           iteration.getJobID() + ") returning true.");
+         "SingleStatisticWithCPUUtilizationOptimizationAlgorithm." +
+              "isAcceptableCPUUtilization(" + iteration.getJobID() +
+              ") returning true.");
     return true;
   }
 }

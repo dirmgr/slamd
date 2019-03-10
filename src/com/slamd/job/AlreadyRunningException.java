@@ -28,7 +28,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class AlreadyRunningException
+public final class AlreadyRunningException
        extends SLAMDException
 {
   /**
@@ -44,7 +44,7 @@ public class AlreadyRunningException
    *
    * @param  message  A message providing information about the exception.
    */
-  public AlreadyRunningException(String message)
+  public AlreadyRunningException(final String message)
   {
     super(message);
   }
@@ -58,7 +58,7 @@ public class AlreadyRunningException
    * @param  message  A message providing information about the exception.
    * @param  cause    The exception that triggered this exception.
    */
-  public AlreadyRunningException(String message, Throwable cause)
+  public AlreadyRunningException(final String message, final Throwable cause)
   {
     super(message, cause);
   }

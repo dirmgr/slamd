@@ -19,8 +19,11 @@ package com.slamd.job;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.slamd.asn1.ASN1Boolean;
@@ -61,48 +64,48 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class Job
+public final class Job
        implements Comparable<Job>, JobItem
 {
   /**
    * The name of the encoded element that holds the job ID.
    */
-  public static final String ELEMENT_JOB_ID = "job_id";
+  private static final String ELEMENT_JOB_ID = "job_id";
 
 
 
   /**
    * The name of the encoded element that holds the job class name.
    */
-  public static final String ELEMENT_JOB_CLASS = "job_class";
+  private static final String ELEMENT_JOB_CLASS = "job_class";
 
 
 
   /**
    * The name of the encoded element that holds the optimizing job ID.
    */
-  public static final String ELEMENT_OPTIMIZING_JOB_ID = "optimizing_job_id";
+  private static final String ELEMENT_OPTIMIZING_JOB_ID = "optimizing_job_id";
 
 
 
   /**
    * The name of the encoded element that holds the job group name.
    */
-  public static final String ELEMENT_JOB_GROUP = "job_group";
+  private static final String ELEMENT_JOB_GROUP = "job_group";
 
 
 
   /**
    * The name of the encoded element that holds the folder name.
    */
-  public static final String ELEMENT_FOLDER = "folder";
+  private static final String ELEMENT_FOLDER = "folder";
 
 
 
   /**
    * The name of the encoded element that holds the job state.
    */
-  public static final String ELEMENT_JOB_STATE = "job_state";
+  private static final String ELEMENT_JOB_STATE = "job_state";
 
 
 
@@ -110,7 +113,7 @@ public class Job
    * The name of the encoded element that indicates whether this job should be
    * displayed in restricted read-only mode.
    */
-  public static final String ELEMENT_DISPLAY_IN_READ_ONLY =
+  private static final String ELEMENT_DISPLAY_IN_READ_ONLY =
        "display_in_read_only";
 
 
@@ -118,42 +121,42 @@ public class Job
   /**
    * The name of the encoded element that holds the job description.
    */
-  public static final String ELEMENT_DESCRIPTION = "description";
+  private static final String ELEMENT_DESCRIPTION = "description";
 
 
 
   /**
    * The name of the encoded element that holds the scheduled start time.
    */
-  public static final String ELEMENT_START_TIME = "start_time";
+  private static final String ELEMENT_START_TIME = "start_time";
 
 
 
   /**
    * The name of the encoded element that holds the scheduled stop time.
    */
-  public static final String ELEMENT_STOP_TIME = "stop_time";
+  private static final String ELEMENT_STOP_TIME = "stop_time";
 
 
 
   /**
    * The name of the encoded element that holds the scheduled duration.
    */
-  public static final String ELEMENT_DURATION = "duration";
+  private static final String ELEMENT_DURATION = "duration";
 
 
 
   /**
    * The name of the encoded element that holds the number of clients.
    */
-  public static final String ELEMENT_NUM_CLIENTS = "num_clients";
+  private static final String ELEMENT_NUM_CLIENTS = "num_clients";
 
 
 
   /**
    * The name of the encoded element that holds the requested clients.
    */
-  public static final String ELEMENT_REQUESTED_CLIENTS = "requested_clients";
+  private static final String ELEMENT_REQUESTED_CLIENTS = "requested_clients";
 
 
 
@@ -161,7 +164,7 @@ public class Job
    * The name of the encoded element that holds the requested resource monitor
    * clients.
    */
-  public static final String ELEMENT_MONITOR_CLIENTS = "monitor_clients";
+  private static final String ELEMENT_MONITOR_CLIENTS = "monitor_clients";
 
 
 
@@ -169,7 +172,7 @@ public class Job
    * The name of the encoded element that indicates whether the clients should
    * be monitored if they are running resource monitor clients.
    */
-  public static final String ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE =
+  private static final String ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE =
        "monitor_clients_if_available";
 
 
@@ -178,7 +181,7 @@ public class Job
    * The name of the encoded element that indicates whether to wait for clients
    * to become available.
    */
-  public static final String ELEMENT_WAIT_FOR_CLIENTS = "wait_for_clients";
+  private static final String ELEMENT_WAIT_FOR_CLIENTS = "wait_for_clients";
 
 
 
@@ -186,14 +189,14 @@ public class Job
    * The name of the encoded element that holds the number of threads per
    * client.
    */
-  public static final String ELEMENT_THREADS_PER_CLIENT = "threads_per_client";
+  private static final String ELEMENT_THREADS_PER_CLIENT = "threads_per_client";
 
 
 
   /**
    * The name of the encoded element that holds the thread startup delay.
    */
-  public static final String ELEMENT_THREAD_STARTUP_DELAY =
+  private static final String ELEMENT_THREAD_STARTUP_DELAY =
        "thread_startup_delay";
 
 
@@ -201,7 +204,7 @@ public class Job
   /**
    * The name of the encoded element that holds the set of dependencies.
    */
-  public static final String ELEMENT_DEPENDENCIES = "dependencies";
+  private static final String ELEMENT_DEPENDENCIES = "dependencies";
 
 
 
@@ -209,7 +212,7 @@ public class Job
    * The name of the encoded element that holds the e-mail addresses of the
    * users to notify on completion.
    */
-  public static final String ELEMENT_NOTIFY_ADDRESSES = "notify_addresses";
+  private static final String ELEMENT_NOTIFY_ADDRESSES = "notify_addresses";
 
 
 
@@ -217,7 +220,7 @@ public class Job
    * The name of the encoded element that holds the statistics collection
    * interval.
    */
-  public static final String ELEMENT_COLLECTION_INTERVAL =
+  private static final String ELEMENT_COLLECTION_INTERVAL =
        "collection_interval";
 
 
@@ -225,42 +228,42 @@ public class Job
   /**
    * The name of the encoded element that holds the job comments.
    */
-  public static final String ELEMENT_COMMENTS = "comments";
+  private static final String ELEMENT_COMMENTS = "comments";
 
 
 
   /**
    * The name of the encoded element that holds the job parameters.
    */
-  public static final String ELEMENT_PARAMETERS = "parameters";
+  private static final String ELEMENT_PARAMETERS = "parameters";
 
 
 
   /**
    * The name of the encoded element that holds the actual start time.
    */
-  public static final String ELEMENT_ACTUAL_START_TIME = "actual_start_time";
+  private static final String ELEMENT_ACTUAL_START_TIME = "actual_start_time";
 
 
 
   /**
    * The name of the encoded element that holds the actual stop time.
    */
-  public static final String ELEMENT_ACTUAL_STOP_TIME = "actual_stop_time";
+  private static final String ELEMENT_ACTUAL_STOP_TIME = "actual_stop_time";
 
 
 
   /**
    * The name of the encoded element that holds the actual duration.
    */
-  public static final String ELEMENT_ACTUAL_DURATION = "actual_duration";
+  private static final String ELEMENT_ACTUAL_DURATION = "actual_duration";
 
 
 
   /**
    * The name of the encoded element that holds the job statistics.
    */
-  public static final String ELEMENT_STATS = "stats";
+  private static final String ELEMENT_STATS = "stats";
 
 
 
@@ -268,41 +271,23 @@ public class Job
    * The name of the encoded element that holds legacy resource monitor
    * statistical data (just stat trackers, not resource monitor stats).
    */
-  public static final String ELEMENT_LEGACY_MONITOR_STATS = "monitor_stats";
+  private static final String ELEMENT_LEGACY_MONITOR_STATS = "monitor_stats";
 
 
 
   /**
    * The name of the encoded element that holds resource monitor statistics.
    */
-  public static final String ELEMENT_RESOURCE_MONITOR_STATS = "resource_stats";
+  private static final String ELEMENT_RESOURCE_MONITOR_STATS = "resource_stats";
 
 
 
   /**
    * The name of the encoded element that holds the log messages.
    */
-  public static final String ELEMENT_LOG_MESSAGES = "log_messages";
+  private static final String ELEMENT_LOG_MESSAGES = "log_messages";
 
 
-
-  // The set of clients that are actively processing this job.
-  private ArrayList<ClientConnection> activeClients;
-
-  // The set of resource monitor clients that are currently active.
-  private ArrayList<ResourceMonitorClientConnection> activeMonitorClients;
-
-  // The set of job IDs that must complete before this job may begin.
-  private ArrayList<String> dependencies;
-
-  // The set of messages logged during job execution.
-  private ArrayList<String> logMessages;
-
-  // The set of stat trackers maintained by the resource monitor clients.
-  private ArrayList<ResourceMonitorStatTracker> resourceStatTrackers;
-
-  // The set of stat trackers associated with this job.
-  private ArrayList<StatTracker> statTrackers;
 
   // Indicates whether this job should be displayed in restricted read-only
   // mode.
@@ -358,6 +343,24 @@ public class Job
   // The delay in milliseconds that should be used when starting each thread on
   // the client.
   private int threadStartupDelay;
+
+  // The set of clients that are actively processing this job.
+  private List<ClientConnection> activeClients;
+
+  // The set of resource monitor clients that are currently active.
+  private List<ResourceMonitorClientConnection> activeMonitorClients;
+
+  // The set of job IDs that must complete before this job may begin.
+  private List<String> dependencies;
+
+  // The set of messages logged during job execution.
+  private List<String> logMessages;
+
+  // The set of stat trackers maintained by the resource monitor clients.
+  private List<ResourceMonitorStatTracker> resourceStatTrackers;
+
+  // The set of stat trackers associated with this job.
+  private List<StatTracker> statTrackers;
 
   // The mutex used to provide threadsafe access to the list of active clients.
   private final Object activeClientMutex = new Object();
@@ -429,7 +432,7 @@ public class Job
    * @throws  SLAMDException  If it is not possible to create an instance of the
    *                          job class.
    */
-  public Job(SLAMDServer slamdServer, String jobThreadClassName)
+  public Job(final SLAMDServer slamdServer, final String jobThreadClassName)
          throws SLAMDException
   {
     // Assign the values of the parameters to instance variables
@@ -485,11 +488,12 @@ public class Job
    * @throws  SLAMDException  If a problem occurred while creating an instance
    *                          of the job thread class.
    */
-  public Job(SLAMDServer slamdServer, String jobThreadClassName,
-             int numClients, int threadsPerClient, int threadStartupDelay,
-             Date startTime, Date stopTime, int duration,
-             int collectionInterval, ParameterList parameters,
-             boolean displayInReadOnlyMode)
+  public Job(final SLAMDServer slamdServer, final String jobThreadClassName,
+             final int numClients, final int threadsPerClient,
+             final int threadStartupDelay, final Date startTime,
+             final Date stopTime, int duration, final int collectionInterval,
+             final ParameterList parameters,
+             final boolean displayInReadOnlyMode)
          throws SLAMDException
   {
     // Invoke the first version of the constructor
@@ -514,20 +518,20 @@ public class Job
     actualStopTime             = null;
     actualDuration             = -1;
     notifyAddresses            = new String[0];
-    dependencies               = new ArrayList<String>();
+    dependencies               = new ArrayList<>();
     monitorClientsIfAvailable  = false;
     monitorClients             = null;
     requestedClients           = null;
-    statTrackers               = new ArrayList<StatTracker>();
-    resourceStatTrackers       = new ArrayList<ResourceMonitorStatTracker>();
+    statTrackers               = new ArrayList<>();
+    resourceStatTrackers       = new ArrayList<>();
     tentativeJobState          = Constants.JOB_STATE_COMPLETED_SUCCESSFULLY;
-    logMessages                = new ArrayList<String>();
+    logMessages                = new ArrayList<>();
 
 
     // Create the variables for working with the list of clients that are
     // actively processing this job.
-    activeClients        = new ArrayList<ClientConnection>();
-    activeMonitorClients = new ArrayList<ResourceMonitorClientConnection>();
+    activeClients        = new ArrayList<>();
+    activeMonitorClients = new ArrayList<>();
 
 
     jobState = Constants.JOB_STATE_NOT_YET_STARTED;
@@ -541,6 +545,7 @@ public class Job
    * @return  An instance of the job class with which this job is associated,
    *          or {@code null} if it could not be retrieved for some reason.
    */
+  @Override()
   public JobClass getJobClass()
   {
     if (infoJobThread != null)
@@ -577,7 +582,7 @@ public class Job
    *
    * @param  jobID  The job ID to use for this job.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -603,7 +608,7 @@ public class Job
    * @param  optimizingJobID  The ID of the optimizing job with which this job
    *                          is associated.
    */
-  public void setOptimizingJobID(String optimizingJobID)
+  public void setOptimizingJobID(final String optimizingJobID)
   {
     this.optimizingJobID = optimizingJobID;
   }
@@ -617,6 +622,7 @@ public class Job
    *          {@code null} if it was not scheduled as part of any job
    *          group.
    */
+  @Override()
   public String getJobGroup()
   {
     return jobGroup;
@@ -630,7 +636,7 @@ public class Job
    * @param  jobGroup  The name of the job group with which this job is
    *                   associated.
    */
-  public void setJobGroup(String jobGroup)
+  public void setJobGroup(final String jobGroup)
   {
     this.jobGroup = jobGroup;
   }
@@ -642,6 +648,7 @@ public class Job
    *
    * @return  The name of the folder in which this job is located.
    */
+  @Override()
   public String getFolderName()
   {
     return folderName;
@@ -654,7 +661,7 @@ public class Job
    *
    * @param  folderName  The name of the folder in which this job is located.
    */
-  public void setFolderName(String folderName)
+  public void setFolderName(final String folderName)
   {
     this.folderName = folderName;
   }
@@ -679,7 +686,7 @@ public class Job
    *
    * @param  jobComments  The set of comments to use for this job.
    */
-  public void setJobComments(String jobComments)
+  public void setJobComments(final String jobComments)
   {
     this.jobComments = jobComments;
   }
@@ -705,7 +712,7 @@ public class Job
    * @param  jobDescription  The job description that should be used for this
    *                         job.
    */
-  public void setJobDescription(String jobDescription)
+  public void setJobDescription(final String jobDescription)
   {
     this.jobDescription = jobDescription;
   }
@@ -743,7 +750,7 @@ public class Job
    *
    * @param  startTime  The start time to use for the job.
    */
-  public void setStartTime(Date startTime)
+  public void setStartTime(final Date startTime)
   {
     this.startTime = startTime;
   }
@@ -767,7 +774,7 @@ public class Job
    *
    * @param  stopTime  The stop time to use for this job.
    */
-  public void setStopTime(Date stopTime)
+  public void setStopTime(final Date stopTime)
   {
     this.stopTime = stopTime;
   }
@@ -791,7 +798,7 @@ public class Job
    *
    * @param  duration  The duration to use for the job.
    */
-  public void setDuration(int duration)
+  public void setDuration(final int duration)
   {
     this.duration = duration;
   }
@@ -840,7 +847,7 @@ public class Job
    * @param  numberOfClients  The number of clients that should be used to run
    *                          this job.
    */
-  public void setNumberOfClients(int numberOfClients)
+  public void setNumberOfClients(final int numberOfClients)
   {
     this.numClients = numberOfClients;
   }
@@ -867,7 +874,7 @@ public class Job
    * @param  threadsPerClient  The number of threads that each client should use
    *                           to run this job.
    */
-  public void setThreadsPerClient(int threadsPerClient)
+  public void setThreadsPerClient(final int threadsPerClient)
   {
     this.threadsPerClient = threadsPerClient;
   }
@@ -895,7 +902,7 @@ public class Job
    * @param  threadStartupDelay  The delay in milliseconds that should be used
    *                             when starting each thread on the client system.
    */
-  public void setThreadStartupDelay(int threadStartupDelay)
+  public void setThreadStartupDelay(final int threadStartupDelay)
   {
     this.threadStartupDelay = threadStartupDelay;
   }
@@ -923,7 +930,7 @@ public class Job
    * @param  collectionInterval  The length of time in seconds that should be
    *                             used as the statistics collection interval.
    */
-  public void setCollectionInterval(int collectionInterval)
+  public void setCollectionInterval(final int collectionInterval)
   {
     this.collectionInterval = collectionInterval;
   }
@@ -977,7 +984,7 @@ public class Job
    *
    * @param  parameters  The list of parameters to use for this job.
    */
-  public void setParameterList(ParameterList parameters)
+  public void setParameterList(final ParameterList parameters)
   {
     this.parameters = parameters;
   }
@@ -1003,7 +1010,7 @@ public class Job
    *
    * @param  jobState  The state to use for the current job.
    */
-  public void setJobState(int jobState)
+  public void setJobState(final int jobState)
   {
     this.jobState = jobState;
   }
@@ -1045,7 +1052,7 @@ public class Job
    * @param  waitForClients  Indicates whether the job will wait for clients to
    *                         be available.
    */
-  public void setWaitForClients(boolean waitForClients)
+  public void setWaitForClients(final boolean waitForClients)
   {
     this.waitForClients = waitForClients;
   }
@@ -1073,7 +1080,7 @@ public class Job
    * @param  displayInReadOnlyMode  Indicates whether this job should be
    *                                displayed in restricted read-only mode.
    */
-  public void setDisplayInReadOnlyMode(boolean displayInReadOnlyMode)
+  public void setDisplayInReadOnlyMode(final boolean displayInReadOnlyMode)
   {
     this.displayInReadOnlyMode = displayInReadOnlyMode;
   }
@@ -1095,7 +1102,7 @@ public class Job
       return null;
     }
 
-    String[] dependencyArray = new String[dependencies.size()];
+    final String[] dependencyArray = new String[dependencies.size()];
     dependencies.toArray(dependencyArray);
     return dependencyArray;
   }
@@ -1109,7 +1116,7 @@ public class Job
    * @param  dependencies  The job IDs of the jobs that must complete before
    *                       this job will be eligible for processing.
    */
-  public void setDependencies(String[] dependencies)
+  public void setDependencies(final String[] dependencies)
   {
     this.dependencies.clear();
 
@@ -1130,11 +1137,11 @@ public class Job
    * @param  jobID  The job ID for the job to remove as a dependency of this
    *                job.
    */
-  public void removeDependency(String jobID)
+  public void removeDependency(final String jobID)
   {
     for (int i=0; i < dependencies.size(); i++)
     {
-      String dependency = dependencies.get(i);
+      final String dependency = dependencies.get(i);
       if (dependency.equalsIgnoreCase(jobID))
       {
         dependencies.remove(i);
@@ -1163,7 +1170,7 @@ public class Job
    * @param  requestedClients  The set of clients that have been requested to
    *                           run this job.
    */
-  public void setRequestedClients(String[] requestedClients)
+  public void setRequestedClients(final String[] requestedClients)
   {
     this.requestedClients = requestedClients;
   }
@@ -1191,7 +1198,7 @@ public class Job
    * @param  monitorClients  The set of resource monitor clients that should be
    *                         used when running this job.
    */
-  public void setResourceMonitorClients(String[] monitorClients)
+  public void setResourceMonitorClients(final String[] monitorClients)
   {
     this.monitorClients = monitorClients;
   }
@@ -1221,7 +1228,8 @@ public class Job
    *                                    on the same systems as the clients used
    *                                    to run this job.
    */
-  public void setMonitorClientsIfAvailable(boolean monitorClientsIfAvailable)
+  public void setMonitorClientsIfAvailable(
+                   final boolean monitorClientsIfAvailable)
   {
     this.monitorClientsIfAvailable = monitorClientsIfAvailable;
   }
@@ -1249,7 +1257,7 @@ public class Job
    * @param  notifyAddresses  The e-mail addresses of the users that should be
    *                          notified when this job has completed running.
    */
-  public void setNotifyAddresses(String[] notifyAddresses)
+  public void setNotifyAddresses(final String[] notifyAddresses)
   {
     if (notifyAddresses == null)
     {
@@ -1288,9 +1296,8 @@ public class Job
    */
   public boolean graphsAvailable()
   {
-    for (int i=0; i < statTrackers.size(); i++)
+    for (final StatTracker tracker : statTrackers)
     {
-      StatTracker tracker = statTrackers.get(i);
       if (tracker.getNumIntervals() > 1)
       {
         return true;
@@ -1311,9 +1318,9 @@ public class Job
    */
   public boolean resourceGraphsAvailable()
   {
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    for (final ResourceMonitorStatTracker monitorTracker :
+         resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
       if (monitorTracker.getStatTracker().getNumIntervals() > 1)
       {
         return true;
@@ -1343,7 +1350,7 @@ public class Job
    *
    * @param  realTimeStats  The real-time stat data associated with this job.
    */
-  public void setRealTimeStats(RealTimeJobStats realTimeStats)
+  public void setRealTimeStats(final RealTimeJobStats realTimeStats)
   {
     this.realTimeStats = realTimeStats;
   }
@@ -1401,14 +1408,14 @@ public class Job
     // Although we could get the list of names from the job thread, it is better
     // to see the names that we actually have, in case the job thread is not
     // giving us the full or correct list (e.g., in the case of scripted jobs).
-    ArrayList<String> trackerNames = new ArrayList<String>();
-    for (int i=0; i < statTrackers.size(); i++)
+    final ArrayList<String> trackerNames = new ArrayList<>();
+    for (final StatTracker statTracker : statTrackers)
     {
-      String name = statTrackers.get(i).getDisplayName();
+      String name = statTracker.getDisplayName();
       boolean matchFound = false;
-      for (int j=0; j < trackerNames.size(); j++)
+      for (final String trackerName : trackerNames)
       {
-        if (name.equalsIgnoreCase(trackerNames.get(j)))
+        if (name.equalsIgnoreCase(trackerName))
         {
           matchFound = true;
           break;
@@ -1421,7 +1428,7 @@ public class Job
       }
     }
 
-    String[] names = new String[trackerNames.size()];
+    final String[] names = new String[trackerNames.size()];
     trackerNames.toArray(names);
     return names;
   }
@@ -1437,15 +1444,15 @@ public class Job
    */
   public String[] getResourceStatTrackerNames()
   {
-    ArrayList<String> trackerNames = new ArrayList<String>();
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<String> trackerNames = new ArrayList<>();
+    for (final ResourceMonitorStatTracker monitorTracker :
+        resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
       String name = monitorTracker.getStatTracker().getDisplayName();
       boolean matchFound = false;
-      for (int j=0; j < trackerNames.size(); j++)
+      for (final String trackerName : trackerNames)
       {
-        if (name.equalsIgnoreCase(trackerNames.get(j)))
+        if (name.equalsIgnoreCase(trackerName))
         {
           matchFound = true;
           break;
@@ -1458,7 +1465,7 @@ public class Job
       }
     }
 
-    String[] names = new String[trackerNames.size()];
+    final String[] names = new String[trackerNames.size()];
     trackerNames.toArray(names);
     return names;
   }
@@ -1474,17 +1481,16 @@ public class Job
    *          associated with this job, in a map that links those names to the
    *          names of the associated resource monitor class.
    */
-  public LinkedHashMap<String,String> getResourceStatTrackerNamesAndClasses()
+  public Map<String,String> getResourceStatTrackerNamesAndClasses()
   {
-    LinkedHashMap<String,String> trackerMap = new LinkedHashMap<>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final Map<String,String> trackerMap = new LinkedHashMap<>();
+    for (final ResourceMonitorStatTracker monitorTracker :
+         resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
-
-      String displayName = monitorTracker.getStatTracker().getDisplayName();
-      String className   =
-                  monitorTracker.getResourceMonitor().getClass().getName();
+      final String displayName =
+           monitorTracker.getStatTracker().getDisplayName();
+      final String className   =
+           monitorTracker.getResourceMonitor().getClass().getName();
 
       trackerMap.put(displayName, className);
     }
@@ -1501,7 +1507,7 @@ public class Job
    */
   public StatTracker[] getStatTrackers()
   {
-    StatTracker[] trackerArray = new StatTracker[statTrackers.size()];
+    final StatTracker[] trackerArray = new StatTracker[statTrackers.size()];
     statTrackers.toArray(trackerArray);
     return trackerArray;
   }
@@ -1517,7 +1523,7 @@ public class Job
    */
   public ResourceMonitorStatTracker[] getResourceMonitorStatTrackers()
   {
-    ResourceMonitorStatTracker[] trackerArray =
+    final ResourceMonitorStatTracker[] trackerArray =
          new ResourceMonitorStatTracker[resourceStatTrackers.size()];
     resourceStatTrackers.toArray(trackerArray);
     return trackerArray;
@@ -1537,18 +1543,16 @@ public class Job
    */
   public StatTracker[] getStatTrackers(String displayName)
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>();
-
-    for (int i=0; i < statTrackers.size(); i++)
+    final ArrayList<StatTracker> trackerList = new ArrayList<>();
+    for (final StatTracker tracker : statTrackers)
     {
-      StatTracker tracker = statTrackers.get(i);
       if (displayName.equals(tracker.getDisplayName()))
       {
         trackerList.add(tracker);
       }
     }
 
-    StatTracker[] trackerArray = new StatTracker[trackerList.size()];
+    final StatTracker[] trackerArray = new StatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
   }
@@ -1565,21 +1569,19 @@ public class Job
    * @return  The set of all resource stat trackers associated with this job
    *          that have the specified display name.
 \   */
-  public StatTracker[] getResourceStatTrackers(String displayName)
+  public StatTracker[] getResourceStatTrackers(final String displayName)
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<StatTracker> trackerList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker monitorTracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
-      StatTracker tracker = monitorTracker.getStatTracker();
+      final StatTracker tracker = monitorTracker.getStatTracker();
       if (displayName.equals(tracker.getDisplayName()))
       {
         trackerList.add(tracker);
       }
     }
 
-    StatTracker[] trackerArray = new StatTracker[trackerList.size()];
+    final StatTracker[] trackerArray = new StatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
   }
@@ -1596,22 +1598,19 @@ public class Job
    * @return  The set of all resource stat trackers associated with this job
    *          that have the specified display name.
    */
-  public ResourceMonitorStatTracker[]
-              getResourceMonitorStatTrackers(String displayName)
+  public ResourceMonitorStatTracker[] getResourceMonitorStatTrackers(
+                                           final String displayName)
   {
-    ArrayList<ResourceMonitorStatTracker> trackerList =
-         new ArrayList<ResourceMonitorStatTracker>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<ResourceMonitorStatTracker> trackerList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker tracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker tracker = resourceStatTrackers.get(i);
       if (displayName.equals(tracker.getStatTracker().getDisplayName()))
       {
         trackerList.add(tracker);
       }
     }
 
-    ResourceMonitorStatTracker[] trackerArray =
+    final ResourceMonitorStatTracker[] trackerArray =
          new ResourceMonitorStatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
@@ -1628,21 +1627,18 @@ public class Job
    */
   public ResourceMonitor[] getResourceMonitorClasses()
   {
-    LinkedHashMap<String,ResourceMonitor> classMap =
-         new LinkedHashMap<String,ResourceMonitor>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final Map<String,ResourceMonitor> classMap = new LinkedHashMap<>();
+    for (final ResourceMonitorStatTracker tracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker tracker = resourceStatTrackers.get(i);
-      ResourceMonitor monitor = tracker.getResourceMonitor();
-      String monitorClass = monitor.getClass().getName();
+      final ResourceMonitor monitor = tracker.getResourceMonitor();
+      final String monitorClass = monitor.getClass().getName();
       if (! classMap.containsKey(monitorClass))
       {
         classMap.put(monitorClass, monitor);
       }
     }
 
-    ResourceMonitor[] monitors = new ResourceMonitor[classMap.size()];
+    final ResourceMonitor[] monitors = new ResourceMonitor[classMap.size()];
     classMap.values().toArray(monitors);
     return monitors;
   }
@@ -1660,22 +1656,19 @@ public class Job
    * @return  The set of all resource monitor stat trackers associated with this
    *          job that have the specified monitor class.
    */
-  public ResourceMonitorStatTracker[]
-              getResourceMonitorStatTrackersForClass(String className)
+  public ResourceMonitorStatTracker[] getResourceMonitorStatTrackersForClass(
+                                           final String className)
   {
-    ArrayList<ResourceMonitorStatTracker> trackerList =
-         new ArrayList<ResourceMonitorStatTracker>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<ResourceMonitorStatTracker> trackerList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker tracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker tracker = resourceStatTrackers.get(i);
       if (tracker.getResourceMonitor().getClass().getName().equals(className))
       {
         trackerList.add(tracker);
       }
     }
 
-    ResourceMonitorStatTracker[] trackerArray =
+    final ResourceMonitorStatTracker[] trackerArray =
          new ResourceMonitorStatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
@@ -1694,13 +1687,12 @@ public class Job
    * @return  The set of all stat trackers associated with this job that have
    *          the specified display name and client ID.
    */
-  public StatTracker[] getStatTrackers(String displayName, String clientID)
+  public StatTracker[] getStatTrackers(final String displayName,
+                                       final String clientID)
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>();
-
-    for (int i=0; i < statTrackers.size(); i++)
+    final ArrayList<StatTracker> trackerList = new ArrayList<>();
+    for (final StatTracker tracker : statTrackers)
     {
-      StatTracker tracker = statTrackers.get(i);
       if (displayName.equals(tracker.getDisplayName()) &&
           clientID.equals(tracker.getClientID()))
       {
@@ -1708,7 +1700,7 @@ public class Job
       }
     }
 
-    StatTracker[] trackerArray = new StatTracker[trackerList.size()];
+    final StatTracker[] trackerArray = new StatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
   }
@@ -1726,15 +1718,13 @@ public class Job
    * @return  The set of all resource monitor stat trackers associated with this
    *          job that have the specified display name and client ID.
    */
-  public StatTracker[] getResourceStatTrackers(String displayName,
-                                               String clientID)
+  public StatTracker[] getResourceStatTrackers(final String displayName,
+                                               final String clientID)
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<StatTracker> trackerList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker monitorTracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
-      StatTracker tracker = monitorTracker.getStatTracker();
+      final StatTracker tracker = monitorTracker.getStatTracker();
       if (displayName.equals(tracker.getDisplayName()) &&
           clientID.equals(tracker.getClientID()))
       {
@@ -1742,7 +1732,7 @@ public class Job
       }
     }
 
-    StatTracker[] trackerArray = new StatTracker[trackerList.size()];
+    final StatTracker[] trackerArray = new StatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
   }
@@ -1760,17 +1750,14 @@ public class Job
    * @return  The set of all resource monitor stat trackers associated with this
    *          job that have the specified display name and client ID.
    */
-  public ResourceMonitorStatTracker[]
-              getResourceMonitorStatTrackers(String displayName,
-                                             String clientID)
+  public ResourceMonitorStatTracker[] getResourceMonitorStatTrackers(
+                                           final String displayName,
+                                           final String clientID)
   {
-    ArrayList<ResourceMonitorStatTracker> trackerList =
-         new ArrayList<ResourceMonitorStatTracker>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<ResourceMonitorStatTracker> trackerList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker monitorTracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
-      StatTracker tracker = monitorTracker.getStatTracker();
+      final StatTracker tracker = monitorTracker.getStatTracker();
       if (displayName.equals(tracker.getDisplayName()) &&
           clientID.equals(tracker.getClientID()))
       {
@@ -1778,7 +1765,7 @@ public class Job
       }
     }
 
-    ResourceMonitorStatTracker[] trackerArray =
+    final ResourceMonitorStatTracker[] trackerArray =
          new ResourceMonitorStatTracker[trackerList.size()];
     trackerList.toArray(trackerArray);
     return trackerArray;
@@ -1795,11 +1782,9 @@ public class Job
    */
   public String[] getStatTrackerClientIDs()
   {
-    ArrayList<String> idList = new ArrayList<String>();
-
-    for (int i=0; i < statTrackers.size(); i++)
+    final ArrayList<String> idList = new ArrayList<>();
+    for (final StatTracker tracker : statTrackers)
     {
-      StatTracker tracker = statTrackers.get(i);
       boolean match = false;
       for (int j=0; j < idList.size(); j++)
       {
@@ -1815,7 +1800,7 @@ public class Job
       }
     }
 
-    String[] clientIDs = new String[idList.size()];
+    final String[] clientIDs = new String[idList.size()];
     idList.toArray(clientIDs);
     return clientIDs;
   }
@@ -1831,12 +1816,10 @@ public class Job
    */
   public String[] getResourceStatTrackerClientIDs()
   {
-    ArrayList<String> idList = new ArrayList<String>();
-
-    for (int i=0; i < resourceStatTrackers.size(); i++)
+    final ArrayList<String> idList = new ArrayList<>();
+    for (final ResourceMonitorStatTracker monitorTracker : resourceStatTrackers)
     {
-      ResourceMonitorStatTracker monitorTracker = resourceStatTrackers.get(i);
-      StatTracker tracker = monitorTracker.getStatTracker();
+      final StatTracker tracker = monitorTracker.getStatTracker();
       boolean match = false;
       for (int j=0; j < idList.size(); j++)
       {
@@ -1852,7 +1835,7 @@ public class Job
       }
     }
 
-    String[] clientIDs = new String[idList.size()];
+    final String[] clientIDs = new String[idList.size()];
     idList.toArray(clientIDs);
     return clientIDs;
   }
@@ -1864,13 +1847,10 @@ public class Job
    *
    * @param  trackerArray  The set of stat trackers to assign to this job.
    */
-  public void setStatTrackers(StatTracker[] trackerArray)
+  public void setStatTrackers(final StatTracker[] trackerArray)
   {
-    statTrackers = new ArrayList<StatTracker>(trackerArray.length);
-    for (int i=0; i < trackerArray.length; i++)
-    {
-      statTrackers.add(trackerArray[i]);
-    }
+    statTrackers = new ArrayList<>(trackerArray.length);
+    statTrackers.addAll(Arrays.asList(trackerArray));
   }
 
 
@@ -1882,15 +1862,14 @@ public class Job
    * @param  trackerArray  The set of resource monitor stat trackers to assign
    *                       to this job.
    */
-  public void setResourceStatTrackers(StatTracker[] trackerArray)
+  public void setResourceStatTrackers(final StatTracker[] trackerArray)
   {
-    resourceStatTrackers =
-         new ArrayList<ResourceMonitorStatTracker>(trackerArray.length);
-    for (int i=0; i < trackerArray.length; i++)
+    resourceStatTrackers = new ArrayList<>(trackerArray.length);
+    for (final StatTracker tracker : trackerArray)
     {
       ResourceMonitorStatTracker monitorTracker =
-           new ResourceMonitorStatTracker(new LegacyResourceMonitor(),
-                                          trackerArray[i]);
+           new ResourceMonitorStatTracker(
+                new LegacyResourceMonitor(), tracker);
       resourceStatTrackers.add(monitorTracker);
     }
   }
@@ -1904,15 +1883,11 @@ public class Job
    * @param  monitorTrackers  The set of resource monitor stat trackers to
    *                          assign to this job.
    */
-  public void setResourceStatTrackers(ResourceMonitorStatTracker[]
-                                           monitorTrackers)
+  public void setResourceStatTrackers(
+                   final ResourceMonitorStatTracker[] monitorTrackers)
   {
-    resourceStatTrackers =
-         new ArrayList<ResourceMonitorStatTracker>(monitorTrackers.length);
-    for (int i=0; i < monitorTrackers.length; i++)
-    {
-      resourceStatTrackers.add(monitorTrackers[i]);
-    }
+    resourceStatTrackers = new ArrayList<>(monitorTrackers.length);
+    resourceStatTrackers.addAll(Arrays.asList(monitorTrackers));
   }
 
 
@@ -1924,15 +1899,8 @@ public class Job
    */
   public String[] getLogMessages()
   {
-    ArrayList<String> clone = new ArrayList<>(logMessages);
-    String[] messageArray = new String[clone.size()];
-
-    for (int i=0; i < messageArray.length; i++)
-    {
-      messageArray[i] = clone.get(i);
-    }
-
-    return messageArray;
+    final String[] messagesArray = new String[logMessages.size()];
+    return logMessages.toArray(messagesArray);
   }
 
 
@@ -1943,7 +1911,7 @@ public class Job
    *
    * @param  message  The message to add to the set of messages for this job.
    */
-  public void addLogMessage(String message)
+  public void addLogMessage(final String message)
   {
     logMessages.add(message);
   }
@@ -1955,15 +1923,10 @@ public class Job
    *
    * @param  logMessages  The set of messages logged during the job's execution.
    */
-  public void setLogMessages(String[] logMessages)
+  public void setLogMessages(final String[] logMessages)
   {
-    ArrayList<String> messageList = new ArrayList<String>(logMessages.length);
-
-    for (int i=0; i < logMessages.length; i++)
-    {
-      messageList.add(logMessages[i]);
-    }
-
+    ArrayList<String> messageList = new ArrayList<>(logMessages.length);
+    messageList.addAll(Arrays.asList(logMessages));
     this.logMessages = messageList;
   }
 
@@ -1975,9 +1938,9 @@ public class Job
    * @param  logMessages  An array list containing the set of messages logged
    *                      during the job's execution.
    */
-  public void setLogMessages(ArrayList<String> logMessages)
+  public void setLogMessages(final List<String> logMessages)
   {
-    this.logMessages = logMessages;
+    this.logMessages = new ArrayList<>(logMessages);
   }
 
 
@@ -1999,7 +1962,7 @@ public class Job
    *
    * @param  actualStartTime  The time that this job actually started running.
    */
-  public void setActualStartTime(Date actualStartTime)
+  public void setActualStartTime(final Date actualStartTime)
   {
     this.actualStartTime = actualStartTime;
   }
@@ -2011,7 +1974,7 @@ public class Job
    *
    * @param  actualStartTime  The time that the job actually started running.
    */
-  public void setActualStartTime(long actualStartTime)
+  public void setActualStartTime(final long actualStartTime)
   {
     this.actualStartTime = new Date(actualStartTime);
   }
@@ -2035,7 +1998,7 @@ public class Job
    *
    * @param  actualStopTime  The time that the job actually stopped running.
    */
-  public void setActualStopTime(Date actualStopTime)
+  public void setActualStopTime(final Date actualStopTime)
   {
     this.actualStopTime = actualStopTime;
   }
@@ -2047,7 +2010,7 @@ public class Job
    *
    * @param  actualStopTime  The time that the job actually stopped running.
    */
-  public void setActualStopTime(long actualStopTime)
+  public void setActualStopTime(final long actualStopTime)
   {
     this.actualStopTime = new Date(actualStopTime);
   }
@@ -2071,7 +2034,7 @@ public class Job
    * @param  actualDuration  The length of time in seconds that the job was
    *                         actually running.
    */
-  public void setActualDuration(int actualDuration)
+  public void setActualDuration(final int actualDuration)
   {
     this.actualDuration = actualDuration;
   }
@@ -2093,8 +2056,8 @@ public class Job
     if (! ((jobState == Constants.JOB_STATE_NOT_YET_STARTED) ||
            (jobState == Constants.JOB_STATE_RUNNING)))
     {
-      String message = "The job cannot be run in its current state (" +
-                       Constants.jobStateToString(jobState) + ')';
+      final String message = "The job cannot be run in its current state (" +
+           Constants.jobStateToString(jobState) + ')';
       throw new UnableToRunException(message);
     }
 
@@ -2113,8 +2076,8 @@ public class Job
          slamdServer.getClientListener().getClientConnections(this);
     if (clientConnections == null)
     {
-      throw new UnableToRunException("Not enough clients available to run " +
-                                     "the job");
+      throw new UnableToRunException(
+           "Not enough clients available to run the job");
     }
 
 
@@ -2127,8 +2090,7 @@ public class Job
       if (monitorConnections == null)
       {
         throw new UnableToRunException("At least one in the requested set of " +
-                                       "resource monitor clients is not " +
-                                       "available.");
+             "resource monitor clients is not available.");
       }
     }
 
@@ -2138,14 +2100,14 @@ public class Job
     {
       infoJobThread.initializeJob(parameters);
     }
-    catch (UnableToRunException utre)
+    catch (final UnableToRunException utre)
     {
       // This job won't be executed after all, so iterate through each
       // connection and make it available for processing again.
-      for (int i=0; i < clientConnections.length; i++)
+      for (final ClientConnection clientConnection : clientConnections)
       {
         slamdServer.getClientListener().setAvailableForProcessing(
-                                             clientConnections[i]);
+             clientConnection);
       }
 
       throw utre;
@@ -2157,7 +2119,7 @@ public class Job
     for (int i=0;
          ((monitorConnections != null) && (i < monitorConnections.length)); i++)
     {
-      JobResponseMessage jobResponse =
+      final JobResponseMessage jobResponse =
            monitorConnections[i].sendJobRequest(this, i);
       if (jobResponse.getResponseCode() ==
           Constants.MESSAGE_RESPONSE_SUCCESS)
@@ -2168,16 +2130,16 @@ public class Job
           activeMonitorClients.add(monitorConnections[i]);
         }
 
-        JobControlResponseMessage startResponse =
+        final JobControlResponseMessage startResponse =
              monitorConnections[i].sendJobControlRequest(this,
-                                       Constants.JOB_CONTROL_TYPE_START);
+                  Constants.JOB_CONTROL_TYPE_START);
         if (startResponse.getResponseCode() !=
             Constants.MESSAGE_RESPONSE_SUCCESS)
         {
           logMessages.add("Unable to start resource monitoring on client " +
-                          monitorConnections[i].getConnectionID() + ":  " +
-                          startResponse.getResponseCode() + " (" +
-                          startResponse.getResponseMessage() + ')');
+               monitorConnections[i].getConnectionID() + ":  " +
+               startResponse.getResponseCode() + " (" +
+               startResponse.getResponseMessage() + ')');
           synchronized (activeClientMutex)
           {
             removeMonitorClient(monitorConnections[i]);
@@ -2191,7 +2153,7 @@ public class Job
     // start processing
     for (int i=0; i < clientConnections.length; i++)
     {
-      JobResponseMessage jobResponse =
+      final JobResponseMessage jobResponse =
            clientConnections[i].sendJobRequest(this, i);
       if (jobResponse.getResponseCode() ==
           Constants.MESSAGE_RESPONSE_SUCCESS)
@@ -2202,40 +2164,39 @@ public class Job
           activeClients.add(clientConnections[i]);
         }
 
-        JobControlResponseMessage startResponse =
+        final JobControlResponseMessage startResponse =
              clientConnections[i].sendJobControlRequest(this,
                                        Constants.JOB_CONTROL_TYPE_START);
-        String errMsg = startResponse.getResponseMessage();
+        final String errMsg = startResponse.getResponseMessage();
         switch (startResponse.getResponseCode())
         {
           case Constants.MESSAGE_RESPONSE_CLASS_NOT_FOUND:
             jobState = Constants.JOB_STATE_NO_SUCH_JOB;
             logMessages.add("Unable to start job on client " +
-                            clientConnections[i].getClientID() +
-                            ":  No such job.");
+                 clientConnections[i].getClientID() + ":  No such job.");
             synchronized (activeClientMutex)
             {
               removeActiveClient(clientConnections[i]);
               slamdServer.getClientListener().setAvailableForProcessing(
-                                                   clientConnections[i]);
+                   clientConnections[i]);
             }
             break;
           case Constants.MESSAGE_RESPONSE_CLASS_NOT_VALID:
             jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
             logMessages.add("Unable to start job on client " +
-                            clientConnections[i].getClientID() +
-                            ":  Job class not valid.");
+                 clientConnections[i].getClientID() +
+                 ":  Job class not valid.");
             synchronized (activeClientMutex)
             {
               removeActiveClient(clientConnections[i]);
               slamdServer.getClientListener().setAvailableForProcessing(
-                                                   clientConnections[i]);
+                   clientConnections[i]);
             }
             break;
           case Constants.MESSAGE_RESPONSE_JOB_CREATION_FAILURE:
             logMessages.add("Unable to start job on client " +
-                            clientConnections[i].getClientID() +
-                            ":  Job creation failure.");
+                 clientConnections[i].getClientID() +
+                 ":  Job creation failure.");
             if ((errMsg != null) && (errMsg.length() > 0))
             {
               logMessages.add(errMsg);
@@ -2245,13 +2206,12 @@ public class Job
             {
               removeActiveClient(clientConnections[i]);
               slamdServer.getClientListener().setAvailableForProcessing(
-                                                   clientConnections[i]);
+                   clientConnections[i]);
             }
             break;
           case Constants.MESSAGE_RESPONSE_LOCAL_ERROR:
             logMessages.add("Unable to start job on client " +
-                            clientConnections[i].getClientID() +
-                            ":  Client local error.");
+                 clientConnections[i].getClientID() + ":  Client local error.");
             if ((errMsg != null) && (errMsg.length() > 0))
             {
               logMessages.add(errMsg);
@@ -2261,19 +2221,19 @@ public class Job
             {
               removeActiveClient(clientConnections[i]);
               slamdServer.getClientListener().setAvailableForProcessing(
-                                                   clientConnections[i]);
+                   clientConnections[i]);
             }
             break;
           case Constants.MESSAGE_RESPONSE_NO_SUCH_JOB:
             logMessages.add("Unable to start job on client " +
-                            clientConnections[i].getClientID() +
-                            ":  Client does not know about job.");
+                 clientConnections[i].getClientID() +
+                 ":  Client does not know about job.");
             jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
             synchronized (activeClientMutex)
             {
               removeActiveClient(clientConnections[i]);
               slamdServer.getClientListener().setAvailableForProcessing(
-                                                   clientConnections[i]);
+                   clientConnections[i]);
             }
             break;
         }
@@ -2286,9 +2246,8 @@ public class Job
       // If there are active monitor connections, they should be stopped.
       synchronized (activeClientMutex)
       {
-        for (int i=0; i < activeMonitorClients.size(); i++)
+        for (final ResourceMonitorClientConnection conn : activeMonitorClients)
         {
-          ResourceMonitorClientConnection conn = activeMonitorClients.get(i);
           conn.sendJobControlRequest(this, Constants.JOB_CONTROL_TYPE_STOP);
         }
         activeMonitorClients.clear();
@@ -2296,8 +2255,8 @@ public class Job
 
 
       jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
-      throw new UnableToRunException("None of the clients were able to start " +
-                                     "the job.");
+      throw new UnableToRunException(
+           "None of the clients were able to start the job.");
     }
   }
 
@@ -2326,7 +2285,7 @@ public class Job
    *
    * @return  The set of clients that are currently being used to run this job.
    */
-  public ArrayList<ClientConnection> getActiveClients()
+  public List<ClientConnection> getActiveClients()
   {
     return activeClients;
   }
@@ -2341,7 +2300,7 @@ public class Job
    * @return  The set of resource monitor clients that are currently being used
    *          to run this job.
    */
-  public ArrayList<ResourceMonitorClientConnection> getActiveMonitorClients()
+  public List<ResourceMonitorClientConnection> getActiveMonitorClients()
   {
     return activeMonitorClients;
   }
@@ -2356,11 +2315,11 @@ public class Job
    * @param  clientConnection  The client connection that should be removed from
    *                           the list of active connections.
    */
-  public void removeActiveClient(ClientConnection clientConnection)
+  public void removeActiveClient(final ClientConnection clientConnection)
   {
     for (int i=0; i < activeClients.size(); i++)
     {
-      ClientConnection conn = activeClients.get(i);
+      final ClientConnection conn = activeClients.get(i);
       if (conn.getClientID().equals(clientConnection.getClientID()))
       {
         activeClients.remove(i);
@@ -2381,12 +2340,12 @@ public class Job
    *                           should be removed from the list of active
    *                           connections.
    */
-  public void removeMonitorClient(ResourceMonitorClientConnection
-                                  clientConnection)
+  public void removeMonitorClient(
+                   final ResourceMonitorClientConnection clientConnection)
   {
     for (int i=0; i < activeMonitorClients.size(); i++)
     {
-      ResourceMonitorClientConnection conn = activeMonitorClients.get(i);
+      final ResourceMonitorClientConnection conn = activeMonitorClients.get(i);
       if (conn.getConnectionID().equals(clientConnection.getConnectionID()))
       {
         activeMonitorClients.remove(i);
@@ -2406,8 +2365,8 @@ public class Job
    * @param  jobCompletedMessage  The job completed message for the client that
    *                              contains all the information we need to track.
    */
-  public void clientDone(ClientConnection clientConnection,
-                         JobCompletedMessage jobCompletedMessage)
+  public void clientDone(final ClientConnection clientConnection,
+                         final JobCompletedMessage jobCompletedMessage)
   {
     boolean jobDone = false;
 
@@ -2427,7 +2386,8 @@ public class Job
 
 
       // Next, update the status counter information for this job.
-      StatTracker[] clientTrackers = jobCompletedMessage.getStatTrackers();
+      final StatTracker[] clientTrackers =
+           jobCompletedMessage.getStatTrackers();
       for (int i=0; i < clientTrackers.length; i++)
       {
         statTrackers.add(clientTrackers[i]);
@@ -2442,14 +2402,14 @@ public class Job
       // synchronization is used.
       if ((actualStartTime == null) ||
           (jobCompletedMessage.getActualStartTime().compareTo(
-                                                         actualStartTime) < 0))
+               actualStartTime) < 0))
       {
         actualStartTime = jobCompletedMessage.getActualStartTime();
       }
 
       if ((actualStopTime == null) ||
           (jobCompletedMessage.getActualStopTime().compareTo(
-                                                        actualStopTime) > 0))
+               actualStopTime) > 0))
       {
         actualStopTime = jobCompletedMessage.getActualStopTime();
       }
@@ -2463,12 +2423,12 @@ public class Job
 
       // Log any appropriate information from the job completed message and
       // store them the job's log message list.
-      String[] clientLogMessages = jobCompletedMessage.getLogMessages();
-      for (int i=0; i < clientLogMessages.length; i++)
+      final String[] clientLogMessages = jobCompletedMessage.getLogMessages();
+      for (final String clientLogMessage : clientLogMessages)
       {
         slamdServer.logWithoutFormatting(Constants.LOG_LEVEL_JOB_PROCESSING,
-                                         clientLogMessages[i]);
-        logMessages.add(clientLogMessages[i]);
+             clientLogMessage);
+        logMessages.add(clientLogMessage);
       }
 
 
@@ -2483,10 +2443,9 @@ public class Job
         }
         else
         {
-          for (int i=0; i < activeMonitorClients.size(); i++)
+          for (final ResourceMonitorClientConnection client :
+               activeMonitorClients)
           {
-            ResourceMonitorClientConnection client =
-                 activeMonitorClients.get(i);
             client.sendJobControlRequest(this, Constants.JOB_CONTROL_TYPE_STOP);
           }
         }
@@ -2516,8 +2475,8 @@ public class Job
    *                           resource monitor client.
    */
   public void resourceClientDone(
-                   ResourceMonitorClientConnection clientConnection,
-                   JobCompletedMessage message)
+                   final ResourceMonitorClientConnection clientConnection,
+                   final JobCompletedMessage message)
   {
     boolean jobDone = false;
 
@@ -2537,13 +2496,13 @@ public class Job
 
 
       // Next, update the status counter information for this job.
-      StatTracker[] monitorTrackers = message.getStatTrackers();
-      for (int i=0; i < monitorTrackers.length; i++)
+      final StatTracker[] monitorTrackers = message.getStatTrackers();
+      for (final StatTracker tracker : monitorTrackers)
       {
         // FIXME -- Correct this when the new protocol is in place.
         ResourceMonitorStatTracker monitorTracker =
-             new ResourceMonitorStatTracker(new LegacyResourceMonitor(),
-                                            monitorTrackers[i]);
+             new ResourceMonitorStatTracker(
+                  new LegacyResourceMonitor(), tracker);
         resourceStatTrackers.add(monitorTracker);
       }
 
@@ -2575,12 +2534,12 @@ public class Job
 
       // Log any appropriate information from the job completed message and
       // store them the job's log message list.
-      String[] monitorLogMessages = message.getLogMessages();
-      for (int i=0; i < monitorLogMessages.length; i++)
+      final String[] monitorLogMessages = message.getLogMessages();
+      for (final String monitorLogMessage : monitorLogMessages)
       {
         slamdServer.logWithoutFormatting(Constants.LOG_LEVEL_JOB_PROCESSING,
-                                         monitorLogMessages[i]);
-        logMessages.add(monitorLogMessages[i]);
+             monitorLogMessage);
+        logMessages.add(monitorLogMessage);
       }
 
 
@@ -2616,16 +2575,13 @@ public class Job
   {
     synchronized (activeClientMutex)
     {
-      for (int i=0; i < activeClients.size(); i++)
+      for (final ClientConnection client : activeClients)
       {
-        ClientConnection client = activeClients.get(i);
         client.sendJobControlRequest(this, Constants.JOB_CONTROL_TYPE_STOP);
       }
 
-      for (int i=0; i < activeMonitorClients.size(); i++)
+      for (final ResourceMonitorClientConnection client : activeMonitorClients)
       {
-        ResourceMonitorClientConnection client =
-             activeMonitorClients.get(i);
         client.sendJobControlRequest(this, Constants.JOB_CONTROL_TYPE_STOP);
       }
     }
@@ -2641,19 +2597,16 @@ public class Job
   {
     synchronized (activeClientMutex)
     {
-      for (int i=0; i < activeClients.size(); i++)
+      for (final ClientConnection client : activeClients)
       {
-        ClientConnection client = activeClients.get(i);
         client.sendJobControlRequest(this,
-                                     Constants.JOB_CONTROL_TYPE_STOP_AND_WAIT);
+             Constants.JOB_CONTROL_TYPE_STOP_AND_WAIT);
       }
 
-      for (int i=0; i < activeMonitorClients.size(); i++)
+      for (final ResourceMonitorClientConnection client : activeMonitorClients)
       {
-        ResourceMonitorClientConnection client =
-             activeMonitorClients.get(i);
         client.sendJobControlRequest(this,
-                                     Constants.JOB_CONTROL_TYPE_STOP_AND_WAIT);
+             Constants.JOB_CONTROL_TYPE_STOP_AND_WAIT);
       }
     }
   }
@@ -2667,8 +2620,8 @@ public class Job
    */
   public byte[] encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
-    SimpleDateFormat dateFormat  =
+    final ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final SimpleDateFormat dateFormat  =
          new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
     elementList.add(new ASN1OctetString(ELEMENT_JOB_ID));
@@ -2725,7 +2678,8 @@ public class Job
 
     if ((requestedClients != null) && (requestedClients.length > 0))
     {
-      ASN1Element[] clientElements = new ASN1Element[requestedClients.length];
+      final ASN1Element[] clientElements =
+           new ASN1Element[requestedClients.length];
       for (int i=0; i < requestedClients.length; i++)
       {
         clientElements[i] = new ASN1OctetString(requestedClients[i]);
@@ -2737,7 +2691,8 @@ public class Job
 
     if ((monitorClients != null) && (monitorClients.length > 0))
     {
-      ASN1Element[] clientElements = new ASN1Element[monitorClients.length];
+      final ASN1Element[] clientElements =
+           new ASN1Element[monitorClients.length];
       for (int i=0; i < monitorClients.length; i++)
       {
         clientElements[i] = new ASN1OctetString(monitorClients[i]);
@@ -2758,7 +2713,8 @@ public class Job
 
     if ((dependencies != null) && (! dependencies.isEmpty()))
     {
-      ASN1Element[] dependencyElements = new ASN1Element[dependencies.size()];
+      final ASN1Element[] dependencyElements =
+           new ASN1Element[dependencies.size()];
       for (int i=0; i < dependencyElements.length; i++)
       {
         dependencyElements[i] = new ASN1OctetString(dependencies.get(i));
@@ -2770,7 +2726,8 @@ public class Job
 
     if ((notifyAddresses != null) && (notifyAddresses.length > 0))
     {
-      ASN1Element[] addrElements = new ASN1Element[notifyAddresses.length];
+      final ASN1Element[] addrElements =
+           new ASN1Element[notifyAddresses.length];
       for (int i=0; i < notifyAddresses.length; i++)
       {
         addrElements[i] = new ASN1OctetString(notifyAddresses[i]);
@@ -2789,8 +2746,8 @@ public class Job
       elementList.add(new ASN1OctetString(jobComments));
     }
 
-    Parameter[] params = parameters.getParameters();
-    ArrayList<ASN1Element> paramList = new ArrayList<ASN1Element>();
+    final Parameter[] params = parameters.getParameters();
+    final ArrayList<ASN1Element> paramList = new ArrayList<>();
     for (int i=0; i < params.length; i++)
     {
       if ((params[i] instanceof PlaceholderParameter) ||
@@ -2807,7 +2764,7 @@ public class Job
 
       paramList.add(new ASN1Sequence(paramElements));
     }
-    ASN1Element[] paramsElements = new ASN1Element[paramList.size()];
+    final ASN1Element[] paramsElements = new ASN1Element[paramList.size()];
     paramList.toArray(paramsElements);
     elementList.add(new ASN1OctetString(ELEMENT_PARAMETERS));
     elementList.add(new ASN1Sequence(paramsElements));
@@ -2832,7 +2789,7 @@ public class Job
 
     if ((statTrackers != null) && (! statTrackers.isEmpty()))
     {
-      StatTracker[] trackers = new StatTracker[statTrackers.size()];
+      final StatTracker[] trackers = new StatTracker[statTrackers.size()];
       statTrackers.toArray(trackers);
       elementList.add(new ASN1OctetString(ELEMENT_STATS));
       elementList.add(StatEncoder.trackersToSequence(trackers));
@@ -2847,7 +2804,7 @@ public class Job
 
     if ((logMessages != null) && (! logMessages.isEmpty()))
     {
-      ASN1Element[] messageElements = new ASN1Element[logMessages.size()];
+      final ASN1Element[] messageElements = new ASN1Element[logMessages.size()];
       for (int i=0; i < messageElements.length; i++)
       {
         messageElements[i] = new ASN1OctetString(logMessages.get(i));
@@ -2858,7 +2815,7 @@ public class Job
     }
 
 
-    ASN1Element[] elements = new ASN1Element[elementList.size()];
+    final ASN1Element[] elements = new ASN1Element[elementList.size()];
     elementList.toArray(elements);
     return new ASN1Sequence(elements).encode();
   }
@@ -2877,7 +2834,8 @@ public class Job
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           job data.
    */
-  public static Job decode(SLAMDServer slamdServer, byte[] encodedJob)
+  public static Job decode(final SLAMDServer slamdServer,
+                           final byte[] encodedJob)
          throws DecodeException
   {
     try
@@ -2913,15 +2871,16 @@ public class Job
       String[]      notifyAddresses           = new String[0];
       String[]      requestedClients          = new String[0];
 
-      SimpleDateFormat dateFormat  =
+      final SimpleDateFormat dateFormat  =
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
-      ASN1Element   element  = ASN1Element.decode(encodedJob);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element  = ASN1Element.decode(encodedJob);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_JOB_ID))
         {
@@ -2959,12 +2918,14 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_STOP_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           stopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_DURATION))
@@ -2977,7 +2938,7 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_REQUESTED_CLIENTS))
         {
-          ASN1Element[] clientElements =
+          final ASN1Element[] clientElements =
                elements[i+1].decodeAsSequence().getElements();
           requestedClients = new String[clientElements.length];
           for (int j=0; j < requestedClients.length; j++)
@@ -2988,7 +2949,7 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS))
         {
-          ASN1Element[] clientElements =
+          final ASN1Element[] clientElements =
                elements[i+1].decodeAsSequence().getElements();
           monitorClients = new String[clientElements.length];
           for (int j=0; j < monitorClients.length; j++)
@@ -3016,7 +2977,7 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
-          ASN1Element[] dependencyElements =
+          final ASN1Element[] dependencyElements =
                elements[i+1].decodeAsSequence().getElements();
           dependencies = new String[dependencyElements.length];
           for (int j=0; j < dependencies.length; j++)
@@ -3027,7 +2988,7 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_NOTIFY_ADDRESSES))
         {
-          ASN1Element[] addrElements =
+          final ASN1Element[] addrElements =
                elements[i+1].decodeAsSequence().getElements();
           notifyAddresses = new String[addrElements.length];
           for (int j=0; j < notifyAddresses.length; j++)
@@ -3050,7 +3011,8 @@ public class Job
           {
             for (int j=i+2; j < elements.length; j += 2)
             {
-              String name = elements[j].decodeAsOctetString().getStringValue();
+              final String name =
+                   elements[j].decodeAsOctetString().getStringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
                 jobClassName =
@@ -3062,41 +3024,41 @@ public class Job
 
           try
           {
-            Class<?> jobClass     = Constants.classForName(jobClassName);
-            JobClass stubInstance = (JobClass) jobClass.newInstance();
+            final Class<?> jobClass = Constants.classForName(jobClassName);
+            final JobClass stubInstance = (JobClass) jobClass.newInstance();
             parameters = stubInstance.getClientSideParameterStubs().clone();
 
-            ASN1Element[] paramsElements =
+            final ASN1Element[] paramsElements =
                  elements[i+1].decodeAsSequence().getElements();
             for (int j=0; j < paramsElements.length; j++)
             {
-              ASN1Element[] paramElements =
+              final ASN1Element[] paramElements =
                    paramsElements[j].decodeAsSequence().getElements();
-              String name =
+              final String name =
                    paramElements[0].decodeAsOctetString().getStringValue();
-              String value =
+              final String value =
                    paramElements[1].decodeAsOctetString().getStringValue();
 
-              Parameter p = parameters.getParameter(name);
+              final Parameter p = parameters.getParameter(name);
               if (p != null)
               {
                 p.setValueFromString(value);
               }
             }
           }
-          catch (Exception e)
+          catch (final Exception e)
           {
             parameters = new ParameterList();
 
-            ASN1Element[] paramsElements =
+            final ASN1Element[] paramsElements =
                  elements[i+1].decodeAsSequence().getElements();
             for (int j=0; j < paramsElements.length; j++)
             {
-              ASN1Element[] paramElements =
+              final ASN1Element[] paramElements =
                    paramsElements[j].decodeAsSequence().getElements();
-              String name =
+              final String name =
                    paramElements[0].decodeAsOctetString().getStringValue();
-              String value =
+              final String value =
                    paramElements[1].decodeAsOctetString().getStringValue();
 
               parameters.addParameter(new StringParameter(name, value));
@@ -3105,12 +3067,14 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_STOP_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_DURATION))
@@ -3124,14 +3088,13 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_LEGACY_MONITOR_STATS))
         {
-          StatTracker[] trackers =
+          final StatTracker[] trackers =
                StatEncoder.sequenceToTrackers(elements[i+1].decodeAsSequence());
           monitorStatTrackers = new ResourceMonitorStatTracker[trackers.length];
           for (int j=0; j < trackers.length; j++)
           {
-            monitorStatTrackers[j] =
-                 new ResourceMonitorStatTracker(new LegacyResourceMonitor(),
-                                                trackers[j]);
+            monitorStatTrackers[j] = new ResourceMonitorStatTracker(
+                 new LegacyResourceMonitor(), trackers[j]);
           }
         }
         else if (elementName.equals(ELEMENT_RESOURCE_MONITOR_STATS))
@@ -3143,7 +3106,7 @@ public class Job
         {
           // FIXME -- Encode the log messages as a single element rather than
           // multiple elements.
-          ASN1Element[] msgElements =
+          final ASN1Element[] msgElements =
                elements[i+1].decodeAsSequence().getElements();
           logMessages = new String[msgElements.length];
           for (int j=0; j < logMessages.length; j++)
@@ -3154,9 +3117,9 @@ public class Job
         }
       }
 
-      Job job = new Job(slamdServer, jobClassName, numClients, threadsPerClient,
-                        threadStartupDelay, startTime, stopTime, duration,
-                        collectionInterval, parameters, displayInReadOnlyMode);
+      final Job job = new Job(slamdServer, jobClassName, numClients,
+           threadsPerClient, threadStartupDelay, startTime, stopTime, duration,
+           collectionInterval, parameters, displayInReadOnlyMode);
       job.setJobID(jobID);
       job.setOptimizingJobID(optimizingJobID);
       job.setJobGroup(jobGroup);
@@ -3178,7 +3141,7 @@ public class Job
       job.setLogMessages(logMessages);
       return job;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode job:  " + e, e);
     }
@@ -3199,7 +3162,8 @@ public class Job
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           job data.
    */
-  public static Job decodeSummaryJob(SLAMDServer slamdServer, byte[] encodedJob)
+  public static Job decodeSummaryJob(final SLAMDServer slamdServer,
+                                     final byte[] encodedJob)
          throws DecodeException
   {
     try
@@ -3213,15 +3177,16 @@ public class Job
       String        jobDescription            = null;
       String        jobID                     = null;
 
-      SimpleDateFormat dateFormat  =
+      final SimpleDateFormat dateFormat  =
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
-      ASN1Element   element  = ASN1Element.decode(encodedJob);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedJob);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_JOB_ID))
         {
@@ -3246,12 +3211,14 @@ public class Job
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_DURATION))
@@ -3260,8 +3227,8 @@ public class Job
         }
       }
 
-      Job job = new Job(slamdServer, jobClassName, 0, 0, 0, startTime, null, 0,
-                        0, null, displayInReadOnlyMode);
+      final Job job = new Job(slamdServer, jobClassName, 0, 0, 0, startTime,
+           null, 0, 0, null, displayInReadOnlyMode);
       job.setJobID(jobID);
       job.setJobDescription(jobDescription);
       job.setJobState(jobState);
@@ -3269,7 +3236,7 @@ public class Job
       job.setActualDuration(actualDuration);
       return job;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode job:  " + e, e);
     }
@@ -3292,7 +3259,7 @@ public class Job
    *
    * @throws  ClassCastException  If the provided object is not a Job.
    */
-  public int compareTo(Job j)
+  public int compareTo(final Job j)
           throws ClassCastException
   {
     if (j == null)
@@ -3306,14 +3273,14 @@ public class Job
     {
       jobID2 = j.getJobID();
 
-      StringTokenizer t1 = new StringTokenizer(jobID, "-");
-      StringTokenizer t2 = new StringTokenizer(jobID2, "-");
+      final StringTokenizer t1 = new StringTokenizer(jobID, "-");
+      final StringTokenizer t2 = new StringTokenizer(jobID2, "-");
 
 
       // Get the timestamp string.  If they differ, then use the
       // String.compareTo method.
-      String date1 = t1.nextToken();
-      String date2 = t2.nextToken();
+      final String date1 = t1.nextToken();
+      final String date2 = t2.nextToken();
       if (! date1.equals(date2))
       {
         return date1.compareTo(date2);
@@ -3322,18 +3289,18 @@ public class Job
 
       // Get the random + counter portion.  If they differ, then compare the
       // numeric counter portions.
-      String counterStr1 = t1.nextToken();
-      String counterStr2 = t2.nextToken();
+      final String counterStr1 = t1.nextToken();
+      final String counterStr2 = t2.nextToken();
       if (! counterStr1.equals(counterStr2))
       {
-        Integer counter1 = new Integer(counterStr1.substring(6));
-        Integer counter2 = new Integer(counterStr2.substring(6));
+        final Integer counter1 = new Integer(counterStr1.substring(6));
+        final Integer counter2 = new Integer(counterStr2.substring(6));
         return counter1.compareTo(counter2);
       }
 
 
       // Get the iteration portion, if they exist.
-      Integer iteration1;
+      final Integer iteration1;
       if (t1.hasMoreTokens())
       {
         iteration1 = new Integer(t1.nextToken());
@@ -3355,7 +3322,7 @@ public class Job
 
       if (t2.hasMoreTokens())
       {
-        Integer iteration2 = new Integer(t2.nextToken());
+        final Integer iteration2 = new Integer(t2.nextToken());
 
         // It is possible that one of the jobs is a rerun iteration, which
         // should always be ordered after all other iterations of an optimizing
@@ -3391,10 +3358,10 @@ public class Job
         return 1;
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
 
       return jobID.compareTo(jobID2);
     }

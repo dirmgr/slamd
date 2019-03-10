@@ -80,7 +80,7 @@ public abstract class OptimizationAlgorithm
    * @return  {@code true} if this optimization algorithm may be used with
    *          the provided job class, or {@code false} if not.
    */
-  public abstract boolean availableWithJobClass(JobClass jobClass);
+  public abstract boolean availableWithJobClass(final JobClass jobClass);
 
 
 
@@ -93,8 +93,8 @@ public abstract class OptimizationAlgorithm
    * @return  A set of parameter stubs that should be used to prompt the end
    *          user for the settings to use when executing the optimizing job.
    */
-  public abstract ParameterList
-       getOptimizationAlgorithmParameterStubs(JobClass jobClass);
+  public abstract ParameterList getOptimizationAlgorithmParameterStubs(
+                                     final JobClass jobClass);
 
 
 
@@ -123,9 +123,9 @@ public abstract class OptimizationAlgorithm
    *                                 list are not valid for use with this
    *                                 optimization algorithm.
    */
-  public abstract void initializeOptimizationAlgorithm(OptimizingJob
-                                                            optimizingJob,
-                                                       ParameterList parameters)
+  public abstract void initializeOptimizationAlgorithm(
+                            final OptimizingJob optimizingJob,
+                            final ParameterList parameters)
          throws InvalidValueException;
 
 
@@ -156,7 +156,7 @@ public abstract class OptimizationAlgorithm
    *                          is thrown, then the optimizing job will stop
    *                          immediately with no further iterations.
    */
-  public abstract boolean isBestIterationSoFar(Job iteration)
+  public abstract boolean isBestIterationSoFar(final Job iteration)
          throws SLAMDException;
 
 
@@ -173,7 +173,7 @@ public abstract class OptimizationAlgorithm
    * @throws  SLAMDException  If a problem occurs while trying to determine the
    *                          value for the given optimizing job iteration.
    */
-  public abstract double getIterationOptimizationValue(Job iteration)
-       throws SLAMDException;
+  public abstract double getIterationOptimizationValue(final Job iteration)
+         throws SLAMDException;
 }
 

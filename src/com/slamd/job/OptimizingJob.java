@@ -53,13 +53,13 @@ import com.slamd.server.Scheduler;
  *
  * @author   Neil A. Wilson
  */
-public class OptimizingJob
+public final class OptimizingJob
        implements Comparable<OptimizingJob>, JobItem
 {
   /**
    * The name of the encoded element that holds the optimizing job ID.
    */
-  public static final String ELEMENT_OPTIMIZING_JOB_ID = "optimizing_job_id";
+  private static final String ELEMENT_OPTIMIZING_JOB_ID = "optimizing_job_id";
 
 
 
@@ -67,7 +67,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the job IDs of the standard
    * iterations.
    */
-  public static final String ELEMENT_ITERATION_IDS = "iteration_ids";
+  private static final String ELEMENT_ITERATION_IDS = "iteration_ids";
 
 
 
@@ -75,35 +75,35 @@ public class OptimizingJob
    * The name of the encoded element that holds the job IDs of the rerun
    * iteration.
    */
-  public static final String ELEMENT_RERUN_ID = "rerun_id";
+  private static final String ELEMENT_RERUN_ID = "rerun_id";
 
 
 
   /**
    * The name of the encoded element that holds the job class name.
    */
-  public static final String ELEMENT_JOB_CLASS = "job_class";
+  private static final String ELEMENT_JOB_CLASS = "job_class";
 
 
 
   /**
    * The name of the encoded element that holds the job group name.
    */
-  public static final String ELEMENT_JOB_GROUP = "job_group";
+  private static final String ELEMENT_JOB_GROUP = "job_group";
 
 
 
   /**
    * The name of the encoded element that holds the job state.
    */
-  public static final String ELEMENT_JOB_STATE = "job_state";
+  private static final String ELEMENT_JOB_STATE = "job_state";
 
 
 
   /**
    * The name of the encoded element that holds the job description.
    */
-  public static final String ELEMENT_DESCRIPTION = "description";
+  private static final String ELEMENT_DESCRIPTION = "description";
 
 
 
@@ -111,7 +111,7 @@ public class OptimizingJob
    * The name of the encoded element that indicates whether to include the
    * number of threads in the job descriptions.
    */
-  public static final String ELEMENT_INCLUDE_THREADS_IN_DESCRIPTION =
+  private static final String ELEMENT_INCLUDE_THREADS_IN_DESCRIPTION =
        "include_threads_in_description";
 
 
@@ -120,7 +120,7 @@ public class OptimizingJob
    * The name of the encoded element that indicates whether the job should be
    * displayed in restricted read-only mode.
    */
-  public static final String ELEMENT_DISPLAY_IN_READ_ONLY =
+  private static final String ELEMENT_DISPLAY_IN_READ_ONLY =
        "display_in_read_only";
 
 
@@ -128,21 +128,21 @@ public class OptimizingJob
   /**
    * The name of the encoded element that holds the scheduled start time.
    */
-  public static final String ELEMENT_START_TIME = "start_time";
+  private static final String ELEMENT_START_TIME = "start_time";
 
 
 
   /**
    * The name of the encoded element that holds the scheduled duration.
    */
-  public static final String ELEMENT_DURATION = "duration";
+  private static final String ELEMENT_DURATION = "duration";
 
 
 
   /**
    * The name of the encoded element that holds the delay between iterations.
    */
-  public static final String ELEMENT_DELAY_BETWEEN_ITERATIONS =
+  private static final String ELEMENT_DELAY_BETWEEN_ITERATIONS =
        "delay_between_iterations";
 
 
@@ -150,21 +150,21 @@ public class OptimizingJob
   /**
    * The name of the encoded element that holds the number of clients.
    */
-  public static final String ELEMENT_NUM_CLIENTS = "num_clients";
+  private static final String ELEMENT_NUM_CLIENTS = "num_clients";
 
 
 
   /**
    * The name of the encoded element that holds the requested clients.
    */
-  public static final String ELEMENT_REQUESTED_CLIENTS = "requested_clients";
+  private static final String ELEMENT_REQUESTED_CLIENTS = "requested_clients";
 
 
 
   /**
    * The name of the encoded element that holds the requested monitor clients.
    */
-  public static final String ELEMENT_MONITOR_CLIENTS = "monitor_clients";
+  private static final String ELEMENT_MONITOR_CLIENTS = "monitor_clients";
 
 
 
@@ -172,7 +172,7 @@ public class OptimizingJob
    * The name of the encoded element that indicates whether to monitor clients
    * if they are also running resource monitor clients.
    */
-  public static final String ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE =
+  private static final String ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE =
        "monitor_clients_if_available";
 
 
@@ -181,7 +181,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the minimum number of threads to
    * use.
    */
-  public static final String ELEMENT_MIN_THREADS = "min_threads";
+  private static final String ELEMENT_MIN_THREADS = "min_threads";
 
 
 
@@ -189,21 +189,21 @@ public class OptimizingJob
    * The name of the encoded element that holds the maximum number of threads to
    * use.
    */
-  public static final String ELEMENT_MAX_THREADS = "max_threads";
+  private static final String ELEMENT_MAX_THREADS = "max_threads";
 
 
 
   /**
    * The name of the encoded element that holds the thread increment.
    */
-  public static final String ELEMENT_THREAD_INCREMENT = "thread_increment";
+  private static final String ELEMENT_THREAD_INCREMENT = "thread_increment";
 
 
 
   /**
    * The name of the encoded element that holds the thread startup delay.
    */
-  public static final String ELEMENT_THREAD_STARTUP_DELAY =
+  private static final String ELEMENT_THREAD_STARTUP_DELAY =
        "thread_startup_delay";
 
 
@@ -211,7 +211,7 @@ public class OptimizingJob
   /**
    * The name of the encoded element that holds the collection interval.
    */
-  public static final String ELEMENT_COLLECTION_INTERVAL =
+  private static final String ELEMENT_COLLECTION_INTERVAL =
        "collection_interval";
 
 
@@ -219,7 +219,7 @@ public class OptimizingJob
   /**
    * The name of the encoded element that holds the job folder name.
    */
-  public static final String ELEMENT_FOLDER_NAME = "folder_name";
+  private static final String ELEMENT_FOLDER_NAME = "folder_name";
 
 
 
@@ -227,7 +227,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the maximum allowed nonimproving
    * iterations.
    */
-  public static final String ELEMENT_MAX_NONIMPROVING = "max_nonimproving";
+  private static final String ELEMENT_MAX_NONIMPROVING = "max_nonimproving";
 
 
 
@@ -235,7 +235,7 @@ public class OptimizingJob
    * The name of the encoded element that indicates whether to rerun the best
    * iteration.
    */
-  public static final String ELEMENT_RERUN_BEST_ITERATION =
+  private static final String ELEMENT_RERUN_BEST_ITERATION =
        "rerun_best_iteration";
 
 
@@ -244,7 +244,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the scheduled duration for the
    * rerun iteration.
    */
-  public static final String ELEMENT_RERUN_DURATION = "rerun_duration";
+  private static final String ELEMENT_RERUN_DURATION = "rerun_duration";
 
 
 
@@ -252,14 +252,14 @@ public class OptimizingJob
    * The name of the encoded element that holds the addresses of the users to
    * notify when the optimizing job is done running.
    */
-  public static final String ELEMENT_NOTIFY_ADDRESSES = "notify_addresses";
+  private static final String ELEMENT_NOTIFY_ADDRESSES = "notify_addresses";
 
 
 
   /**
    * The name of the encoded element that holds the dependencies.
    */
-  public static final String ELEMENT_DEPENDENCIES = "dependencies";
+  private static final String ELEMENT_DEPENDENCIES = "dependencies";
 
 
 
@@ -267,7 +267,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the information about the
    * optimization algorithm.
    */
-  public static final String ELEMENT_OPTIMIZATION_ALGORITHM =
+  private static final String ELEMENT_OPTIMIZATION_ALGORITHM =
        "optimization_algorithm";
 
 
@@ -275,28 +275,28 @@ public class OptimizingJob
   /**
    * The name of the encoded element that holds the job parameters.
    */
-  public static final String ELEMENT_PARAMETERS = "parameters";
+  private static final String ELEMENT_PARAMETERS = "parameters";
 
 
 
   /**
    * The name of the encoded element that holds the actual start time.
    */
-  public static final String ELEMENT_ACTUAL_START_TIME = "actual_start_time";
+  private static final String ELEMENT_ACTUAL_START_TIME = "actual_start_time";
 
 
 
   /**
    * The name of the encoded element that holds the actual stop time.
    */
-  public static final String ELEMENT_ACTUAL_STOP_TIME = "actual_stop_time";
+  private static final String ELEMENT_ACTUAL_STOP_TIME = "actual_stop_time";
 
 
 
   /**
    * The name of the encoded element that holds the stop reason.
    */
-  public static final String ELEMENT_STOP_REASON = "stop_reason";
+  private static final String ELEMENT_STOP_REASON = "stop_reason";
 
 
 
@@ -304,7 +304,7 @@ public class OptimizingJob
    * The name of the encoded element that indicates whether the optimizing job
    * should make the next iteration disabled when it is scheduled.
    */
-  public static final String ELEMENT_PAUSE_REQUESTED = "pause_requested";
+  private static final String ELEMENT_PAUSE_REQUESTED = "pause_requested";
 
 
 
@@ -312,7 +312,7 @@ public class OptimizingJob
    * The name of the encoded element that holds the set of comments for an
    * optimizing job.
    */
-  public static final String ELEMENT_COMMENTS = "comments";
+  private static final String ELEMENT_COMMENTS = "comments";
 
 
 
@@ -508,18 +508,24 @@ public class OptimizingJob
    *                                      should be displayed in restricted
    *                                      read-only mode.
    */
-  public OptimizingJob(SLAMDServer slamdServer, String optimizingJobID,
-                       OptimizationAlgorithm optimizationAlgorithm, Job baseJob,
-                       String folderName, String description,
-                       boolean includeThreadsInDescription, Date startTime,
-                       int duration, int delayBetweenIterations,
-                       int numClients, String[] requestedClients,
-                       String[] monitorClients,
-                       boolean monitorClientsIfAvailable, int minThreads,
-                       int maxThreads, int threadIncrement,
-                       int collectionInterval, int maxNonImproving,
-                       String[] notifyAddresses, boolean reRunBestIteration,
-                       int reRunDuration, boolean displayInReadOnlyMode)
+  public OptimizingJob(final SLAMDServer slamdServer,
+                       final String optimizingJobID,
+                       final OptimizationAlgorithm optimizationAlgorithm,
+                       final Job baseJob, final String folderName,
+                       final String description,
+                       final boolean includeThreadsInDescription,
+                       final Date startTime, final int duration,
+                       final int delayBetweenIterations, final int numClients,
+                       final String[] requestedClients,
+                       final String[] monitorClients,
+                       final boolean monitorClientsIfAvailable,
+                       final int minThreads, final int maxThreads,
+                       final int threadIncrement, final int collectionInterval,
+                       final int maxNonImproving,
+                       final String[] notifyAddresses,
+                       final boolean reRunBestIteration,
+                       final int reRunDuration,
+                       final boolean displayInReadOnlyMode)
   {
     this.slamdServer                 = slamdServer;
     this.optimizingJobID             = optimizingJobID;
@@ -555,7 +561,7 @@ public class OptimizingJob
     stopReason            = null;
     jobState              = Constants.JOB_STATE_NOT_YET_STARTED;
     reRunIteration        = null;
-    jobList               = new ArrayList<Job>();
+    jobList               = new ArrayList<>();
     dependencies          = new String[0];
   }
 
@@ -624,19 +630,24 @@ public class OptimizingJob
    *                                      should be displayed in restricted
    *                                      read-only mode.
    */
-  public OptimizingJob(SLAMDServer slamdServer, String optimizingJobID,
-                       OptimizationAlgorithm optimizationAlgorithm,
-                       JobClass jobClass, String folderName, String description,
-                       boolean includeThreadsInDescription, Date startTime,
-                       int duration, int delayBetweenIterations,
-                       int numClients, String[] requestedClients,
-                       String[] monitorClients,
-                       boolean monitorClientsIfAvailable, int minThreads,
-                       int maxThreads, int threadIncrement,
-                       int collectionInterval, int maxNonImproving,
-                       String[] notifyAddresses, boolean reRunBestIteration,
-                       int reRunDuration, ParameterList parameters,
-                       boolean displayInReadOnlyMode)
+  public OptimizingJob(final SLAMDServer slamdServer,
+                       final String optimizingJobID,
+                       final OptimizationAlgorithm optimizationAlgorithm,
+                       final JobClass jobClass, final String folderName,
+                       final String description,
+                       final boolean includeThreadsInDescription,
+                       final Date startTime, final int duration,
+                       final int delayBetweenIterations,
+                       final int numClients, final String[] requestedClients,
+                       final String[] monitorClients,
+                       final boolean monitorClientsIfAvailable,
+                       final int minThreads, final int maxThreads,
+                       final int threadIncrement, final int collectionInterval,
+                       final int maxNonImproving, final
+                       String[] notifyAddresses,
+                       final boolean reRunBestIteration,
+                       final int reRunDuration, final ParameterList parameters,
+                       final boolean displayInReadOnlyMode)
   {
     this.slamdServer                 = slamdServer;
     this.optimizingJobID             = optimizingJobID;
@@ -672,7 +683,7 @@ public class OptimizingJob
     stopReason            = null;
     jobState              = Constants.JOB_STATE_NOT_YET_STARTED;
     reRunIteration        = null;
-    jobList               = new ArrayList<Job>();
+    jobList               = new ArrayList<>();
     dependencies          = new String[0];
   }
 
@@ -707,6 +718,7 @@ public class OptimizingJob
    *
    * @return  The job class associated with this optimizing job.
    */
+  @Override()
   public JobClass getJobClass()
   {
     return jobClass;
@@ -762,6 +774,7 @@ public class OptimizingJob
    *          associated, or {@code null} if it was not scheduled as part
    *          of a job group.
    */
+  @Override()
   public String getJobGroup()
   {
     return jobGroup;
@@ -776,7 +789,7 @@ public class OptimizingJob
    * @param  jobGroup  The name of the job group with which this optimizing job
    *                   is associated.
    */
-  public void setJobGroup(String jobGroup)
+  public void setJobGroup(final String jobGroup)
   {
     this.jobGroup = jobGroup;
   }
@@ -804,7 +817,7 @@ public class OptimizingJob
    * @param  displayInReadOnlyMode  Indicates whether this optimizing job should
    *                                be displayed in restricted read-only mode.
    */
-  public void setDisplayInReadOnlyMode(boolean displayInReadOnlyMode)
+  public void setDisplayInReadOnlyMode(final boolean displayInReadOnlyMode)
   {
     this.displayInReadOnlyMode = displayInReadOnlyMode;
   }
@@ -818,6 +831,7 @@ public class OptimizingJob
    * @return  The name of the job folder in which this optimizing job is
    *          located.
    */
+  @Override()
   public String getFolderName()
   {
     return folderName;
@@ -832,7 +846,7 @@ public class OptimizingJob
    * @param  folderName  The name of the job folder in which this optimizing job
    *                     is located.
    */
-  public void setFolderName(String folderName)
+  public void setFolderName(final String folderName)
   {
     this.folderName = folderName;
   }
@@ -920,7 +934,7 @@ public class OptimizingJob
    *
    * @param  comments  The set of comments for this optimizing job.
    */
-  public void setComments(String comments)
+  public void setComments(final String comments)
   {
     this.comments = comments;
   }
@@ -1033,7 +1047,7 @@ public class OptimizingJob
    * @param  reRunIteration  The job that is a re-run of the best iteration of
    *                         this optimizing job.
    */
-  public void setReRunIteration(Job reRunIteration)
+  public void setReRunIteration(final Job reRunIteration)
   {
     this.reRunIteration = reRunIteration;
   }
@@ -1105,7 +1119,8 @@ public class OptimizingJob
    *                                    on the same systems as the clients used
    *                                    to run this job.
    */
-  public void setMonitorClientsIfAvailable(boolean monitorClientsIfAvailable)
+  public void setMonitorClientsIfAvailable(
+                   final boolean monitorClientsIfAvailable)
   {
     this.monitorClientsIfAvailable = monitorClientsIfAvailable;
   }
@@ -1172,7 +1187,7 @@ public class OptimizingJob
    * @param  threadStartupDelay  The thread startup delay for iterations of this
    *                             optimizing job.
    */
-  public void setThreadStartupDelay(int threadStartupDelay)
+  public void setThreadStartupDelay(final int threadStartupDelay)
   {
     this.threadStartupDelay = threadStartupDelay;
   }
@@ -1244,7 +1259,7 @@ public class OptimizingJob
    * @param  actualStartTime  The time at which the first iteration of this job
    *                          actually started running.
    */
-  public void setActualStartTime(Date actualStartTime)
+  public void setActualStartTime(final Date actualStartTime)
   {
     this.actualStartTime = actualStartTime;
   }
@@ -1272,7 +1287,7 @@ public class OptimizingJob
    * @param  actualStopTime  The time at which the last iteration of this job
    *                         actually completed running.
    */
-  public void setActualStopTime(Date actualStopTime)
+  public void setActualStopTime(final Date actualStopTime)
   {
     this.actualStopTime = actualStopTime;
   }
@@ -1296,7 +1311,7 @@ public class OptimizingJob
    *
    * @param  jobState  The current state of this optimizing job.
    */
-  public void setJobState(int jobState)
+  public void setJobState(final int jobState)
   {
     this.jobState = jobState;
   }
@@ -1334,7 +1349,7 @@ public class OptimizingJob
    *
    * @param  stopReason  The reason that the job stopped running.
    */
-  public void setStopReason(String stopReason)
+  public void setStopReason(final String stopReason)
   {
     this.stopReason = stopReason;
   }
@@ -1353,7 +1368,7 @@ public class OptimizingJob
       return new Job[0];
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     return jobs;
   }
@@ -1369,7 +1384,7 @@ public class OptimizingJob
    */
   public Job[] getAssociatedJobsIncludingReRun()
   {
-    ArrayList<Job> list = new ArrayList<Job>();
+    final ArrayList<Job> list = new ArrayList<>();
     if (jobList != null)
     {
       list.addAll(jobList);
@@ -1380,7 +1395,7 @@ public class OptimizingJob
       list.add(reRunIteration);
     }
 
-    Job[] jobs = new Job[list.size()];
+    final Job[] jobs = new Job[list.size()];
     list.toArray(jobs);
     return jobs;
   }
@@ -1393,7 +1408,7 @@ public class OptimizingJob
    * @param  associatedJobs  The set of jobs scheduled as iterations of this
    *                         optimizing job.
    */
-  public void setAssociatedJobs(Job[] associatedJobs)
+  public void setAssociatedJobs(final Job[] associatedJobs)
   {
     // If the provided list of jobs is empty or null, then just clear the
     // list and reset the optimum values.
@@ -1412,10 +1427,7 @@ public class OptimizingJob
 
     // Add the jobs into the job list.
     jobList.clear();
-    for (int i=0; i < associatedJobs.length; i++)
-    {
-      jobList.add(associatedJobs[i]);
-    }
+    jobList.addAll(Arrays.asList(associatedJobs));
 
 
     // Set the first job to be the optimum so far.
@@ -1427,19 +1439,19 @@ public class OptimizingJob
 
     // Iterate through the list of remaining jobs and extract the optimum values
     // from them.
-    for (int i=0; i < associatedJobs.length; i++)
+    for (final Job associatedJob : associatedJobs)
     {
-      if (! associatedJobs[i].doneRunning())
+      if (! associatedJob.doneRunning())
       {
         break;
       }
 
       try
       {
-        if (optimizationAlgorithm.isBestIterationSoFar(associatedJobs[i]))
+        if (optimizationAlgorithm.isBestIterationSoFar(associatedJob))
         {
-          currentOptimalID      = associatedJobs[i].getJobID();
-          currentOptimalThreads = associatedJobs[i].getThreadsPerClient();
+          currentOptimalID      = associatedJob.getJobID();
+          currentOptimalThreads = associatedJob.getThreadsPerClient();
           currentNonImproving   = 0;
         }
         else
@@ -1447,7 +1459,7 @@ public class OptimizingJob
           currentNonImproving++;
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         // There's really not much that can be done about this.  However, it
         // should never happen for any case except the last iteration.
@@ -1475,7 +1487,7 @@ public class OptimizingJob
    *
    * @param  dependencies  The set of dependencies for this optimizing job.
    */
-  public void setDependencies(String[] dependencies)
+  public void setDependencies(final String[] dependencies)
   {
     if (dependencies == null)
     {
@@ -1526,9 +1538,8 @@ public class OptimizingJob
       return false;
     }
 
-    for (int i=0; i < jobList.size(); i++)
+    for (final Job job : jobList)
     {
-      Job job = jobList.get(i);
       if (job.hasStats())
       {
         return true;
@@ -1565,15 +1576,14 @@ public class OptimizingJob
   {
     if (currentOptimalID != null)
     {
-      for (int i=0; i < jobList.size(); i++)
+      for (final Job iteration : jobList)
       {
-        Job iteration = jobList.get(i);
         if (iteration.getJobID().equals(currentOptimalID))
         {
           try
           {
-            return
-                 optimizationAlgorithm.getIterationOptimizationValue(iteration);
+            return optimizationAlgorithm.getIterationOptimizationValue(
+                 iteration);
           }
           catch (Exception e)
           {
@@ -1609,7 +1619,7 @@ public class OptimizingJob
    * @param  optimalIteration  The job that is the optimal iteration for this
    *                           optimizing job.
    */
-  public void setOptimalIteration(Job optimalIteration)
+  public void setOptimalIteration(final Job optimalIteration)
   {
     currentOptimalID      = optimalIteration.getJobID();
     currentOptimalThreads = optimalIteration.getThreadsPerClient();
@@ -1630,9 +1640,8 @@ public class OptimizingJob
       return null;
     }
 
-    for (int i=0; i < jobList.size(); i++)
+    for (final Job job : jobList)
     {
-      Job job = jobList.get(i);
       if (job.getJobID().equals(currentOptimalID))
       {
         return job;
@@ -1656,9 +1665,9 @@ public class OptimizingJob
   {
     try
     {
-      Job job = new Job(slamdServer, jobClass.getClass().getName(),
-                        numClients, minThreads, 0, startTime, null, duration,
-                        collectionInterval, parameters, displayInReadOnlyMode);
+      final Job job = new Job(slamdServer, jobClass.getClass().getName(),
+           numClients, minThreads, 0, startTime, null, duration,
+           collectionInterval, parameters, displayInReadOnlyMode);
 
       job.setOptimizingJobID(optimizingJobID);
       job.setJobID(optimizingJobID + '-' + minThreads);
@@ -1699,12 +1708,13 @@ public class OptimizingJob
       slamdServer.getConfigDB().writeOptimizingJob(this);
       slamdServer.getScheduler().scheduleJob(job, folderName);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
-      throw new SLAMDServerException("Unable to schedule optimizing job " +
-                                     optimizingJobID + ":  " + e, e);
+           JobClass.stackTraceToString(e));
+      throw new SLAMDServerException(
+           "Unable to schedule optimizing job " + optimizingJobID + ":  " + e,
+           e);
     }
   }
 
@@ -1729,25 +1739,25 @@ public class OptimizingJob
     // Indicate that a cancel has been requested and cancel any iteration that
     // may be pending or running.
     cancelRequested = true;
-    boolean runningFound = slamdServer.getScheduler().cancelOptimizingJob(this);
+    final boolean runningFound =
+         slamdServer.getScheduler().cancelOptimizingJob(this);
 
     // Update the job state to indicate that it has been cancelled.
     jobState = Constants.JOB_STATE_CANCELLED;
     stopReason = "The optimizing job was cancelled by administrative " +
-                 "request.";
+         "request.";
 
     try
     {
       slamdServer.getConfigDB().writeOptimizingJob(this);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                             "Unable to update optimizing job information " +
-                             "for optimizing job " + optimizingJobID +
-                             " to indicate the job was cancelled:" + de);
+           "Unable to update optimizing job information \for optimizing job " +
+                optimizingJobID + " to indicate the job was cancelled:" + de);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(de));
+           JobClass.stackTraceToString(de));
     }
 
 
@@ -1790,7 +1800,7 @@ public class OptimizingJob
     {
       slamdServer.getConfigDB().writeOptimizingJob(this);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
@@ -1814,7 +1824,7 @@ public class OptimizingJob
     catch (Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
     }
   }
 
@@ -1828,10 +1838,10 @@ public class OptimizingJob
    *
    * @param  jobIteration  The job iteration that has completed.
    */
-  public void jobIterationComplete(Job jobIteration)
+  public void jobIterationComplete(final Job jobIteration)
   {
     // Get a reference to the scheduler.
-    Scheduler scheduler = slamdServer.getScheduler();
+    final Scheduler scheduler = slamdServer.getScheduler();
 
 
     // First, make sure the job is not null.  That should never happen.
@@ -1843,15 +1853,14 @@ public class OptimizingJob
       {
         slamdServer.getConfigDB().writeOptimizingJob(this);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate stopped due to null " +
-                               "iteration:  " + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate stopped due to null " +
+                  "iteration:  " + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       scheduler.decacheOptimizingJob(optimizingJobID);
@@ -1865,21 +1874,20 @@ public class OptimizingJob
     if (cancelRequested)
     {
       jobState = Constants.JOB_STATE_CANCELLED;
-      stopReason = "The optimizing job was cancelled by administrative " +
-                   "request.";
+      stopReason =
+           "The optimizing job was cancelled by administrative request.";
 
       try
       {
         slamdServer.getConfigDB().writeOptimizingJob(this);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate the job was cancelled:" + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate the job was cancelled:" + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       scheduler.decacheOptimizingJob(optimizingJobID);
@@ -1902,24 +1910,21 @@ public class OptimizingJob
     if (! acceptableStopReason)
     {
       jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
-      stopReason = "Job \"" + jobIteration.getJobID() +
-                    "\" stopped with a stop reason that was not acceptable " +
-                    "for continuing (" +
-                    Constants.jobStateToString(jobIteration.getJobState()) +
-                    ").";
+      stopReason = "Job \"" + jobIteration.getJobID() + "\" stopped with a " +
+           "stop reason that was not acceptable for continuing (" +
+           Constants.jobStateToString(jobIteration.getJobState()) + ").";
       try
       {
         slamdServer.getConfigDB().writeOptimizingJob(this);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate stopped due to unacceptable job " +
-                               "iteration state:" + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate stopped due to " +
+                  "unacceptable job iteration state:" + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       scheduler.decacheOptimizingJob(optimizingJobID);
@@ -1935,20 +1940,19 @@ public class OptimizingJob
     {
       jobState = Constants.JOB_STATE_COMPLETED_SUCCESSFULLY;
       stopReason = "The optimizing job completed successfully after " +
-                   "re-running the best iteration.";
+           "re-running the best iteration.";
       try
       {
         slamdServer.getConfigDB().writeOptimizingJob(this);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate stopped successfully after " +
-                               "re-running the best iteration:  " + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate stopped successfully after " +
+                  "re-running the best iteration:  " + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       scheduler.decacheOptimizingJob(optimizingJobID);
@@ -1974,16 +1978,14 @@ public class OptimizingJob
         {
           slamdServer.getConfigDB().writeOptimizingJob(this);
         }
-        catch (DatabaseException de)
+        catch (final DatabaseException de)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                                 "Unable to update optimizing job " +
-                                 "information for optimizing job " +
-                                 optimizingJobID + " to indicate stopped due " +
-                                 "to maximum number of threads per client:  " +
-                                 de);
+               "Unable to update optimizing job information for optimizing " +
+                    "job " + optimizingJobID + " to indicate stopped due " +
+                    "to maximum number of threads per client:  " + de);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(de));
+               JobClass.stackTraceToString(de));
         }
 
         scheduler.decacheOptimizingJob(optimizingJobID);
@@ -2006,21 +2008,19 @@ public class OptimizingJob
       {
         jobState = Constants.JOB_STATE_COMPLETED_SUCCESSFULLY;
         stopReason = "The maximum number of consecutive non-improving " +
-                     "iterations was reached.";
+             "iterations was reached.";
         try
         {
           slamdServer.getConfigDB().writeOptimizingJob(this);
         }
-        catch (DatabaseException de)
+        catch (final DatabaseException de)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                                 "Unable to update optimizing job " +
-                                 "information for optimizing job " +
-                                 optimizingJobID + " to indicate stopped due " +
-                                 "to maximum number of non-improving " +
-                                 "iterations:  " + de);
+               "Unable to update optimizing job information for optimizing " +
+                    "job " + optimizingJobID + " to indicate stopped due " +
+                    "to maximum number of non-improving iterations:  " + de);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(de));
+               JobClass.stackTraceToString(de));
         }
 
         scheduler.decacheOptimizingJob(optimizingJobID);
@@ -2040,14 +2040,13 @@ public class OptimizingJob
         numThreads = maxThreads;
       }
 
-      long nextStartTimeMillis = System.currentTimeMillis() +
-                                 (1000 * delayBetweenIterations);
-      Date nextStartTime = new Date(nextStartTimeMillis);
+      final long nextStartTimeMillis =
+           System.currentTimeMillis() + (1000 * delayBetweenIterations);
+      final Date nextStartTime = new Date(nextStartTimeMillis);
 
-      Job job = new Job(slamdServer, jobClass.getClass().getName(),
-                        numClients, numThreads, 0, nextStartTime, null,
-                        duration, collectionInterval,
-                        parameters, displayInReadOnlyMode);
+      final Job job = new Job(slamdServer, jobClass.getClass().getName(),
+           numClients, numThreads, 0, nextStartTime, null, duration,
+           collectionInterval, parameters, displayInReadOnlyMode);
 
       job.setOptimizingJobID(optimizingJobID);
       job.setJobID(optimizingJobID + '-' + numThreads);
@@ -2066,7 +2065,7 @@ public class OptimizingJob
         pauseRequested = false;
       }
 
-      String threadStr = numThreads + " Threads";
+      final String threadStr = numThreads + " Threads";
       if ((description == null) || (description.length() == 0))
       {
         if (includeThreadsInDescription)
@@ -2090,10 +2089,10 @@ public class OptimizingJob
       slamdServer.getConfigDB().writeOptimizingJob(this);
       slamdServer.getScheduler().scheduleJob(job, folderName);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
 
       jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
       stopReason = "Unable to schedule a new iteration:  " + e;
@@ -2104,12 +2103,11 @@ public class OptimizingJob
       catch (DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate stopped due to scheduling " +
-                               "failure:  " + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate stopped due to scheduling " +
+                  "failure:  " + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       scheduler.decacheOptimizingJob(optimizingJobID);
@@ -2127,14 +2125,14 @@ public class OptimizingJob
   {
     try
     {
-      long nextStartTimeMillis = System.currentTimeMillis() +
-                                 (1000 * delayBetweenIterations);
-      Date nextStartTime = new Date(nextStartTimeMillis);
+      final long nextStartTimeMillis =
+           System.currentTimeMillis() + (1000 * delayBetweenIterations);
+      final Date nextStartTime = new Date(nextStartTimeMillis);
 
-      Job job = new Job(slamdServer, jobClass.getClass().getName(),
-                        numClients, currentOptimalThreads, 0, nextStartTime,
-                        null, reRunDuration, collectionInterval, parameters,
-                        displayInReadOnlyMode);
+      final Job job = new Job(slamdServer, jobClass.getClass().getName(),
+           numClients, currentOptimalThreads, 0, nextStartTime, null,
+           reRunDuration, collectionInterval, parameters,
+           displayInReadOnlyMode);
 
       job.setOptimizingJobID(optimizingJobID);
       job.setJobID(optimizingJobID + '-' + currentOptimalThreads + "-rerun");
@@ -2154,7 +2152,7 @@ public class OptimizingJob
         pauseRequested = false;
       }
 
-      String threadStr = currentOptimalThreads + " Threads";
+      final String threadStr = currentOptimalThreads + " Threads";
       if ((description == null) || (description.length() == 0))
       {
         if (includeThreadsInDescription)
@@ -2179,7 +2177,7 @@ public class OptimizingJob
       slamdServer.getConfigDB().writeOptimizingJob(this);
       slamdServer.getScheduler().scheduleJob(job, folderName);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       jobState = Constants.JOB_STATE_STOPPED_DUE_TO_ERROR;
       stopReason = "Unable to schedule a re-run of the best iteration:  " + e;
@@ -2187,15 +2185,14 @@ public class OptimizingJob
       {
         slamdServer.getConfigDB().writeOptimizingJob(this);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "Unable to update optimizing job information " +
-                               "for optimizing job " + optimizingJobID +
-                               " to indicate stopped due to scheduling " +
-                               "failure:  " + de);
+             "Unable to update optimizing job information for optimizing job " +
+                  optimizingJobID + " to indicate stopped due to scheduling " +
+                  "failure:  " + de);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
       }
 
       slamdServer.getScheduler().decacheOptimizingJob(optimizingJobID);
@@ -2220,29 +2217,29 @@ public class OptimizingJob
 
 
     // Initialize variables we will use later.
-    SMTPMailer mailer = slamdServer.getMailer();
+    final SMTPMailer mailer = slamdServer.getMailer();
     SimpleDateFormat dateFormat =
          new SimpleDateFormat(Constants.DISPLAY_DATE_FORMAT);
 
 
     // Construct an e-mail message with information about the optimizing job.
-    String EOL = Constants.SMTP_EOL;
-    String subject = "SLAMD optimizing job " + optimizingJobID + " completed";
-    StringBuilder message = new StringBuilder();
+    final String EOL = Constants.SMTP_EOL;
+    final String subject = "SLAMD optimizing job " + optimizingJobID + " completed";
+    final StringBuilder message = new StringBuilder();
     message.append("The optimization process for the SLAMD optimizing job " +
-                   optimizingJobID + " has completed." + EOL + EOL);
+         optimizingJobID + " has completed." + EOL + EOL);
 
-    String baseURI = mailer.getServletBaseURI();
+    final String baseURI = mailer.getServletBaseURI();
     if ((baseURI != null) && (baseURI.length() > 0))
     {
-      message.append("For more detailed information about this job, go to" +
-                     EOL);
+      message.append(
+           "For more detailed information about this job, go to" + EOL);
       message.append(baseURI + '?' + Constants.SERVLET_PARAM_SECTION + '=' +
-                     Constants.SERVLET_SECTION_JOB + '&' +
-                     Constants.SERVLET_PARAM_SUBSECTION + '=' +
-                     Constants.SERVLET_SECTION_JOB_VIEW_OPTIMIZING + '&' +
-                     Constants.SERVLET_PARAM_OPTIMIZING_JOB_ID + '=' +
-                     optimizingJobID + EOL + EOL);
+           Constants.SERVLET_SECTION_JOB + '&' +
+           Constants.SERVLET_PARAM_SUBSECTION + '=' +
+           Constants.SERVLET_SECTION_JOB_VIEW_OPTIMIZING + '&' +
+           Constants.SERVLET_PARAM_OPTIMIZING_JOB_ID + '=' +
+           optimizingJobID + EOL + EOL);
     }
 
     message.append("Optimizing job ID:  " + optimizingJobID + EOL);
@@ -2250,36 +2247,36 @@ public class OptimizingJob
     if (actualStartTime != null)
     {
       message.append("Actual Start Time:  " +
-                     dateFormat.format(actualStartTime) + EOL);
+           dateFormat.format(actualStartTime) + EOL);
     }
     if (actualStopTime != null)
     {
       message.append("Actual Stop Time:  " + dateFormat.format(actualStopTime) +
-                     EOL);
+           EOL);
     }
 
     message.append("Current State:  " + Constants.jobStateToString(jobState) +
-                   EOL);
+         EOL);
     message.append("Stop Reason:  " + stopReason + EOL);
 
-    DecimalFormat decimalFormat = new DecimalFormat("0.000");
+    final DecimalFormat decimalFormat = new DecimalFormat("0.000");
     if (currentOptimalThreads > 0)
     {
       message.append(EOL);
 
-      ParameterList paramList =
+      final ParameterList paramList =
            optimizationAlgorithm.getOptimizationAlgorithmParameters();
-      Parameter[] params = paramList.getParameters();
-      for (int i=0; i < params.length; i++)
+      final Parameter[] params = paramList.getParameters();
+      for (final Parameter param : params)
       {
-        message.append(params[i].getDisplayName() + ":  " +
-                       params[i].getDisplayValue() + EOL);
+        message.append(param.getDisplayName() + ":  " +
+             param.getDisplayValue() + EOL);
       }
 
-      message.append("Optimal Number of Threads:  " + currentOptimalThreads +
-                     EOL);
+      message.append(
+           "Optimal Number of Threads:  " + currentOptimalThreads + EOL);
       message.append("Optimal Value :  " +
-                     decimalFormat.format(getOptimalValue())  + EOL);
+           decimalFormat.format(getOptimalValue())  + EOL);
       message.append(EOL);
     }
 
@@ -2287,13 +2284,13 @@ public class OptimizingJob
     {
       try
       {
-        double reRunValue =
+        final double reRunValue =
              optimizationAlgorithm.getIterationOptimizationValue(
                   reRunIteration);
-        message.append("Re-Run Value:  " + decimalFormat.format(reRunValue) +
-                       EOL);
+        message.append(
+             "Re-Run Value:  " + decimalFormat.format(reRunValue) + EOL);
         message.append(EOL);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
     mailer.sendMessage(notifyAddresses, subject, message.toString());
@@ -2309,8 +2306,8 @@ public class OptimizingJob
    */
   public byte[] encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
-    SimpleDateFormat dateFormat  =
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
+    final SimpleDateFormat dateFormat  =
          new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
     elementList.add(new ASN1OctetString(ELEMENT_OPTIMIZING_JOB_ID));
@@ -2322,10 +2319,10 @@ public class OptimizingJob
 
     if ((jobList != null) && (! jobList.isEmpty()))
     {
-      ASN1Element[] idElements = new ASN1Element[jobList.size()];
+      final ASN1Element[] idElements = new ASN1Element[jobList.size()];
       for (int i=0; i < idElements.length; i++)
       {
-        Job job = jobList.get(i);
+        final Job job = jobList.get(i);
         idElements[i] = new ASN1OctetString(job.getJobID());
       }
 
@@ -2377,7 +2374,8 @@ public class OptimizingJob
 
     if ((requestedClients != null) && (requestedClients.length > 0))
     {
-      ASN1Element[] clientElements = new ASN1Element[requestedClients.length];
+      final ASN1Element[] clientElements =
+           new ASN1Element[requestedClients.length];
       for (int i=0; i < requestedClients.length; i++)
       {
         clientElements[i] = new ASN1OctetString(requestedClients[i]);
@@ -2389,7 +2387,8 @@ public class OptimizingJob
 
     if ((monitorClients != null) && (monitorClients.length > 0))
     {
-      ASN1Element[] clientElements = new ASN1Element[monitorClients.length];
+      final ASN1Element[] clientElements =
+           new ASN1Element[monitorClients.length];
       for (int i=0; i < monitorClients.length; i++)
       {
         clientElements[i] = new ASN1OctetString(monitorClients[i]);
@@ -2424,7 +2423,8 @@ public class OptimizingJob
 
     if ((notifyAddresses != null) && (notifyAddresses.length > 0))
     {
-      ASN1Element[] addrElements = new ASN1Element[notifyAddresses.length];
+      final ASN1Element[] addrElements =
+           new ASN1Element[notifyAddresses.length];
       for (int i=0; i < notifyAddresses.length; i++)
       {
         addrElements[i] = new ASN1OctetString(notifyAddresses[i]);
@@ -2436,7 +2436,8 @@ public class OptimizingJob
 
     if ((dependencies != null) && (dependencies.length > 0))
     {
-      ASN1Element[] dependencyElements = new ASN1Element[dependencies.length];
+      final ASN1Element[] dependencyElements =
+           new ASN1Element[dependencies.length];
       for (int i=0; i < dependencies.length; i++)
       {
         dependencyElements[i] = new ASN1OctetString(dependencies[i]);
@@ -2449,7 +2450,7 @@ public class OptimizingJob
 
     if (jobClass instanceof UnknownJobClass)
     {
-      ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
+      final ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
       {
         new ASN1OctetString(optimizationAlgorithm.getClass().getName()),
         new ASN1Sequence()
@@ -2459,14 +2460,14 @@ public class OptimizingJob
     }
     else
     {
-      Parameter[] optimizationParams =
+      final Parameter[] optimizationParams =
            optimizationAlgorithm.getOptimizationAlgorithmParameters().
                 getParameters();
-      ASN1Element[] optParamsElements =
+      final ASN1Element[] optParamsElements =
            new ASN1Element[optimizationParams.length];
       for (int i=0; i < optimizationParams.length; i++)
       {
-        ASN1Element[] optParamElements = new ASN1Element[]
+        final ASN1Element[] optParamElements = new ASN1Element[]
         {
           new ASN1OctetString(optimizationParams[i].getName()),
           new ASN1OctetString(optimizationParams[i].getValueString())
@@ -2474,7 +2475,7 @@ public class OptimizingJob
 
         optParamsElements[i] = new ASN1Sequence(optParamElements);
       }
-      ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
+      final ASN1Element[] optimizationAlgorithmElements = new ASN1Element[]
       {
         new ASN1OctetString(optimizationAlgorithm.getClass().getName()),
         new ASN1Sequence(optParamsElements)
@@ -2483,25 +2484,25 @@ public class OptimizingJob
       elementList.add(new ASN1Sequence(optimizationAlgorithmElements));
     }
 
-    Parameter[] params = parameters.getParameters();
-    ArrayList<ASN1Element> paramList = new ArrayList<ASN1Element>();
-    for (int i=0; i < params.length; i++)
+    final Parameter[] params = parameters.getParameters();
+    final ArrayList<ASN1Element> paramList = new ArrayList<>();
+    for (final Parameter param : params)
     {
-      if ((params[i] instanceof PlaceholderParameter) ||
-          (params[i] instanceof LabelParameter))
+      if ((param instanceof PlaceholderParameter) ||
+          (param instanceof LabelParameter))
       {
         continue;
       }
 
-      ASN1Element[] paramElements = new ASN1Element[]
+      final ASN1Element[] paramElements = new ASN1Element[]
       {
-        new ASN1OctetString(params[i].getName()),
-        new ASN1OctetString(params[i].getValueString())
+        new ASN1OctetString(param.getName()),
+        new ASN1OctetString(param.getValueString())
       };
 
       paramList.add(new ASN1Sequence(paramElements));
     }
-    ASN1Element[] paramsElements = new ASN1Element[paramList.size()];
+    final ASN1Element[] paramsElements = new ASN1Element[paramList.size()];
     paramList.toArray(paramsElements);
     elementList.add(new ASN1OctetString(ELEMENT_PARAMETERS));
     elementList.add(new ASN1Sequence(paramsElements));
@@ -2531,7 +2532,7 @@ public class OptimizingJob
     }
 
 
-    ASN1Element[] elements = new ASN1Element[elementList.size()];
+    final ASN1Element[] elements = new ASN1Element[elementList.size()];
     elementList.toArray(elements);
     return new ASN1Sequence(elements).encode();
   }
@@ -2551,8 +2552,8 @@ public class OptimizingJob
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the provided byte array as an optimizing job.
    */
-  public static OptimizingJob decode(SLAMDServer slamdServer,
-                                     byte[] encodedOptimizingJob)
+  public static OptimizingJob decode(final SLAMDServer slamdServer,
+                                     final byte[] encodedOptimizingJob)
          throws DecodeException
   {
     try
@@ -2593,15 +2594,16 @@ public class OptimizingJob
       String[]              notifyAddresses             = new String[0];
       String[]              requestedClients            = new String[0];
 
-      SimpleDateFormat dateFormat  =
+      final SimpleDateFormat dateFormat  =
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
-      ASN1Element   element  = ASN1Element.decode(encodedOptimizingJob);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedOptimizingJob);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_OPTIMIZING_JOB_ID))
         {
@@ -2618,13 +2620,14 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_ITERATION_IDS))
         {
-          ASN1Element[] idElements =
+          final ASN1Element[] idElements =
                elements[i+1].decodeAsSequence().getElements();
-          ArrayList<Job> jobList = new ArrayList<Job>(idElements.length);
-          for (int j=0; j < idElements.length; j++)
+          final ArrayList<Job> jobList = new ArrayList<>(idElements.length);
+          for (final ASN1Element idElement : idElements)
           {
-            String jobID = idElements[j].decodeAsOctetString().getStringValue();
-            Job job = slamdServer.getConfigDB().getJob(jobID);
+            final String jobID =
+                 idElement.decodeAsOctetString().getStringValue();
+            final Job job = slamdServer.getConfigDB().getJob(jobID);
             if (job != null)
             {
               jobList.add(job);
@@ -2636,12 +2639,13 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_RERUN_ID))
         {
-          String jobID = elements[i+1].decodeAsOctetString().getStringValue();
+          final String jobID =
+               elements[i+1].decodeAsOctetString().getStringValue();
           reRunIteration = slamdServer.getConfigDB().getJob(jobID);
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
-          String jobClassName =
+          final String jobClassName =
                elements[i+1].decodeAsOctetString().getStringValue();
           jobClass = slamdServer.getOrLoadJobClass(jobClassName);
         }
@@ -2669,7 +2673,8 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_DURATION))
@@ -2687,7 +2692,7 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_REQUESTED_CLIENTS))
         {
-          ASN1Element[] clientElements =
+          final ASN1Element[] clientElements =
                elements[i+1].decodeAsSequence().getElements();
           requestedClients = new String[clientElements.length];
           for (int j=0; j < requestedClients.length; j++)
@@ -2698,7 +2703,7 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS))
         {
-          ASN1Element[] clientElements =
+          final ASN1Element[] clientElements =
                elements[i+1].decodeAsSequence().getElements();
           monitorClients = new String[clientElements.length];
           for (int j=0; j < monitorClients.length; j++)
@@ -2747,7 +2752,7 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_NOTIFY_ADDRESSES))
         {
-          ASN1Element[] addrElements =
+          final ASN1Element[] addrElements =
                elements[i+1].decodeAsSequence().getElements();
           notifyAddresses = new String[addrElements.length];
           for (int j=0; j < notifyAddresses.length; j++)
@@ -2758,7 +2763,7 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
-          ASN1Element[] dependencyElements =
+          final ASN1Element[] dependencyElements =
                elements[i+1].decodeAsSequence().getElements();
           dependencies = new String[dependencyElements.length];
           for (int j=0; j < dependencies.length; j++)
@@ -2773,10 +2778,11 @@ public class OptimizingJob
           {
             for (int j=i+2; j < elements.length; j += 2)
             {
-              String name = elements[j].decodeAsOctetString().getStringValue();
+              final String name =
+                   elements[j].decodeAsOctetString().getStringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
-                String className =
+                final String className =
                      elements[j+1].decodeAsOctetString().getStringValue();
                 jobClass = slamdServer.getOrLoadJobClass(className);
                 break;
@@ -2784,27 +2790,27 @@ public class OptimizingJob
             }
           }
 
-          ASN1Element[] algorithmElements =
+          final ASN1Element[] algorithmElements =
                elements[i+1].decodeAsSequence().getElements();
-          String algorithmName =
+          final String algorithmName =
                algorithmElements[0].decodeAsOctetString().getStringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
                Constants.classForName(algorithmName).newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();
-          ASN1Element[] paramsElements =
+          final ASN1Element[] paramsElements =
                algorithmElements[1].decodeAsSequence().getElements();
-          for (int j=0; j < paramsElements.length; j++)
+          for (final ASN1Element paramsElement : paramsElements)
           {
-            ASN1Element[] paramElements =
-                 paramsElements[j].decodeAsSequence().getElements();
-            String name =
+            final ASN1Element[] paramElements =
+                 paramsElement.decodeAsSequence().getElements();
+            final String name =
                  paramElements[0].decodeAsOctetString().getStringValue();
-            String value =
+            final String value =
                  paramElements[1].decodeAsOctetString().getStringValue();
 
-            Parameter p = optimizationParameters.getParameter(name);
+            final Parameter p = optimizationParameters.getParameter(name);
             if (p != null)
             {
               p.setValueFromString(value);
@@ -2817,10 +2823,11 @@ public class OptimizingJob
           {
             for (int j=i+2; j < elements.length; j += 2)
             {
-              String name = elements[j].decodeAsOctetString().getStringValue();
+              final String name =
+                   elements[j].decodeAsOctetString().getStringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
-                String jobClassName =
+                final String jobClassName =
                      elements[j+1].decodeAsOctetString().getStringValue();
                 jobClass = slamdServer.getOrLoadJobClass(jobClassName);
                 break;
@@ -2829,18 +2836,18 @@ public class OptimizingJob
           }
 
           parameters = jobClass.getClientSideParameterStubs().clone();
-          ASN1Element[] paramsElements =
+          final ASN1Element[] paramsElements =
                elements[i+1].decodeAsSequence().getElements();
-          for (int j=0; j < paramsElements.length; j++)
+          for (final ASN1Element paramsElement : paramsElements)
           {
-            ASN1Element[] paramElements =
-                 paramsElements[j].decodeAsSequence().getElements();
-            String name =
+            final ASN1Element[] paramElements =
+                 paramsElement.decodeAsSequence().getElements();
+            final String name =
                  paramElements[0].decodeAsOctetString().getStringValue();
-            String value =
+            final String value =
                  paramElements[1].decodeAsOctetString().getStringValue();
 
-            Parameter p = parameters.getParameter(name);
+            final Parameter p = parameters.getParameter(name);
             if (p != null)
             {
               p.setValueFromString(value);
@@ -2849,12 +2856,14 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_STOP_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_STOP_REASON))
@@ -2867,22 +2876,19 @@ public class OptimizingJob
         }
       }
 
-      OptimizingJob optimizingJob =
-           new OptimizingJob(slamdServer, optimizingJobID,
-                             optimizationAlgorithm, jobClass, folderName,
-                             description, includeThreadsInDescription,
-                             startTime, duration, delayBetweenIterations,
-                             numClients, requestedClients, monitorClients,
-                             monitorClientsIfAvailable, minThreads, maxThreads,
-                             threadIncrement, collectionInterval,
-                             maxNonImproving, notifyAddresses,
-                             reRunBestIteration, reRunDuration, parameters,
-                             displayInReadOnlyMode);
+      final OptimizingJob optimizingJob = new OptimizingJob(slamdServer,
+           optimizingJobID, optimizationAlgorithm, jobClass, folderName,
+           description, includeThreadsInDescription, startTime, duration,
+           delayBetweenIterations, numClients, requestedClients, monitorClients,
+           monitorClientsIfAvailable, minThreads, maxThreads, threadIncrement,
+           collectionInterval, maxNonImproving, notifyAddresses,
+           reRunBestIteration, reRunDuration, parameters,
+           displayInReadOnlyMode);
 
       if (! (jobClass instanceof UnknownJobClass))
       {
         optimizationAlgorithm.initializeOptimizationAlgorithm(optimizingJob,
-                                   optimizationParameters);
+             optimizationParameters);
       }
 
       optimizingJob.setActualStartTime(actualStartTime);
@@ -2900,7 +2906,7 @@ public class OptimizingJob
 
       return optimizingJob;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode optimizing job:  " + e, e);
     }
@@ -2922,8 +2928,8 @@ public class OptimizingJob
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the provided byte array as an optimizing job.
    */
-  public static OptimizingJob decodeSummary(SLAMDServer slamdServer,
-                                            byte[] encodedOptimizingJob)
+  public static OptimizingJob decodeSummary(final SLAMDServer slamdServer,
+                                            final byte[] encodedOptimizingJob)
          throws DecodeException
   {
     try
@@ -2937,15 +2943,16 @@ public class OptimizingJob
       String                folderName                  = null;
       String                optimizingJobID             = null;
 
-      SimpleDateFormat dateFormat  =
+      final SimpleDateFormat dateFormat  =
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
-      ASN1Element   element  = ASN1Element.decode(encodedOptimizingJob);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedOptimizingJob);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
 
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_OPTIMIZING_JOB_ID))
         {
@@ -2958,7 +2965,7 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
-          String jobClassName =
+          final String jobClassName =
                elements[i+1].decodeAsOctetString().getStringValue();
           jobClass = slamdServer.getOrLoadJobClass(jobClassName);
         }
@@ -2977,26 +2984,27 @@ public class OptimizingJob
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
-          String timeStr = elements[i+1].decodeAsOctetString().getStringValue();
+          final String timeStr =
+               elements[i+1].decodeAsOctetString().getStringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
       }
 
-      OptimizingJob optimizingJob =
-           new OptimizingJob(slamdServer, optimizingJobID, null, jobClass,
-                             folderName, description, false, startTime, -1, 0,
-                             -1, null, null, false, 1, -1, 1, 1, 1, null, false,
-                             -1, null, displayInReadOnlyMode);
+      final OptimizingJob optimizingJob = new OptimizingJob(slamdServer,
+           optimizingJobID, null, jobClass, folderName, description, false,
+           startTime, -1, 0, -1, null, null, false, 1, -1, 1, 1, 1, null, false,
+           -1, null, displayInReadOnlyMode);
       optimizingJob.setActualStartTime(actualStartTime);
       optimizingJob.setJobState(jobState);
       return optimizingJob;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode optimizing job:  " + e, e);
     }
@@ -3019,7 +3027,8 @@ public class OptimizingJob
    * @throws  ClassCastException  If the provided object is not an
    *                              OptimizingJob.
    */
-  public int compareTo(OptimizingJob oj)
+  @Override()
+  public int compareTo(final OptimizingJob oj)
           throws ClassCastException
   {
     if (oj == null)
@@ -3033,14 +3042,14 @@ public class OptimizingJob
     {
       optimizingJobID2 = oj.getOptimizingJobID();
 
-      StringTokenizer t1 = new StringTokenizer(optimizingJobID, "-");
-      StringTokenizer t2 = new StringTokenizer(optimizingJobID2, "-");
+      final StringTokenizer t1 = new StringTokenizer(optimizingJobID, "-");
+      final StringTokenizer t2 = new StringTokenizer(optimizingJobID2, "-");
 
 
       // Get the timestamp string.  If they differ, then use the
       // String.compareTo method.
-      String date1 = t1.nextToken();
-      String date2 = t2.nextToken();
+      final String date1 = t1.nextToken();
+      final String date2 = t2.nextToken();
       if (! date1.equals(date2))
       {
         return date1.compareTo(date2);
@@ -3049,12 +3058,12 @@ public class OptimizingJob
 
       // Get the random + counter portion.  If they differ, then compare the
       // numeric counter portions.
-      String counterStr1 = t1.nextToken();
-      String counterStr2 = t2.nextToken();
+      final String counterStr1 = t1.nextToken();
+      final String counterStr2 = t2.nextToken();
       if (! counterStr1.equals(counterStr2))
       {
-        Integer counter1 = new Integer(counterStr1.substring(6));
-        Integer counter2 = new Integer(counterStr2.substring(6));
+        final Integer counter1 = new Integer(counterStr1.substring(6));
+        final Integer counter2 = new Integer(counterStr2.substring(6));
         return counter1.compareTo(counter2);
       }
 
@@ -3063,10 +3072,10 @@ public class OptimizingJob
       // comparison.
       return optimizingJobID.compareTo(optimizingJobID2);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
 
       return optimizingJobID.compareTo(optimizingJobID2);
     }

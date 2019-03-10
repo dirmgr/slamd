@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -2439,7 +2440,7 @@ public class AdminJob
     {
       int styleValue = 0;
 
-      ArrayList<ClientConnection> clientList = job.getActiveClients();
+      final List<ClientConnection> clientList = job.getActiveClients();
       if ((clientList != null) && (! clientList.isEmpty()))
       {
         String style = ((styleValue++ % 2) == 0)
@@ -2460,7 +2461,7 @@ public class AdminJob
         htmlBody.append("  </TR>" + EOL);
       }
 
-      ArrayList<ResourceMonitorClientConnection> monitorClientList =
+      final List<ResourceMonitorClientConnection> monitorClientList =
            job.getActiveMonitorClients();
       if ((monitorClientList != null) && (! monitorClientList.isEmpty()))
       {

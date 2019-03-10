@@ -42,14 +42,14 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class SingleStatisticWithConstraintOptimizationAlgorithm
+public final class SingleStatisticWithConstraintOptimizationAlgorithm
        extends OptimizationAlgorithm
 {
   /**
    * The name of the parameter that is used to specify the minimum required
    * percent improvement needed for a new best iteration.
    */
-  public static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
+  private static final String PARAM_MIN_PCT_IMPROVEMENT = "min_pct_improvement";
 
 
 
@@ -57,7 +57,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The name of the parameter that is used to specify the statistic to
    * optimize.
    */
-  public static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
+  private static final String PARAM_OPTIMIZE_STAT = "optimize_stat";
 
 
 
@@ -65,7 +65,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The name of the parameter that is used to specify the type of optimization
    * to perform.
    */
-  public static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
+  private static final String PARAM_OPTIMIZE_TYPE = "optimize_type";
 
 
 
@@ -73,7 +73,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The name of the parameter that is used to specify the statistic to
    * constrain.
    */
-  public static final String PARAM_CONSTRAIN_STAT = "constrain_stat";
+  private static final String PARAM_CONSTRAIN_STAT = "constrain_stat";
 
 
 
@@ -81,7 +81,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The name of the parameter that specifies the type of constraint to
    * enforce.
    */
-  public static final String PARAM_CONSTRAINT_TYPE = "constraint_type";
+  private static final String PARAM_CONSTRAINT_TYPE = "constraint_type";
 
 
 
@@ -89,7 +89,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The name of the parameter that specifies the value to use for the
    * constraint.
    */
-  public static final String PARAM_CONSTRAINT_VALUE = "constraint_value";
+  private static final String PARAM_CONSTRAINT_VALUE = "constraint_value";
 
 
 
@@ -97,7 +97,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * highest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
+  private static final int OPTIMIZE_TYPE_MAXIMIZE = 1;
 
 
 
@@ -105,7 +105,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The optimization type value that indicates that we should try to find the
    * lowest value for the statistic to optimize.
    */
-  public static final int OPTIMIZE_TYPE_MINIMIZE = 2;
+  private static final int OPTIMIZE_TYPE_MINIMIZE = 2;
 
 
 
@@ -113,7 +113,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The constraint type that indicates that the statistic to constrain should
    * not be allowed to be greater than the specified value.
    */
-  public static final int CONSTRAINT_TYPE_NO_GREATER_THAN = 1;
+  private static final int CONSTRAINT_TYPE_NO_GREATER_THAN = 1;
 
 
 
@@ -121,7 +121,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The constraint type that indicates that the statistic to constrain should
    * not be allowed to be less than the specified value.
    */
-  public static final int CONSTRAINT_TYPE_NO_LESS_THAN = 2;
+  private static final int CONSTRAINT_TYPE_NO_LESS_THAN = 2;
 
 
 
@@ -129,7 +129,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The string that will be displayed if the user wants to ensure that the
    * constraint statistic does not go above the given value.
    */
-  public static final String CONSTRAINT_STRING_NO_GREATER_THAN =
+  private static final String CONSTRAINT_STRING_NO_GREATER_THAN =
       "No greater than constraint value";
 
 
@@ -138,7 +138,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    * The string that will be displayed if the user wants to ensure that the
    * constraint statistic does not go below the given value.
    */
-  public static final String CONSTRAINT_STRING_NO_LESS_THAN =
+  private static final String CONSTRAINT_STRING_NO_LESS_THAN =
        "No less than constraint value";
 
 
@@ -256,19 +256,19 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    *          the provided job class, or {@code false} if not.
    */
   @Override()
-  public boolean availableWithJobClass(JobClass jobClass)
+  public boolean availableWithJobClass(final JobClass jobClass)
   {
     boolean searchableStatFound = false;
 
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
     if ((jobStats == null) || (jobStats.length == 0))
     {
       return false;
     }
 
-    for (int i=0; i < jobStats.length; i++)
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
         if (searchableStatFound)
         {
@@ -311,39 +311,40 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    *          user for the settings to use when executing the optimizing job.
    */
   @Override()
-  public ParameterList getOptimizationAlgorithmParameterStubs(JobClass jobClass)
+  public ParameterList getOptimizationAlgorithmParameterStubs(
+                            final JobClass jobClass)
   {
     // First, compile a list of all the "searchable" statistics that this job
     // reports it collects.
-    ArrayList<String> availableStatList = new ArrayList<String>();
-    StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
-    for (int i=0; i < jobStats.length; i++)
+    final ArrayList<String> availableStatList = new ArrayList<>();
+    final StatTracker[] jobStats = jobClass.getStatTrackerStubs("", "", 1);
+    for (final StatTracker statTracker : jobStats)
     {
-      if (jobStats[i].isSearchable())
+      if (statTracker.isSearchable())
       {
-        availableStatList.add(jobStats[i].getDisplayName());
+        availableStatList.add(statTracker.getDisplayName());
       }
     }
 
-    int numAvailable = availableStatList.size();
+    final int numAvailable = availableStatList.size();
     if (numAvailable == 0)
     {
       return new ParameterList();
     }
 
-    String[] searchableStatNames = new String[numAvailable];
+    final String[] searchableStatNames = new String[numAvailable];
     availableStatList.toArray(searchableStatNames);
     if (optimizeStat == null)
     {
       optimizeStat = searchableStatNames[0];
     }
 
-    String[] optimizationTypes =
+    final String[] optimizationTypes =
     {
       Constants.OPTIMIZE_TYPE_MAXIMIZE,
       Constants.OPTIMIZE_TYPE_MINIMIZE
     };
-    String optimizeTypeStr;
+    final String optimizeTypeStr;
     switch (optimizeType)
     {
       case OPTIMIZE_TYPE_MAXIMIZE:
@@ -357,51 +358,43 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
         break;
     }
 
-    String[] constraintTypes =
+    final String[] constraintTypes =
     {
       CONSTRAINT_STRING_NO_GREATER_THAN,
       CONSTRAINT_STRING_NO_LESS_THAN
     };
 
 
-    optimizeStatParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_STAT, "Statistic to Optimize",
-                                  "The name of the statistic for which to " +
-                                  "try to find the optimal value.",
-                                  searchableStatNames, optimizeStat);
-    optimizeTypeParameter =
-         new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE, "Optimization Type",
-                                  "The type of optimization to perform for " +
-                                  "the statistic to optimize.",
-                                  optimizationTypes, optimizeTypeStr);
-    constrainStatParameter =
-         new MultiChoiceParameter(PARAM_CONSTRAIN_STAT,
-                                  "Statistic to Constrain",
-                                  "The name of the statistic to constrain to " +
-                                  "a given range.  It must be different from " +
-                                  "the statistic to optimize.",
-                                  searchableStatNames, searchableStatNames[1]);
-    constraintTypeParameter =
-         new MultiChoiceParameter(PARAM_CONSTRAINT_TYPE,
-                                  "Constraint to Enforce",
-                                  "The constraint to enforce upon the " +
-                                  "specified statistic to constrain.",
-                                  constraintTypes, constraintTypes[0]);
-    constraintValueParameter =
-         new FloatParameter(PARAM_CONSTRAINT_VALUE, "Constraint Value",
-                            "The value to use when enforcing the constraint.",
-                            true, (float) 0.0);
+    optimizeStatParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_STAT,
+         "Statistic to Optimize",
+         "The name of the statistic for which to try to find the optimal " +
+              "value.",
+         searchableStatNames, optimizeStat);
+    optimizeTypeParameter = new MultiChoiceParameter(PARAM_OPTIMIZE_TYPE,
+         "Optimization Type",
+         "The type of optimization to perform for the statistic to optimize.",
+         optimizationTypes, optimizeTypeStr);
+    constrainStatParameter = new MultiChoiceParameter(PARAM_CONSTRAIN_STAT,
+         "Statistic to Constrain",
+         "The name of the statistic to constrain to a given range.  It must " +
+              "be different from the statistic to optimize.",
+         searchableStatNames, searchableStatNames[1]);
+    constraintTypeParameter = new MultiChoiceParameter(PARAM_CONSTRAINT_TYPE,
+         "Constraint to Enforce",
+         "The constraint to enforce upon the specified statistic to constrain.",
+         constraintTypes, constraintTypes[0]);
+    constraintValueParameter = new FloatParameter(PARAM_CONSTRAINT_VALUE,
+         "Constraint Value", "The value to use when enforcing the constraint.",
+         true, (float) 0.0);
 
-    minPctImprovementParameter =
-         new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
-                            "Min. % Improvement for New Best Iteration",
-                            "The minimum percentage improvement in " +
-                            "performance that an iteration must have over " +
-                            "the previous best to be considered the new best " +
-                            "iteration.", false, minPctImprovement, true, 0.0F,
-                            false, 0.0F);
+    minPctImprovementParameter = new FloatParameter(PARAM_MIN_PCT_IMPROVEMENT,
+         "Min. % Improvement for New Best Iteration",
+         "The minimum percentage improvement in performance that an " +
+              "iteration must have over the previous best to be considered " +
+              "the new best iteration.",
+         false, minPctImprovement, true, 0.0F, false, 0.0F);
 
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       new PlaceholderParameter(),
       optimizeStatParameter,
@@ -427,7 +420,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
   @Override()
   public ParameterList getOptimizationAlgorithmParameters()
   {
-    Parameter[] algorithmParams =
+    final Parameter[] algorithmParams =
     {
       optimizeStatParameter,
       optimizeTypeParameter,
@@ -457,8 +450,8 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    *                                 optimization algorithm.
    */
   @Override()
-  public void initializeOptimizationAlgorithm(OptimizingJob optimizingJob,
-                                              ParameterList parameters)
+  public void initializeOptimizationAlgorithm(final OptimizingJob optimizingJob,
+                                              final ParameterList parameters)
          throws InvalidValueException
   {
     this.optimizingJob = optimizingJob;
@@ -469,8 +462,8 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_STAT);
     if ((optimizeStatParameter == null) || (! optimizeStatParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the statistic " +
-                                      "to optimize");
+      throw new InvalidValueException(
+           "No value provided for the statistic to optimize");
     }
     optimizeStat = optimizeStatParameter.getStringValue();
 
@@ -481,10 +474,10 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
          parameters.getMultiChoiceParameter(PARAM_OPTIMIZE_TYPE);
     if ((optimizeTypeParameter == null) || (! optimizeTypeParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the " +
-                                      "optimization type");
+      throw new InvalidValueException(
+           "No value provided for the optimization type");
     }
-    String optimizeTypeStr = optimizeTypeParameter.getStringValue();
+    final String optimizeTypeStr = optimizeTypeParameter.getStringValue();
     if (optimizeTypeStr.equalsIgnoreCase(Constants.OPTIMIZE_TYPE_MAXIMIZE))
     {
       optimizeType = OPTIMIZE_TYPE_MAXIMIZE;
@@ -496,8 +489,8 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + optimizeTypeStr +
-                                      "\" for optimization type.");
+      throw new InvalidValueException(
+           "Invalid value \"" + optimizeTypeStr + "\" for optimization type.");
     }
 
 
@@ -507,15 +500,14 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
     if ((constrainStatParameter == null) ||
         (! constrainStatParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the statistic " +
-                                      "to constrain");
+      throw new InvalidValueException(
+           "No value provided for the statistic to constrain");
     }
     constrainStat = constrainStatParameter.getStringValue();
     if (constrainStat.equals(optimizeStat))
     {
       throw new InvalidValueException("The statistic to constrain must be " +
-                                      "different from the statistic to " +
-                                      "optimize");
+           "different from the statistic to optimize");
     }
 
 
@@ -525,10 +517,10 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
     if ((constraintTypeParameter == null) ||
         (! constraintTypeParameter.hasValue()))
     {
-      throw new InvalidValueException("No value provided for the type of " +
-                                      "constraint to enforce");
+      throw new InvalidValueException(
+           "No value provided for the type of constraint to enforce");
     }
-    String constraintTypeStr = constraintTypeParameter.getStringValue();
+    final String constraintTypeStr = constraintTypeParameter.getStringValue();
     if (constraintTypeStr.equalsIgnoreCase(CONSTRAINT_STRING_NO_GREATER_THAN))
     {
       constraintType = CONSTRAINT_TYPE_NO_GREATER_THAN;
@@ -539,8 +531,8 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
     }
     else
     {
-      throw new InvalidValueException("Invalid value \"" + constraintTypeStr +
-                                      "\" for constraint type.");
+      throw new InvalidValueException(
+           "Invalid value \"" + constraintTypeStr + "\" for constraint type.");
     }
 
 
@@ -569,12 +561,12 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
     // See If the provided optimizing job has run any iterations so far.  If so,
     // then look through them to determine the best value so far.
     bestValueSoFar = Double.NaN;
-    Job[] iterations = optimizingJob.getAssociatedJobs();
+    final Job[] iterations = optimizingJob.getAssociatedJobs();
     if (iterations != null)
     {
-      for (int i=0; i <iterations.length; i++)
+      for (final Job iteration : iterations)
       {
-        StatTracker[] trackers = iterations[i].getStatTrackers(constrainStat);
+        StatTracker[] trackers = iteration.getStatTrackers(constrainStat);
         if ((trackers != null) && (trackers.length > 0))
         {
           // First, make sure that it was within the appropriate constraint.
@@ -595,7 +587,7 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
 
 
           // Now check to see if it is the best value.
-          trackers = iterations[i].getStatTrackers(optimizeStat);
+          trackers = iteration.getStatTrackers(optimizeStat);
           if ((trackers != null) && (trackers.length > 0))
           {
             tracker = trackers[0].newInstance();
@@ -622,13 +614,12 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
       }
     }
 
-    SLAMDServer slamdServer = optimizingJob.slamdServer;
+    final SLAMDServer slamdServer = optimizingJob.slamdServer;
     slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                           "SingleStatisticWithConstraintOptimization" +
-                           "Algorithm.initializeOptimizationAlgorith(" +
-                           optimizingJob.getOptimizingJobID() +
-                           ") best so far is " +
-                           String.valueOf(bestValueSoFar));
+         "SingleStatisticWithConstraintOptimizationAlgorithm." +
+              "initializeOptimizationAlgorith(" +
+              optimizingJob.getOptimizingJobID() + ") best so far is " +
+              String.valueOf(bestValueSoFar));
   }
 
 
@@ -650,64 +641,59 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    *                          immediately with no further iterations.
    */
   @Override()
-  public boolean isBestIterationSoFar(Job iteration)
+  public boolean isBestIterationSoFar(final Job iteration)
          throws SLAMDException
   {
-    SLAMDServer slamdServer = iteration.slamdServer;
+    final SLAMDServer slamdServer = iteration.slamdServer;
 
     // Get the value of the constraint statistic to ensure that the job was
     // within the appropriate range.
-    StatTracker[] trackers = iteration.getStatTrackers(constrainStat);
+    final StatTracker[] trackers = iteration.getStatTrackers(constrainStat);
     if ((trackers == null) || (trackers.length == 0))
     {
       throw new SLAMDException("The provided optimizing job iteration did " +
-                               "not include any values for the statistic " +
-                               "to constrain, \"" + constrainStat + '"');
+           "not include any values for the statistic to constrain, \"" +
+           constrainStat + '"');
     }
-    StatTracker tracker = trackers[0].newInstance();
+    final StatTracker tracker = trackers[0].newInstance();
     tracker.aggregate(trackers);
-    double value = tracker.getSummaryValue();
+    final double value = tracker.getSummaryValue();
     if ((constraintType == CONSTRAINT_TYPE_NO_GREATER_THAN) &&
         (value > constraintValue))
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithConstraintOptimization" +
-                             "Algorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning false " +
-                             "because value " + value + " for constraint " +
-                             "statistic " + constrainStat + " is greater " +
-                             "than the maximum allowed value of " +
-                             constraintValue);
+           "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning false because value " + value +
+                " for constraint statistic " + constrainStat + " is greater " +
+                "than the maximum allowed value of " + constraintValue);
       return false;
     }
     else if ((constraintType == CONSTRAINT_TYPE_NO_LESS_THAN) &&
              (value < constraintValue))
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithConstraintOptimization" +
-                             "Algorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning false " +
-                             "because value " + value + " for constraint " +
-                             "statistic " + constrainStat + " is less " +
-                             "than the minimum allowed value of " +
-                             constraintValue);
+           "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning false because value " + value + " for constraint " +
+                "statistic " + constrainStat + " is less than the minimum " +
+                "allowed value of " + constraintValue);
       return false;
     }
 
 
     // Now check to see whether the statistic to optimize had a better value
     // than any previous iteration.
-    double iterationValue = getIterationOptimizationValue(iteration);
+    final double iterationValue = getIterationOptimizationValue(iteration);
 
     if (Double.isNaN(bestValueSoFar) && (! Double.isNaN(iterationValue)))
     {
       bestValueSoFar = iterationValue;
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                             "SingleStatisticWithConstraintOptimization" +
-                             "Algorithm.isBestIterationSoFar(" +
-                             iteration.getJobID() + ") returning true " +
-                             "because iteration value " + iterationValue +
-                             " is not NaN but current best is NaN.");
+           "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                "isBestIterationSoFar(" + iteration.getJobID() +
+                ") returning true because iteration value " + iterationValue +
+                " is not NaN but current best is NaN.");
       return true;
     }
 
@@ -719,39 +705,35 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
           if (iterationValue > bestValueSoFar+bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithConstraintOptimization" +
-                                   "Algorithm.isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithConstraintOptimization" +
-                                   "Algorithm.isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is greater than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is greater than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithConstraintOptimization" +
-                                 "Algorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is less than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is less than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       case OPTIMIZE_TYPE_MINIMIZE:
@@ -760,48 +742,43 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
           if (iterationValue < bestValueSoFar-bestValueSoFar*minPctImprovement)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithConstraintOptimization" +
-                                   "Algorithm.isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning true " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " by at least " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning true because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " by at least " +
+                      (minPctImprovement*100) + "%.");
             bestValueSoFar = iterationValue;
             return true;
           }
           else
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                   "SingleStatisticWithConstraintOptimization" +
-                                   "Algorithm.isBestIterationSoFar(" +
-                                   iteration.getJobID() + ") returning false " +
-                                   "because iteration value " + iterationValue +
-                                   " is less than previous best value " +
-                                   bestValueSoFar + " but the margin of " +
-                                   "improvement is less than " +
-                                   (minPctImprovement*100) + "%.");
+                 "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                      "isBestIterationSoFar(" + iteration.getJobID() +
+                      ") returning false because iteration value " +
+                      iterationValue + " is less than previous best value " +
+                      bestValueSoFar + " but the margin of improvement is " +
+                      "less than " + (minPctImprovement*100) + "%.");
             return false;
           }
         }
         else
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                 "SingleStatisticWithConstraintOptimization" +
-                                 "Algorithm.isBestIterationSoFar(" +
-                                 iteration.getJobID() + ") returning false " +
-                                 "because iteration value " + iterationValue +
-                                 " is greater than previous best value " +
-                                 bestValueSoFar);
+               "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                    "isBestIterationSoFar(" + iteration.getJobID() +
+                    ") returning false because iteration value " +
+                    iterationValue + " is greater than previous best value " +
+                    bestValueSoFar);
           return false;
         }
       default:
         slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                               "SingleStatisticWithConstraintOptimization" +
-                               "Algorithm.isBestIterationSoFar(" +
-                               iteration.getJobID() + ") returning false " +
-                               "because an unknown optimization type of " +
-                               optimizeType + " is being used.");
+             "SingleStatisticWithConstraintOptimizationAlgorithm." +
+                  "isBestIterationSoFar(" + iteration.getJobID() +
+                  ") returning false because an unknown optimization type of " +
+                  optimizeType + " is being used.");
         return false;
     }
   }
@@ -821,10 +798,10 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
    *                          value for the given optimizing job iteration.
    */
   @Override()
-  public double getIterationOptimizationValue(Job iteration)
+  public double getIterationOptimizationValue(final Job iteration)
        throws SLAMDException
   {
-    StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
+    final StatTracker[] trackers = iteration.getStatTrackers(optimizeStat);
     if ((trackers == null) || (trackers.length == 0))
     {
       throw new SLAMDException("The provided optimizing job iteration did " +
@@ -832,16 +809,14 @@ public class SingleStatisticWithConstraintOptimizationAlgorithm
                                "optimize, \"" + optimizeStat + "\".");
     }
 
-    StatTracker tracker = trackers[0].newInstance();
+    final StatTracker tracker = trackers[0].newInstance();
     tracker.aggregate(trackers);
 
-    double summaryValue = tracker.getSummaryValue();
+    final double summaryValue = tracker.getSummaryValue();
     iteration.slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
-                                     "SingleStatisticWithConstraint" +
-                                     "OptimizationAlgorithm." +
-                                     "getIterationOptimizationValue(" +
-                                     iteration.getJobID() + ") returning " +
-                                     summaryValue);
+         "SingleStatisticWithConstraintOptimizationAlgorithm." +
+              "getIterationOptimizationValue(" + iteration.getJobID() +
+              ") returning " + summaryValue);
 
     return summaryValue;
   }

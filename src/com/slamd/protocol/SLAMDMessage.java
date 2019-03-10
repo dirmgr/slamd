@@ -20,10 +20,11 @@ package com.slamd.protocol;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
@@ -234,13 +235,13 @@ public abstract class SLAMDMessage
   {
     try
     {
-      ASN1Element[] elements = messageElement.decodeAsSequence().getElements();
+      ASN1Element[] elements = messageElement.decodeAsSequence().elements();
 
       // First, get the message ID.
       int messageID;
       try
       {
-        messageID = elements[0].decodeAsInteger().getIntValue();
+        messageID = elements[0].decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -254,7 +255,7 @@ public abstract class SLAMDMessage
       String className;
       try
       {
-        className = elements[1].decodeAsOctetString().getStringValue();
+        className = elements[1].decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -269,14 +270,14 @@ public abstract class SLAMDMessage
       try
       {
         ASN1Element[] propElements =
-             elements[3].decodeAsSequence().getElements();
+             elements[3].decodeAsSequence().elements();
         extraProperties = new HashMap<String,String>(propElements.length);
 
         for (int i=0; i < propElements.length; i++)
         {
-          ASN1Element[] e = propElements[i].decodeAsSequence().getElements();
-          String name     = e[0].decodeAsOctetString().getStringValue();
-          String value    = e[1].decodeAsOctetString().getStringValue();
+          ASN1Element[] e = propElements[i].decodeAsSequence().elements();
+          String name     = e[0].decodeAsOctetString().stringValue();
+          String value    = e[1].decodeAsOctetString().stringValue();
           extraProperties.put(name, value);
         }
       }
@@ -490,7 +491,7 @@ public abstract class SLAMDMessage
     ASN1Element[] elements;
     try
     {
-      elements = sequenceElement.decodeAsSequence().getElements();
+      elements = sequenceElement.decodeAsSequence().elements();
     }
     catch (Exception e)
     {
@@ -508,7 +509,7 @@ public abstract class SLAMDMessage
     String name;
     try
     {
-      name = elements[0].decodeAsOctetString().getStringValue();
+      name = elements[0].decodeAsOctetString().stringValue();
     }
     catch (Exception e)
     {
@@ -543,7 +544,7 @@ public abstract class SLAMDMessage
     ASN1Element[] elements;
     try
     {
-      elements = sequenceElement.decodeAsSequence().getElements();
+      elements = sequenceElement.decodeAsSequence().elements();
     }
     catch (Exception e)
     {

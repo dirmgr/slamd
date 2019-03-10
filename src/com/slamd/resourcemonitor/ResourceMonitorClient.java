@@ -19,7 +19,9 @@ package com.slamd.resourcemonitor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -28,9 +30,10 @@ import java.util.LinkedHashMap;
 import java.util.Properties;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.client.Client;
 import com.slamd.client.ClientException;
 import com.slamd.client.ClientMessageWriter;
@@ -87,11 +90,8 @@ public class ResourceMonitorClient
 
 
 
-  // The ASN.1 reader used to read messages from the SLAMD server.
-  private ASN1Reader reader;
-
-  // The ASN.1 writer used to send messages to the SLAMD server.
-  private ASN1Writer writer;
+  // The ASN.1 stream reader used to read messages from the SLAMD server.
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether the client should blindly trust the server's SSL cert.
   private boolean blindTrust;
@@ -146,6 +146,9 @@ public class ResourceMonitorClient
 
   // A mutex used to provide threadsafe access to the job hash.
   private final Object jobHashMutex;
+
+  // The output stream used to send messagse to the SLAMD server.
+  private OutputStream outputStream;
 
   // The stat reporter used to send results to the SLAMD server while a job is
   // in progress.
@@ -461,8 +464,8 @@ public class ResourceMonitorClient
         }
       }
 
-      reader = new ASN1Reader(monitorSocket);
-      writer = new ASN1Writer(monitorSocket);
+      asn1StreamReader = new ASN1StreamReader(monitorSocket.getInputStream());
+      outputStream = monitorSocket.getOutputStream();
       messageWriter.writeMessage("Connected to the SLAMD server");
     }
     catch (Exception e)
@@ -479,7 +482,7 @@ public class ResourceMonitorClient
                                 supportsTimeSync);
     try
     {
-      writer.writeElement(helloMessage.encode());
+      writeElement(helloMessage.encode());
       messageWriter.writeVerbose("Wrote a hello request");
       messageWriter.writeVerbose(helloMessage.toString());
     }
@@ -494,8 +497,11 @@ public class ResourceMonitorClient
     HelloResponseMessage helloResponse;
     try
     {
-      ASN1Element element =
-           reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
+      final int originalSOTimeout = monitorSocket.getSoTimeout();
+      monitorSocket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+      ASN1Element element = asn1StreamReader.readElement();
+      monitorSocket.setSoTimeout(originalSOTimeout);
+
       helloResponse = (HelloResponseMessage) Message.decode(element);
       messageWriter.writeVerbose("Read a hello response");
       messageWriter.writeVerbose(helloResponse.toString());
@@ -664,7 +670,7 @@ public class ResourceMonitorClient
   {
     try
     {
-      writer.writeElement(message.encode());
+      writeElement(message.encode());
     }
     catch (Exception e)
     {
@@ -688,8 +694,10 @@ public class ResourceMonitorClient
       Message message = null;
       try
       {
-        message = Message.decode(
-                       reader.readElement(Constants.MAX_BLOCKING_READ_TIME));
+        final int originalSoTimeout = monitorSocket.getSoTimeout();
+        monitorSocket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+        message = Message.decode(asn1StreamReader.readElement());
+        monitorSocket.setSoTimeout(originalSoTimeout);
         consecutiveFailures = false;
       }
       catch (InterruptedIOException ioe)
@@ -712,12 +720,12 @@ public class ResourceMonitorClient
 
           try
           {
-            reader.close();
+            asn1StreamReader.close();
           } catch (Exception e2) {}
 
           try
           {
-            writer.close();
+            outputStream.close();
           } catch (Exception e2) {}
 
           try
@@ -764,12 +772,12 @@ public class ResourceMonitorClient
 
         try
         {
-          reader.close();
+          asn1StreamReader.close();
         } catch (Exception e) {}
 
         try
         {
-          writer.close();
+          outputStream.close();
         } catch (Exception e) {}
 
         try
@@ -1085,6 +1093,23 @@ public class ResourceMonitorClient
     {
       jobHash.remove(jobID);
     }
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

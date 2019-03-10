@@ -20,12 +20,13 @@ package com.slamd.message;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.stat.StatEncoder;
 import com.slamd.stat.StatTracker;
 import com.slamd.common.Constants;
@@ -300,7 +301,7 @@ public class JobCompletedMessage
     }
 
 
-    ASN1Element[] elements = completedSequence.getElements();
+    ASN1Element[] elements = completedSequence.elements();
     if (elements.length != 7)
     {
       throw new SLAMDException("A job completed message must have seven " +
@@ -308,22 +309,13 @@ public class JobCompletedMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Cannot decode first element as an octet " +
-                               "string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     int jobState = 0;
     try
     {
-      jobState = elements[1].decodeAsEnumerated().getIntValue();
+      jobState = elements[1].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -333,51 +325,35 @@ public class JobCompletedMessage
 
 
     long actualStartTime = 0;
+    String startTimeStr = elements[2].decodeAsOctetString().stringValue();
     try
     {
-      String startTimeStr = elements[2].decodeAsOctetString().getStringValue();
-      try
-      {
-        actualStartTime = Long.parseLong(startTimeStr);
-      }
-      catch (NumberFormatException nfe)
-      {
-        throw new SLAMDException("Could not convert " + startTimeStr +
-                                 "to a long", nfe);
-      }
+      actualStartTime = Long.parseLong(startTimeStr);
     }
-    catch (ASN1Exception ae)
+    catch (NumberFormatException nfe)
     {
-      throw new SLAMDException("Cannot decode third element as an octet " +
-                               "string", ae);
+      throw new SLAMDException("Could not convert " + startTimeStr +
+           "to a long", nfe);
     }
 
 
     long actualStopTime = 0;
+    String stopTimeStr = elements[3].decodeAsOctetString().stringValue();
     try
     {
-      String stopTimeStr = elements[3].decodeAsOctetString().getStringValue();
-      try
-      {
-        actualStopTime = Long.parseLong(stopTimeStr);
-      }
-      catch (NumberFormatException nfe)
-      {
-        throw new SLAMDException("Could not convert " + stopTimeStr +
-                                 "to a long", nfe);
-      }
+      actualStopTime = Long.parseLong(stopTimeStr);
     }
-    catch (ASN1Exception ae)
+    catch (NumberFormatException nfe)
     {
-      throw new SLAMDException("Cannot decode fourth element as an octet " +
-                               "string", ae);
+      throw new SLAMDException("Could not convert " + stopTimeStr +
+           "to a long", nfe);
     }
 
 
     int actualDuration = 0;
     try
     {
-      actualDuration = elements[4].decodeAsInteger().getIntValue();
+      actualDuration = elements[4].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -401,11 +377,11 @@ public class JobCompletedMessage
     String[] logMessages = null;
     try
     {
-      ASN1Element[] logElements = elements[6].decodeAsSequence().getElements();
+      ASN1Element[] logElements = elements[6].decodeAsSequence().elements();
       logMessages = new String[logElements.length];
       for (int i=0; i < logElements.length; i++)
       {
-        logMessages[i] = logElements[i].decodeAsOctetString().getStringValue();
+        logMessages[i] = logElements[i].decodeAsOctetString().stringValue();
       }
     }
     catch (ASN1Exception ae)

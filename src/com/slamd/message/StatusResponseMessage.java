@@ -17,12 +17,13 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.stat.StatEncoder;
@@ -299,7 +300,7 @@ public class StatusResponseMessage
     }
 
 
-    ASN1Element[] elements = responseSequence.getElements();
+    ASN1Element[] elements = responseSequence.elements();
     if ((elements.length != 3) && (elements.length != 4))
     {
       throw new SLAMDException("There must be either 3 or 4 elements in a " +
@@ -310,7 +311,7 @@ public class StatusResponseMessage
     int responseCode = 0;
     try
     {
-      responseCode = elements[0].decodeAsEnumerated().getIntValue();
+      responseCode = elements[0].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -322,7 +323,7 @@ public class StatusResponseMessage
     int clientState = 0;
     try
     {
-      clientState = elements[0].decodeAsEnumerated().getIntValue();
+      clientState = elements[0].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -331,16 +332,7 @@ public class StatusResponseMessage
     }
 
 
-    String clientMessage = null;
-    try
-    {
-      clientMessage = elements[2].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the third element as an " +
-                               "octet string", ae);
-    }
+    String clientMessage = elements[2].decodeAsOctetString().stringValue();
 
 
     if (elements.length == 3)
@@ -362,7 +354,7 @@ public class StatusResponseMessage
     }
 
 
-    elements = jobStatusSequence.getElements();
+    elements = jobStatusSequence.elements();
     if (elements.length != 3)
     {
       throw new SLAMDException("There must be 3 elements in a job status " +
@@ -370,22 +362,13 @@ public class StatusResponseMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode first job status element " +
-                               "as an octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     int jobState =0;
     try
     {
-      jobState = elements[1].decodeAsEnumerated().getIntValue();
+      jobState = elements[1].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {

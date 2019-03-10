@@ -20,10 +20,11 @@ package com.slamd.db;
 import java.security.MessageDigest;
 import java.util.Arrays;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+import com.unboundid.util.StaticUtils;
 
 
 
@@ -160,7 +161,7 @@ public final class SLAMDUser
    */
   public boolean checkPassword(final String password)
   {
-    byte[] pwHash = sha256Digest.digest(ASN1Element.getBytes(password));
+    byte[] pwHash = sha256Digest.digest(StaticUtils.getBytes(password));
     if (pwHash.length != hashedPassword.length)
     {
       return false;
@@ -186,7 +187,7 @@ public final class SLAMDUser
    */
   public void setPassword(final String password)
   {
-    hashedPassword = sha256Digest.digest(ASN1Element.getBytes(password));
+    hashedPassword = sha256Digest.digest(StaticUtils.getBytes(password));
   }
 
 
@@ -410,14 +411,14 @@ public final class SLAMDUser
       String[] groupNames     = new String[0];
 
       final ASN1Element element = ASN1Element.decode(encodedUser);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
         if (elementName.equals(ELEMENT_USER_NAME))
         {
-          userName = elements[i+1].decodeAsOctetString().getStringValue();
+          userName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_HASHED_PASSWORD))
         {
@@ -426,21 +427,21 @@ public final class SLAMDUser
         else if (elementName.equals(ELEMENT_GROUPS))
         {
           final ASN1Element[] groupElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           groupNames = new String[groupElements.length];
           for (int j=0; j < groupNames.length; j++)
           {
             groupNames[j] =
-                 groupElements[j].decodeAsOctetString().getStringValue();
+                 groupElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_IS_ADMIN))
         {
-          isAdmin = elements[i+1].decodeAsBoolean().getBooleanValue();
+          isAdmin = elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_DEFAULT_FOLDER))
         {
-          defaultFolder = elements[i+1].decodeAsOctetString().getStringValue();
+          defaultFolder = elements[i+1].decodeAsOctetString().stringValue();
         }
       }
 

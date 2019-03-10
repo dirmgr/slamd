@@ -27,11 +27,12 @@ import java.util.StringTokenizer;
 
 import com.sleepycat.je.DatabaseException;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.db.DecodeException;
 import com.slamd.parameter.LabelParameter;
@@ -2599,35 +2600,35 @@ public final class OptimizingJob
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
       final ASN1Element element = ASN1Element.decode(encodedOptimizingJob);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_OPTIMIZING_JOB_ID))
         {
           optimizingJobID =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_FOLDER_NAME))
         {
-          folderName = elements[i+1].decodeAsOctetString().getStringValue();
+          folderName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_PAUSE_REQUESTED))
         {
-          pauseRequested = elements[i+1].decodeAsBoolean().getBooleanValue();
+          pauseRequested = elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_ITERATION_IDS))
         {
           final ASN1Element[] idElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           final ArrayList<Job> jobList = new ArrayList<>(idElements.length);
           for (final ASN1Element idElement : idElements)
           {
             final String jobID =
-                 idElement.decodeAsOctetString().getStringValue();
+                 idElement.decodeAsOctetString().stringValue();
             final Job job = slamdServer.getConfigDB().getJob(jobID);
             if (job != null)
             {
@@ -2641,136 +2642,136 @@ public final class OptimizingJob
         else if (elementName.equals(ELEMENT_RERUN_ID))
         {
           final String jobID =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           reRunIteration = slamdServer.getConfigDB().getJob(jobID);
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
           final String jobClassName =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           jobClass = slamdServer.getOrLoadJobClass(jobClassName);
         }
         else if (elementName.equals(ELEMENT_JOB_STATE))
         {
-          jobState = elements[i+1].decodeAsInteger().getIntValue();
+          jobState = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_JOB_GROUP))
         {
-          jobGroup = elements[i+1].decodeAsOctetString().getStringValue();
+          jobGroup = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          description = elements[i+1].decodeAsOctetString().getStringValue();
+          description = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_INCLUDE_THREADS_IN_DESCRIPTION))
         {
           includeThreadsInDescription =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_DISPLAY_IN_READ_ONLY))
         {
           displayInReadOnlyMode =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_DURATION))
         {
-          duration = elements[i+1].decodeAsInteger().getIntValue();
+          duration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DELAY_BETWEEN_ITERATIONS))
         {
           delayBetweenIterations =
-               elements[i+1].decodeAsInteger().getIntValue();
+               elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_NUM_CLIENTS))
         {
-          numClients = elements[i+1].decodeAsInteger().getIntValue();
+          numClients = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_REQUESTED_CLIENTS))
         {
           final ASN1Element[] clientElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           requestedClients = new String[clientElements.length];
           for (int j=0; j < requestedClients.length; j++)
           {
             requestedClients[j] =
-                 clientElements[j].decodeAsOctetString().getStringValue();
+                 clientElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS))
         {
           final ASN1Element[] clientElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           monitorClients = new String[clientElements.length];
           for (int j=0; j < monitorClients.length; j++)
           {
             monitorClients[j] =
-                 clientElements[j].decodeAsOctetString().getStringValue();
+                 clientElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE))
         {
           monitorClientsIfAvailable =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_MIN_THREADS))
         {
-          minThreads = elements[i+1].decodeAsInteger().getIntValue();
+          minThreads = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_MAX_THREADS))
         {
-          maxThreads = elements[i+1].decodeAsInteger().getIntValue();
+          maxThreads = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_INCREMENT))
         {
-          threadIncrement = elements[i+1].decodeAsInteger().getIntValue();
+          threadIncrement = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_STARTUP_DELAY))
         {
-          threadStartupDelay = elements[i+1].decodeAsInteger().getIntValue();
+          threadStartupDelay = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_COLLECTION_INTERVAL))
         {
-          collectionInterval = elements[i+1].decodeAsInteger().getIntValue();
+          collectionInterval = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_MAX_NONIMPROVING))
         {
-          maxNonImproving = elements[i+1].decodeAsInteger().getIntValue();
+          maxNonImproving = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_RERUN_BEST_ITERATION))
         {
           reRunBestIteration =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_RERUN_DURATION))
         {
-          reRunDuration = elements[i+1].decodeAsInteger().getIntValue();
+          reRunDuration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_NOTIFY_ADDRESSES))
         {
           final ASN1Element[] addrElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           notifyAddresses = new String[addrElements.length];
           for (int j=0; j < notifyAddresses.length; j++)
           {
             notifyAddresses[j] =
-                 addrElements[j].decodeAsOctetString().getStringValue();
+                 addrElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
           final ASN1Element[] dependencyElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           dependencies = new String[dependencyElements.length];
           for (int j=0; j < dependencies.length; j++)
           {
             dependencies[j] =
-                 dependencyElements[j].decodeAsOctetString().getStringValue();
+                 dependencyElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_OPTIMIZATION_ALGORITHM))
@@ -2780,11 +2781,11 @@ public final class OptimizingJob
             for (int j=i+2; j < elements.length; j += 2)
             {
               final String name =
-                   elements[j].decodeAsOctetString().getStringValue();
+                   elements[j].decodeAsOctetString().stringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
                 final String className =
-                     elements[j+1].decodeAsOctetString().getStringValue();
+                     elements[j+1].decodeAsOctetString().stringValue();
                 jobClass = slamdServer.getOrLoadJobClass(className);
                 break;
               }
@@ -2792,24 +2793,24 @@ public final class OptimizingJob
           }
 
           final ASN1Element[] algorithmElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           final String algorithmName =
-               algorithmElements[0].decodeAsOctetString().getStringValue();
+               algorithmElements[0].decodeAsOctetString().stringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
                Constants.classForName(algorithmName).newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();
           final ASN1Element[] paramsElements =
-               algorithmElements[1].decodeAsSequence().getElements();
+               algorithmElements[1].decodeAsSequence().elements();
           for (final ASN1Element paramsElement : paramsElements)
           {
             final ASN1Element[] paramElements =
-                 paramsElement.decodeAsSequence().getElements();
+                 paramsElement.decodeAsSequence().elements();
             final String name =
-                 paramElements[0].decodeAsOctetString().getStringValue();
+                 paramElements[0].decodeAsOctetString().stringValue();
             final String value =
-                 paramElements[1].decodeAsOctetString().getStringValue();
+                 paramElements[1].decodeAsOctetString().stringValue();
 
             final Parameter p = optimizationParameters.getParameter(name);
             if (p != null)
@@ -2825,11 +2826,11 @@ public final class OptimizingJob
             for (int j=i+2; j < elements.length; j += 2)
             {
               final String name =
-                   elements[j].decodeAsOctetString().getStringValue();
+                   elements[j].decodeAsOctetString().stringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
                 final String jobClassName =
-                     elements[j+1].decodeAsOctetString().getStringValue();
+                     elements[j+1].decodeAsOctetString().stringValue();
                 jobClass = slamdServer.getOrLoadJobClass(jobClassName);
                 break;
               }
@@ -2838,15 +2839,15 @@ public final class OptimizingJob
 
           parameters = jobClass.getClientSideParameterStubs().clone();
           final ASN1Element[] paramsElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (final ASN1Element paramsElement : paramsElements)
           {
             final ASN1Element[] paramElements =
-                 paramsElement.decodeAsSequence().getElements();
+                 paramsElement.decodeAsSequence().elements();
             final String name =
-                 paramElements[0].decodeAsOctetString().getStringValue();
+                 paramElements[0].decodeAsOctetString().stringValue();
             final String value =
-                 paramElements[1].decodeAsOctetString().getStringValue();
+                 paramElements[1].decodeAsOctetString().stringValue();
 
             final Parameter p = parameters.getParameter(name);
             if (p != null)
@@ -2858,22 +2859,22 @@ public final class OptimizingJob
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_STOP_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_STOP_REASON))
         {
-          stopReason = elements[i+1].decodeAsOctetString().getStringValue();
+          stopReason = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_COMMENTS))
         {
-          comments = elements[i+1].decodeAsOctetString().getStringValue();
+          comments = elements[i+1].decodeAsOctetString().stringValue();
         }
       }
 
@@ -2948,51 +2949,51 @@ public final class OptimizingJob
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
       final ASN1Element element = ASN1Element.decode(encodedOptimizingJob);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_OPTIMIZING_JOB_ID))
         {
           optimizingJobID =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_FOLDER_NAME))
         {
-          folderName = elements[i+1].decodeAsOctetString().getStringValue();
+          folderName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
           final String jobClassName =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           jobClass = slamdServer.getOrLoadJobClass(jobClassName);
         }
         else if (elementName.equals(ELEMENT_JOB_STATE))
         {
-          jobState = elements[i+1].decodeAsInteger().getIntValue();
+          jobState = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          description = elements[i+1].decodeAsOctetString().getStringValue();
+          description = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DISPLAY_IN_READ_ONLY))
         {
           displayInReadOnlyMode =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
       }

@@ -21,9 +21,10 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1446,7 +1447,7 @@ public class IncrementalTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decode(encodedData).decodeAsSequence().getElements();
+           ASN1Element.decode(encodedData).decodeAsSequence().elements();
 
       countList  = new ArrayList<Integer>(elements.length);
       maxPerInterval = 0;
@@ -1454,7 +1455,7 @@ public class IncrementalTracker
 
       for (int i=0; i < elements.length; i++)
       {
-        int intervalCount = elements[i].decodeAsInteger().getIntValue();
+        int intervalCount = elements[i].decodeAsInteger().intValue();
         countList.add(intervalCount);
         if (intervalCount > maxPerInterval)
         {

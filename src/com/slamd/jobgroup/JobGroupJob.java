@@ -24,10 +24,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.db.DecodeException;
@@ -713,65 +714,65 @@ public final class JobGroupJob
       String        name               = null;
 
       final ASN1Element[] elements =
-           encodedJob.decodeAsSequence().getElements();
+           encodedJob.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
-          name = elements[i+1].decodeAsOctetString().getStringValue();
+          name = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
           // FIXME -- Does this need to be able to handle classes that aren't
           // registered?
           final String jobClassName =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           jobClass = slamdServer.getJobClass(jobClassName);
         }
         else if (elementName.equals(ELEMENT_COLLECTION_INTERVAL))
         {
-          collectionInterval = elements[i+1].decodeAsInteger().getIntValue();
+          collectionInterval = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DURATION))
         {
-          duration = elements[i+1].decodeAsInteger().getIntValue();
+          duration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_NUM_CLIENTS))
         {
-          numClients = elements[i+1].decodeAsInteger().getIntValue();
+          numClients = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREADS_PER_CLIENT))
         {
-          threadsPerClient = elements[i+1].decodeAsInteger().getIntValue();
+          threadsPerClient = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_STARTUP_DELAY))
         {
-          threadStartupDelay = elements[i+1].decodeAsInteger().getIntValue();
+          threadStartupDelay = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
           final ASN1Element[] depElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (final ASN1Element depElement : depElements)
           {
-            dependencies.add(depElement.decodeAsOctetString().getStringValue());
+            dependencies.add(depElement.decodeAsOctetString().stringValue());
           }
         }
         else if (elementName.equals(ELEMENT_MAPPED_PARAMS))
         {
           final ASN1Element[] paramElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (final ASN1Element paramElement : paramElements)
           {
             final ASN1Element[] pElements =
-                 paramElement.decodeAsSequence().getElements();
+                 paramElement.decodeAsSequence().elements();
             mappedParameters.put(
-                 pElements[0].decodeAsOctetString().getStringValue(),
-                 pElements[1].decodeAsOctetString().getStringValue());
+                 pElements[0].decodeAsOctetString().stringValue(),
+                 pElements[1].decodeAsOctetString().stringValue());
           }
         }
         else if (elementName.equals(ELEMENT_FIXED_PARAMS))

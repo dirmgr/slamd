@@ -21,11 +21,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.parameter.Parameter;
@@ -661,7 +662,7 @@ public class JobRequest
     {
       try
       {
-        jobID = valueElement.decodeAsOctetString().getStringValue();
+        jobID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -679,7 +680,7 @@ public class JobRequest
     {
       try
       {
-        jobClassName = valueElement.decodeAsOctetString().getStringValue();
+        jobClassName = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -694,7 +695,7 @@ public class JobRequest
     {
       try
       {
-        jobClassVersion = valueElement.decodeAsInteger().getIntValue();
+        jobClassVersion = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -713,7 +714,7 @@ public class JobRequest
     {
       try
       {
-        numClients = valueElement.decodeAsInteger().getIntValue();
+        numClients = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -733,7 +734,7 @@ public class JobRequest
     {
       try
       {
-        numClients = valueElement.decodeAsInteger().getIntValue();
+        numClients = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -753,7 +754,7 @@ public class JobRequest
       try
       {
         String startTimeStr =
-             valueElement.decodeAsOctetString().getStringValue();
+             valueElement.decodeAsOctetString().stringValue();
         startTime = new Date(Long.parseLong(startTimeStr));
       }
       catch (Exception e)
@@ -768,7 +769,7 @@ public class JobRequest
       try
       {
         String stopTimeStr =
-             valueElement.decodeAsOctetString().getStringValue();
+             valueElement.decodeAsOctetString().stringValue();
         stopTime = new Date(Long.parseLong(stopTimeStr));
       }
       catch (Exception e)
@@ -782,7 +783,7 @@ public class JobRequest
     {
       try
       {
-        duration = valueElement.decodeAsInteger().getIntValue();
+        duration = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -801,7 +802,7 @@ public class JobRequest
     {
       try
       {
-        collectionInterval = valueElement.decodeAsInteger().getIntValue();
+        collectionInterval = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -816,7 +817,7 @@ public class JobRequest
     {
       try
       {
-        threadStartupDelay = valueElement.decodeAsInteger().getIntValue();
+        threadStartupDelay = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -851,7 +852,7 @@ public class JobRequest
       try
       {
         reportInProgressStats =
-             valueElement.decodeAsBoolean().getBooleanValue();
+             valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {
@@ -866,7 +867,7 @@ public class JobRequest
     {
       try
       {
-        inProgressReportInterval = valueElement.decodeAsInteger().getIntValue();
+        inProgressReportInterval = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -885,7 +886,7 @@ public class JobRequest
     {
       try
       {
-        clientNumber = valueElement.decodeAsInteger().getIntValue();
+        clientNumber = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {

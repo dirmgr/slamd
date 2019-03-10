@@ -17,11 +17,12 @@ package com.slamd.stat;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -87,19 +88,19 @@ public class StatEncoder
   {
     try
     {
-      ASN1Element[] elements = sequence.getElements();
+      ASN1Element[] elements = sequence.elements();
       if (elements.length != 7)
       {
         throw new SLAMDException("There must be 7 elements in a stat tracker " +
                                  "sequence");
       }
 
-      String className   = elements[0].decodeAsOctetString().getStringValue();
-      String clientID    = elements[1].decodeAsOctetString().getStringValue();
-      String threadID    = elements[2].decodeAsOctetString().getStringValue();
-      String displayName = elements[3].decodeAsOctetString().getStringValue();
-      int    interval    = elements[4].decodeAsInteger().getIntValue();
-      int    duration    = elements[5].decodeAsInteger().getIntValue();
+      String className   = elements[0].decodeAsOctetString().stringValue();
+      String clientID    = elements[1].decodeAsOctetString().stringValue();
+      String threadID    = elements[2].decodeAsOctetString().stringValue();
+      String displayName = elements[3].decodeAsOctetString().stringValue();
+      int    interval    = elements[4].decodeAsInteger().intValue();
+      int    duration    = elements[5].decodeAsInteger().intValue();
       byte[] data        = elements[6].decodeAsOctetString().getValue();
 
       Class<?> trackerClass = Constants.classForName(className);
@@ -177,7 +178,7 @@ public class StatEncoder
   public static StatTracker[] sequenceToTrackers(ASN1Sequence sequence)
          throws SLAMDException
   {
-    ASN1Element[] elements = sequence.getElements();
+    ASN1Element[] elements = sequence.elements();
     StatTracker[] trackers = new StatTracker[elements.length];
 
     for (int i=0; i < elements.length; i++)

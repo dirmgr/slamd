@@ -17,10 +17,11 @@ package com.slamd.server;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.db.DecodeException;
 
 
@@ -253,26 +254,26 @@ public class UploadedFile
       String fileType        = null;
 
       ASN1Element   element  = ASN1Element.decode(encodedFile);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      ASN1Element[] elements = element.decodeAsSequence().elements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        String elementName = elements[i].decodeAsOctetString().stringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
-          fileName = elements[i+1].decodeAsOctetString().getStringValue();
+          fileName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_SIZE))
         {
-          fileSize = elements[i+1].decodeAsInteger().getIntValue();
+          fileSize = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_TYPE))
         {
-          fileType = elements[i+1].decodeAsOctetString().getStringValue();
+          fileType = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
           fileDescription =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DATA))
         {
@@ -313,26 +314,26 @@ public class UploadedFile
       String fileType        = null;
 
       ASN1Element   element  = ASN1Element.decode(encodedFile);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      ASN1Element[] elements = element.decodeAsSequence().elements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        String elementName = elements[i].decodeAsOctetString().stringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
-          fileName = elements[i+1].decodeAsOctetString().getStringValue();
+          fileName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_SIZE))
         {
-          fileSize = elements[i+1].decodeAsInteger().getIntValue();
+          fileSize = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_TYPE))
         {
-          fileType = elements[i+1].decodeAsOctetString().getStringValue();
+          fileType = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
           fileDescription =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
         }
       }
 

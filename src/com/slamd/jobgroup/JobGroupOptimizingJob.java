@@ -24,11 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.db.DecodeException;
@@ -1144,78 +1145,78 @@ public final class JobGroupOptimizingJob
       String                name                   = null;
 
       final ASN1Element[] elements =
-           encodedOptimizingJob.decodeAsSequence().getElements();
+           encodedOptimizingJob.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
-          name = elements[i+1].decodeAsOctetString().getStringValue();
+          name = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
           // FIXME -- Does this need to be able to handle classes that aren't
           // registered?
           final String jobClassName =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           jobClass = slamdServer.getJobClass(jobClassName);
         }
         else if (elementName.equals(ELEMENT_DURATION))
         {
-          duration = elements[i+1].decodeAsInteger().getIntValue();
+          duration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DELAY_BETWEEN_ITERATIONS))
         {
           delayBetweenIterations =
-               elements[i+1].decodeAsInteger().getIntValue();
+               elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_NUM_CLIENTS))
         {
-          numClients = elements[i+1].decodeAsInteger().getIntValue();
+          numClients = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_MIN_THREADS))
         {
-          minThreads = elements[i+1].decodeAsInteger().getIntValue();
+          minThreads = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_MAX_THREADS))
         {
-          maxThreads = elements[i+1].decodeAsInteger().getIntValue();
+          maxThreads = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_INCREMENT))
         {
-          threadIncrement = elements[i+1].decodeAsInteger().getIntValue();
+          threadIncrement = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_COLLECTION_INTERVAL))
         {
-          collectionInterval = elements[i+1].decodeAsInteger().getIntValue();
+          collectionInterval = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_MAX_NONIMPROVING))
         {
-          maxNonImproving = elements[i+1].decodeAsInteger().getIntValue();
+          maxNonImproving = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_STARTUP_DELAY))
         {
-          threadStartupDelay = elements[i+1].decodeAsInteger().getIntValue();
+          threadStartupDelay = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_RERUN_BEST_ITERATION))
         {
           reRunBestIteration =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_RERUN_DURATION))
         {
-          reRunDuration = elements[i+1].decodeAsInteger().getIntValue();
+          reRunDuration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
           final ASN1Element[] depElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (final ASN1Element depElement : depElements)
           {
-            dependencies.add(depElement.decodeAsOctetString().getStringValue());
+            dependencies.add(depElement.decodeAsOctetString().stringValue());
           }
         }
         else if (elementName.equals(ELEMENT_OPTIMIZATION_ALGORITHM))
@@ -1225,11 +1226,11 @@ public final class JobGroupOptimizingJob
             for (int j=i+2; j < elements.length; j += 2)
             {
               final String elementName2 =
-                   elements[j].decodeAsOctetString().getStringValue();
+                   elements[j].decodeAsOctetString().stringValue();
               if (elementName2.equals(ELEMENT_JOB_CLASS))
               {
                 final String className =
-                     elements[j+1].decodeAsOctetString().getStringValue();
+                     elements[j+1].decodeAsOctetString().stringValue();
                 jobClass = slamdServer.getOrLoadJobClass(className);
                 break;
               }
@@ -1237,24 +1238,24 @@ public final class JobGroupOptimizingJob
           }
 
           final ASN1Element[] algorithmElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           final String algorithmName =
-               algorithmElements[0].decodeAsOctetString().getStringValue();
+               algorithmElements[0].decodeAsOctetString().stringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
                Constants.classForName(algorithmName).newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();
           final ASN1Element[] paramsElements =
-               algorithmElements[1].decodeAsSequence().getElements();
+               algorithmElements[1].decodeAsSequence().elements();
           for (final ASN1Element paramsElement : paramsElements)
           {
             final ASN1Element[] paramElements =
-                 paramsElement.decodeAsSequence().getElements();
+                 paramsElement.decodeAsSequence().elements();
             final String paramName =
-                 paramElements[0].decodeAsOctetString().getStringValue();
+                 paramElements[0].decodeAsOctetString().stringValue();
             final String paramValue =
-                 paramElements[1].decodeAsOctetString().getStringValue();
+                 paramElements[1].decodeAsOctetString().stringValue();
 
             final Parameter p = optimizationParameters.getParameter(paramName);
             if (p != null)
@@ -1266,14 +1267,14 @@ public final class JobGroupOptimizingJob
         else if (elementName.equals(ELEMENT_MAPPED_PARAMS))
         {
           final ASN1Element[] paramElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (final ASN1Element paramElement : paramElements)
           {
             final ASN1Element[] pElements =
-                 paramElement.decodeAsSequence().getElements();
+                 paramElement.decodeAsSequence().elements();
             mappedParameters.put(
-                 pElements[0].decodeAsOctetString().getStringValue(),
-                 pElements[1].decodeAsOctetString().getStringValue());
+                 pElements[0].decodeAsOctetString().stringValue(),
+                 pElements[1].decodeAsOctetString().stringValue());
           }
         }
         else if (elementName.equals(ELEMENT_FIXED_PARAMS))

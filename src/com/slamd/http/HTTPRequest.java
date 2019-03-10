@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import com.slamd.asn1.ASN1Element;
+import com.unboundid.util.StaticUtils;
 
 import com.unboundid.util.Base64;
 
@@ -705,7 +705,7 @@ public class HTTPRequest
     {
       String authStr = client.proxyAuthID + ':' + client.proxyAuthPW;
       buffer.append(HTTPClient.PROXY_AUTH_HEADER_PREFIX);
-      buffer.append(Base64.encode(ASN1Element.getBytes(authStr)));
+      buffer.append(Base64.encode(StaticUtils.getBytes(authStr)));
       buffer.append("\r\n");
     }
 
@@ -713,7 +713,7 @@ public class HTTPRequest
     {
       String authStr = client.authID + ':' + client.authPW;
       buffer.append(HTTPClient.AUTH_HEADER_PREFIX);
-      buffer.append(Base64.encode(ASN1Element.getBytes(authStr)));
+      buffer.append(Base64.encode(StaticUtils.getBytes(authStr)));
       buffer.append("\r\n");
     }
 

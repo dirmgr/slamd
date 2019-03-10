@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -157,39 +158,21 @@ public class ClientManagerHelloMessage
                                "as a sequence", ae);
     }
 
-    ASN1Element[] elements = helloSequence.getElements();
+    ASN1Element[] elements = helloSequence.elements();
     if (elements.length != 3)
     {
       throw new SLAMDException("There must be 3 elements in a client manager " +
                                "hello message");
     }
 
-    String clientVersion = null;
-    try
-    {
-      clientVersion = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode first element as an octet " +
-                               "string", ae);
-    }
+    String clientVersion = elements[0].decodeAsOctetString().stringValue();
 
-    String clientID = null;
-    try
-    {
-      clientID = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode second element as an octet " +
-                               "string", ae);
-    }
+    String clientID = elements[1].decodeAsOctetString().stringValue();
 
     int maxClients = -1;
     try
     {
-      maxClients = elements[2].decodeAsInteger().getIntValue();
+      maxClients = elements[2].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {

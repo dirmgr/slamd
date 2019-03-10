@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -210,7 +211,7 @@ public class ServerHelloMessage
     }
 
 
-    ASN1Element[] elements = helloSequence.getElements();
+    ASN1Element[] elements = helloSequence.elements();
     if (elements.length < 2)
     {
       throw new SLAMDException("There must be at least two elements in a " +
@@ -218,28 +219,10 @@ public class ServerHelloMessage
     }
 
 
-    String serverVersion = null;
-    try
-    {
-      serverVersion = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the first element as an " +
-                               "octet string", ae);
-    }
+    String serverVersion = elements[0].decodeAsOctetString().stringValue();
 
 
-    String serverID = null;
-    try
-    {
-      serverID = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the second element as an " +
-                               "octet string", ae);
-    }
+    String serverID = elements[1].decodeAsOctetString().stringValue();
 
 
     // FIXME:  Decode the authentication if it's present

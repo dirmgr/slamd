@@ -39,7 +39,8 @@ import java.util.StringTokenizer;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.slamd.asn1.ASN1Element;
+import com.unboundid.util.StaticUtils;
+
 import com.slamd.stat.CategoricalTracker;
 import com.slamd.stat.IncrementalTracker;
 import com.slamd.stat.IntegerValueTracker;
@@ -1613,7 +1614,7 @@ public class HTTPClient
     try
     {
       String requestStr = request.generateHTTPRequest(this);
-      outputStream.write(ASN1Element.getBytes(requestStr));
+      outputStream.write(StaticUtils.getBytes(requestStr));
       if (debugMode)
       {
         debug("CLIENT REQUEST:");
@@ -2822,13 +2823,13 @@ public class HTTPClient
           String authStr = proxyAuthID + ':' + proxyAuthPW;
           StringBuilder b = new StringBuilder();
           b.append("CLIENT REQUEST:  ").append(PROXY_AUTH_HEADER_PREFIX).
-            append(Base64.encode(ASN1Element.getBytes(authStr)));
+            append(Base64.encode(StaticUtils.getBytes(authStr)));
           debug(b.toString());
         }
 
         String authStr = proxyAuthID + ':' + proxyAuthPW;
         w.write(PROXY_AUTH_HEADER_PREFIX);
-        w.write(Base64.encode(ASN1Element.getBytes(authStr)));
+        w.write(Base64.encode(StaticUtils.getBytes(authStr)));
         w.write("\r\n");
       }
 

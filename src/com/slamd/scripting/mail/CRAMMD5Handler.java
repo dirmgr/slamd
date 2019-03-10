@@ -20,9 +20,8 @@ package com.slamd.scripting.mail;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.slamd.asn1.ASN1Element;
-
 import com.unboundid.util.Base64;
+import com.unboundid.util.StaticUtils;
 
 
 
@@ -163,11 +162,11 @@ public class CRAMMD5Handler
 
     // Finally, generate the HMAC-MD5 digest of the password and challenge,
     // convert it to a string, and return it.
-    byte[] challengeBytes = ASN1Element.getBytes(challenge);
-    byte[] pwBytes        = ASN1Element.getBytes(password);
+    byte[] challengeBytes = StaticUtils.getBytes(challenge);
+    byte[] pwBytes        = StaticUtils.getBytes(password);
     byte[] hmacMD5Bytes   = generateHMACMD5(challengeBytes, pwBytes);
     writeToHexString(hmacMD5Bytes, buffer);
-    return Base64.encode(ASN1Element.getBytes(buffer.toString()));
+    return Base64.encode(StaticUtils.getBytes(buffer.toString()));
   }
 
 

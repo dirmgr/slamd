@@ -17,11 +17,11 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -106,16 +106,8 @@ public class ClassTransferRequestMessage
   {
     String className = null;
 
-    try
-    {
-      ASN1OctetString nameString = element.decodeAsOctetString();
-      className = nameString.getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The class name element cannot be decoded as " +
-                               "an octet string", ae);
-    }
+    ASN1OctetString nameString = element.decodeAsOctetString();
+    className = nameString.stringValue();
 
     return new ClassTransferRequestMessage(messageID, className);
   }

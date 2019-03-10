@@ -20,9 +20,10 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -228,7 +229,7 @@ public class FileData
     {
       try
       {
-        fileName = valueElement.decodeAsOctetString().getStringValue();
+        fileName = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -270,7 +271,7 @@ public class FileData
     {
       try
       {
-        fileType = valueElement.decodeAsOctetString().getStringValue();
+        fileType = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -286,7 +287,7 @@ public class FileData
     {
       try
       {
-        fileDescription = valueElement.decodeAsOctetString().getStringValue();
+        fileDescription = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -339,7 +340,7 @@ public class FileData
     ASN1Element[] elements;
     try
     {
-      elements = encodedData.decodeAsSequence().getElements();
+      elements = encodedData.decodeAsSequence().elements();
     }
     catch (Exception e)
     {

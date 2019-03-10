@@ -20,11 +20,12 @@ package com.slamd.message;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.parameter.Parameter;
@@ -381,7 +382,7 @@ public class JobRequestMessage
     }
 
 
-    ASN1Element[] elements = requestSequence.getElements();
+    ASN1Element[] elements = requestSequence.elements();
     if (elements.length != 10)
     {
       throw new SLAMDException("There must be ten elements in a job " +
@@ -390,77 +391,43 @@ public class JobRequestMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the first element as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
-    String jobClass = null;
-    try
-    {
-      jobClass = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the second element as an " +
-                               "octet string", ae);
-    }
+    String jobClass = elements[1].decodeAsOctetString().stringValue();
 
 
 
     long startTime = 0;
+    String startTimeStr = elements[2].decodeAsOctetString().stringValue();
     try
     {
-      String startTimeStr = elements[2].decodeAsOctetString().getStringValue();
-      try
-      {
-        startTime = Long.parseLong(startTimeStr);
-      }
-      catch (NumberFormatException nfe)
-      {
-        throw new SLAMDException("Could not decode " + startTimeStr +
-                                 " as a long", nfe);
-      }
+      startTime = Long.parseLong(startTimeStr);
     }
-    catch (ASN1Exception ae)
+    catch (NumberFormatException nfe)
     {
-      throw new SLAMDException("Could not decode the third element as an " +
-                               "octet string", ae);
+      throw new SLAMDException("Could not decode " + startTimeStr +
+           " as a long", nfe);
     }
 
 
     long stopTime = 0;
+    String stopTimeStr = elements[3].decodeAsOctetString().stringValue();
     try
     {
-      String stopTimeStr = elements[3].decodeAsOctetString().getStringValue();
-      try
-      {
-        stopTime = Long.parseLong(stopTimeStr);
-      }
-      catch (NumberFormatException nfe)
-      {
-        throw new SLAMDException("Could not decode " + stopTimeStr +
-                                 " as a long", nfe);
-      }
+      stopTime = Long.parseLong(stopTimeStr);
     }
-    catch (ASN1Exception ae)
+    catch (NumberFormatException nfe)
     {
-      throw new SLAMDException("Could not decode the fourth element as an " +
-                               "octet string", ae);
+      throw new SLAMDException("Could not decode " + stopTimeStr +
+           " as a long", nfe);
     }
 
 
     int clientNumber = -1;
     try
     {
-      clientNumber = elements[4].decodeAsInteger().getIntValue();
+      clientNumber = elements[4].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -472,7 +439,7 @@ public class JobRequestMessage
     int duration = 0;
     try
     {
-      duration = elements[5].decodeAsInteger().getIntValue();
+      duration = elements[5].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -484,7 +451,7 @@ public class JobRequestMessage
     int threadsPerClient = 0;
     try
     {
-      threadsPerClient = elements[6].decodeAsInteger().getIntValue();
+      threadsPerClient = elements[6].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -496,7 +463,7 @@ public class JobRequestMessage
     int threadStartupDelay = 0;
     try
     {
-      threadStartupDelay = elements[7].decodeAsInteger().getIntValue();
+      threadStartupDelay = elements[7].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -508,7 +475,7 @@ public class JobRequestMessage
     int collectionInterval = 0;
     try
     {
-      collectionInterval = elements[8].decodeAsInteger().getIntValue();
+      collectionInterval = elements[8].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {

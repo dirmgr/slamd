@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -181,7 +182,7 @@ public class JobControlResponseMessage
     }
 
 
-    ASN1Element[] elements = responseSequence.getElements();
+    ASN1Element[] elements = responseSequence.elements();
     if (elements.length != 3)
     {
       throw new SLAMDException("There must be three elements in a job " +
@@ -189,22 +190,13 @@ public class JobControlResponseMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the first element as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     int responseCode = 0;
     try
     {
-      responseCode = elements[1].decodeAsEnumerated().getIntValue();
+      responseCode = elements[1].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -213,16 +205,7 @@ public class JobControlResponseMessage
     }
 
 
-    String responseMessage = null;
-    try
-    {
-      responseMessage = elements[2].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the third element as an " +
-                               "octet string", ae);
-    }
+    String responseMessage = elements[2].decodeAsOctetString().stringValue();
 
 
     return new JobControlResponseMessage(messageID, jobID, responseCode,

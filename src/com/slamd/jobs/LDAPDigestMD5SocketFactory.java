@@ -29,14 +29,14 @@ import java.util.StringTokenizer;
 import netscape.ldap.LDAPException;
 import netscape.ldap.LDAPSocketFactory;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Sequence;
-import com.slamd.asn1.ASN1Writer;
-import com.slamd.common.Constants;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -284,28 +284,26 @@ public class LDAPDigestMD5SocketFactory
 
     // Tap into the input and output streams and use them to create an ASN.1
     // reader and writer.
-    InputStream  inputStream;
+    InputStream inputStream;
     OutputStream outputStream;
-    ASN1Reader   asn1Reader;
-    ASN1Writer   asn1Writer;
+    ASN1StreamReader asn1StreamReader;
     try
     {
-      inputStream  = socket.getInputStream();
+      inputStream = socket.getInputStream();
       outputStream = socket.getOutputStream();
-      asn1Reader   = new ASN1Reader(inputStream);
-      asn1Writer   = new ASN1Writer(outputStream);
+      asn1StreamReader   = new ASN1StreamReader(inputStream);
     }
     catch (IOException ioe)
     {
       throw new LDAPException("Unable to get input and/or output stream -- " +
-                              ioe, LDAPException.CONNECT_ERROR);
+           ioe, LDAPException.CONNECT_ERROR);
     }
 
 
     // Bind the connection to the directory server.
     try
     {
-      doBind(asn1Reader, asn1Writer, host, authID, password);
+      doBind(asn1StreamReader, outputStream, host, authID, password);
     }
     catch (LDAPException le)
     {
@@ -327,19 +325,24 @@ public class LDAPDigestMD5SocketFactory
   /**
    * Handles the process of actually performing the bind.
    *
-   * @param  asn1Reader  The ASN.1 reader used top read responses from the
-   *                     server.
-   * @param  asn1Writer  The ASN.1 writer used to write requests to the server.
-   * @param  host        The address of the directory server, used to construct
-   *                     the digest-uri field for the authentication.
-   * @param  authID      The authentication ID of the user that is to perform
-   *                     the bind.  It is generally in the form "dn:{userdn}".
-   * @param  password    The password for the user indicated in the auth ID.
+   * @param  asn1StreamReader  The ASN.1 reader used top read responses from the
+   *                           server.
+   * @param  outputStream      The output stream used to write requests to the
+   *                           server.
+   * @param  host              The address of the directory server, used to
+   *                           construct  the digest-uri field for the
+   *                           authentication.
+   * @param  authID            The authentication ID of the user that is to
+   *                           perform the bind.  It is generally in the form
+   *                           "dn:{userdn}".
+   * @param  password          The password for the user indicated in the auth
+   *                           ID.
    *
    * @throws  LDAPException  If any problem occurs while processing the bind.
    */
-  private void doBind(ASN1Reader asn1Reader, ASN1Writer asn1Writer, String host,
-                      String authID, String password)
+  private void doBind(ASN1StreamReader asn1StreamReader,
+                      OutputStream outputStream, String host, String authID,
+                      String password)
           throws LDAPException
   {
     // First, create the LDAP message for the bind request.
@@ -368,7 +371,8 @@ public class LDAPDigestMD5SocketFactory
     // Send the request to the server.
     try
     {
-      asn1Writer.writeElement(messageElement);
+      ASN1Writer.writeElement(messageElement, outputStream);
+      outputStream.flush();
     }
     catch (IOException ioe)
     {
@@ -382,14 +386,7 @@ public class LDAPDigestMD5SocketFactory
     ASN1Element responseElement;
     try
     {
-      responseElement =
-           asn1Reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new LDAPException("Unable to decode the initial bind response " +
-                              "from the server:  " + ae,
-                              LDAPException.UNAVAILABLE);
+      responseElement = asn1StreamReader.readElement();
     }
     catch (IOException ioe)
     {
@@ -403,7 +400,7 @@ public class LDAPDigestMD5SocketFactory
     String responseData = null;
     try
     {
-      ASN1Element[] elements = responseElement.decodeAsSequence().getElements();
+      ASN1Element[] elements = responseElement.decodeAsSequence().elements();
       if (elements.length != 2)
       {
         throw new LDAPException("Unable to decode the initial bind response " +
@@ -420,8 +417,8 @@ public class LDAPDigestMD5SocketFactory
                                 LDAPException.UNAVAILABLE);
       }
 
-      elements = elements[1].decodeAsSequence().getElements();
-      int resultCode = elements[0].decodeAsEnumerated().getIntValue();
+      elements = elements[1].decodeAsSequence().elements();
+      int resultCode = elements[0].decodeAsEnumerated().intValue();
       if (resultCode != LDAPException.SASL_BIND_IN_PROGRESS)
       {
         throw new LDAPException("Unable to decode the initial bind response " +
@@ -433,7 +430,7 @@ public class LDAPDigestMD5SocketFactory
       {
         if (elements[i].getType() == LDAP_SERVER_SASL_CREDENTIALS_TYPE)
         {
-          responseData = elements[i].decodeAsOctetString().getStringValue();
+          responseData = elements[i].decodeAsOctetString().stringValue();
         }
       }
 
@@ -557,7 +554,8 @@ public class LDAPDigestMD5SocketFactory
     // Send the bind request to the directory server.
     try
     {
-      asn1Writer.writeElement(messageElement);
+      ASN1Writer.writeElement(messageElement, outputStream);
+      outputStream.flush();
     }
     catch (IOException ioe)
     {
@@ -570,14 +568,7 @@ public class LDAPDigestMD5SocketFactory
     // Read the response from the server.
     try
     {
-      responseElement =
-           asn1Reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new LDAPException("Unable to decode the subsequent bind response " +
-                              "from the server:  " + ae,
-                              LDAPException.UNAVAILABLE);
+      responseElement = asn1StreamReader.readElement();
     }
     catch (IOException ioe)
     {
@@ -590,7 +581,7 @@ public class LDAPDigestMD5SocketFactory
     // Decode the element as a bind response.
     try
     {
-      ASN1Element[] elements = responseElement.decodeAsSequence().getElements();
+      ASN1Element[] elements = responseElement.decodeAsSequence().elements();
       if (elements.length != 2)
       {
         throw new LDAPException("Unable to decode the subsequent bind " +
@@ -607,16 +598,16 @@ public class LDAPDigestMD5SocketFactory
                                 LDAPException.UNAVAILABLE);
       }
 
-      elements = elements[1].decodeAsSequence().getElements();
-      int resultCode = elements[0].decodeAsEnumerated().getIntValue();
+      elements = elements[1].decodeAsSequence().elements();
+      int resultCode = elements[0].decodeAsEnumerated().intValue();
       if (resultCode == LDAPException.SUCCESS)
       {
         return;
       }
 
 
-      String matchedDN    = elements[1].decodeAsOctetString().getStringValue();
-      String errorMessage = elements[2].decodeAsOctetString().getStringValue();
+      String matchedDN    = elements[1].decodeAsOctetString().stringValue();
+      String errorMessage = elements[2].decodeAsOctetString().stringValue();
       throw new LDAPException("The bind attempt was not successful.",
                               resultCode, errorMessage, matchedDN);
     }

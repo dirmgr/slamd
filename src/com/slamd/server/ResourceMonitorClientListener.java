@@ -27,7 +27,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import javax.net.ssl.SSLServerSocketFactory;
 
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.common.Constants;
 import com.slamd.db.SLAMDDB;
 import com.slamd.job.Job;
@@ -361,8 +362,9 @@ public class ResourceMonitorClientListener
                       Constants.MESSAGE_RESPONSE_CONNECTION_LIMIT_REACHED,
                       "The maximum number of simultaneous connections has " +
                       "been reached", -1);
-            ASN1Writer writer = new ASN1Writer(clientSocket.getOutputStream());
-            writer.writeElement(helloResp.encode());
+            ASN1Writer.writeElement(helloResp.encode(),
+                 clientSocket.getOutputStream());
+            clientSocket.getOutputStream().flush();
             clientSocket.close();
           }
           else

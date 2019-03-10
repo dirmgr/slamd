@@ -20,8 +20,9 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 

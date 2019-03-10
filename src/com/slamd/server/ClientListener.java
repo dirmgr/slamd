@@ -28,9 +28,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import javax.net.ssl.SSLServerSocketFactory;
 
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.admin.AccessManager;
 import com.slamd.admin.AdminAccess;
-import com.slamd.asn1.ASN1Writer;
 import com.slamd.common.Constants;
 import com.slamd.common.RefCountMutex;
 import com.slamd.common.SLAMDException;
@@ -418,8 +419,10 @@ public class ClientListener
                     Constants.MESSAGE_RESPONSE_SERVER_ERROR,
                     "Unable to obtain a write lock on the connection list.",
                     -1);
-          ASN1Writer writer = new ASN1Writer(clientSocket.getOutputStream());
-          writer.writeElement(helloResp.encode());
+
+          ASN1Writer.writeElement(helloResp.encode(),
+               clientSocket.getOutputStream());
+          clientSocket.getOutputStream();
           clientSocket.close();
           continue;
         }
@@ -441,8 +444,9 @@ public class ClientListener
                     Constants.MESSAGE_RESPONSE_CONNECTION_LIMIT_REACHED,
                     "The maximum number of simultaneous connections has " +
                     "been reached", -1);
-          ASN1Writer writer = new ASN1Writer(clientSocket.getOutputStream());
-          writer.writeElement(helloResp.encode());
+          ASN1Writer.writeElement(helloResp.encode(),
+               clientSocket.getOutputStream());
+          clientSocket.getOutputStream().flush();
           clientSocket.close();
         }
         else

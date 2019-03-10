@@ -20,11 +20,12 @@ package com.slamd.message;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -193,7 +194,7 @@ public class HelloResponseMessage
     }
 
 
-    ASN1Element[] elements = responseSequence.getElements();
+    ASN1Element[] elements = responseSequence.elements();
     if ((elements.length < 2) || (elements.length > 3))
     {
       throw new SLAMDException("A hello response message must have two or " +
@@ -203,7 +204,7 @@ public class HelloResponseMessage
     int responseCode = 0;
     try
     {
-      responseCode = elements[0].decodeAsInteger().getIntValue();
+      responseCode = elements[0].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -211,23 +212,14 @@ public class HelloResponseMessage
                                "integer", ae);
     }
 
-    String responseMessage = null;
-    try
-    {
-      responseMessage = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the second element as an " +
-                               "octet string", ae);
-    }
+    String responseMessage = elements[1].decodeAsOctetString().stringValue();
 
     long serverTime = -1;
     if (elements.length == 3)
     {
       try
       {
-        String timeStr = elements[2].decodeAsOctetString().getStringValue();
+        String timeStr = elements[2].decodeAsOctetString().stringValue();
         serverTime = Long.parseLong(timeStr);
       }
       catch (Exception e)

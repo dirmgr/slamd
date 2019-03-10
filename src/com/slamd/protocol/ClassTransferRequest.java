@@ -20,10 +20,11 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -203,12 +204,12 @@ public class ClassTransferRequest
       try
       {
         ASN1Element[] classNameElements =
-             valueElement.decodeAsSequence().getElements();
+             valueElement.decodeAsSequence().elements();
         classNames = new String[classNameElements.length];
         for (int i=0; i < classNameElements.length; i++)
         {
           classNames[i] =
-               classNameElements[i].decodeAsOctetString().getStringValue();
+               classNameElements[i].decodeAsOctetString().stringValue();
         }
       }
       catch (Exception e)
@@ -225,7 +226,7 @@ public class ClassTransferRequest
     {
       try
       {
-        includeDependencies = valueElement.decodeAsBoolean().getBooleanValue();
+        includeDependencies = valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {

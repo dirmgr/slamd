@@ -20,6 +20,7 @@ package com.slamd.clientmanager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -28,10 +29,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.client.Client;
 import com.slamd.client.ClientMessageWriter;
 import com.slamd.common.Constants;
@@ -76,10 +78,7 @@ public class ClientManager
   ArrayList<Process> processList;
 
   // The ASN.1 reader used to read messages from the server.
-  ASN1Reader asn1Reader;
-
-  // The ASN.1 writer used to write messages to the server.
-  ASN1Writer asn1Writer;
+  ASN1StreamReader asn1StreamReader;
 
   // Indicates whether the client manager should blindly trust any SSL
   // certificate presented by the SLAMD server.
@@ -115,6 +114,9 @@ public class ClientManager
 
   // The port number for the SLAMD server.
   int serverPort;
+
+  // The output stream to use to write to the server.
+  private OutputStream outputStream;
 
   // The socket used to communicate with the SLAMD server.
   Socket socket;
@@ -201,8 +203,8 @@ public class ClientManager
     nextMessageID     = 1;
     processList       = new ArrayList<Process>();
     socket            = null;
-    asn1Reader        = null;
-    asn1Writer        = null;
+    asn1StreamReader  = null;
+    outputStream      = null;
 
     if ((clientID == null) || (clientID.length() == 0))
     {
@@ -316,8 +318,8 @@ public class ClientManager
                 socket = socketFactory.createSocket(serverAddress, serverPort,
                                                     localAddress, 0);
               }
-              asn1Reader = new ASN1Reader(socket);
-              asn1Writer = new ASN1Writer(socket);
+              asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+              outputStream = socket.getOutputStream();
               socket.setSoTimeout(MAX_BLOCK_TIME);
             }
             catch (Exception e)
@@ -344,8 +346,9 @@ public class ClientManager
                 socket = socketFactory.createSocket(serverAddress, serverPort,
                                                     localAddress, 0);
               }
-              asn1Reader = new ASN1Reader(socket);
-              asn1Writer = new ASN1Writer(socket);
+
+              asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+              outputStream = socket.getOutputStream();
               socket.setSoTimeout(MAX_BLOCK_TIME);
             }
             catch (Exception e)
@@ -369,8 +372,8 @@ public class ClientManager
               InetAddress localAddress = InetAddress.getByName(clientAddress);
               socket = new Socket(serverAddress, serverPort, localAddress, 0);
             }
-            asn1Reader = new ASN1Reader(socket);
-            asn1Writer = new ASN1Writer(socket);
+            asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+            outputStream = socket.getOutputStream();
             socket.setSoTimeout(MAX_BLOCK_TIME);
           }
           catch (Exception e)
@@ -390,7 +393,7 @@ public class ClientManager
                                            clientID, maxClients);
         try
         {
-          asn1Writer.writeElement(helloMessage.encode());
+          writeElement(helloMessage.encode());
         }
         catch (Exception e)
         {
@@ -404,8 +407,10 @@ public class ClientManager
         HelloResponseMessage helloResponse = null;
         try
         {
-          ASN1Element element =
-               asn1Reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
+          socket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+          final ASN1Element element = asn1StreamReader.readElement();
+          socket.setSoTimeout(MAX_BLOCK_TIME);
+
           helloResponse = (HelloResponseMessage) Message.decode(element);
         }
         catch (Exception e)
@@ -466,7 +471,7 @@ public class ClientManager
       ASN1Element element = null;
       try
       {
-        element = asn1Reader.readElement();
+        element = asn1StreamReader.readElement();
         if (element == null)
         {
           messageWriter.writeMessage("Client manager connection closed by " +
@@ -665,7 +670,7 @@ public class ClientManager
 
       try
       {
-        asn1Writer.writeElement(responseMessage.encode());
+        writeElement(responseMessage.encode());
       } catch (Exception e) {}
       return;
     }
@@ -691,7 +696,7 @@ public class ClientManager
 
         try
         {
-          asn1Writer.writeElement(responseMessage.encode());
+          writeElement(responseMessage.encode());
         } catch (Exception e2) {}
         return;
       }
@@ -704,7 +709,7 @@ public class ClientManager
     messageWriter.writeVerbose(responseMessage.toString());
     try
     {
-      asn1Writer.writeElement(responseMessage.encode());
+      writeElement(responseMessage.encode());
     } catch (Exception e) {}
   }
 
@@ -758,7 +763,7 @@ public class ClientManager
     messageWriter.writeVerbose(response.toString());
     try
     {
-      asn1Writer.writeElement(response.encode());
+      writeElement(response.encode());
     } catch (Exception e) {}
   }
 
@@ -809,6 +814,23 @@ public class ClientManager
         Thread.sleep(MAX_BLOCK_TIME);
       } catch (InterruptedException ie) {}
     }
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

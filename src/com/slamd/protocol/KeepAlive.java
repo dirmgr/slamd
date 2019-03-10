@@ -19,8 +19,9 @@ package com.slamd.protocol;
 
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Null;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Null;
+
 import com.slamd.common.SLAMDException;
 
 

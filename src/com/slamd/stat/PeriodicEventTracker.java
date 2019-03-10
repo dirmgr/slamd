@@ -22,9 +22,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1248,24 +1249,24 @@ public class PeriodicEventTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decodeAsSequence(encodedData).getElements();
+           ASN1Sequence.decodeAsSequence(encodedData).elements();
       numOccurrences = (elements.length-3) / 2;
       eventTimes     = new long[numOccurrences];
       eventValues    = new double[numOccurrences];
       totalValue     = 0.0;
 
       startTime =
-           Long.parseLong(elements[0].decodeAsOctetString().getStringValue());
+           Long.parseLong(elements[0].decodeAsOctetString().stringValue());
       stopTime =
-           Long.parseLong(elements[1].decodeAsOctetString().getStringValue());
+           Long.parseLong(elements[1].decodeAsOctetString().stringValue());
       duration = (int) ((stopTime - startTime) / 1000);
 
       ASN1Element[] configElements =
-                         elements[2].decodeAsSequence().getElements();
+                         elements[2].decodeAsSequence().elements();
       for (int i=0; i < configElements.length; i++)
       {
         String elementStr =
-             configElements[i].decodeAsOctetString().getStringValue();
+             configElements[i].decodeAsOctetString().stringValue();
         int equalPos = elementStr.indexOf('=');
         String name = elementStr.substring(0, equalPos);
         boolean value = Boolean.valueOf(elementStr.substring(equalPos+1));
@@ -1300,10 +1301,10 @@ public class PeriodicEventTracker
       {
         eventTimes[i] =
              Long.parseLong(
-                  elements[j++].decodeAsOctetString().getStringValue());
+                  elements[j++].decodeAsOctetString().stringValue());
         eventValues[i] =
              Double.parseDouble(
-                  elements[j++].decodeAsOctetString().getStringValue());
+                  elements[j++].decodeAsOctetString().stringValue());
         totalValue += eventValues[i];
       }
     }

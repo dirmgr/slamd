@@ -34,7 +34,8 @@ import netscape.ldap.factory.JSSESocketFactory;
 import org.apache.catalina.realm.GenericPrincipal;
 import org.apache.catalina.realm.RealmBase;
 
-import com.slamd.asn1.ASN1Element;
+import com.unboundid.util.StaticUtils;
+
 import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 
 
@@ -1048,7 +1049,7 @@ public class LDAPRealm
       }
     }
 
-    return shaDigest.digest(ASN1Element.getBytes(credentials));
+    return shaDigest.digest(StaticUtils.getBytes(credentials));
   }
 
 

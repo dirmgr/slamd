@@ -19,8 +19,10 @@ package com.slamd.server;
 
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Constants;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.db.SLAMDDB;
 import com.slamd.job.JobClass;
@@ -178,14 +180,14 @@ public class RealTimeStatHandler
       {
         try
         {
-          ASN1Element[] dataElements = dataSequences[i].getElements();
+          ASN1Element[] dataElements = dataSequences[i].elements();
 // These are currently unused.
 //          String clientID =
 //               dataElements[0].decodeAsOctetString().getStringValue();
 //          String threadID =
 //               dataElements[1].decodeAsOctetString().getStringValue();
           String statName =
-               dataElements[2].decodeAsOctetString().getStringValue();
+               dataElements[2].decodeAsOctetString().stringValue();
 
 
           // Oops.  There is a bug in the way that stat done messages are
@@ -195,14 +197,15 @@ public class RealTimeStatHandler
           // around the problem.
           int intervalNum = -1;
           int statType;
-          if (dataElements[3].getType() == ASN1Element.ASN1_ENUMERATED_TYPE)
+          if (dataElements[3].getType() ==
+               ASN1Constants.UNIVERSAL_ENUMERATED_TYPE)
           {
-            statType = dataElements[3].decodeAsEnumerated().getIntValue();
+            statType = dataElements[3].decodeAsEnumerated().intValue();
           }
           else
           {
-            intervalNum = dataElements[3].decodeAsInteger().getIntValue();
-            statType    = dataElements[4].decodeAsEnumerated().getIntValue();
+            intervalNum = dataElements[3].decodeAsInteger().intValue();
+            statType    = dataElements[4].decodeAsEnumerated().intValue();
           }
 
           switch (statType)
@@ -210,13 +213,13 @@ public class RealTimeStatHandler
             case Constants.STAT_REPORT_TYPE_ADD:
               double statValue =
                    Double.parseDouble(dataElements[5].decodeAsOctetString().
-                                      getStringValue());
+                                      stringValue());
               jobStats.updateStatToAdd(statName, intervalNum, statValue);
               break;
             case Constants.STAT_REPORT_TYPE_AVERAGE:
               statValue =
                    Double.parseDouble(dataElements[5].decodeAsOctetString().
-                                      getStringValue());
+                                      stringValue());
               jobStats.updateStatToAverage(statName, intervalNum, statValue);
               break;
             case Constants.STAT_REPORT_TYPE_DONE:

@@ -30,7 +30,8 @@ import com.sleepycat.je.Environment;
 import com.sleepycat.je.EnvironmentConfig;
 import com.sleepycat.je.LockMode;
 import com.sleepycat.je.OperationStatus;
-import com.slamd.asn1.ASN1Element;
+
+import com.unboundid.util.StaticUtils;
 
 
 
@@ -349,8 +350,8 @@ public class DBDump
           System.out.println("DB \"" + name + "\" key \"" + keyName + '"');
           if (listValues)
           {
-            String valueStr = ASN1Element.byteArrayToStringWithASCII(
-                                               valueEntry.getData(), 5);
+            String valueStr =
+                 StaticUtils.toHexPlusASCII(valueEntry.getData(), 5);
             System.out.println("Value:");
             System.out.println(valueStr);
           }
@@ -428,8 +429,8 @@ public class DBDump
           System.out.println("DB \"" + name + "\" key \"" + keyStr + '"');
           if (listValues)
           {
-            String valueStr = ASN1Element.byteArrayToStringWithASCII(
-                                               valueEntry.getData(), 5);
+            String valueStr =
+                 StaticUtils.toHexPlusASCII(valueEntry.getData(), 5);
             System.out.println("Value:");
             System.out.println(valueStr);
           }

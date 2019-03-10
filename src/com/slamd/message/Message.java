@@ -20,9 +20,10 @@ package com.slamd.message;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -304,7 +305,7 @@ public abstract class Message
                                "as a sequence:  " + ae, ae);
     }
 
-    ASN1Element[] elements = messageSequence.getElements();
+    ASN1Element[] elements = messageSequence.elements();
     if (elements.length != 2)
     {
       throw new SLAMDException("There must be 2 elements in a SLAMD message " +
@@ -315,7 +316,7 @@ public abstract class Message
     int messageID = 0;
     try
     {
-      messageID = elements[0].decodeAsInteger().getIntValue();
+      messageID = elements[0].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {

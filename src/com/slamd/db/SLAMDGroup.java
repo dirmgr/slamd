@@ -19,9 +19,9 @@ package com.slamd.db;
 
 import java.util.Arrays;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
 
 
 
@@ -252,25 +252,25 @@ public final class SLAMDGroup
       String[] memberNames = new String[0];
 
       final ASN1Element element = ASN1Element.decode(encodedGroup);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
-          groupName = elements[i+1].decodeAsOctetString().getStringValue();
+          groupName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_MEMBERS))
         {
           final ASN1Element[] memberElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           memberNames = new String[memberElements.length];
           for (int j=0; j < memberNames.length; j++)
           {
             memberNames[j] =
-                 memberElements[j].decodeAsOctetString().getStringValue();
+                 memberElements[j].decodeAsOctetString().stringValue();
           }
         }
       }

@@ -23,9 +23,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -185,7 +186,7 @@ public class ClassData
     {
       try
       {
-        className = valueElement.decodeAsOctetString().getStringValue();
+        className = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {

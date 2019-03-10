@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -154,7 +155,7 @@ public class ClassTransferResponseMessage
     ASN1Element[] elements = null;
     try
     {
-      elements = element.decodeAsSequence().getElements();
+      elements = element.decodeAsSequence().elements();
     }
     catch (ASN1Exception ae)
     {
@@ -175,7 +176,7 @@ public class ClassTransferResponseMessage
     int responseCode = Constants.MESSAGE_RESPONSE_LOCAL_ERROR;
     try
     {
-      responseCode = elements[0].decodeAsInteger().getIntValue();
+      responseCode = elements[0].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -185,31 +186,12 @@ public class ClassTransferResponseMessage
 
 
     // The second element is the class name.
-    String className = null;
-    try
-    {
-      ASN1OctetString nameString = elements[1].decodeAsOctetString();
-      className = nameString.getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The class name element cannot be decoded as " +
-                               "an octet string", ae);
-    }
+    ASN1OctetString nameString = elements[1].decodeAsOctetString();
+    String className = nameString.stringValue();
 
 
     // The third element is the class data.
-    byte[] classData = null;
-    try
-    {
-      classData = elements[2].decodeAsOctetString().getValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The class data element cannot be decoded as " +
-                               "an octet string", ae);
-    }
-
+    byte[] classData = elements[2].decodeAsOctetString().getValue();
 
     return new ClassTransferResponseMessage(messageID, responseCode, className,
                                             classData);

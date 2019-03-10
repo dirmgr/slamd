@@ -17,7 +17,8 @@ package com.slamd.jobgroup;
 
 
 
-import com.slamd.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Element;
+
 import com.slamd.job.JobClass;
 
 

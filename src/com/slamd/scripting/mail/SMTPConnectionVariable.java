@@ -27,8 +27,8 @@ import java.util.ArrayList;
 import javax.net.ssl.SSLSocket;
 
 import com.unboundid.util.Base64;
+import com.unboundid.util.StaticUtils;
 
-import com.slamd.asn1.ASN1Element;
 import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 import com.slamd.job.JobClass;
 import com.slamd.scripting.engine.Argument;
@@ -492,7 +492,7 @@ public class SMTPConnectionVariable
             return new BooleanVariable(false);
           }
 
-          byte[] usernameBytes  = ASN1Element.getBytes(sv1.getStringValue());
+          byte[] usernameBytes  = StaticUtils.getBytes(sv1.getStringValue());
           String usernameString = Base64.encode(usernameBytes);
           writer.write(usernameString + EOL);
           writer.flush();
@@ -505,7 +505,7 @@ public class SMTPConnectionVariable
             return new BooleanVariable(false);
           }
 
-          byte[] passwordBytes  = ASN1Element.getBytes(sv2.getStringValue());
+          byte[] passwordBytes  = StaticUtils.getBytes(sv2.getStringValue());
           String passwordString = Base64.encode(passwordBytes);
           writer.write(passwordString + EOL);
           writer.flush();
@@ -546,8 +546,8 @@ public class SMTPConnectionVariable
             return new BooleanVariable(false);
           }
 
-          byte[] usernameBytes = ASN1Element.getBytes(sv1.getStringValue());
-          byte[] passwordBytes = ASN1Element.getBytes(sv2.getStringValue());
+          byte[] usernameBytes = StaticUtils.getBytes(sv1.getStringValue());
+          byte[] passwordBytes = StaticUtils.getBytes(sv2.getStringValue());
           byte[] authBytes = new byte[usernameBytes.length +
                                       passwordBytes.length + 2];
           System.arraycopy(usernameBytes, 0, authBytes, 1,

@@ -19,13 +19,14 @@ package com.slamd.message;
 
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -317,34 +318,16 @@ public class ClientHelloMessage
                                "as a sequence", ae);
     }
 
-    ASN1Element[] elements = helloSequence.getElements();
+    ASN1Element[] elements = helloSequence.elements();
     if ((elements.length < 2) || (elements.length > 6))
     {
       throw new SLAMDException("There must be between 2 and 6 elements in a " +
                                "client hello message");
     }
 
-    String clientVersion = null;
-    try
-    {
-      clientVersion = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode first element as an octet " +
-                               "string", ae);
-    }
+    String clientVersion = elements[0].decodeAsOctetString().stringValue();
 
-    String clientID = null;
-    try
-    {
-      clientID = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode second element as an octet " +
-                               "string", ae);
-    }
+    String clientID = elements[1].decodeAsOctetString().stringValue();
 
 
     int    authType        = Constants.AUTH_TYPE_NONE;
@@ -355,7 +338,7 @@ public class ClientHelloMessage
       try
       {
         ASN1Element[] authElements =
-             elements[2].decodeAsSequence().getElements();
+             elements[2].decodeAsSequence().elements();
 
         if (authElements.length != 3)
         {
@@ -363,10 +346,10 @@ public class ClientHelloMessage
                                    "authentication sequence");
         }
 
-        authType = authElements[0].decodeAsInteger().getIntValue();
-        authID   = authElements[1].decodeAsOctetString().getStringValue();
+        authType = authElements[0].decodeAsInteger().intValue();
+        authID   = authElements[1].decodeAsOctetString().stringValue();
         authCredentials =
-             authElements[2].decodeAsOctetString().getStringValue();
+             authElements[2].decodeAsOctetString().stringValue();
       }
       catch (ASN1Exception ae)
       {
@@ -380,7 +363,7 @@ public class ClientHelloMessage
     {
       try
       {
-        requestServerAuth = elements[3].decodeAsBoolean().getBooleanValue();
+        requestServerAuth = elements[3].decodeAsBoolean().booleanValue();
       }
       catch (ASN1Exception ae)
       {
@@ -394,7 +377,7 @@ public class ClientHelloMessage
     {
       try
       {
-        restrictedMode = elements[4].decodeAsBoolean().getBooleanValue();
+        restrictedMode = elements[4].decodeAsBoolean().booleanValue();
       }
       catch (ASN1Exception ae)
       {
@@ -408,7 +391,7 @@ public class ClientHelloMessage
     {
       try
       {
-        supportsTimeSync = elements[5].decodeAsBoolean().getBooleanValue();
+        supportsTimeSync = elements[5].decodeAsBoolean().booleanValue();
       }
       catch (ASN1Exception ae)
       {

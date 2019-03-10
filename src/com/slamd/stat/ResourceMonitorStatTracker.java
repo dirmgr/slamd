@@ -20,9 +20,10 @@ package com.slamd.stat;
 import java.util.HashMap;
 import java.util.List;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.protocol.SLAMDMessage;
@@ -159,7 +160,7 @@ public class ResourceMonitorStatTracker
       try
       {
         String monitorClassName =
-             valueElement.decodeAsOctetString().getStringValue();
+             valueElement.decodeAsOctetString().stringValue();
         Class<?> monitorClass = Constants.classForName(monitorClassName);
         resourceMonitor = (ResourceMonitor) monitorClass.newInstance();
       }
@@ -263,7 +264,7 @@ public class ResourceMonitorStatTracker
                                                                 trackerSequence)
          throws SLAMDException
   {
-    ASN1Element[] elements = trackerSequence.getElements();
+    ASN1Element[] elements = trackerSequence.elements();
     ResourceMonitorStatTracker[] trackers =
          new ResourceMonitorStatTracker[elements.length];
     for (int i=0; i < elements.length; i++)

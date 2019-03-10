@@ -21,10 +21,11 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1289,15 +1290,15 @@ public class CategoricalTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decode(encodedData).decodeAsSequence().getElements();
+           ASN1Element.decode(encodedData).decodeAsSequence().elements();
 
       ASN1Element[] categoryNameElements =
-           elements[0].decodeAsSequence().getElements();
+           elements[0].decodeAsSequence().elements();
       categoryNames = new String[categoryNameElements.length];
       for (int i=0; i < categoryNames.length; i++)
       {
         categoryNames[i] =
-             categoryNameElements[i].decodeAsOctetString().getStringValue();
+             categoryNameElements[i].decodeAsOctetString().stringValue();
       }
 
       countList   = new ArrayList<int[]>();
@@ -1306,11 +1307,11 @@ public class CategoricalTracker
       for (int i=1; i < elements.length; i++)
       {
         ASN1Element[] countElements =
-             elements[i].decodeAsSequence().getElements();
+             elements[i].decodeAsSequence().elements();
         int[] counts = new int[countElements.length];
         for (int j=0; j< counts.length; j++)
         {
-          counts[j] = countElements[j].decodeAsInteger().getIntValue();
+          counts[j] = countElements[j].decodeAsInteger().intValue();
           totalCounts[j] += counts[j];
           totalCount += counts[j];
         }

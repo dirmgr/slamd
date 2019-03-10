@@ -21,10 +21,11 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1686,7 +1687,7 @@ public class LongValueTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decode(encodedData).decodeAsSequence().getElements();
+           ASN1Element.decode(encodedData).decodeAsSequence().elements();
 
       countList  = new ArrayList<Integer>();
       totalList  = new ArrayList<Long>();
@@ -1694,16 +1695,16 @@ public class LongValueTracker
       totalCount = 0;
 
       maxValue =
-           Long.parseLong(elements[0].decodeAsOctetString().getStringValue());
+           Long.parseLong(elements[0].decodeAsOctetString().stringValue());
       minValue =
-           Long.parseLong(elements[1].decodeAsOctetString().getStringValue());
+           Long.parseLong(elements[1].decodeAsOctetString().stringValue());
 
 
       for (int i=2; i < elements.length; i += 2)
       {
         long intervalTotal =
-             Long.parseLong(elements[i].decodeAsOctetString().getStringValue());
-        int intervalCount = elements[i+1].decodeAsInteger().getIntValue();
+             Long.parseLong(elements[i].decodeAsOctetString().stringValue());
+        int intervalCount = elements[i+1].decodeAsInteger().intValue();
 
         totalList.add(intervalTotal);
         countList.add(intervalCount);

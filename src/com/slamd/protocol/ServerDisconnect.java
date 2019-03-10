@@ -20,10 +20,11 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -244,7 +245,7 @@ public class ServerDisconnect
     {
       try
       {
-        disconnectReason = valueElement.decodeAsOctetString().getStringValue();
+        disconnectReason = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -260,7 +261,7 @@ public class ServerDisconnect
     {
       try
       {
-        isTransient = valueElement.decodeAsBoolean().getBooleanValue();
+        isTransient = valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {
@@ -276,7 +277,7 @@ public class ServerDisconnect
     {
       try
       {
-        clientShouldClose = valueElement.decodeAsBoolean().getBooleanValue();
+        clientShouldClose = valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {

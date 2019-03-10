@@ -22,11 +22,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.stat.ResourceMonitorStatTracker;
@@ -501,7 +502,7 @@ public class JobCompleted
     {
       try
       {
-        jobID = valueElement.decodeAsOctetString().getStringValue();
+        jobID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -520,7 +521,7 @@ public class JobCompleted
     {
       try
       {
-        jobState = valueElement.decodeAsEnumerated().getIntValue();
+        jobState = valueElement.decodeAsEnumerated().intValue();
       }
       catch (Exception e)
       {
@@ -541,7 +542,7 @@ public class JobCompleted
       try
       {
         actualStartTime = Long.parseLong(valueElement.decodeAsOctetString().
-                                              getStringValue());
+                                              stringValue());
       }
       catch (Exception e)
       {
@@ -562,7 +563,7 @@ public class JobCompleted
       try
       {
         actualStopTime = Long.parseLong(valueElement.decodeAsOctetString().
-                                             getStringValue());
+                                             stringValue());
       }
       catch (Exception e)
       {
@@ -583,7 +584,7 @@ public class JobCompleted
       try
       {
         actualDuration = Integer.parseInt(valueElement.decodeAsOctetString().
-                                               getStringValue());
+                                               stringValue());
       }
       catch (Exception e)
       {
@@ -646,7 +647,7 @@ public class JobCompleted
       try
       {
         String messagesString =
-             valueElement.decodeAsOctetString().getStringValue();
+             valueElement.decodeAsOctetString().stringValue();
         StringTokenizer tokenizer = new StringTokenizer(messagesString, "\r\n");
         ArrayList<String> messageList = new ArrayList<String>();
 

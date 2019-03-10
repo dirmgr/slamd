@@ -22,16 +22,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.common.Constants;
 import com.slamd.common.DynamicConstants;
 import com.slamd.common.SLAMDException;
@@ -94,11 +95,8 @@ public class Client
 
 
 
-  // The ASN.1 reader used to read messages from the server.
-  ASN1Reader reader;
-
-  // The ASN.1 writer used to write messages to the server.
-  ASN1Writer writer;
+  // An ASN.1 stream reader used to read messages from the server.
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether the client should aggregate the data from all the
   // individual threads before sending the results to the server.
@@ -135,6 +133,16 @@ public class Client
   // server.
   boolean useSSL;
 
+  // The message writer to which all informational and verbose messages will be
+  // written.
+  ClientMessageWriter messageWriter;
+
+  // The shutdown listener that will be notified when the client has stopped.
+  ClientShutdownListener shutdownListener;
+
+  // The local definition of a job that is currently defined
+  ClientSideJob jobInProgress;
+
   // The type of authentication that the client will perform with the SLAMD
   // server.
   int authType;
@@ -160,15 +168,8 @@ public class Client
   // the clock on the server system.
   long serverTimeOffset;
 
-  // The message writer to which all informational and verbose messages will be
-  // written.
-  ClientMessageWriter messageWriter;
-
-  // The shutdown listener that will be notified when the client has stopped.
-  ClientShutdownListener shutdownListener;
-
-  // The local definition of a job that is currently defined
-  ClientSideJob jobInProgress;
+  // The output stream used to write data to the server.
+  private OutputStream outputStream;
 
   // The stat reporter that can be used for sending real-time statistics to the
   // SLAMD server.
@@ -580,8 +581,10 @@ public class Client
             clientSocket = socketFactory.createSocket(serverAddress, serverPort,
                                 InetAddress.getByName(clientAddress), 0);
           }
-          writer = new ASN1Writer(clientSocket.getOutputStream());
-          reader = new ASN1Reader(clientSocket.getInputStream());
+
+          asn1StreamReader =
+               new ASN1StreamReader(clientSocket.getInputStream());
+          outputStream = clientSocket.getOutputStream();
         }
         catch (Exception e)
         {
@@ -632,8 +635,10 @@ public class Client
             clientSocket = socketFactory.createSocket(serverAddress, serverPort,
                                 InetAddress.getByName(clientAddress), 0);
           }
-          writer = new ASN1Writer(clientSocket.getOutputStream());
-          reader = new ASN1Reader(clientSocket.getInputStream());
+
+          asn1StreamReader =
+               new ASN1StreamReader(clientSocket.getInputStream());
+          outputStream = clientSocket.getOutputStream();
         }
         catch (Exception e)
         {
@@ -658,8 +663,8 @@ public class Client
                                     InetAddress.getByName(clientAddress), 0);
         }
 
-        writer = new ASN1Writer(clientSocket.getOutputStream());
-        reader = new ASN1Reader(clientSocket.getInputStream());
+        asn1StreamReader = new ASN1StreamReader(clientSocket.getInputStream());
+        outputStream = clientSocket.getOutputStream();
       }
       catch (IOException ioe)
       {
@@ -696,7 +701,7 @@ public class Client
                                 false, restrictedMode, supportsTimeSync);
     try
     {
-      writer.writeElement(helloMessage.encode());
+      writeElement(helloMessage.encode());
       if (messageWriter.usingVerboseMode())
       {
         messageWriter.writeVerbose("Sent the hello request");
@@ -714,9 +719,14 @@ public class Client
     // Read the hello response from the server
     try
     {
+      final int originalSOTimeout = clientSocket.getSoTimeout();
+      clientSocket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+      asn1StreamReader.setIgnoreSocketTimeout(false, false);
+      final ASN1Element helloResponseElement = asn1StreamReader.readElement();
+      clientSocket.setSoTimeout(originalSOTimeout);
+
       HelloResponseMessage helloResp =
-           (HelloResponseMessage)
-           Message.decode(reader.readElement(Constants.MAX_BLOCKING_READ_TIME));
+           (HelloResponseMessage) Message.decode(helloResponseElement);
       if (messageWriter.usingVerboseMode())
       {
         messageWriter.writeVerbose("Received the hello response");
@@ -1084,7 +1094,7 @@ public class Client
       ASN1Element element = null;
       try
       {
-        element = reader.readElement();
+        element = asn1StreamReader.readElement();
       }
       catch (InterruptedIOException iioe)
       {
@@ -1096,11 +1106,6 @@ public class Client
       {
         writeMessage("I/O Exception in handleRequests:  " + ioe);
         break;
-      }
-      catch (ASN1Exception ae)
-      {
-        writeMessage("ASN.1 parse exception in handleRequests:  " + ae);
-        continue;
       }
 
 
@@ -1164,7 +1169,7 @@ public class Client
 
           try
           {
-            writer.writeElement(response.encode());
+            writeElement(response.encode());
           }
           catch (IOException ioe)
           {
@@ -1201,7 +1206,7 @@ public class Client
 
           try
           {
-            writer.writeElement(response.encode());
+            writeElement(response.encode());
           }
           catch (IOException ioe)
           {
@@ -1484,7 +1489,7 @@ public class Client
                                        responseMsg);
     try
     {
-      writer.writeElement(response.encode());
+      writeElement(response.encode());
       if (messageWriter.usingVerboseMode())
       {
         writeVerbose("Sent job control response message");
@@ -1570,7 +1575,7 @@ public class Client
 
     try
     {
-      writer.writeElement(response.encode());
+      writeElement(response.encode());
       if (messageWriter.usingVerboseMode())
       {
         writeVerbose("Sent job response message");
@@ -1646,7 +1651,7 @@ public class Client
 
     try
     {
-      writer.writeElement(response.encode());
+      writeElement(response.encode());
       if (messageWriter.usingVerboseMode())
       {
         writeVerbose("Sent status response message");
@@ -1675,7 +1680,7 @@ public class Client
   public void sendMessage(Message message)
          throws IOException
   {
-    writer.writeElement(message.encode());
+    writeElement(message.encode());
   }
 
 
@@ -1777,7 +1782,7 @@ public class Client
       try
       {
         writeMessage("Done processing job " + jobInProgress.getJobID());
-        writer.writeElement(msg.encode());
+        writeElement(msg.encode());
         if (messageWriter.usingVerboseMode())
         {
           writeVerbose("Sent a job completed message");
@@ -1844,6 +1849,23 @@ public class Client
   public void writeVerbose(String message)
   {
     messageWriter.writeVerbose(message);
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

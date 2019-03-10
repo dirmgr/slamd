@@ -21,9 +21,10 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1650,19 +1651,19 @@ public class IntegerValueTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decode(encodedData).decodeAsSequence().getElements();
+           ASN1Element.decode(encodedData).decodeAsSequence().elements();
 
       countList  = new ArrayList<Integer>();
       totalList  = new ArrayList<Integer>();
 
-      maxValue = elements[0].decodeAsInteger().getIntValue();
-      minValue = elements[1].decodeAsInteger().getIntValue();
+      maxValue = elements[0].decodeAsInteger().intValue();
+      minValue = elements[1].decodeAsInteger().intValue();
 
 
       for (int i=2; i < elements.length; i += 2)
       {
-        int intervalTotal = elements[i].decodeAsInteger().getIntValue();
-        int intervalCount = elements[i+1].decodeAsInteger().getIntValue();
+        int intervalTotal = elements[i].decodeAsInteger().intValue();
+        int intervalCount = elements[i+1].decodeAsInteger().intValue();
 
         totalList.add(intervalTotal);
         countList.add(intervalCount);

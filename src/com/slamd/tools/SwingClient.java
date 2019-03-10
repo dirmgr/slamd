@@ -952,6 +952,7 @@ public class SwingClient
    * Indicates that the client has disconnected from the server and that the
    * client may wish to take whatever action is appropriate.
    */
+  @Override()
   public void clientDisconnected()
   {
     writeMessage("Disconnected from the SLAMD server");

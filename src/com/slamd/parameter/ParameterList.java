@@ -19,9 +19,10 @@ package com.slamd.parameter;
 
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -707,7 +708,7 @@ public class ParameterList
                                "as a sequence", ae);
     }
 
-    ASN1Element[] elements = listSequence.getElements();
+    ASN1Element[] elements = listSequence.elements();
     Parameter[] parameters = new Parameter[elements.length];
     for (int i=0; i < elements.length; i++)
     {

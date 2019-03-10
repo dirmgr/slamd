@@ -20,10 +20,11 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -305,7 +306,7 @@ public class StatusResponse
     {
       try
       {
-        resultCode = valueElement.decodeAsEnumerated().getIntValue();
+        resultCode = valueElement.decodeAsEnumerated().intValue();
       }
       catch (Exception e)
       {
@@ -323,7 +324,7 @@ public class StatusResponse
     {
       try
       {
-        clientState = valueElement.decodeAsEnumerated().getIntValue();
+        clientState = valueElement.decodeAsEnumerated().intValue();
       }
       catch (Exception e)
       {
@@ -337,7 +338,7 @@ public class StatusResponse
     {
       try
       {
-        stateMessage = valueElement.decodeAsOctetString().getStringValue();
+        stateMessage = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -351,7 +352,7 @@ public class StatusResponse
     {
       try
       {
-        jobID = valueElement.decodeAsOctetString().getStringValue();
+        jobID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -364,7 +365,7 @@ public class StatusResponse
     {
       try
       {
-        jobState = valueElement.decodeAsEnumerated().getIntValue();
+        jobState = valueElement.decodeAsEnumerated().intValue();
       }
       catch (Exception e)
       {

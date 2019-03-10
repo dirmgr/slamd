@@ -23,9 +23,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 import com.slamd.db.DecodeException;
 import com.slamd.job.JobItem;
@@ -361,22 +362,22 @@ public final class JobGroup
       final ArrayList<JobGroupItem> jobList = new ArrayList<>();
 
       final ASN1Element   element  = ASN1Element.decode(encodedJobGroup);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
           jobGroup.setName(
-               elements[i+1].decodeAsOctetString().getStringValue());
+               elements[i+1].decodeAsOctetString().stringValue());
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
           jobGroup.setDescription(
-               elements[i+1].decodeAsOctetString().getStringValue());
+               elements[i+1].decodeAsOctetString().stringValue());
         }
         else if (elementName.equals(ELEMENT_PARAMETERS))
         {
@@ -385,11 +386,11 @@ public final class JobGroup
         else if (elementName.equals(ELEMENT_JOB_LIST))
         {
           final ASN1Element[] listElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           for (int j=0; j < listElements.length; j += 2)
           {
             final String elementName2 =
-                 listElements[j].decodeAsOctetString().getStringValue();
+                 listElements[j].decodeAsOctetString().stringValue();
 
             if (elementName2.equals(ELEMENT_JOB_GROUP_JOB))
             {
@@ -438,20 +439,20 @@ public final class JobGroup
       String description = null;
 
       final ASN1Element element = ASN1Element.decode(encodedJobGroup);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
-          name = elements[i+1].decodeAsOctetString().getStringValue();
+          name = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          description = elements[i+1].decodeAsOctetString().getStringValue();
+          description = elements[i+1].decodeAsOctetString().stringValue();
         }
       }
 

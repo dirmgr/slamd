@@ -20,10 +20,11 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -190,7 +191,7 @@ public class StartClientResponse
     {
       try
       {
-        resultCode = valueElement.decodeAsEnumerated().getIntValue();
+        resultCode = valueElement.decodeAsEnumerated().intValue();
       }
       catch (Exception e)
       {
@@ -204,7 +205,7 @@ public class StartClientResponse
     {
       try
       {
-        errorMessage = valueElement.decodeAsOctetString().getStringValue();
+        errorMessage = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {

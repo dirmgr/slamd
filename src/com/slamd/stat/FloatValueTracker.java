@@ -21,10 +21,11 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1616,26 +1617,26 @@ public class FloatValueTracker
     try
     {
       ASN1Element[] elements =
-           ASN1Element.decode(encodedData).decodeAsSequence().getElements();
+           ASN1Element.decode(encodedData).decodeAsSequence().elements();
 
       countList  = new ArrayList<Integer>();
       totalList  = new ArrayList<Double>();
       totalValue = 0.0;
       totalCount = 0;
 
-      String maxStr = elements[0].decodeAsOctetString().getStringValue();
+      String maxStr = elements[0].decodeAsOctetString().stringValue();
       maxValue = Double.parseDouble(maxStr);
 
-      String minStr = elements[1].decodeAsOctetString().getStringValue();
+      String minStr = elements[1].decodeAsOctetString().stringValue();
       minValue = Double.parseDouble(minStr);
 
 
       for (int i=2; i < elements.length; i += 2)
       {
-        String totalStr = elements[i].decodeAsOctetString().getStringValue();
+        String totalStr = elements[i].decodeAsOctetString().stringValue();
         double intervalTotal = Double.parseDouble(totalStr);
 
-        int intervalCount = elements[i+1].decodeAsInteger().getIntValue();
+        int intervalCount = elements[i+1].decodeAsInteger().intValue();
 
         totalList.add(intervalTotal);
         countList.add(intervalCount);

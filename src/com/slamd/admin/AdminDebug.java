@@ -25,7 +25,8 @@ import java.util.Properties;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
-import com.slamd.asn1.ASN1Element;
+import com.unboundid.util.StaticUtils;
+
 import com.slamd.common.Constants;
 import com.slamd.job.JobClass;
 
@@ -654,7 +655,7 @@ public class AdminDebug
       htmlBody.append("<BR><BR>" + EOL);
 
       byte[] data = configDB.getDBData(dbName, dbKey);
-      String hexData = ASN1Element.byteArrayToStringWithASCII(data);
+      String hexData = StaticUtils.toHexPlusASCII(data, 0);
       hexData = replaceText(hexData, "<", "&lt;");
       hexData = replaceText(hexData, ">", "&gt;");
 

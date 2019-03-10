@@ -39,8 +39,9 @@ import com.sun.media.jai.codec.ImageEncoder;
 
 import com.sleepycat.je.DatabaseException;
 
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.DurationParser;
 import com.slamd.common.SLAMDException;
@@ -10244,12 +10245,12 @@ public class AdminJob
         else
         {
           FileInputStream inputStream     = new FileInputStream(f);
-          ASN1Reader      reader          = new ASN1Reader(inputStream);
           ASN1Sequence    trackerSequence = null;
 
           try
           {
-            trackerSequence = reader.readElement().decodeAsSequence();
+            trackerSequence =
+                 ASN1Element.readFrom(inputStream).decodeAsSequence();
           }
           catch (Exception e)
           {

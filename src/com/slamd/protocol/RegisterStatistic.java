@@ -20,9 +20,10 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -251,7 +252,7 @@ public class RegisterStatistic
     {
       try
       {
-        jobID = valueElement.decodeAsOctetString().getStringValue();
+        jobID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -270,7 +271,7 @@ public class RegisterStatistic
     {
       try
       {
-        clientID = valueElement.decodeAsOctetString().getStringValue();
+        clientID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -289,7 +290,7 @@ public class RegisterStatistic
     {
       try
       {
-        threadID = valueElement.decodeAsOctetString().getStringValue();
+        threadID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -308,7 +309,7 @@ public class RegisterStatistic
     {
       try
       {
-        displayName = valueElement.decodeAsOctetString().getStringValue();
+        displayName = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {

@@ -23,7 +23,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.client.ClientSideJob;
 
 
@@ -183,9 +184,9 @@ public class StatPersistenceThread
       fileName = fileName.replace(':', '_');
       File statFile = new File(fileName + ".temp");
       OutputStream outputStream = new FileOutputStream(statFile, false);
-      ASN1Writer writer = new ASN1Writer(outputStream);
-      writer.writeElement(StatEncoder.trackersToSequence(trackers));
-      writer.close();
+      ASN1Writer.writeElement(StatEncoder.trackersToSequence(trackers),
+           outputStream);
+      outputStream.flush();
       outputStream.close();
 
       File origFile = new File(fileName);
@@ -255,9 +256,9 @@ public class StatPersistenceThread
                   File statFile = new File(fileName + ".temp");
                   OutputStream outputStream = new FileOutputStream(statFile,
                                                                    false);
-                  ASN1Writer writer = new ASN1Writer(outputStream);
-                  writer.writeElement(StatEncoder.trackersToSequence(trackers));
-                  writer.close();
+                  ASN1Writer.writeElement(
+                       StatEncoder.trackersToSequence(trackers), outputStream);
+                  outputStream.flush();
                   outputStream.close();
 
                   File origFile = new File(fileName);

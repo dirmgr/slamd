@@ -21,10 +21,11 @@ import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -1381,35 +1382,35 @@ public class StackedValueTracker
     try
     {
       ASN1Element[] trackerElements =
-           ASN1Element.decodeAsSequence(encodedData).getElements();
+           ASN1Sequence.decodeAsSequence(encodedData).elements();
 
       ASN1Element[] nameElements =
-           trackerElements[0].decodeAsSequence().getElements();
+           trackerElements[0].decodeAsSequence().elements();
       categoryNames = new String[nameElements.length];
       for (int i=0; i < nameElements.length; i++)
       {
         categoryNames[i] =
-             nameElements[i].decodeAsOctetString().getStringValue();
+             nameElements[i].decodeAsOctetString().stringValue();
       }
 
       ASN1Element[] sequenceElements =
-           trackerElements[1].decodeAsSequence().getElements();
+           trackerElements[1].decodeAsSequence().elements();
       for (int i=0; i < sequenceElements.length; i++)
       {
         ASN1Element[] dataElements =
-             sequenceElements[i].decodeAsSequence().getElements();
+             sequenceElements[i].decodeAsSequence().elements();
 
         ASN1Element[] valueElements =
-             dataElements[0].decodeAsSequence().getElements();
+             dataElements[0].decodeAsSequence().elements();
         double[] values = new double[valueElements.length];
         for (int j=0; j < valueElements.length; j++)
         {
           values[j] =
                Double.parseDouble(
-                    valueElements[j].decodeAsOctetString().getStringValue());
+                    valueElements[j].decodeAsOctetString().stringValue());
         }
 
-        int count = dataElements[1].decodeAsInteger().getIntValue();
+        int count = dataElements[1].decodeAsInteger().intValue();
         valueList.add(values);
         countList.add(count);
       }
@@ -1417,11 +1418,11 @@ public class StackedValueTracker
       if (trackerElements.length > 2)
       {
         ASN1Element[] configElements =
-          trackerElements[2].decodeAsSequence().getElements();
+          trackerElements[2].decodeAsSequence().elements();
         for (int i=0; i < configElements.length; i++)
         {
           String elementStr =
-               configElements[i].decodeAsOctetString().getStringValue();
+               configElements[i].decodeAsOctetString().stringValue();
           int equalPos = elementStr.indexOf('=');
           String name = elementStr.substring(0, equalPos);
           boolean value = Boolean.valueOf(elementStr.substring(equalPos+1));

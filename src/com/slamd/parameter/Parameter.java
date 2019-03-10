@@ -20,12 +20,14 @@ package com.slamd.parameter;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Null;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Constants;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Null;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -562,7 +564,7 @@ public abstract class Parameter
     }
 
 
-    ASN1Element[] elements = parameterSequence.getElements();
+    ASN1Element[] elements = parameterSequence.elements();
     if (elements.length < 3)
     {
       throw new SLAMDException("The number of elements in the parameter " +
@@ -570,70 +572,19 @@ public abstract class Parameter
     }
 
 
-    String className = null;
-    try
-    {
-      className = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The first element of the parameter sequence " +
-                               "is not an enumerated value", ae);
-    }
+    String className = elements[0].decodeAsOctetString().stringValue();
 
 
-    String name = null;
-    try
-    {
-      name = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The second element of the parameter sequence " +
-                               "is not an octet string", ae);
-    }
+    String name = elements[1].decodeAsOctetString().stringValue();
 
 
-    String valueStr = null;
-    try
-    {
-      valueStr = elements[2].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The third element of the parameter sequence " +
-                               "is not an octet string", ae);
-    }
+    String valueStr = elements[2].decodeAsOctetString().stringValue();
 
 
-    String displayName = null;
-    if (elements.length > 3)
-    {
-      try
-      {
-        displayName = elements[3].decodeAsOctetString().getStringValue();
-      }
-      catch (ASN1Exception ae)
-      {
-        throw new SLAMDException("The fourth element of the parameter " +
-                                 "sequence is not an octet string", ae);
-      }
-    }
+    String displayName = elements[3].decodeAsOctetString().stringValue();
 
 
-    String description = null;
-    if (elements.length > 4)
-    {
-      try
-      {
-        description = elements[4].decodeAsOctetString().getStringValue();
-      }
-      catch (ASN1Exception ae)
-      {
-        throw new SLAMDException("The fifth element of the parameter " +
-                                 "sequence is not an octet string", ae);
-      }
-    }
+    String description = elements[4].decodeAsOctetString().stringValue();
 
 
     boolean isRequired = false;
@@ -641,7 +592,7 @@ public abstract class Parameter
     {
       try
       {
-        isRequired = elements[5].decodeAsBoolean().getBooleanValue();
+        isRequired = elements[5].decodeAsBoolean().booleanValue();
       }
       catch (ASN1Exception e)
       {
@@ -656,7 +607,7 @@ public abstract class Parameter
     {
       try
       {
-        isSensitive = elements[6].decodeAsBoolean().getBooleanValue();
+        isSensitive = elements[6].decodeAsBoolean().booleanValue();
       }
       catch (ASN1Exception e)
       {
@@ -671,15 +622,15 @@ public abstract class Parameter
     {
       try
       {
-        if (elements[7].getType() == ASN1Element.ASN1_SEQUENCE_TYPE)
+        if (elements[7].getType() == ASN1Constants.UNIVERSAL_SEQUENCE_TYPE)
         {
           ASN1Element[] choiceElements =
-               elements[7].decodeAsSequence().getElements();
+               elements[7].decodeAsSequence().elements();
           choices = new String[choiceElements.length];
           for (int i=0; i < choices.length; i++)
           {
             choices[i] =
-                 choiceElements[i].decodeAsOctetString().getStringValue();
+                 choiceElements[i].decodeAsOctetString().stringValue();
           }
         }
       }

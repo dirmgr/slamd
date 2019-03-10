@@ -19,13 +19,15 @@ package com.slamd.server;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
@@ -58,10 +60,7 @@ public class ClientManagerConnection
   private ArrayList<Message> messageQueue;
 
   // The ASN.1 reader used to read data from the client manager.
-  private ASN1Reader asn1Reader;
-
-  // The ASN.1 writer used to write data to the client manager.
-  private ASN1Writer asn1Writer;
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether this thread should continue listening for communication
   // from the client manager.
@@ -85,6 +84,9 @@ public class ClientManagerConnection
 
   // A mutex used to provide threadsafe access to the message queue.
   private final Object messageQueueMutex;
+
+  // The output stream used to write messages to the client manager.
+  private OutputStream outputStream;
 
   // The SLAMD server with which this client manager connection is associated.
   private SLAMDServer slamdServer;
@@ -136,8 +138,9 @@ public class ClientManagerConnection
     try
     {
       clientIPAddress = clientManagerSocket.getInetAddress().getHostAddress();
-      asn1Reader      = new ASN1Reader(clientManagerSocket);
-      asn1Writer      = new ASN1Writer(clientManagerSocket);
+      asn1StreamReader =
+           new ASN1StreamReader(clientManagerSocket.getInputStream());
+      outputStream = clientManagerSocket.getOutputStream();
     }
     catch (IOException ioe)
     {
@@ -152,8 +155,11 @@ public class ClientManagerConnection
     ClientManagerHelloMessage helloMessage = null;
     try
     {
-      ASN1Element element =
-           asn1Reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
+      final int originalSOTimeout = clientManagerSocket.getSoTimeout();
+      clientManagerSocket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+      final ASN1Element element = asn1StreamReader.readElement();
+      clientManagerSocket.setSoTimeout(originalSOTimeout);
+
       helloMessage = (ClientManagerHelloMessage) Message.decode(element);
     }
     catch (Exception e)
@@ -206,7 +212,7 @@ public class ClientManagerConnection
                         Constants.MESSAGE_RESPONSE_CLIENT_REJECTED,
                         "A client manager connection has already been " +
                         "established with client ID \"" + clientID + "\".", -1);
-          asn1Writer.writeElement(helloResponse.encode());
+          writeElement(helloResponse.encode());
           disconnect(true);
         }
         catch (IOException ioe)
@@ -230,7 +236,7 @@ public class ClientManagerConnection
       HelloResponseMessage helloResponse =
            new HelloResponseMessage(helloMessage.getMessageID(),
                                     Constants.MESSAGE_RESPONSE_SUCCESS, -1);
-      asn1Writer.writeElement(helloResponse.encode());
+      writeElement(helloResponse.encode());
     }
     catch (IOException ioe)
     {
@@ -355,7 +361,7 @@ public class ClientManagerConnection
       StartClientRequestMessage startMessage =
            new StartClientRequestMessage(messageID, numClients,
                     slamdServer.getClientListener().listenPort);
-      asn1Writer.writeElement(startMessage.encode());
+      writeElement(startMessage.encode());
     }
     catch (IOException ioe)
     {
@@ -439,7 +445,7 @@ public class ClientManagerConnection
     {
       StopClientRequestMessage stopMessage =
            new StopClientRequestMessage(messageID, numClients);
-      asn1Writer.writeElement(stopMessage.encode());
+      writeElement(stopMessage.encode());
     }
     catch (IOException ioe)
     {
@@ -517,7 +523,7 @@ public class ClientManagerConnection
            new ServerShutdownMessage(nextMessageID());
       try
       {
-        asn1Writer.writeElement(shutdownMessage.encode());
+        writeElement(shutdownMessage.encode());
       } catch (Exception e) {}
     }
 
@@ -623,7 +629,7 @@ public class ClientManagerConnection
     {
       try
       {
-        ASN1Element element = asn1Reader.readElement();
+        ASN1Element element = asn1StreamReader.readElement();
         if (element == null)
         {
           // This should only happen if the client has closed the connection.
@@ -700,7 +706,7 @@ public class ClientManagerConnection
              new KeepAliveMessage(nextMessageID());
         try
         {
-          asn1Writer.writeElement(keepAliveMessage.encode());
+          writeElement(keepAliveMessage.encode());
         }
         catch (IOException ioe)
         {
@@ -757,6 +763,23 @@ public class ClientManagerConnection
          throws ClassCastException
   {
     return clientID.compareTo(c.clientID);
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

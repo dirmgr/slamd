@@ -17,11 +17,14 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import java.util.ArrayList;
+
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -128,7 +131,7 @@ public class StatusRequestMessage
     }
 
 
-    ASN1Element[] elements = requestSequence.getElements();
+    ASN1Element[] elements = requestSequence.elements();
     if (elements.length == 0)
     {
       return new StatusRequestMessage(messageID);
@@ -139,16 +142,7 @@ public class StatusRequestMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Could not decode the first element as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     return new StatusRequestMessage(messageID, jobID);
@@ -170,18 +164,17 @@ public class StatusRequestMessage
   public ASN1Element encode()
   {
     ASN1Integer messageIDElement = new ASN1Integer(messageID);
-    ASN1Sequence statusRequestSequence =
-        new ASN1Sequence(ASN1_TYPE_STATUS_REQUEST);
 
+    final ArrayList<ASN1Element> elements = new ArrayList<>(1);
     if (! ((jobID == null) || (jobID.length() == 0)))
     {
-      statusRequestSequence.addElement(new ASN1OctetString(jobID));
+      elements.add(new ASN1OctetString(jobID));
     }
 
     ASN1Element[] messageElements = new ASN1Element[]
     {
       messageIDElement,
-      statusRequestSequence
+      new ASN1Sequence(ASN1_TYPE_STATUS_REQUEST, elements)
     };
 
     return new ASN1Sequence(messageElements);

@@ -19,18 +19,20 @@ package com.slamd.server;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.admin.AccessManager;
 import com.slamd.admin.AdminAccess;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.Job;
@@ -66,10 +68,7 @@ public class ResourceMonitorClientConnection
   private ArrayList<Message> messageList;
 
   // The reader used to read ASN.1 elements from the client.
-  private ASN1Reader reader;
-
-  // The writer used to write ASN.1 elements to the client.
-  private ASN1Writer writer;
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether this connection should keep listening for new messages
   // from the client.
@@ -106,6 +105,9 @@ public class ResourceMonitorClientConnection
 
   // A mutex used to provide threadsafe access to the message list
   private final Object messageListMutex;
+
+  // The output stream used to write messages to the client.
+  private OutputStream outputStream;
 
   // The SLAMD server with which this client connection is associated
   private SLAMDServer slamdServer;
@@ -179,15 +181,18 @@ public class ResourceMonitorClientConnection
     // Send the hello response to the client
     try
     {
-      reader = new ASN1Reader(socket.getInputStream());
-      writer = new ASN1Writer(socket.getOutputStream());
+      asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+      outputStream = socket.getOutputStream();
 
       ClientHelloMessage helloRequest;
       String respMesg = "";
       try
       {
-        ASN1Element element =
-             reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
+        final int originalSOTimeout = socket.getSoTimeout();
+        socket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+        final ASN1Element element = asn1StreamReader.readElement();
+        socket.setSoTimeout(originalSOTimeout);
+
         Message message = Message.decode(element);
         if (message instanceof ClientHelloMessage)
         {
@@ -211,7 +216,7 @@ public class ResourceMonitorClientConnection
               HelloResponseMessage helloResp =
                    new HelloResponseMessage(0,
                             Constants.MESSAGE_RESPONSE_SERVER_ERROR, msg, -1);
-              writer.writeElement(helloResp.encode());
+              writeElement(helloResp.encode());
               slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                      "Rejected new monitor client connection " +
                                      clientID + " -- " + msg);
@@ -238,7 +243,7 @@ public class ResourceMonitorClientConnection
               HelloResponseMessage helloResp =
                    new HelloResponseMessage(0,
                             Constants.MESSAGE_RESPONSE_SERVER_ERROR, msg, -1);
-              writer.writeElement(helloResp.encode());
+              writeElement(helloResp.encode());
               slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                      "Rejected new monitor client connection " +
                                      clientID + " -- " + msg);
@@ -262,7 +267,7 @@ public class ResourceMonitorClientConnection
               String msg = msgBuffer.toString();
               HelloResponseMessage helloResp =
                    new HelloResponseMessage(0, resultCode, msg, -1);
-              writer.writeElement(helloResp.encode());
+              writeElement(helloResp.encode());
               slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                      "Rejected new monitor client connection " +
                                      clientID + " -- " + msg);
@@ -283,17 +288,6 @@ public class ResourceMonitorClientConnection
                                    "got instance of " +
                                    message.getClass().getName());
         }
-      }
-      catch (ASN1Exception ae)
-      {
-        slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
-                               "Unable to parse hello request message from " +
-                               toString() + ":  " + ae);
-        ae.printStackTrace();
-        slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(ae));
-        throw new SLAMDException("Unable to parse hello request message from " +
-                                 toString() + ":  " + ae, ae);
       }
       catch (SLAMDException se)
       {
@@ -321,7 +315,7 @@ public class ResourceMonitorClientConnection
                           "A resource monitor client connection has already " +
                           "been established with client ID \"" + clientID +
                           "\".", -1);
-            writer.writeElement(helloResponse.encode());
+            writeElement(helloResponse.encode());
             socket.close();
           }
           catch (IOException ioe)
@@ -347,7 +341,7 @@ public class ResourceMonitorClientConnection
       HelloResponseMessage helloResp =
            new HelloResponseMessage(0, Constants.MESSAGE_RESPONSE_SUCCESS,
                                     respMesg, serverTime);
-      writer.writeElement(helloResp.encode());
+      writeElement(helloResp.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                              "Accepted new resource monitor client " +
                              "connection " + clientID + " from " +
@@ -582,7 +576,7 @@ public class ResourceMonitorClientConnection
     {
       try
       {
-        ASN1Element element = reader.readElement();
+        ASN1Element element = asn1StreamReader.readElement();
         if (element == null)
         {
           // This should only happen if the client has closed the connection.
@@ -676,7 +670,7 @@ public class ResourceMonitorClientConnection
         {
           KeepAliveMessage kaMsg =
                new KeepAliveMessage(getMessageID());
-          writer.writeElement(kaMsg.encode());
+          writeElement(kaMsg.encode());
           slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                                  "Sent keepalive to monitor client " +
                                  clientID);
@@ -725,22 +719,6 @@ public class ResourceMonitorClientConnection
                                JobClass.stackTraceToString(se));
         se.printStackTrace();
       }
-      catch (ASN1Exception ae)
-      {
-        slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
-                               "Exception decoding message from monitor " +
-                               "client " + connectionID + ":  " + ae);
-        slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(ae));
-        ae.printStackTrace();
-
-        try
-        {
-          socket.close();
-        } catch (Exception e) {}
-        clientListener.connectionLost(this);
-        return;
-      }
       catch (Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
@@ -785,7 +763,7 @@ public class ResourceMonitorClientConnection
 
     try
     {
-      writer.writeElement(message.encode());
+      writeElement(message.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Wrote message to monitor client " + clientID +
                              " -- " + message.toString());
@@ -948,7 +926,7 @@ public class ResourceMonitorClientConnection
 
     try
     {
-      writer.writeElement(request.encode());
+      writeElement(request.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Sent job request to monitor client " + clientID +
                              " -- " + request.toString());
@@ -1033,7 +1011,7 @@ public class ResourceMonitorClientConnection
          new JobControlRequestMessage(messageID, jobID, controlType);
     try
     {
-      writer.writeElement(request.encode());
+      writeElement(request.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Sent job control request to monitor client " +
                              clientID + " -- " + request.toString());
@@ -1126,7 +1104,7 @@ public class ResourceMonitorClientConnection
 
     try
     {
-      writer.writeElement(request.encode());
+      writeElement(request.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Sent status request message to monitor client " +
                              clientID + " -- " + request.toString());
@@ -1204,7 +1182,7 @@ public class ResourceMonitorClientConnection
 
     try
     {
-      writer.writeElement(shutdownMessage.encode());
+      writeElement(shutdownMessage.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Sent shutdown message to monitor client " +
                              clientID + " -- " + shutdownMessage.toString());
@@ -1301,6 +1279,23 @@ public class ResourceMonitorClientConnection
          throws ClassCastException
   {
     return clientID.compareTo(c.clientID);
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

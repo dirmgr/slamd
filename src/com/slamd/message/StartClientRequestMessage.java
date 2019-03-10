@@ -17,10 +17,11 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -133,7 +134,7 @@ public class StartClientRequestMessage
                                "as a sequence", ae);
     }
 
-    ASN1Element[] elements = startClientSequence.getElements();
+    ASN1Element[] elements = startClientSequence.elements();
     if (elements.length != 2)
     {
       throw new SLAMDException("There must be 2 elements in a start client " +
@@ -143,7 +144,7 @@ public class StartClientRequestMessage
     int numClients;
     try
     {
-      numClients = elements[0].decodeAsInteger().getIntValue();
+      numClients = elements[0].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {
@@ -154,7 +155,7 @@ public class StartClientRequestMessage
     int serverPort;
     try
     {
-      serverPort = elements[1].decodeAsInteger().getIntValue();
+      serverPort = elements[1].decodeAsInteger().intValue();
     }
     catch (ASN1Exception ae)
     {

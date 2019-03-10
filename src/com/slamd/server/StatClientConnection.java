@@ -19,15 +19,17 @@ package com.slamd.server;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.admin.AccessManager;
 import com.slamd.admin.AdminAccess;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Writer;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
@@ -57,10 +59,7 @@ public class StatClientConnection
   private ArrayList<Message> messageQueue;
 
   // The ASN.1 reader used to read data from the client.
-  private ASN1Reader asn1Reader;
-
-  // The ASN.1 writer used to write data to the client.
-  private ASN1Writer asn1Writer;
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether this thread should continue listening for communication
   // from the client.
@@ -79,6 +78,9 @@ public class StatClientConnection
 
   // A mutex used to provide threadsafe access to the message queue.
   private final Object messageQueueMutex;
+
+  // The output stream use dto write data to the client.
+  private OutputStream outputStream;
 
   // The real-time stat handler to which data will be reported.
   private RealTimeStatHandler statHandler;
@@ -128,8 +130,8 @@ public class StatClientConnection
     try
     {
       clientIPAddress = clientSocket.getInetAddress().getHostAddress();
-      asn1Reader      = new ASN1Reader(clientSocket);
-      asn1Writer      = new ASN1Writer(clientSocket);
+      asn1StreamReader = new ASN1StreamReader(clientSocket.getInputStream());
+      outputStream = clientSocket.getOutputStream();
     }
     catch (IOException ioe)
     {
@@ -144,8 +146,11 @@ public class StatClientConnection
     ClientHelloMessage helloMessage = null;
     try
     {
-      ASN1Element element =
-           asn1Reader.readElement(Constants.MAX_BLOCKING_READ_TIME);
+      final int originalSOTimeout = clientSocket.getSoTimeout();
+      clientSocket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+      final ASN1Element element = asn1StreamReader.readElement();
+      clientSocket.setSoTimeout(originalSOTimeout);
+
       helloMessage = (ClientHelloMessage) Message.decode(element);
     }
     catch (Exception e)
@@ -181,7 +186,7 @@ public class StatClientConnection
                       Constants.MESSAGE_RESPONSE_SERVER_ERROR, msg, -1);
         try
         {
-          asn1Writer.writeElement(helloResp.encode());
+          writeElement(helloResp.encode());
         } catch (IOException ioe) {}
         slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                "Rejected new stat client connection " +
@@ -211,7 +216,7 @@ public class StatClientConnection
                       Constants.MESSAGE_RESPONSE_SERVER_ERROR, msg, -1);
         try
         {
-          asn1Writer.writeElement(helloResp.encode());
+          writeElement(helloResp.encode());
         } catch (IOException ioe) {}
         slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                "Rejected new stat client connection " +
@@ -234,7 +239,7 @@ public class StatClientConnection
              new HelloResponseMessage(0, resultCode, msg, -1);
         try
         {
-          asn1Writer.writeElement(helloResp.encode());
+          writeElement(helloResp.encode());
         } catch (IOException ioe) {}
         slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT,
                                "Rejected new client connection " +
@@ -281,7 +286,7 @@ public class StatClientConnection
                         Constants.MESSAGE_RESPONSE_CLIENT_REJECTED,
                         "A stat client connection has already been " +
                         "established with client ID \"" + clientID + "\".", -1);
-          asn1Writer.writeElement(helloResponse.encode());
+          writeElement(helloResponse.encode());
           clientSocket.close();
         }
         catch (IOException ioe)
@@ -310,7 +315,7 @@ public class StatClientConnection
            new HelloResponseMessage(helloMessage.getMessageID(),
                                     Constants.MESSAGE_RESPONSE_SUCCESS,
                                     serverTime);
-      asn1Writer.writeElement(helloResponse.encode());
+      writeElement(helloResponse.encode());
     }
     catch (IOException ioe)
     {
@@ -452,7 +457,7 @@ public class StatClientConnection
          new ServerShutdownMessage(nextMessageID());
     try
     {
-      asn1Writer.writeElement(shutdownMessage.encode());
+      writeElement(shutdownMessage.encode());
       slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                              "Sent shutdown message to " + clientID);
     }
@@ -526,7 +531,7 @@ public class StatClientConnection
     {
       try
       {
-        ASN1Element element = asn1Reader.readElement();
+        ASN1Element element = asn1StreamReader.readElement();
         if (element == null)
         {
           // This should only happen if the client has closed the connection.
@@ -568,7 +573,7 @@ public class StatClientConnection
         {
           KeepAliveMessage kaMsg =
                new KeepAliveMessage(nextMessageID());
-          asn1Writer.writeElement(kaMsg.encode());
+          writeElement(kaMsg.encode());
           slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
                                  "Sent keepalive to " + clientID);
         }
@@ -614,13 +619,6 @@ public class StatClientConnection
                                ":  " + se);
         se.printStackTrace();
       }
-      catch (ASN1Exception ae)
-      {
-        slamdServer.logMessage(Constants.LOG_LEVEL_CLIENT_DEBUG,
-                               "Exception decoding message from " + clientID +
-                               ":  " + ae);
-        ae.printStackTrace();
-      }
     }
 
     slamdServer.logMessage(Constants.LOG_LEVEL_TRACE,
@@ -655,6 +653,23 @@ public class StatClientConnection
          throws ClassCastException
   {
     return clientID.compareTo(c.clientID);
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

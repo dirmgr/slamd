@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -170,56 +171,20 @@ public class RegisterStatisticMessage
     }
 
 
-    ASN1Element[] elements = registerStatSequence.getElements();
+    ASN1Element[] elements = registerStatSequence.elements();
     if (elements.length != 4)
     {
       throw new SLAMDException("A register statistic sequence must contain " +
                                "3 elements");
     }
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The first element cannot be decoded as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
-    String clientID = null;
-    try
-    {
-      clientID = elements[1].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The second element cannot be decoded as an " +
-                               "octet string", ae);
-    }
+    String clientID = elements[1].decodeAsOctetString().stringValue();
 
-    String threadID = null;
-    try
-    {
-      threadID = elements[2].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The third element cannot be decoded as an " +
-                               "octet string", ae);
-    }
+    String threadID = elements[2].decodeAsOctetString().stringValue();
 
-    String displayName = null;
-    try
-    {
-      displayName = elements[3].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The fourth element cannot be decoded as an " +
-                               "octet string", ae);
-    }
+    String displayName = elements[3].decodeAsOctetString().stringValue();
 
 
     return new RegisterStatisticMessage(messageID, jobID, clientID, threadID,

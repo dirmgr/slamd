@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.db.DecodeException;
@@ -2875,135 +2876,135 @@ public final class Job
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
       final ASN1Element element  = ASN1Element.decode(encodedJob);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_JOB_ID))
         {
-          jobID = elements[i+1].decodeAsOctetString().getStringValue();
+          jobID = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
-          jobClassName = elements[i+1].decodeAsOctetString().getStringValue();
+          jobClassName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_OPTIMIZING_JOB_ID))
         {
           optimizingJobID =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_GROUP))
         {
-          jobGroup = elements[i+1].decodeAsOctetString().getStringValue();
+          jobGroup = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_FOLDER))
         {
-          folderName = elements[i+1].decodeAsOctetString().getStringValue();
+          folderName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_STATE))
         {
-          jobState = elements[i+1].decodeAsInteger().getIntValue();
+          jobState = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DISPLAY_IN_READ_ONLY))
         {
           displayInReadOnlyMode =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          jobDescription = elements[i+1].decodeAsOctetString().getStringValue();
+          jobDescription = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_STOP_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           stopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_DURATION))
         {
-          duration = elements[i+1].decodeAsInteger().getIntValue();
+          duration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_NUM_CLIENTS))
         {
-          numClients = elements[i+1].decodeAsInteger().getIntValue();
+          numClients = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_REQUESTED_CLIENTS))
         {
           final ASN1Element[] clientElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           requestedClients = new String[clientElements.length];
           for (int j=0; j < requestedClients.length; j++)
           {
             requestedClients[j] =
-                 clientElements[j].decodeAsOctetString().getStringValue();
+                 clientElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS))
         {
           final ASN1Element[] clientElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           monitorClients = new String[clientElements.length];
           for (int j=0; j < monitorClients.length; j++)
           {
             monitorClients[j] =
-                 clientElements[j].decodeAsOctetString().getStringValue();
+                 clientElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_MONITOR_CLIENTS_IF_AVAILABLE))
         {
           monitorClientsIfAvailable =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_WAIT_FOR_CLIENTS))
         {
-          waitForClients = elements[i+1].decodeAsBoolean().getBooleanValue();
+          waitForClients = elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_THREADS_PER_CLIENT))
         {
-          threadsPerClient = elements[i+1].decodeAsInteger().getIntValue();
+          threadsPerClient = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_THREAD_STARTUP_DELAY))
         {
-          threadStartupDelay = elements[i+1].decodeAsInteger().getIntValue();
+          threadStartupDelay = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DEPENDENCIES))
         {
           final ASN1Element[] dependencyElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           dependencies = new String[dependencyElements.length];
           for (int j=0; j < dependencies.length; j++)
           {
             dependencies[j] =
-                 dependencyElements[j].decodeAsOctetString().getStringValue();
+                 dependencyElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_NOTIFY_ADDRESSES))
         {
           final ASN1Element[] addrElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           notifyAddresses = new String[addrElements.length];
           for (int j=0; j < notifyAddresses.length; j++)
           {
             notifyAddresses[j] =
-                 addrElements[j].decodeAsOctetString().getStringValue();
+                 addrElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_COLLECTION_INTERVAL))
         {
-          collectionInterval = elements[i+1].decodeAsInteger().getIntValue();
+          collectionInterval = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_COMMENTS))
         {
-          comments = elements[i+1].decodeAsOctetString().getStringValue();
+          comments = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_PARAMETERS))
         {
@@ -3012,11 +3013,11 @@ public final class Job
             for (int j=i+2; j < elements.length; j += 2)
             {
               final String name =
-                   elements[j].decodeAsOctetString().getStringValue();
+                   elements[j].decodeAsOctetString().stringValue();
               if (name.equals(ELEMENT_JOB_CLASS))
               {
                 jobClassName =
-                     elements[j+1].decodeAsOctetString().getStringValue();
+                     elements[j+1].decodeAsOctetString().stringValue();
                 break;
               }
             }
@@ -3029,15 +3030,15 @@ public final class Job
             parameters = stubInstance.getClientSideParameterStubs().clone();
 
             final ASN1Element[] paramsElements =
-                 elements[i+1].decodeAsSequence().getElements();
+                 elements[i+1].decodeAsSequence().elements();
             for (int j=0; j < paramsElements.length; j++)
             {
               final ASN1Element[] paramElements =
-                   paramsElements[j].decodeAsSequence().getElements();
+                   paramsElements[j].decodeAsSequence().elements();
               final String name =
-                   paramElements[0].decodeAsOctetString().getStringValue();
+                   paramElements[0].decodeAsOctetString().stringValue();
               final String value =
-                   paramElements[1].decodeAsOctetString().getStringValue();
+                   paramElements[1].decodeAsOctetString().stringValue();
 
               final Parameter p = parameters.getParameter(name);
               if (p != null)
@@ -3051,15 +3052,15 @@ public final class Job
             parameters = new ParameterList();
 
             final ASN1Element[] paramsElements =
-                 elements[i+1].decodeAsSequence().getElements();
+                 elements[i+1].decodeAsSequence().elements();
             for (int j=0; j < paramsElements.length; j++)
             {
               final ASN1Element[] paramElements =
-                   paramsElements[j].decodeAsSequence().getElements();
+                   paramsElements[j].decodeAsSequence().elements();
               final String name =
-                   paramElements[0].decodeAsOctetString().getStringValue();
+                   paramElements[0].decodeAsOctetString().stringValue();
               final String value =
-                   paramElements[1].decodeAsOctetString().getStringValue();
+                   paramElements[1].decodeAsOctetString().stringValue();
 
               parameters.addParameter(new StringParameter(name, value));
             }
@@ -3068,18 +3069,18 @@ public final class Job
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_STOP_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStopTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_DURATION))
         {
-          actualDuration = elements[i+1].decodeAsInteger().getIntValue();
+          actualDuration = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_STATS))
         {
@@ -3107,12 +3108,12 @@ public final class Job
           // FIXME -- Encode the log messages as a single element rather than
           // multiple elements.
           final ASN1Element[] msgElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           logMessages = new String[msgElements.length];
           for (int j=0; j < logMessages.length; j++)
           {
             logMessages[j] =
-                 msgElements[j].decodeAsOctetString().getStringValue();
+                 msgElements[j].decodeAsOctetString().stringValue();
           }
         }
       }
@@ -3181,49 +3182,49 @@ public final class Job
            new SimpleDateFormat(Constants.ATTRIBUTE_DATE_FORMAT);
 
       final ASN1Element element = ASN1Element.decode(encodedJob);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
 
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
 
         if (elementName.equals(ELEMENT_JOB_ID))
         {
-          jobID = elements[i+1].decodeAsOctetString().getStringValue();
+          jobID = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_CLASS))
         {
-          jobClassName = elements[i+1].decodeAsOctetString().getStringValue();
+          jobClassName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_STATE))
         {
-          jobState = elements[i+1].decodeAsInteger().getIntValue();
+          jobState = elements[i+1].decodeAsInteger().intValue();
         }
         else if (elementName.equals(ELEMENT_DISPLAY_IN_READ_ONLY))
         {
           displayInReadOnlyMode =
-               elements[i+1].decodeAsBoolean().getBooleanValue();
+               elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          jobDescription = elements[i+1].decodeAsOctetString().getStringValue();
+          jobDescription = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           startTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_START_TIME))
         {
           final String timeStr =
-               elements[i+1].decodeAsOctetString().getStringValue();
+               elements[i+1].decodeAsOctetString().stringValue();
           actualStartTime = dateFormat.parse(timeStr);
         }
         else if (elementName.equals(ELEMENT_ACTUAL_DURATION))
         {
-          actualDuration = elements[i+1].decodeAsInteger().getIntValue();
+          actualDuration = elements[i+1].decodeAsInteger().intValue();
         }
       }
 

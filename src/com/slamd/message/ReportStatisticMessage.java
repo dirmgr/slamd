@@ -17,11 +17,12 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -124,7 +125,7 @@ public class ReportStatisticMessage
     ASN1Element[] elements = null;
     try
     {
-      elements = element.decodeAsSequence().getElements();
+      elements = element.decodeAsSequence().elements();
     }
     catch (ASN1Exception ae)
     {
@@ -137,22 +138,13 @@ public class ReportStatisticMessage
                                "ReportStat sequence.");
     }
 
-    String jobID;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("Unable to decode the first element as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     ASN1Element[] dataElements;
     try
     {
-      dataElements = elements[1].decodeAsSequence().getElements();
+      dataElements = elements[1].decodeAsSequence().elements();
     }
     catch (ASN1Exception ae)
     {

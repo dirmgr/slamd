@@ -19,9 +19,9 @@ package com.slamd.db;
 
 import java.util.Arrays;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
 
 
 
@@ -402,33 +402,33 @@ public final class SLAMDPermission
       String[] users  = new String[0];
       String[] groups = new String[0];
 
-      final ASN1Element[] elements = permissionSequence.getElements();
+      final ASN1Element[] elements = permissionSequence.elements();
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
-          name = elements[i+1].decodeAsOctetString().getStringValue();
+          name = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_USERS))
         {
           final ASN1Element[] userElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           users = new String[userElements.length];
           for (int j=0; j < users.length; j++)
           {
-            users[j] = userElements[j].decodeAsOctetString().getStringValue();
+            users[j] = userElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_GROUPS))
         {
           final ASN1Element[] groupElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           groups = new String[groupElements.length];
           for (int j=0; j < groups.length; j++)
           {
-            groups[j] = groupElements[j].decodeAsOctetString().getStringValue();
+            groups[j] = groupElements[j].decodeAsOctetString().stringValue();
           }
         }
       }
@@ -458,7 +458,7 @@ public final class SLAMDPermission
   {
     try
     {
-      return decodeSequence(ASN1Element.decodeAsSequence(encodedPermission));
+      return decodeSequence(ASN1Sequence.decodeAsSequence(encodedPermission));
     }
     catch (final DecodeException de)
     {

@@ -46,15 +46,15 @@ import com.sleepycat.je.PreloadConfig;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
 
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Writer;
 import com.unboundid.util.StaticUtils;
 
 import com.slamd.admin.AdminServlet;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Sequence;
-import com.slamd.asn1.ASN1Writer;
 import com.slamd.common.Constants;
 import com.slamd.common.JobClassLoader;
 import com.slamd.dslogplay.LogPlaybackJobClass;
@@ -936,9 +936,6 @@ public final class SLAMDDB
     }
 
 
-    final ASN1Writer asn1Writer = new ASN1Writer(outputStream);
-
-
     // First, the real job folders.  We have to keep everything consistent
     // within a folder, so we'll use a transaction to protect it.
     for (final String realFolderName : realFolderNames)
@@ -966,7 +963,7 @@ public final class SLAMDDB
           new ASN1OctetString(realFolderName),
           new ASN1OctetString(folderBytes)
         };
-        asn1Writer.writeElement(new ASN1Sequence(elements));
+        ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
 
 
         // Get the set of jobs contained in that folder.
@@ -989,7 +986,7 @@ public final class SLAMDDB
               new ASN1OctetString(jobID),
               new ASN1OctetString(jobBytes)
             };
-            asn1Writer.writeElement(new ASN1Sequence(elements));
+            ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
           }
           catch (final DatabaseException | IOException e)
           {
@@ -1025,7 +1022,7 @@ public final class SLAMDDB
               new ASN1OctetString(optimizingJobID),
               new ASN1OctetString(optimizingJobBytes)
             };
-            asn1Writer.writeElement(new ASN1Sequence(elements));
+            ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
           }
           catch (DatabaseException | IOException e)
           {
@@ -1062,7 +1059,7 @@ public final class SLAMDDB
               new ASN1OctetString(fileName),
               new ASN1OctetString(fileBytes)
             };
-            asn1Writer.writeElement(new ASN1Sequence(elements));
+            ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
           }
           catch (final DatabaseException | IOException e)
           {
@@ -1121,7 +1118,7 @@ public final class SLAMDDB
           new ASN1OctetString(virtualFolderName),
           new ASN1OctetString(virtualFolderBytes)
         };
-        asn1Writer.writeElement(new ASN1Sequence(elements));
+        ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
       }
       catch (final DatabaseException | IOException e)
       {
@@ -1164,7 +1161,7 @@ public final class SLAMDDB
           new ASN1OctetString(jobGroupName),
           new ASN1OctetString(jobGroupBytes)
         };
-        asn1Writer.writeElement(new ASN1Sequence(elements));
+        ASN1Writer.writeElement(new ASN1Sequence(elements), outputStream);
       }
       catch (final DatabaseException | IOException e)
       {
@@ -1203,12 +1200,12 @@ public final class SLAMDDB
                                   final PrintWriter progressWriter,
                                   final boolean writeHTML)
   {
-    final ASN1Reader asn1Reader = new ASN1Reader(inputStream);
+    final ASN1StreamReader asn1StreamReader = new ASN1StreamReader(inputStream);
 
     ASN1Element element;
     try
     {
-      element = nextElement(asn1Reader, progressWriter, writeHTML);
+      element = nextElement(asn1StreamReader, progressWriter, writeHTML);
     }
     catch (final Exception e)
     {
@@ -1227,9 +1224,9 @@ public final class SLAMDDB
       final String keyName;
       try
       {
-        ASN1Element[] elements = element.decodeAsSequence().getElements();
-        dbName  = elements[0].decodeAsOctetString().getStringValue();
-        keyName = elements[1].decodeAsOctetString().getStringValue();
+        ASN1Element[] elements = element.decodeAsSequence().elements();
+        dbName  = elements[0].decodeAsOctetString().stringValue();
+        keyName = elements[1].decodeAsOctetString().stringValue();
         data    = elements[2].decodeAsOctetString().getValue();
       }
       catch (Exception e)
@@ -1253,7 +1250,7 @@ public final class SLAMDDB
 
         try
         {
-          element = nextElement(asn1Reader, progressWriter, writeHTML);
+          element = nextElement(asn1StreamReader, progressWriter, writeHTML);
         }
         catch (final Exception e2)
         {
@@ -1282,7 +1279,7 @@ public final class SLAMDDB
 
         try
         {
-          element = nextElement(asn1Reader, progressWriter, writeHTML);
+          element = nextElement(asn1StreamReader, progressWriter, writeHTML);
         }
         catch (final Exception e)
         {
@@ -1409,7 +1406,7 @@ public final class SLAMDDB
 
         try
         {
-          element = nextElement(asn1Reader, progressWriter, writeHTML);
+          element = nextElement(asn1StreamReader, progressWriter, writeHTML);
         }
         catch (final Exception e2)
         {
@@ -1423,7 +1420,7 @@ public final class SLAMDDB
 
       try
       {
-        element = nextElement(asn1Reader, progressWriter, writeHTML);
+        element = nextElement(asn1StreamReader, progressWriter, writeHTML);
       }
       catch (final Exception e)
       {
@@ -1463,7 +1460,7 @@ public final class SLAMDDB
    * @throws  ASN1Exception  If a problem occurs while trying to decode the data
    *                         read as an ASN.1 element.
    */
-  private static ASN1Element nextElement(final ASN1Reader reader,
+  private static ASN1Element nextElement(final ASN1StreamReader reader,
                                          final PrintWriter progressWriter,
                                          final boolean writeHTML)
           throws IOException, ASN1Exception
@@ -1475,7 +1472,7 @@ public final class SLAMDDB
     catch (IOException ioe)
     {
       progressWriter.println("I/O error encountered while attempting to read " +
-           "from the provided input stream:");
+           "an ASN.1 element from the provided input stream:");
 
       if (writeHTML)
       {
@@ -1492,27 +1489,6 @@ public final class SLAMDDB
       }
 
       throw ioe;
-    }
-    catch (final ASN1Exception ae)
-    {
-      progressWriter.println("Unable to decode data read from input stream " +
-           "as an ASN.1 element:");
-
-      if (writeHTML)
-      {
-        progressWriter.println("<BR>");
-        progressWriter.println("<PRE>");
-      }
-
-      progressWriter.println(JobClass.stackTraceToString(ae));
-
-      if (writeHTML)
-      {
-        progressWriter.println("</PRE>");
-        progressWriter.println("<BR>");
-      }
-
-      throw ae;
     }
     catch (Exception e)
     {
@@ -1831,7 +1807,7 @@ public final class SLAMDDB
          throws DatabaseException
   {
     final OperationStatus status = put(null, configDB, parameterName,
-         ASN1Element.getBytes(parameterValue));
+         StaticUtils.getBytes(parameterValue));
     if (status != OperationStatus.SUCCESS)
     {
       throw new SLAMDDatabaseException(
@@ -1887,7 +1863,7 @@ public final class SLAMDDB
   {
     final OperationStatus status =
          put(null, configDB, parameterName,
-             ASN1Element.getBytes(String.valueOf(parameterValue)));
+             StaticUtils.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
     {
       throw new SLAMDDatabaseException(
@@ -1942,7 +1918,7 @@ public final class SLAMDDB
          throws DatabaseException
   {
     final OperationStatus status = put(null, configDB, parameterName,
-         ASN1Element.getBytes(String.valueOf(parameterValue)));
+         StaticUtils.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
     {
       throw new SLAMDDatabaseException(
@@ -2875,7 +2851,7 @@ public final class SLAMDDB
       }
     }
 
-    final byte[] disabledJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] disabledJobBytes = StaticUtils.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_DISABLED_JOBS, disabledJobBytes);
   }
 
@@ -2968,7 +2944,7 @@ public final class SLAMDDB
       }
     }
 
-    final byte[] pendingJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] pendingJobBytes = StaticUtils.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_PENDING_JOBS, pendingJobBytes);
   }
 
@@ -3062,7 +3038,7 @@ public final class SLAMDDB
       }
     }
 
-    final byte[] runningJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] runningJobBytes = StaticUtils.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_RUNNING_JOBS, runningJobBytes);
   }
 
@@ -4380,7 +4356,7 @@ public final class SLAMDDB
 
       // Perform the get and return the associated data.
       final DatabaseEntry keyEntry =
-           new DatabaseEntry(ASN1Element.getBytes(key));
+           new DatabaseEntry(StaticUtils.getBytes(key));
       final DatabaseEntry dataEntry = new DatabaseEntry();
       final LockMode lockMode = (writeLock ? LockMode.RMW : LockMode.DEFAULT);
 
@@ -4432,7 +4408,7 @@ public final class SLAMDDB
 
       // Perform the put and return the status.
       final DatabaseEntry keyEntry =
-           new DatabaseEntry(ASN1Element.getBytes(key));
+           new DatabaseEntry(StaticUtils.getBytes(key));
       final DatabaseEntry dataEntry = new DatabaseEntry(data);
       return db.put(txn, keyEntry, dataEntry);
     }
@@ -4464,9 +4440,9 @@ public final class SLAMDDB
     try
     {
       final DatabaseEntry keyEntry =
-           new DatabaseEntry(ASN1Element.getBytes(key));
+           new DatabaseEntry(StaticUtils.getBytes(key));
       final DatabaseEntry dataEntry =
-           new DatabaseEntry(ASN1Element.getBytes(data));
+           new DatabaseEntry(StaticUtils.getBytes(data));
       return db.put(null, keyEntry, dataEntry);
     }
     catch (final DatabaseException de)
@@ -4506,7 +4482,7 @@ public final class SLAMDDB
     try
     {
       final DatabaseEntry keyEntry =
-           new DatabaseEntry(ASN1Element.getBytes(key));
+           new DatabaseEntry(StaticUtils.getBytes(key));
       final DatabaseEntry dataEntry = new DatabaseEntry(data);
       return db.put(null, keyEntry, dataEntry);
     }
@@ -4555,7 +4531,7 @@ public final class SLAMDDB
 
       // Perform the put and return the status.
       final DatabaseEntry keyEntry =
-           new DatabaseEntry(ASN1Element.getBytes(key));
+           new DatabaseEntry(StaticUtils.getBytes(key));
       return db.delete(txn, keyEntry);
     }
   }

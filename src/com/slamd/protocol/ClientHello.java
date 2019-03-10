@@ -20,11 +20,12 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -609,7 +610,7 @@ public class ClientHello
     {
       try
       {
-        clientIP = valueElement.decodeAsOctetString().getStringValue();
+        clientIP = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -629,7 +630,7 @@ public class ClientHello
     {
       try
       {
-        clientPort = valueElement.decodeAsInteger().getIntValue();
+        clientPort = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -648,7 +649,7 @@ public class ClientHello
     {
       try
       {
-        clientID = valueElement.decodeAsOctetString().getStringValue();
+        clientID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -663,7 +664,7 @@ public class ClientHello
     {
       try
       {
-        clientManagerID = valueElement.decodeAsOctetString().getStringValue();
+        clientManagerID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -683,7 +684,7 @@ public class ClientHello
     {
       try
       {
-        majorVersion = valueElement.decodeAsInteger().getIntValue();
+        majorVersion = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -703,7 +704,7 @@ public class ClientHello
     {
       try
       {
-        minorVersion = valueElement.decodeAsInteger().getIntValue();
+        minorVersion = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -723,7 +724,7 @@ public class ClientHello
     {
       try
       {
-        pointVersion = valueElement.decodeAsInteger().getIntValue();
+        pointVersion = valueElement.decodeAsInteger().intValue();
       }
       catch (Exception e)
       {
@@ -738,7 +739,7 @@ public class ClientHello
     {
       try
       {
-        restrictedMode = valueElement.decodeAsBoolean().getBooleanValue();
+        restrictedMode = valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {
@@ -753,7 +754,7 @@ public class ClientHello
     {
       try
       {
-        authMethod = valueElement.decodeAsOctetString().getStringValue();
+        authMethod = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -767,7 +768,7 @@ public class ClientHello
     {
       try
       {
-        authID = valueElement.decodeAsOctetString().getStringValue();
+        authID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -798,7 +799,7 @@ public class ClientHello
     {
       try
       {
-        requireServerAuth = valueElement.decodeAsBoolean().getBooleanValue();
+        requireServerAuth = valueElement.decodeAsBoolean().booleanValue();
       }
       catch (Exception e)
       {

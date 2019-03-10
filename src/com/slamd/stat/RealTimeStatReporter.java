@@ -18,19 +18,21 @@ package com.slamd.stat;
 
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.Vector;
 import javax.net.ssl.SSLSocketFactory;
 
 import netscape.ldap.LDAPException;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Sequence;
-import com.slamd.asn1.ASN1Writer;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Writer;
+
 import com.slamd.client.Client;
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
@@ -55,10 +57,7 @@ public class RealTimeStatReporter
        extends Thread
 {
   // The ASN.1 reader used to read messages from the SLAMD server.
-  private ASN1Reader reader;
-
-  // The ASN.1 writer used to write messages to the SLAMD server.
-  private ASN1Writer writer;
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether this stat reporter should stop running.
   private boolean shouldStop;
@@ -68,6 +67,9 @@ public class RealTimeStatReporter
 
   // The interval to use when reporting statistics back to the server.
   private int reportInterval;
+
+  // The output stream used to write messages to the SLAMD server.
+  private OutputStream outputStream;
 
   // The socket used to communicate with the SLAMD server.
   private Socket socket;
@@ -197,8 +199,8 @@ public class RealTimeStatReporter
     // Create the reader and writer for the socket.
     try
     {
-      reader = new ASN1Reader(socket);
-      writer = new ASN1Writer(socket);
+      asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+      outputStream = socket.getOutputStream();
     }
     catch (IOException ioe)
     {
@@ -384,7 +386,7 @@ public class RealTimeStatReporter
   {
     try
     {
-      writer.writeElement(message.encode());
+      writeElement(message.encode());
     }
     catch (IOException ioe)
     {
@@ -410,7 +412,7 @@ public class RealTimeStatReporter
   {
     try
     {
-      writer.writeElement(message.encode());
+      writeElement(message.encode());
     }
     catch (IOException ioe)
     {
@@ -424,9 +426,12 @@ public class RealTimeStatReporter
     {
       while (! shouldStop)
       {
-        Message respMsg =
-             Message.decode(
-                  reader.readElement(Constants.MAX_BLOCKING_READ_TIME));
+        final int originalSOTimeout = socket.getSoTimeout();
+        socket.setSoTimeout(Constants.MAX_BLOCKING_READ_TIME);
+        final ASN1Element element = asn1StreamReader.readElement();
+        socket.setSoTimeout(originalSOTimeout);
+
+        Message respMsg = Message.decode(element);
         if (respMsg.getMessageID() == message.getMessageID())
         {
           return respMsg;
@@ -525,6 +530,23 @@ public class RealTimeStatReporter
   public void stopRunning()
   {
     shouldStop = true;
+  }
+
+
+
+  /**
+   * Writes the provided ASN.1 element to the server.
+   *
+   * @param  element  The ASN.1 element to be written.
+   *
+   * @throws  IOException  If a problem is encountered while writing the
+   *                       element.
+   */
+  void writeElement(final ASN1Element element)
+       throws IOException
+  {
+    ASN1Writer.writeElement(element, outputStream);
+    outputStream.flush();
   }
 }
 

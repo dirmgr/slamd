@@ -72,7 +72,7 @@ public class ClientShutdownHook
                     Constants.MESSAGE_RESPONSE_CLIENT_SHUTDOWN,
                     Constants.CLIENT_STATE_SHUTTING_DOWN,
                     "The SLAMD client is shutting down");
-      client.writer.writeElement(msg.encode());
+      client.writeElement(msg.encode());
       client.clientSocket.close();
     }
     catch (Exception e)

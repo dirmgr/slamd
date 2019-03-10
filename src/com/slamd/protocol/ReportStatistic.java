@@ -20,9 +20,10 @@ package com.slamd.protocol;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -201,7 +202,7 @@ public class ReportStatistic
     {
       try
       {
-        jobID = valueElement.decodeAsOctetString().getStringValue();
+        jobID = valueElement.decodeAsOctetString().stringValue();
       }
       catch (Exception e)
       {
@@ -221,7 +222,7 @@ public class ReportStatistic
       try
       {
         ASN1Element[] dataElements =
-             valueElement.decodeAsSequence().getElements();
+             valueElement.decodeAsSequence().elements();
         dataSequences = new ASN1Sequence[dataElements.length];
         for (int i=0; i < dataSequences.length; i++)
         {

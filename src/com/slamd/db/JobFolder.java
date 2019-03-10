@@ -19,10 +19,10 @@ package com.slamd.db;
 
 import java.util.Arrays;
 
-import com.slamd.asn1.ASN1Boolean;
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Boolean;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
 
 
 
@@ -1020,78 +1020,78 @@ public final class JobFolder
       String[]          optimizingJobIDs  = new String[0];
 
       final ASN1Element   element  = ASN1Element.decode(encodedFolder);
-      final ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element[] elements = element.decodeAsSequence().elements();
       for (int i=0; i < elements.length; i += 2)
       {
         final String elementName =
-             elements[i].decodeAsOctetString().getStringValue();
+             elements[i].decodeAsOctetString().stringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
-          folderName = elements[i+1].decodeAsOctetString().getStringValue();
+          folderName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_DISPLAY_IN_READ_ONLY))
         {
-          displayInReadOnly = elements[i+1].decodeAsBoolean().getBooleanValue();
+          displayInReadOnly = elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_IS_VIRTUAL))
         {
-          isVirtual = elements[i+1].decodeAsBoolean().getBooleanValue();
+          isVirtual = elements[i+1].decodeAsBoolean().booleanValue();
         }
         else if (elementName.equals(ELEMENT_PARENT))
         {
-          parentName = elements[i+1].decodeAsOctetString().getStringValue();
+          parentName = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_CHILDREN))
         {
           final ASN1Element[] childElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           childNames = new String[childElements.length];
           for (int j=0; j < childNames.length; j++)
           {
             childNames[j] =
-                 childElements[j].decodeAsOctetString().getStringValue();
+                 childElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_DESCRIPTION))
         {
-          description = elements[i+1].decodeAsOctetString().getStringValue();
+          description = elements[i+1].decodeAsOctetString().stringValue();
         }
         else if (elementName.equals(ELEMENT_JOB_IDS))
         {
           final ASN1Element[] jobElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           jobIDs = new String[jobElements.length];
           for (int j=0; j < jobIDs.length; j++)
           {
-            jobIDs[j] = jobElements[j].decodeAsOctetString().getStringValue();
+            jobIDs[j] = jobElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_OPTIMIZING_JOB_IDS))
         {
           final ASN1Element[] optimizingElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           optimizingJobIDs = new String[optimizingElements.length];
           for (int j=0; j < optimizingJobIDs.length; j++)
           {
             optimizingJobIDs[j] =
-                 optimizingElements[j].decodeAsOctetString().getStringValue();
+                 optimizingElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_FILE_NAMES))
         {
           final ASN1Element[] fileElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           fileNames = new String[fileElements.length];
           for (int j=0; j < fileNames.length; j++)
           {
             fileNames[j] =
-                 fileElements[j].decodeAsOctetString().getStringValue();
+                 fileElements[j].decodeAsOctetString().stringValue();
           }
         }
         else if (elementName.equals(ELEMENT_PERMISSIONS))
         {
           final ASN1Element[] permissionElements =
-               elements[i+1].decodeAsSequence().getElements();
+               elements[i+1].decodeAsSequence().elements();
           permissions = new SLAMDPermission[permissionElements.length];
           for (int j=0; j < permissions.length; j++)
           {

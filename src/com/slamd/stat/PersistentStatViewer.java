@@ -31,9 +31,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Reader;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1StreamReader;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.SLAMDException;
 
 
@@ -308,12 +309,12 @@ public class PersistentStatViewer
     }
 
     FileInputStream inputStream = new FileInputStream(filename);
-    ASN1Reader      asn1Reader  = new ASN1Reader(inputStream);
+    ASN1StreamReader asn1StreamReader  = new ASN1StreamReader(inputStream);
     ASN1Element     element;
 
     try
     {
-      element = asn1Reader.readElement();
+      element = asn1StreamReader.readElement();
     }
     catch (IOException ioe)
     {
@@ -336,7 +337,7 @@ public class PersistentStatViewer
     }
 
 
-    asn1Reader.close();
+    asn1StreamReader.close();
     inputStream.close();
 
 

@@ -17,12 +17,13 @@ package com.slamd.message;
 
 
 
-import com.slamd.asn1.ASN1Element;
-import com.slamd.asn1.ASN1Enumerated;
-import com.slamd.asn1.ASN1Exception;
-import com.slamd.asn1.ASN1Integer;
-import com.slamd.asn1.ASN1OctetString;
-import com.slamd.asn1.ASN1Sequence;
+import com.unboundid.asn1.ASN1Element;
+import com.unboundid.asn1.ASN1Enumerated;
+import com.unboundid.asn1.ASN1Exception;
+import com.unboundid.asn1.ASN1Integer;
+import com.unboundid.asn1.ASN1OctetString;
+import com.unboundid.asn1.ASN1Sequence;
+
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 
@@ -138,7 +139,7 @@ public class JobControlRequestMessage
     }
 
 
-    ASN1Element[] elements = requestSequence.getElements();
+    ASN1Element[] elements = requestSequence.elements();
     if (elements.length != 2)
     {
       throw new SLAMDException("A job control request sequence must contain " +
@@ -146,22 +147,13 @@ public class JobControlRequestMessage
     }
 
 
-    String jobID = null;
-    try
-    {
-      jobID = elements[0].decodeAsOctetString().getStringValue();
-    }
-    catch (ASN1Exception ae)
-    {
-      throw new SLAMDException("The first element cannot be decoded as an " +
-                               "octet string", ae);
-    }
+    String jobID = elements[0].decodeAsOctetString().stringValue();
 
 
     int controlType = 0;
     try
     {
-      controlType = elements[1].decodeAsEnumerated().getIntValue();
+      controlType = elements[1].decodeAsEnumerated().intValue();
     }
     catch (ASN1Exception ae)
     {

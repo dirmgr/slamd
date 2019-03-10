@@ -340,8 +340,8 @@ public class HTTPCookie
    * Indicates whether this cookie should be only provided over secure
    * connections.
    *
-   * @return  <CODE>true</CODE> if this cookie should only be provided over
-   *          secure connections, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this cookie should only be provided over
+   *          secure connections, or {@code false} if not.
    */
   public boolean getSecure()
   {
@@ -353,7 +353,7 @@ public class HTTPCookie
   /**
    * Retrieves the comment for this cookie.
    *
-   * @return  The comment for this cookie, or <CODE>null</CODE> if there is
+   * @return  The comment for this cookie, or {@code null} if there is
    *          none.
    */
   public String getComment()
@@ -396,7 +396,7 @@ public class HTTPCookie
    * @param  lowerName  The name of the property to retrieve, in all lowercase
    *                    characters.
    *
-   * @return  The value for the requested "extra" property, or <CODE>null</CODE>
+   * @return  The value for the requested "extra" property, or {@code null}
    *          if no such property has been set.
    */
   public String getProperty(String lowerName)
@@ -413,8 +413,8 @@ public class HTTPCookie
    * @param  currentTime  The time to use when determining whether the cookie
    *                      is expired.
    *
-   * @return  <CODE>true</CODE> if this cookie should be included in the given
-   *          request, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this cookie should be included in the given
+   *          request, or {@code false} if not.
    */
   public boolean appliesToRequest(URL requestURL, long currentTime)
   {

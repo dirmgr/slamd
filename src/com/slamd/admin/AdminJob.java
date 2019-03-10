@@ -17387,7 +17387,7 @@ public class AdminJob
    *
    * @param  optimizingJobID  The ID of the optimizing job to retrieve.
    *
-   * @return  The requested optimizing job, or <CODE>null</CODE> if the
+   * @return  The requested optimizing job, or {@code null} if the
    *          requested optimizing job does not exist.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the

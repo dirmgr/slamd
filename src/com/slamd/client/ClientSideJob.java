@@ -460,8 +460,8 @@ public class ClientSideJob
   /**
    * Indicates whether this job should collect statistical data in real time.
    *
-   * @return  <CODE>true</CODE> if the client should collect statistical data in
-   *          real time, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client should collect statistical data in
+   *          real time, or {@code false} if not.
    */
   public boolean enableRealTimeStats()
   {
@@ -475,7 +475,7 @@ public class ClientSideJob
    * statistical data.
    *
    * @return  The stat reporter that should be used to report real-time
-   *          statistical data, or <CODE>null</CODE> if no reporting should be
+   *          statistical data, or {@code null} if no reporting should be
    *          done.
    */
   public RealTimeStatReporter getStatReporter()
@@ -1114,7 +1114,7 @@ public class ClientSideJob
    * Indicates whether this job has been completed or is otherwise stopped for
    * some reason.  A job will not be considered done if it was never started.
    *
-   * @return  <CODE>true</CODE> if the job is done, or <CODE>false</CODE> if
+   * @return  {@code true} if the job is done, or {@code false} if
    *          not.
    */
   public boolean isDone()

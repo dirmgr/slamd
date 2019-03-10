@@ -510,8 +510,8 @@ public class JSSEBlindTrustSocketFactory
   /**
    * Indicates whether SSL sessions may be reused across multiple connections.
    *
-   * @return  <CODE>true</CODE> if SSL sessions may be reused across multiple
-   *          connections, or <CODE>false</CODE> if not.
+   * @return  {@code true} if SSL sessions may be reused across multiple
+   *          connections, or {@code false} if not.
    */
   public boolean getDisableSessionReuse()
   {

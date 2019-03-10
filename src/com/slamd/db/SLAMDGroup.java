@@ -33,27 +33,27 @@ import com.slamd.asn1.ASN1Sequence;
  *
  * @author  Neil A. Wilson
  */
-public class SLAMDGroup
+public final class SLAMDGroup
 {
   /**
    * The name of the encoded element that holds the name of this group.
    */
-  public static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_NAME = "name";
 
 
 
   /**
    * The name of the encoded element that holds the member names for this group.
    */
-  public static final String ELEMENT_MEMBERS = "members";
+  private static final String ELEMENT_MEMBERS = "members";
 
 
 
   // The name of this group.
-  String groupName;
+  private final String groupName;
 
   // The user names of the members of this group.
-  String[] memberNames;
+  private String[] memberNames;
 
 
 
@@ -64,7 +64,7 @@ public class SLAMDGroup
    * @param  memberNames  The user names of the users that are members of this
    *                      group.
    */
-  public SLAMDGroup(String groupName, String[] memberNames)
+  public SLAMDGroup(final String groupName, final String[] memberNames)
   {
     this.groupName   = groupName;
 
@@ -110,14 +110,14 @@ public class SLAMDGroup
    * @param  userName  The user name of the user for which to make the
    *                   determination.
    *
-   * @return  <CODE>true</CODE> if the user is a member of this group, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the user is a member of this group, or
+   *          {@code false} if not.
    */
-  public boolean isMember(String userName)
+  public boolean isMember(final String userName)
   {
-    for (int i=0; i < memberNames.length; i++)
+    for (final String memberName : memberNames)
     {
-      if (memberNames[i].equals(userName))
+      if (memberName.equals(userName))
       {
         return true;
       }
@@ -134,15 +134,17 @@ public class SLAMDGroup
    * @param  memberNames  The user names of the users that should be members of
    *                      this group.
    */
-  public void setMemberNames(String[] memberNames)
+  public void setMemberNames(final String[] memberNames)
   {
     if (memberNames == null)
     {
-      memberNames = new String[0];
+      this.memberNames = new String[0];
     }
-
-    Arrays.sort(memberNames);
-    this.memberNames = memberNames;
+    else
+    {
+      Arrays.sort(memberNames);
+      this.memberNames = memberNames;
+    }
   }
 
 
@@ -152,21 +154,18 @@ public class SLAMDGroup
    *
    * @param  userName  The user name of the user to add to this group.
    */
-  public void addMember(String userName)
+  public void addMember(final String userName)
   {
-    String[] newMemberNames = new String[memberNames.length+1];
-    for (int i=0; i < memberNames.length; i++)
+    for (final String memberName : memberNames)
     {
-      if (memberNames[i].equals(userName))
+      if (memberName.equals(userName))
       {
         return;
       }
-      else
-      {
-        newMemberNames[i] = userName;
-      }
     }
 
+    String[] newMemberNames = new String[memberNames.length+1];
+    System.arraycopy(memberNames, 0, newMemberNames, 0, memberNames.length);
     newMemberNames[memberNames.length] = userName;
     Arrays.sort(newMemberNames);
     memberNames = newMemberNames;
@@ -179,7 +178,7 @@ public class SLAMDGroup
    *
    * @param  userName  The user name of the user to remove from this group.
    */
-  public void removeMember(String userName)
+  public void removeMember(final String userName)
   {
     int pos = -1;
     for (int i=0; i < memberNames.length; i++)
@@ -196,10 +195,10 @@ public class SLAMDGroup
       return;
     }
 
-    String[] newUserNames = new String[memberNames.length-1];
+    final String[] newUserNames = new String[memberNames.length-1];
     System.arraycopy(memberNames, 0, newUserNames, 0, pos);
     System.arraycopy(memberNames, pos+1, newUserNames, pos,
-                     (newUserNames.length - pos));
+         (newUserNames.length - pos));
     memberNames = newUserNames;
   }
 
@@ -213,14 +212,14 @@ public class SLAMDGroup
    */
   public byte[] encode()
   {
-    ASN1Element[] memberElements = new ASN1Element[memberNames.length];
+    final ASN1Element[] memberElements = new ASN1Element[memberNames.length];
     for (int i=0; i < memberNames.length; i++)
     {
       memberElements[i] = new ASN1OctetString(memberNames[i]);
     }
 
 
-    ASN1Element[] groupElements = new ASN1Element[]
+    final ASN1Element[] groupElements = new ASN1Element[]
     {
       new ASN1OctetString(ELEMENT_NAME),
       new ASN1OctetString(groupName),
@@ -244,7 +243,7 @@ public class SLAMDGroup
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           provided byte array as a SLAMD group.
    */
-  public static SLAMDGroup decode(byte[] encodedGroup)
+  public static SLAMDGroup decode(final byte[] encodedGroup)
          throws DecodeException
   {
     try
@@ -252,11 +251,12 @@ public class SLAMDGroup
       String   groupName   = null;
       String[] memberNames = new String[0];
 
-      ASN1Element   element  = ASN1Element.decode(encodedGroup);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedGroup);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
 
         if (elementName.equals(ELEMENT_NAME))
         {
@@ -264,7 +264,7 @@ public class SLAMDGroup
         }
         else if (elementName.equals(ELEMENT_MEMBERS))
         {
-          ASN1Element[] memberElements =
+          final ASN1Element[] memberElements =
                elements[i+1].decodeAsSequence().getElements();
           memberNames = new String[memberElements.length];
           for (int j=0; j < memberNames.length; j++)
@@ -277,7 +277,7 @@ public class SLAMDGroup
 
       return new SLAMDGroup(groupName, memberNames);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode the SLAMD group:  " + e, e);
     }

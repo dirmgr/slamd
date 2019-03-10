@@ -108,7 +108,7 @@ public class ServerDisconnect
    * Retrieves the reason that the server has initiated the disconnect process.
    *
    * @return  The reason that the server has initiated the disconnect process,
-   *          or <CODE>null</CODE> if none was provided.
+   *          or {@code null} if none was provided.
    */
   public String getDisconnectReason()
   {
@@ -136,8 +136,8 @@ public class ServerDisconnect
    * being restarted) or permanent.  If the disconnect is transient, then the
    * client may be able to re-establish the connection after a short delay.
    *
-   * @return  <CODE>true</CODE> if the disconnect is transient, or
-   *          <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the disconnect is transient, or
+   *          {@code false} if it is not.
    */
   public boolean isTransient()
   {
@@ -162,13 +162,13 @@ public class ServerDisconnect
    * Indicates whether the actual disconnect should be initiated by the client.
    * If this is the case, then the client may have a short period of time during
    * which it may send any results that it may have to the server.  If this
-   * returns <CODE>false</CODE>, then the client should assume that the server
+   * returns {@code false}, then the client should assume that the server
    * will immediately terminate the connection.  If it returns
-   * <CODE>true</CODE>, then the server may still close the connection if the
+   * {@code true}, then the server may still close the connection if the
    * client does not do so in a sufficiently short period of time.
    *
-   * @return  <CODE>true</CODE> if the actual closure should be done by the
-   *          client, or <CODE>false</CODE> if it will be done by the server.
+   * @return  {@code true} if the actual closure should be done by the
+   *          client, or {@code false} if it will be done by the server.
    */
   public boolean clientShouldClose()
   {

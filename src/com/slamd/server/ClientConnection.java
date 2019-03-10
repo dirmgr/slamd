@@ -382,8 +382,8 @@ public class ClientConnection
    * case it will only be used to handle jobs for which it has been explicitly
    * requested.
    *
-   * @return  <CODE>true</CODE> if this client is operating in restricted mode,
-   *          or <CODE>false</CODE> if it is not.
+   * @return  {@code true} if this client is operating in restricted mode,
+   *          or {@code false} if it is not.
    */
   public boolean restrictedMode()
   {
@@ -396,7 +396,7 @@ public class ClientConnection
    * Retrieves the job that the client is currently processing (if any).
    *
    * @return  The job that the client is currently processing, or
-   *          <CODE>null</CODE> if it is not processing any job.
+   *          {@code null} if it is not processing any job.
    */
   public Job getJob()
   {
@@ -736,7 +736,7 @@ public class ClientConnection
    * Retrieves a message with the specified message ID and type from the queue
    * used to hold responses to solicited messages.  This will wait for a
    * configurable maximum amount of time for the message to appear before
-   * returning <CODE>null</CODE>.
+   * returning {@code null}.
    *
    * @param  messageID    The message ID for the message that is expected.
    * @param  messageType  The type of message that is expected.

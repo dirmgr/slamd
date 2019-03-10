@@ -318,8 +318,8 @@ public class AdminConfig
    *
    * @param  config  The servlet configuration information.
    *
-   * @return  <CODE>true</CODE> if the configuration information could be read,
-   *          or <CODE>false</CODE> if it could not.
+   * @return  {@code true} if the configuration information could be read,
+   *          or {@code false} if it could not.
    *
    * @throws  IOException  If a problem occurs while reading the configuration
    *                       file.
@@ -2880,8 +2880,8 @@ public class AdminConfig
    *
    * @param  name  The parameter name for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the specified parameter is one of the
-   *          resource DN parameter names, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the specified parameter is one of the
+   *          resource DN parameter names, or {@code false} if not.
    */
   static boolean isResourceDNParameter(String name)
   {
@@ -2916,8 +2916,8 @@ public class AdminConfig
    * @param  name  The name of the parameter for which to make the
    *               determination.
    *
-   * @return  <CODE>true</CODE> if a change in the specified parameter requires
-   *          a restart, or <CODE>false</CODE> if not.
+   * @return  {@code true} if a change in the specified parameter requires
+   *          a restart, or {@code false} if not.
    */
   static boolean changeRequiresSLAMDRestart(String name)
   {
@@ -2936,8 +2936,8 @@ public class AdminConfig
    * @param  name  The name of the parameter for which to make the
    *               determination.
    *
-   * @return  <CODE>true</CODE> if a change in the specified parameter requires
-   *          a restart, or <CODE>false</CODE> if not.
+   * @return  {@code true} if a change in the specified parameter requires
+   *          a restart, or {@code false} if not.
    */
   static boolean changeRequiresAccessManagerRestart(String name)
   {

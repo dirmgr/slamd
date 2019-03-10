@@ -232,7 +232,7 @@ public class StatDebugger
    *                trackers.
    *
    * @return  The set of stat trackers associated with the specified job, or
-   *          <CODE>null</CODE> if it does not have any statistics.
+   *          {@code null} if it does not have any statistics.
    *
    * @throws  SLAMDException  If a problem occurs while trying to retrieve and
    *                          process the job information.

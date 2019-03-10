@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -46,6 +45,8 @@ import com.sleepycat.je.OperationStatus;
 import com.sleepycat.je.PreloadConfig;
 import com.sleepycat.je.Transaction;
 import com.sleepycat.je.TransactionConfig;
+
+import com.unboundid.util.StaticUtils;
 
 import com.slamd.admin.AdminServlet;
 import com.slamd.asn1.ASN1Element;
@@ -118,76 +119,76 @@ import com.slamd.server.UploadedFile;
  *
  * @author  Neil A. Wilson
  */
-public class SLAMDDB
+public final class SLAMDDB
 {
   // The set of transactions that are currently active in the database.
-  ArrayList<Transaction> activeTransactions;
+  private final ArrayList<Transaction> activeTransactions;
 
   // The list of configuration subscribers that have been registered with this
   // configuration database.
-  ArrayList<ConfigSubscriber> configSubscribers;
+  private final ArrayList<ConfigSubscriber> configSubscribers;
 
   // Indicates whether the databases are currently open.
-  boolean dbsOpen;
+  private boolean dbsOpen;
 
   // Indicates whether the database environment is currently open.
-  boolean environmentOpen;
+  private boolean environmentOpen;
 
   // Indicates whether the database is currently operating in read-only mode.
-  boolean readOnly;
+  private final boolean readOnly;
 
   // The handle to the configuration database.
-  Database configDB;
+  private Database configDB;
 
   // The handle to the uploaded file database.
-  Database fileDB;
+  private Database fileDB;
 
   // The handle to the folder database.
-  Database folderDB;
+  private Database folderDB;
 
   // The handle to the group database.
-  Database groupDB;
+  private Database groupDB;
 
   // The handle to the job database.
-  Database jobDB;
+  private Database jobDB;
 
   // The handle to the job group database.
-  Database jobGroupDB;
+  private Database jobGroupDB;
 
   // The handle to the optimizing job database.
-  Database optimizingJobDB;
+  private Database optimizingJobDB;
 
   // The handle to the user database.
-  Database userDB;
+  private Database userDB;
 
   // The handle to the virtual folder database.
-  Database virtualFolderDB;
+  private Database virtualFolderDB;
 
   // The database environment with which all the databases are associated.
-  Environment dbEnv;
+  private final Environment dbEnv;
 
   // The path to the directory containing the database files.
-  File dbDir;
+  private final File dbDir;
 
   // The hash map that is used to hold information about the configuration
   // parameters.
-  HashMap<String,String> configHash;
+  private HashMap<String,String> configHash;
 
   // The set of jobs that are currently disabled and not eligible for execution.
-  HashSet<String> disabledJobs;
+  private final HashSet<String> disabledJobs;
 
   // The set of jobs that have been scheduled but have not yet started running
   // and are not disabled.
-  HashSet<String> pendingJobs;
+  private final HashSet<String> pendingJobs;
 
   // The set of jobs that are currently running.
-  HashSet<String> runningJobs;
+  private final HashSet<String> runningJobs;
 
   // The mutex used to provide threadsafe access to the database.
   private final Object dbMutex;
 
   // The SLAMD server instance with which this database is associated.
-  SLAMDServer slamdServer;
+  private final SLAMDServer slamdServer;
 
 
 
@@ -208,8 +209,8 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while initializing the
    *                             database environment.
    */
-  public SLAMDDB(SLAMDServer slamdServer, String dbDirectory, boolean readOnly,
-                 boolean createIfNecessary)
+  public SLAMDDB(final SLAMDServer slamdServer, final String dbDirectory,
+                 final boolean readOnly, final boolean createIfNecessary)
          throws DatabaseException
   {
     this.readOnly    = readOnly;
@@ -224,7 +225,7 @@ public class SLAMDDB
       if (! dbDir.isDirectory())
       {
         String message = "Specified database directory \"" + dbDirectory +
-                         "\" exists but is not a directory.";
+             "\" exists but is not a directory.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -237,21 +238,21 @@ public class SLAMDDB
         {
           dbDir.mkdirs();
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           String message = "Unable to create database directory \"" +
-                           dbDirectory + "\" -- " + e;
+               dbDirectory + "\" -- " + e;
           slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           throw new SLAMDDatabaseException(message, e);
         }
       }
       else
       {
         String message = "Database directory \"" + dbDirectory +
-                         "\" does not exist and the SLAMD server has been " +
-                         "configured to not create it.";
+             "\" does not exist and the SLAMD server has been " +
+             "configured to not create it.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -259,7 +260,7 @@ public class SLAMDDB
 
 
     // Define the properties that should be used to open the DB environment.
-    EnvironmentConfig config = new EnvironmentConfig();
+    final EnvironmentConfig config = new EnvironmentConfig();
     config.setAllowCreate(createIfNecessary);
     config.setReadOnly(readOnly);
     config.setTransactional(true);
@@ -270,7 +271,7 @@ public class SLAMDDB
     // Open the database environment with the specified configuration.
     dbEnv = new Environment(dbDir, config);
     slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                           "Opened the configuration database environment.");
+         "Opened the configuration database environment.");
 
 
     // Initialize the remaining instance variables.
@@ -286,7 +287,7 @@ public class SLAMDDB
     {
       openDatabases(! readOnly);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       try
       {
@@ -295,12 +296,12 @@ public class SLAMDDB
 
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       try
       {
         dbEnv.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       throw new SLAMDDatabaseException(
            "Unable to open the SLAMD databases:  " + e,
@@ -310,21 +311,12 @@ public class SLAMDDB
 
     // Get the lists of disabled, pending, and running jobs.
     disabledJobs = new HashSet<String>();
-    byte[] disabledBytes = get(null, configDB, Constants.PARAM_DISABLED_JOBS,
-                               false);
+    final byte[] disabledBytes =
+         get(null, configDB, Constants.PARAM_DISABLED_JOBS, false);
     if ((disabledBytes != null) && (disabledBytes.length > 0))
     {
-      String disabledStr;
-      try
-      {
-        disabledStr = new String(disabledBytes, "UTF-8");
-      }
-      catch (UnsupportedEncodingException uee)
-      {
-        disabledStr = new String(disabledBytes);
-      }
-
-      StringTokenizer tokenizer = new StringTokenizer(disabledStr, "\n");
+      final String disabledStr = StaticUtils.toUTF8String(disabledBytes);
+      final StringTokenizer tokenizer = new StringTokenizer(disabledStr, "\n");
       while (tokenizer.hasMoreTokens())
       {
         disabledJobs.add(tokenizer.nextToken());
@@ -332,21 +324,12 @@ public class SLAMDDB
     }
 
     pendingJobs = new HashSet<String>();
-    byte[] pendingBytes = get(null, configDB, Constants.PARAM_PENDING_JOBS,
-                              false);
+    final byte[] pendingBytes =
+         get(null, configDB, Constants.PARAM_PENDING_JOBS, false);
     if ((pendingBytes != null) && (pendingBytes.length > 0))
     {
-      String pendingStr;
-      try
-      {
-        pendingStr = new String(pendingBytes, "UTF-8");
-      }
-      catch (UnsupportedEncodingException uee)
-      {
-        pendingStr = new String(pendingBytes);
-      }
-
-      StringTokenizer tokenizer = new StringTokenizer(pendingStr, "\n");
+      final String pendingStr = StaticUtils.toUTF8String(pendingBytes);
+      final StringTokenizer tokenizer = new StringTokenizer(pendingStr, "\n");
       while (tokenizer.hasMoreTokens())
       {
         pendingJobs.add(tokenizer.nextToken());
@@ -354,21 +337,12 @@ public class SLAMDDB
     }
 
     runningJobs = new HashSet<String>();
-    byte[] runningBytes = get(null, configDB, Constants.PARAM_RUNNING_JOBS,
-                              false);
+    final byte[] runningBytes =
+         get(null, configDB, Constants.PARAM_RUNNING_JOBS, false);
     if ((runningBytes != null) && (runningBytes.length > 0))
     {
-      String runningStr;
-      try
-      {
-        runningStr = new String(runningBytes, "UTF-8");
-      }
-      catch (UnsupportedEncodingException uee)
-      {
-        runningStr = new String(runningBytes);
-      }
-
-      StringTokenizer tokenizer = new StringTokenizer(runningStr, "\n");
+      final String runningStr = StaticUtils.toUTF8String(runningBytes);
+      final StringTokenizer tokenizer = new StringTokenizer(runningStr, "\n");
       while (tokenizer.hasMoreTokens())
       {
         runningJobs.add(tokenizer.nextToken());
@@ -384,18 +358,18 @@ public class SLAMDDB
    * @param  dbDirectory  The path to the directory containing the database
    *                      files.
    *
-   * @return  <CODE>true</CODE> if the database exists, or <CODE>false</CODE>
+   * @return  {@code true} if the database exists, or {@code false}
    *          false if not.
    *
    * @throws  DatabaseException  If a problem occurs while attempting to make
    *                             the determination.
    */
-  public static boolean dbExists(String dbDirectory)
+  public static boolean dbExists(final String dbDirectory)
          throws DatabaseException
   {
     // First make sure that the specified directory exists and is actually a
     // directory.  If it does not exist, then create it if appropriate.
-    File dbDir = new File(dbDirectory);
+    final File dbDir = new File(dbDirectory);
     if (dbDir.exists())
     {
       if (! dbDir.isDirectory())
@@ -411,44 +385,44 @@ public class SLAMDDB
 
 
     // Define the properties that should be used to open the DB environment.
-    EnvironmentConfig config = new EnvironmentConfig();
+    final EnvironmentConfig config = new EnvironmentConfig();
     config.setAllowCreate(false);
     config.setReadOnly(true);
     config.setTransactional(true);
 
 
     // Open the database environment with the specified configuration.
-    Environment dbEnv = new Environment(dbDir, config);
+    final Environment dbEnv = new Environment(dbDir, config);
 
 
     // Try to open the configuration database.
     try
     {
-      DatabaseConfig dbConfig = new DatabaseConfig();
+      final DatabaseConfig dbConfig = new DatabaseConfig();
       dbConfig.setAllowCreate(false);
       dbConfig.setReadOnly(true);
 
-      Database configDB = dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG,
-                                             dbConfig);
+      final Database configDB =
+           dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG, dbConfig);
       configDB.close();
       dbEnv.close();
       return true;
     }
-    catch (DatabaseNotFoundException dnfe)
+    catch (final DatabaseNotFoundException dnfe)
     {
       try
       {
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       return false;
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       try
       {
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       throw de;
     }
@@ -465,12 +439,12 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to create the
    *                             database.
    */
-  public static void createDB(String dbDirectory)
+  public static void createDB(final String dbDirectory)
          throws DatabaseException
   {
     // First make sure that the specified directory exists and is actually a
     // directory.  If it does not exist, then create it if appropriate.
-    File dbDir = new File(dbDirectory);
+    final File dbDir = new File(dbDirectory);
     if (dbDir.exists())
     {
       if (! dbDir.isDirectory())
@@ -496,7 +470,7 @@ public class SLAMDDB
 
 
     // Define the properties that should be used to open the DB environment.
-    EnvironmentConfig config = new EnvironmentConfig();
+    final EnvironmentConfig config = new EnvironmentConfig();
     config.setAllowCreate(true);
     config.setReadOnly(false);
     config.setTransactional(true);
@@ -504,11 +478,11 @@ public class SLAMDDB
 
 
     // Open the database environment with the specified configuration.
-    Environment dbEnv = new Environment(dbDir, config);
+    final Environment dbEnv = new Environment(dbDir, config);
 
 
     // Open and close the individual DBs, creating them if necessary.
-    DatabaseConfig dbConfig = new DatabaseConfig();
+    final DatabaseConfig dbConfig = new DatabaseConfig();
     dbConfig.setAllowCreate(true);
     dbConfig.setReadOnly(false);
     dbConfig.setSortedDuplicates(false);
@@ -528,12 +502,12 @@ public class SLAMDDB
       dbEnv.openDatabase(null, Constants.DB_NAME_VIRTUAL_FOLDER,
                          dbConfig).close();
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       try
       {
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       throw de;
     }
@@ -541,9 +515,9 @@ public class SLAMDDB
 
     // Re-open the config DB and Populate it with the most important initial
     // configuration.
-    Database configDB = dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG,
-                                           dbConfig);
-    String[] jobClasses =
+    final Database configDB =
+         dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG, dbConfig);
+    final String[] jobClasses =
     {
       BurnCPUJobClass.class.getName(),
       DSADMImportRateJobClass.class.getName(),
@@ -584,7 +558,7 @@ public class SLAMDDB
       LogPlaybackJobClass.class.getName()
     };
 
-    String[] optimizationAlgorithms =
+    final String[] optimizationAlgorithms =
     {
       SingleStatisticOptimizationAlgorithm.class.getName(),
       SingleStatisticWithConstraintOptimizationAlgorithm.class.getName(),
@@ -592,7 +566,7 @@ public class SLAMDDB
       SingleStatisticWithReplicationLatencyOptimizationAlgorithm.class.getName()
     };
 
-    String[] reportGenerators =
+    final String[] reportGenerators =
     {
       HTMLReportGenerator.class.getName(),
       PDFReportGenerator.class.getName(),
@@ -642,39 +616,39 @@ public class SLAMDDB
           buffer.toString());
 
 
-      String logFilename = AdminServlet.getWebInfPath() + '/' +
-                           Constants.DEFAULT_LOG_FILENAME;
+      final String logFilename = AdminServlet.getWebInfPath() + '/' +
+           Constants.DEFAULT_LOG_FILENAME;
       put(configDB, Constants.PARAM_LOG_FILENAME, logFilename);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       try
       {
         configDB.close();
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       throw de;
     }
 
 
     // Create an "Unclassified" job folder.
-    Database folderDB = dbEnv.openDatabase(null, Constants.DB_NAME_FOLDER,
-                                           dbConfig);
-    JobFolder folder = new JobFolder(Constants.FOLDER_NAME_UNCLASSIFIED, false,
-                                     false, null, null, "Unclassified jobs.",
-                                     null, null, null, null);
+    final Database folderDB =
+         dbEnv.openDatabase(null, Constants.DB_NAME_FOLDER, dbConfig);
+    final JobFolder folder = new JobFolder(Constants.FOLDER_NAME_UNCLASSIFIED,
+         false, false, null, null, "Unclassified jobs.", null, null, null,
+         null);
     try
     {
       put(folderDB, Constants.FOLDER_NAME_UNCLASSIFIED, folder.encode());
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       try
       {
         folderDB.close();
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       throw de;
     }
@@ -686,7 +660,7 @@ public class SLAMDDB
     try
     {
       configDB.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     dbEnv.close();
   }
@@ -705,7 +679,7 @@ public class SLAMDDB
    *                             then all databases will be closed but the
    *                             environment will still be open.
    */
-  public void openDatabases(boolean createIfNecessary)
+  public void openDatabases(final boolean createIfNecessary)
          throws DatabaseException
   {
     // See if the database is already open.  If so, then don't do anything.
@@ -720,8 +694,8 @@ public class SLAMDDB
       // The database environment must be open in order to proceed.
       if (! environmentOpen)
       {
-        String message = "Unable to open SLAMD databases because the " +
-                         "database environment is not open.";
+        final String message = "Unable to open SLAMD databases because the " +
+             "database environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -729,7 +703,7 @@ public class SLAMDDB
 
       // Create the database configuration that will be used to open the
       // databases.
-      DatabaseConfig dbConfig = new DatabaseConfig();
+      final DatabaseConfig dbConfig = new DatabaseConfig();
       dbConfig.setAllowCreate(createIfNecessary);
       dbConfig.setReadOnly(readOnly);
       dbConfig.setSortedDuplicates(false);
@@ -749,7 +723,7 @@ public class SLAMDDB
         userDB          = openDB(Constants.DB_NAME_USER, dbConfig);
         virtualFolderDB = openDB(Constants.DB_NAME_VIRTUAL_FOLDER, dbConfig);
       }
-      catch (DatabaseException dbe)
+      catch (final DatabaseException dbe)
       {
         closeDatabases(true);
         throw dbe;
@@ -758,25 +732,16 @@ public class SLAMDDB
 
       // Populate the configuration map.
       configHash = new HashMap<String,String>();
-      Cursor configCursor = configDB.openCursor(null, new CursorConfig());
-      DatabaseEntry keyEntry = new DatabaseEntry();
-      DatabaseEntry valueEntry = new DatabaseEntry();
-      OperationStatus status = configCursor.getFirst(keyEntry, valueEntry,
-                                                     LockMode.DEFAULT);
+      final Cursor configCursor = configDB.openCursor(null, new CursorConfig());
+      final DatabaseEntry keyEntry = new DatabaseEntry();
+      final DatabaseEntry valueEntry = new DatabaseEntry();
+      OperationStatus status =
+           configCursor.getFirst(keyEntry, valueEntry, LockMode.DEFAULT);
       while (status == OperationStatus.SUCCESS)
       {
-        try
-        {
-          String key   = new String(keyEntry.getData(), "UTF-8");
-          String value = new String(valueEntry.getData(), "UTF-8");
-          configHash.put(key, value);
-        }
-        catch (UnsupportedEncodingException uee)
-        {
-          String key   = new String(keyEntry.getData());
-          String value = new String(valueEntry.getData());
-          configHash.put(key, value);
-        }
+        final String key   = StaticUtils.toUTF8String(keyEntry.getData());
+        final String value = StaticUtils.toUTF8String(valueEntry.getData());
+        configHash.put(key, value);
 
         status = configCursor.getNext(keyEntry, valueEntry, LockMode.DEFAULT);
       }
@@ -800,12 +765,12 @@ public class SLAMDDB
    *
    * @throws  DatabaseException  If a problem occurs while opening the database.
    */
-  private Database openDB(String dbName, DatabaseConfig dbConfig)
+  private Database openDB(final String dbName, final DatabaseConfig dbConfig)
           throws DatabaseException
   {
-    Database db = dbEnv.openDatabase(null, dbName, dbConfig);
+    final Database db = dbEnv.openDatabase(null, dbName, dbConfig);
 
-    PreloadConfig preloadConfig = new PreloadConfig();
+    final PreloadConfig preloadConfig = new PreloadConfig();
     preloadConfig.setLoadLNs(false);
     db.preload(preloadConfig);
 
@@ -825,7 +790,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If there are active transactions and this
    *                             method is configured to not abort them.
    */
-  public void closeDatabases(boolean abortTransactions)
+  public void closeDatabases(final boolean abortTransactions)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -842,7 +807,7 @@ public class SLAMDDB
       {
         if (abortTransactions)
         {
-          for (Transaction txn : activeTransactions)
+          for (final Transaction txn : activeTransactions)
           {
             try
             {
@@ -855,8 +820,8 @@ public class SLAMDDB
         else
         {
           String message = "Not closing databases because there are active " +
-                           "transactions and this method has been configured " +
-                           "to not abort them.";
+               "transactions and this method has been configured " +
+               "to not abort them.";
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
           throw new SLAMDDatabaseException(message);
         }
@@ -884,14 +849,14 @@ public class SLAMDDB
    *
    * @param  db  The database to be closed.
    */
-  private void closeDB(Database db)
+  private void closeDB(final Database db)
   {
     if (db != null)
     {
       try
       {
         db.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
   }
 
@@ -911,8 +876,8 @@ public class SLAMDDB
       // Make sure that there are no databases open.
       if (dbsOpen)
       {
-        String message = "Unable to close the environment because the " +
-                         "databases are still open.";
+        final String message = "Unable to close the environment because the " +
+             "databases are still open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -922,14 +887,14 @@ public class SLAMDDB
       try
       {
         dbEnv.sync();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
 
       // Close the database environment.
       try
       {
         dbEnv.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       environmentOpen = false;
     }
@@ -956,186 +921,171 @@ public class SLAMDDB
    * @throws  IOException  If a problem occurs while writing to the provided
    *                       output stream.
    */
-  public void exportFolderData(String[] realFolderNames,
-                               String[] virtualFolderNames,
-                               String[] jobGroupNames,
-                               OutputStream outputStream)
+  public void exportFolderData(final String[] realFolderNames,
+                               final String[] virtualFolderNames,
+                               final String[] jobGroupNames,
+                               final OutputStream outputStream)
          throws DatabaseException, IOException
   {
     if ((realFolderNames.length == 0) && (virtualFolderNames.length == 0) &&
         (jobGroupNames.length == 0))
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                             "No folders or job groups specified to include " +
-                             "in the export.");
+           "No folders or job groups specified to include in the export.");
       return;
     }
 
 
-    ASN1Writer asn1Writer = new ASN1Writer(outputStream);
+    final ASN1Writer asn1Writer = new ASN1Writer(outputStream);
 
 
     // First, the real job folders.  We have to keep everything consistent
     // within a folder, so we'll use a transaction to protect it.
-    for (int i=0; i < realFolderNames.length; i++)
+    for (final String realFolderName : realFolderNames)
     {
-      Transaction txn = getTransaction();
+      final Transaction txn = getTransaction();
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                             "Beginning export for folder \"" +
-                             realFolderNames[i] + '"');
+           "Beginning export for folder \"" + realFolderName + '"');
 
       try
       {
         // Retrieve the entry for the folder itself.
-        byte[] folderBytes = get(txn, folderDB, realFolderNames[i], false);
+        final byte[] folderBytes = get(txn, folderDB, realFolderName, false);
         if (folderBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find job folder " +
-                                 realFolderNames[i] +
-                                 " in the configuration database.");
+               "Could not find job folder " + realFolderName +
+                    " in the configuration database.");
           continue;
         }
 
-        JobFolder folder = JobFolder.decode(folderBytes);
+        final JobFolder folder = JobFolder.decode(folderBytes);
         ASN1Element[] elements =
         {
           new ASN1OctetString(Constants.DB_NAME_FOLDER),
-          new ASN1OctetString(realFolderNames[i]),
+          new ASN1OctetString(realFolderName),
           new ASN1OctetString(folderBytes)
         };
         asn1Writer.writeElement(new ASN1Sequence(elements));
 
 
         // Get the set of jobs contained in that folder.
-        String[] jobIDs = folder.getJobIDs();
-        for (int j=0; j < jobIDs.length; j++)
+        for (final String jobID : folder.getJobIDs())
         {
           try
           {
-            byte[] jobBytes = get(txn, jobDB, jobIDs[j], false);
+            byte[] jobBytes = get(txn, jobDB, jobID, false);
             if (jobBytes == null)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                     "Could not find job " + jobIDs[j] +
-                                     " referenced in folder " +
-                                     realFolderNames[i]);
+                   "Could not find job " + jobID + " referenced in folder " +
+                        realFolderName);
               continue;
             }
 
             elements = new ASN1Element[]
             {
               new ASN1OctetString(Constants.DB_NAME_JOB),
-              new ASN1OctetString(jobIDs[j]),
+              new ASN1OctetString(jobID),
               new ASN1OctetString(jobBytes)
             };
             asn1Writer.writeElement(new ASN1Sequence(elements));
           }
-          catch (IOException ioe)
+          catch (final DatabaseException | IOException e)
           {
-            throw ioe;
+            throw e;
           }
-          catch (Exception e)
+          catch (final Exception e)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                   "Unable to retrieve information about job " +
-                                   jobIDs[j] + " from the configuration " +
-                                   "database:  " + e);
+                 "Unable to retrieve information about job " + jobID +
+                      " from the configuration database:  " + e);
           }
         }
 
 
         // Get the set of optimizing jobs contained in the folder.
-        String[] optimizingJobIDs = folder.getOptimizingJobIDs();
-        for (int j=0; j < optimizingJobIDs.length; j++)
+        for (final String optimizingJobID : folder.getOptimizingJobIDs())
         {
           try
           {
-            byte[] optimizingJobBytes = get(txn, optimizingJobDB,
-                                            optimizingJobIDs[j], false);
+            final byte[] optimizingJobBytes =
+                 get(txn, optimizingJobDB, optimizingJobID, false);
             if (optimizingJobBytes == null)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                     "Could not find optimizing job " +
-                                     optimizingJobIDs[j] + " referenced in " +
-                                     "folder " + realFolderNames[i]);
+                   "Could not find optimizing job " + optimizingJobID +
+                        " referenced in folder " + realFolderName);
               continue;
             }
 
             elements = new ASN1Element[]
             {
               new ASN1OctetString(Constants.DB_NAME_OPTIMIZING_JOB),
-              new ASN1OctetString(optimizingJobIDs[j]),
+              new ASN1OctetString(optimizingJobID),
               new ASN1OctetString(optimizingJobBytes)
             };
             asn1Writer.writeElement(new ASN1Sequence(elements));
           }
-          catch (IOException ioe)
+          catch (DatabaseException | IOException e)
           {
-            throw ioe;
+            throw e;
           }
           catch (Exception e)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                   "Unable to retrieve information about " +
-                                   "optimizing job " + optimizingJobIDs[j] +
-                                   " from the configuration database:  " + e);
+                 "Unable to retrieve information about optimizing job " +
+                      optimizingJobID +" from the configuration database:  " +
+                      e);
           }
         }
 
 
         // Get the set of uploaded files contained in the folder.
-        String[] fileNames = folder.getFileNames();
-        for (int j=0; j < fileNames.length; j++)
+        for (final String fileName : folder.getFileNames())
         {
           try
           {
-            String key = realFolderNames[i] + '\t' + fileNames[j];
+            final String key = realFolderName + '\t' + fileName;
             byte[] fileBytes = get(txn, fileDB, key, false);
             if (fileBytes == null)
             {
               slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                     "Could not find uploaded file " +
-                                     fileNames[j] + " referenced in folder " +
-                                     realFolderNames[i]);
+                   "Could not find uploaded file " + fileName +
+                        " referenced in folder " + realFolderName);
               continue;
             }
 
             elements = new ASN1Element[]
             {
               new ASN1OctetString(Constants.DB_NAME_FILE),
-              new ASN1OctetString(fileNames[j]),
+              new ASN1OctetString(fileName),
               new ASN1OctetString(fileBytes)
             };
             asn1Writer.writeElement(new ASN1Sequence(elements));
           }
-          catch (IOException ioe)
+          catch (final DatabaseException | IOException e)
           {
-            throw ioe;
+            throw e;
           }
-          catch (Exception e)
+          catch (final Exception e)
           {
             slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                   "Unable to retrieve information about " +
-                                   "uploaded " + "file " + fileNames[j] +
-                                   " from the configuration database:  " + e);
+                 "Unable to retrieve information about uploaded file " +
+                      fileName + " from the configuration database:  " + e);
           }
         }
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException | IOException e)
       {
-        throw de;
+        throw e;
       }
-      catch (IOException ioe)
-      {
-        throw ioe;
-      }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new SLAMDDatabaseException("Unexpected error occurred while " +
-             "performing the export:  " + e, e);
+             JobClass.stackTraceToString(e));
+        throw new SLAMDDatabaseException(
+             "Unexpected error occurred while performing the export:  " + e, e);
       }
       finally
       {
@@ -1150,44 +1100,39 @@ public class SLAMDDB
     // the folder itself since the jobs are contained elsewhere and were
     // hopefully included in the export of the real folders, so there is no need
     // for a transaction.
-    for (int i=0; i < virtualFolderNames.length; i++)
+    for (final String virtualFolderName : virtualFolderNames)
     {
       try
       {
         // Retrieve the entry for the virtual folder itself.
-        byte[] virtualFolderBytes = get(null, virtualFolderDB,
-                                        virtualFolderNames[i], false);
+        final byte[] virtualFolderBytes =
+             get(null, virtualFolderDB, virtualFolderName, false);
         if (virtualFolderBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find virtual job folder " +
-                                 virtualFolderNames[i] +
-                                 " in the configuration database.");
+               "Could not find virtual job folder " + virtualFolderName +
+                    " in the configuration database.");
           continue;
         }
 
-        ASN1Element[] elements =
+        final ASN1Element[] elements =
         {
           new ASN1OctetString(Constants.DB_NAME_VIRTUAL_FOLDER),
-          new ASN1OctetString(virtualFolderNames[i]),
+          new ASN1OctetString(virtualFolderName),
           new ASN1OctetString(virtualFolderBytes)
         };
         asn1Writer.writeElement(new ASN1Sequence(elements));
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException | IOException e)
       {
-        throw de;
+        throw e;
       }
-      catch (IOException ioe)
-      {
-        throw ioe;
-      }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new SLAMDDatabaseException("Unexpected error occurred while " +
-             "performing the export:  " + e, e);
+             JobClass.stackTraceToString(e));
+        throw new SLAMDDatabaseException(
+             "Unexpected error occurred while performing the export:  " + e, e);
       }
 
       outputStream.flush();
@@ -1197,45 +1142,40 @@ public class SLAMDDB
     // Next, iterate through the job groups.  In this case, a job group is a
     // single entity in the database, so there is no need to protect this with a
     // transaction.
-    for (int i=0; i < jobGroupNames.length; i++)
+    for (final String jobGroupName : jobGroupNames)
     {
       try
       {
         // Retrieve the entry for the job group itself.
-        byte[] jobGroupBytes = get(null, jobGroupDB, jobGroupNames[i], false);
+        final byte[] jobGroupBytes = get(null, jobGroupDB, jobGroupName, false);
 
         if (jobGroupBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find job group " +
-                                 jobGroupNames[i] +
-                                 " in the configuration database.");
+               "Could not find job group " + jobGroupName +
+                    " in the configuration database.");
 
           continue;
         }
 
-        ASN1Element[] elements =
+        final ASN1Element[] elements =
         {
           new ASN1OctetString(Constants.DB_NAME_JOB_GROUP),
-          new ASN1OctetString(jobGroupNames[i]),
+          new ASN1OctetString(jobGroupName),
           new ASN1OctetString(jobGroupBytes)
         };
         asn1Writer.writeElement(new ASN1Sequence(elements));
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException | IOException e)
       {
-        throw de;
+        throw e;
       }
-      catch (IOException ioe)
-      {
-        throw ioe;
-      }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new SLAMDDatabaseException("Unexpected error occurred while " +
-             "performing the export:  " + e, e);
+             JobClass.stackTraceToString(e));
+        throw new SLAMDDatabaseException(
+             "Unexpected error occurred while performing the export:  " + e, e);
       }
 
       outputStream.flush();
@@ -1256,34 +1196,35 @@ public class SLAMDDB
    *                         be written in HTML format.  If not, then it will be
    *                         plain text.
    *
-   * @return  <CODE>true</CODE> if the import was completely successful, or
-   *          <CODE>false</CODE> if one or more problems were encountered.
+   * @return  {@code true} if the import was completely successful, or
+   *          {@code false} if one or more problems were encountered.
    */
-  public boolean importFolderData(InputStream inputStream,
-                                  PrintWriter progressWriter, boolean writeHTML)
+  public boolean importFolderData(final InputStream inputStream,
+                                  final PrintWriter progressWriter,
+                                  final boolean writeHTML)
   {
-    ASN1Reader asn1Reader = new ASN1Reader(inputStream);
+    final ASN1Reader asn1Reader = new ASN1Reader(inputStream);
 
     ASN1Element element;
     try
     {
       element = nextElement(asn1Reader, progressWriter, writeHTML);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       return false;
     }
 
     boolean completeSuccess = true;
-    int     numRecords      = 0;
-    long    startTime       = System.currentTimeMillis();
+    int numRecords = 0;
+    final long startTime = System.currentTimeMillis();
     while (element != null)
     {
       numRecords++;
 
-      byte[] data;
-      String dbName;
-      String keyName;
+      final byte[] data;
+      final String dbName;
+      final String keyName;
       try
       {
         ASN1Element[] elements = element.decodeAsSequence().getElements();
@@ -1294,8 +1235,7 @@ public class SLAMDDB
       catch (Exception e)
       {
         progressWriter.println("Unable to decode ASN.1 element read from the " +
-                               "input stream as a sequence of three " +
-                               "elements:");
+             "input stream as a sequence of three elements:");
 
         if (writeHTML)
         {
@@ -1315,7 +1255,7 @@ public class SLAMDDB
         {
           element = nextElement(asn1Reader, progressWriter, writeHTML);
         }
-        catch (Exception e2)
+        catch (final Exception e2)
         {
           return false;
         }
@@ -1325,11 +1265,11 @@ public class SLAMDDB
       }
 
 
-      Database db = getDB(dbName);
+      final Database db = getDB(dbName);
       if (db == null)
       {
         progressWriter.println("Unable to retrieve a reference to database " +
-                               dbName + " from the DB environment.");
+             dbName + " from the DB environment.");
 
         if (writeHTML)
         {
@@ -1344,7 +1284,7 @@ public class SLAMDDB
         {
           element = nextElement(asn1Reader, progressWriter, writeHTML);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           return false;
         }
@@ -1359,66 +1299,60 @@ public class SLAMDDB
         // See if the specified record exists.  If so, then see if it's a folder
         // and merge the contents together.  Otherwise, refuse to overwrite the
         // existing record.
-        byte[] existingData;
-        if ((existingData = get(null, db, keyName, false)) != null)
+        final byte[] existingData = get(null, db, keyName, false);
+        if (existingData != null)
         {
           if (dbName.equals(Constants.DB_NAME_FOLDER))
           {
-            JobFolder existingFolder = getFolder(keyName);
-            JobFolder newFolder      = JobFolder.decode(existingData);
+            final JobFolder existingFolder = getFolder(keyName);
+            final JobFolder newFolder      = JobFolder.decode(existingData);
 
-            String[] newJobIDs = newFolder.getJobIDs();
-            for (int i=0; i < newJobIDs.length; i++)
+            for (final String newJobID : newFolder.getJobIDs())
             {
-              if (! existingFolder.containsJobID(newJobIDs[i]))
+              if (! existingFolder.containsJobID(newJobID))
               {
-                existingFolder.addJobID(newJobIDs[i]);
+                existingFolder.addJobID(newJobID);
               }
             }
 
-            String[] newOptimizingJobIDs = newFolder.getOptimizingJobIDs();
-            for (int i=0; i < newOptimizingJobIDs.length; i++)
+            for (final String newOptimizingJobID :
+                 newFolder.getOptimizingJobIDs())
             {
-              if (! existingFolder.containsOptimizingJobID(
-                                        newOptimizingJobIDs[i]))
+              if (! existingFolder.containsOptimizingJobID(newOptimizingJobID))
               {
-                existingFolder.addOptimizingJobID(newOptimizingJobIDs[i]);
+                existingFolder.addOptimizingJobID(newOptimizingJobID);
               }
             }
 
-            String[] newChildNames = newFolder.getChildNames();
-            for (int i=0; i < newChildNames.length; i++)
+            for (final String newChildName : newFolder.getChildNames())
             {
-              if (! existingFolder.containsChildName(newChildNames[i]))
+              if (! existingFolder.containsChildName(newChildName))
               {
-                existingFolder.addChildName(newChildNames[i]);
+                existingFolder.addChildName(newChildName);
               }
             }
 
-            String[] newFileNames = newFolder.getFileNames();
-            for (int i=0; i < newFileNames.length; i++)
+            for (final String newFileName : newFolder.getFileNames())
             {
-              if (! existingFolder.containsFileName(newFileNames[i]))
+              if (! existingFolder.containsFileName(newFileName))
               {
-                existingFolder.addFileName(newFileNames[i]);
+                existingFolder.addFileName(newFileName);
               }
             }
 
-            byte[] updatedEntry = existingFolder.encode();
+            final byte[] updatedEntry = existingFolder.encode();
             put(null, db, keyName, updatedEntry);
             if (writeHTML)
             {
               progressWriter.println("<SPAN CLASS=\"" +
-                                     Constants.STYLE_WARNING_TEXT +
-                                     "\">Updated existing job folder \"" +
-                                     keyName + "\" in database \"" + dbName +
-                                     "\".</SPAN>");
+                   Constants.STYLE_WARNING_TEXT +
+                   "\">Updated existing job folder \"" + keyName +
+                   "\" in database \"" + dbName + "\".</SPAN>");
             }
             else
             {
               progressWriter.println("Updated existing job folder \"" +
-                                     keyName + "\" in database \"" + dbName +
-                                     "\".");
+                   keyName + "\" in database \"" + dbName + "\".");
             }
           }
           else
@@ -1426,17 +1360,15 @@ public class SLAMDDB
             if (writeHTML)
             {
               progressWriter.println("<SPAN CLASS=\"" +
-                                     Constants.STYLE_WARNING_TEXT +
-                                     "\">Refusing to overwrite existing " +
-                                     "record with key \"" + keyName +
-                                     "\" in database \"" + dbName +
-                                     "\".</SPAN>");
+                   Constants.STYLE_WARNING_TEXT +
+                   "\">Refusing to overwrite existing record with key \"" +
+                   keyName + "\" in database \"" + dbName + "\".</SPAN>");
             }
             else
             {
               progressWriter.println("Refusing to overwrite existing record " +
-                                     "with key \"" + keyName +
-                                     "\" in database \"" + dbName + "\".");
+                   "with key \"" + keyName + "\" in database \"" + dbName +
+                   "\".");
             }
           }
         }
@@ -1444,8 +1376,7 @@ public class SLAMDDB
         {
           put(null, db, keyName, data);
           progressWriter.println("Successfully wrote record with key \"" +
-                                 keyName + "\" to database \"" + dbName +
-                                 "\".");
+               keyName + "\" to database \"" + dbName + "\".");
         }
 
         if (writeHTML)
@@ -1460,7 +1391,7 @@ public class SLAMDDB
       catch (Exception e)
       {
         progressWriter.println("Unable to write entry with key \"" + keyName +
-                               "\" to database \"" + dbName + "\":");
+             "\" to database \"" + dbName + "\":");
 
         if (writeHTML)
         {
@@ -1480,7 +1411,7 @@ public class SLAMDDB
         {
           element = nextElement(asn1Reader, progressWriter, writeHTML);
         }
-        catch (Exception e2)
+        catch (final Exception e2)
         {
           return false;
         }
@@ -1494,7 +1425,7 @@ public class SLAMDDB
       {
         element = nextElement(asn1Reader, progressWriter, writeHTML);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         return false;
       }
@@ -1503,7 +1434,7 @@ public class SLAMDDB
       continue;
     }
 
-    long endTime = System.currentTimeMillis();
+    final long endTime = System.currentTimeMillis();
     progressWriter.println("<BR><BR>");
     progressWriter.println("Import complete.<BR><BR>");
     progressWriter.println("Processed " + numRecords + " records in " +
@@ -1532,9 +1463,9 @@ public class SLAMDDB
    * @throws  ASN1Exception  If a problem occurs while trying to decode the data
    *                         read as an ASN.1 element.
    */
-  private static ASN1Element nextElement(ASN1Reader reader,
-                                         PrintWriter progressWriter,
-                                         boolean writeHTML)
+  private static ASN1Element nextElement(final ASN1Reader reader,
+                                         final PrintWriter progressWriter,
+                                         final boolean writeHTML)
           throws IOException, ASN1Exception
   {
     try
@@ -1544,7 +1475,7 @@ public class SLAMDDB
     catch (IOException ioe)
     {
       progressWriter.println("I/O error encountered while attempting to read " +
-                             "from the provided input stream:");
+           "from the provided input stream:");
 
       if (writeHTML)
       {
@@ -1562,10 +1493,10 @@ public class SLAMDDB
 
       throw ioe;
     }
-    catch (ASN1Exception ae)
+    catch (final ASN1Exception ae)
     {
       progressWriter.println("Unable to decode data read from input stream " +
-                             "as an ASN.1 element:");
+           "as an ASN.1 element:");
 
       if (writeHTML)
       {
@@ -1585,8 +1516,8 @@ public class SLAMDDB
     }
     catch (Exception e)
     {
-      String message = "Unexpected error while reading ASN.1 element from " +
-                       "input stream:";
+      String message =
+           "Unexpected error while reading ASN.1 element from input stream:";
       progressWriter.println(message);
 
       if (writeHTML)
@@ -1620,8 +1551,8 @@ public class SLAMDDB
   public String[] getDBNames()
          throws DatabaseException
   {
-    List<String> list = dbEnv.getDatabaseNames();
-    String[] dbNames = new String[list.size()];
+    final List<String> list = dbEnv.getDatabaseNames();
+    final String[] dbNames = new String[list.size()];
     list.toArray(dbNames);
     return dbNames;
   }
@@ -1633,10 +1564,10 @@ public class SLAMDDB
    *
    * @param  dbName  The name of the database to retrieve.
    *
-   * @return  The requested database, or <CODE>null</CODE> if there is no such
+   * @return  The requested database, or {@code null} if there is no such
    *          database.
    */
-  private Database getDB(String dbName)
+  private Database getDB(final String dbName)
   {
     Database db = null;
 
@@ -1693,43 +1624,43 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while obtaining the list of
    *                             database keys.
    */
-  public String[] getDBKeys(String dbName)
+  public String[] getDBKeys(final String dbName)
          throws DatabaseException
   {
-    Database db = getDB(dbName);
+    final Database db = getDB(dbName);
     if (db == null)
     {
       throw new SLAMDDatabaseException("No database found with a name of \"" +
            dbName + '"');
     }
 
-    CursorConfig cursorConfig = new CursorConfig();
+    final CursorConfig cursorConfig = new CursorConfig();
     cursorConfig.setReadUncommitted(true);
-    Cursor cursor = db.openCursor(null, cursorConfig);
+    final Cursor cursor = db.openCursor(null, cursorConfig);
 
-    ArrayList<String> keyList = new ArrayList<String>();
+    final ArrayList<String> keyList = new ArrayList<>();
     try
     {
-      DatabaseEntry keyEntry  = new DatabaseEntry();
-      DatabaseEntry dataEntry = new DatabaseEntry();
+      final DatabaseEntry keyEntry  = new DatabaseEntry();
+      final DatabaseEntry dataEntry = new DatabaseEntry();
 
-      OperationStatus status = cursor.getFirst(keyEntry, dataEntry,
-                                               LockMode.READ_UNCOMMITTED);
+      OperationStatus status =
+           cursor.getFirst(keyEntry, dataEntry, LockMode.READ_UNCOMMITTED);
       while (status == OperationStatus.SUCCESS)
       {
         keyList.add(new String(keyEntry.getData(), "UTF-8"));
         status = cursor.getNext(keyEntry, dataEntry, LockMode.READ_UNCOMMITTED);
       }
 
-      String[] keys = new String[keyList.size()];
+      final String[] keys = new String[keyList.size()];
       keyList.toArray(keys);
       return keys;
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new SLAMDDatabaseException("Unexpected exception caught while " +
            "retrieving DB keys:  " + e, e);
@@ -1750,15 +1681,15 @@ public class SLAMDDB
    * @param  dbKey   The key associated with the data to retrieve.
    *
    * @return  The data associated with the specified key in the given database,
-   *          or <CODE>null</CODE> if there is no such database key.
+   *          or {@code null} if there is no such database key.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             database.
    */
-  public byte[] getDBData(String dbName, String dbKey)
+  public byte[] getDBData(final String dbName, final String dbKey)
          throws DatabaseException
   {
-    Database db = getDB(dbName);
+    final Database db = getDB(dbName);
     if (db == null)
     {
       return null;
@@ -1777,9 +1708,9 @@ public class SLAMDDB
    *                        retrieve.
    *
    * @return  The value of the specified configuration parameter, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
-  public String getConfigParameter(String parameterName)
+  public String getConfigParameter(final String parameterName)
   {
     return configHash.get(parameterName);
   }
@@ -1798,9 +1729,10 @@ public class SLAMDDB
    * @return  The value of the specified configuration parameter, or the
    *          provided default value if there is no such parameter.
    */
-  public String getConfigParameter(String parameterName, String defaultValue)
+  public String getConfigParameter(final String parameterName,
+                                   final String defaultValue)
   {
-    String value = configHash.get(parameterName);
+    final String value = configHash.get(parameterName);
     if (value == null)
     {
       return defaultValue;
@@ -1823,9 +1755,10 @@ public class SLAMDDB
    * @return  The value of the specified configuration parameter, or the
    *          provided default value if there is no such parameter.
    */
-  public boolean getConfigParameter(String parameterName, boolean defaultValue)
+  public boolean getConfigParameter(final String parameterName,
+                                    final boolean defaultValue)
   {
-    String value = configHash.get(parameterName);
+    final String value = configHash.get(parameterName);
     if (value == null)
     {
       return defaultValue;
@@ -1859,9 +1792,10 @@ public class SLAMDDB
    * @return  The value of the specified configuration parameter, or the
    *          provided default value if there is no such parameter.
    */
-  public int getConfigParameter(String parameterName, int defaultValue)
+  public int getConfigParameter(final String parameterName,
+                                final int defaultValue)
   {
-    String value = configHash.get(parameterName);
+    final String value = configHash.get(parameterName);
     if (value == null)
     {
       return defaultValue;
@@ -1891,12 +1825,13 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while attempting to store
    *                             the configuration parameter.
    */
-  public void putConfigParameter(String parameterName, String parameterValue,
-                                 boolean notifySubscribers)
+  public void putConfigParameter(final String parameterName,
+                                 final String parameterValue,
+                                 final boolean notifySubscribers)
          throws DatabaseException
   {
-    OperationStatus status = put(null, configDB, parameterName,
-                                 ASN1Element.getBytes(parameterValue));
+    final OperationStatus status = put(null, configDB, parameterName,
+         ASN1Element.getBytes(parameterValue));
     if (status != OperationStatus.SUCCESS)
     {
       throw new SLAMDDatabaseException(
@@ -1912,23 +1847,20 @@ public class SLAMDDB
 
     synchronized (configSubscribers)
     {
-      for (int i=0; i < configSubscribers.size(); i++)
+      for (final ConfigSubscriber s : configSubscribers)
       {
-        ConfigSubscriber s = configSubscribers.get(i);
         try
         {
           s.refreshSubscriberConfiguration(parameterName);
         }
-        catch (SLAMDServerException sse)
+        catch (final SLAMDServerException sse)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Error while notifying subscriber " +
-                                 s.getSubscriberName() + " of change to " +
-                                 " configuration parameter " + parameterName +
-                                 " with value " + parameterValue + " -- " +
-                                 sse);
+               "Error while notifying subscriber " + s.getSubscriberName() +
+                    " of change to configuration parameter " + parameterName +
+                    " with value " + parameterValue + " -- " + sse);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(sse));
+               JobClass.stackTraceToString(sse));
         }
       }
     }
@@ -1948,11 +1880,12 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while attempting to store
    *                             the configuration parameter.
    */
-  public void putConfigParameter(String parameterName, boolean parameterValue,
-                                 boolean notifySubscribers)
+  public void putConfigParameter(final String parameterName,
+                                 final boolean parameterValue,
+                                 final boolean notifySubscribers)
          throws DatabaseException
   {
-    OperationStatus status =
+    final OperationStatus status =
          put(null, configDB, parameterName,
              ASN1Element.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
@@ -1970,9 +1903,8 @@ public class SLAMDDB
 
     synchronized (configSubscribers)
     {
-      for (int i=0; i < configSubscribers.size(); i++)
+      for (final ConfigSubscriber s : configSubscribers)
       {
-        ConfigSubscriber s = configSubscribers.get(i);
         try
         {
           s.refreshSubscriberConfiguration(parameterName);
@@ -1980,13 +1912,11 @@ public class SLAMDDB
         catch (SLAMDServerException sse)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Error while notifying subscriber " +
-                                 s.getSubscriberName() + " of change to " +
-                                 " configuration parameter " + parameterName +
-                                 " with value " + parameterValue + " -- " +
-                                 sse);
+               "Error while notifying subscriber " + s.getSubscriberName() +
+                    " of change to  configuration parameter " + parameterName +
+                    " with value " + parameterValue + " -- " + sse);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(sse));
+               JobClass.stackTraceToString(sse));
         }
       }
     }
@@ -2006,13 +1936,13 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while attempting to store
    *                             the configuration parameter.
    */
-  public void putConfigParameter(String parameterName, int parameterValue,
-                                 boolean notifySubscribers)
+  public void putConfigParameter(final String parameterName,
+                                 final int parameterValue,
+                                 final boolean notifySubscribers)
          throws DatabaseException
   {
-    OperationStatus status =
-         put(null, configDB, parameterName,
-             ASN1Element.getBytes(String.valueOf(parameterValue)));
+    final OperationStatus status = put(null, configDB, parameterName,
+         ASN1Element.getBytes(String.valueOf(parameterValue)));
     if (status != OperationStatus.SUCCESS)
     {
       throw new SLAMDDatabaseException(
@@ -2028,9 +1958,8 @@ public class SLAMDDB
 
     synchronized (configSubscribers)
     {
-      for (int i=0; i < configSubscribers.size(); i++)
+      for (final ConfigSubscriber s : configSubscribers)
       {
-        ConfigSubscriber s = configSubscribers.get(i);
         try
         {
           s.refreshSubscriberConfiguration(parameterName);
@@ -2038,13 +1967,11 @@ public class SLAMDDB
         catch (SLAMDServerException sse)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Error while notifying subscriber " +
-                                 s.getSubscriberName() + " of change to " +
-                                 " configuration parameter " + parameterName +
-                                 " with value " + parameterValue + " -- " +
-                                 sse);
+               "Error while notifying subscriber " + s.getSubscriberName() +
+                    " of change to  configuration parameter " + parameterName +
+                    " with value " + parameterValue + " -- " + sse);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(sse));
+               JobClass.stackTraceToString(sse));
         }
       }
     }
@@ -2062,7 +1989,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If  problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeConfigParameter(String parameterName)
+  public void removeConfigParameter(final String parameterName)
          throws DatabaseException
   {
     delete(null, configDB, parameterName);
@@ -2070,9 +1997,8 @@ public class SLAMDDB
 
     synchronized (configSubscribers)
     {
-      for (int i=0; i < configSubscribers.size(); i++)
+      for (final ConfigSubscriber s : configSubscribers)
       {
-        ConfigSubscriber s = configSubscribers.get(i);
         try
         {
           s.refreshSubscriberConfiguration(parameterName);
@@ -2080,12 +2006,11 @@ public class SLAMDDB
         catch (SLAMDServerException sse)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Error while notifying subscriber " +
-                                 s.getSubscriberName() + " of removal of " +
-                                 " configuration parameter " + parameterName +
-                                 " -- " +  sse);
+               "Error while notifying subscriber " + s.getSubscriberName() +
+                    " of removal of configuration parameter " + parameterName +
+                    " -- " +  sse);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(sse));
+               JobClass.stackTraceToString(sse));
         }
       }
     }
@@ -2098,7 +2023,7 @@ public class SLAMDDB
    *
    * @param  folderName  The name of the folder to retrieve.
    *
-   * @return  The requested folder, or <CODE>null</CODE> if no such folder
+   * @return  The requested folder, or {@code null} if no such folder
    *          exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -2107,10 +2032,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           folder from the configuration database.
    */
-  public JobFolder getFolder(String folderName)
+  public JobFolder getFolder(final String folderName)
          throws DatabaseException, DecodeException
   {
-    byte[] folderBytes = get(null, folderDB, folderName, false);
+    final byte[] folderBytes = get(null, folderDB, folderName, false);
     if (folderBytes == null)
     {
       return null;
@@ -2134,20 +2059,21 @@ public class SLAMDDB
   {
     synchronized (dbMutex)
     {
-      ArrayList<JobFolder> folderList = new ArrayList<JobFolder>();
+      final ArrayList<JobFolder> folderList = new ArrayList<JobFolder>();
 
-      CursorConfig cursorConfig = new CursorConfig();
+      final CursorConfig cursorConfig = new CursorConfig();
       cursorConfig.setReadUncommitted(false);
 
-      Cursor          cursor = folderDB.openCursor(null, cursorConfig);
-      DatabaseEntry   key    = new DatabaseEntry();
-      DatabaseEntry   value  = new DatabaseEntry();
+      final Cursor cursor = folderDB.openCursor(null, cursorConfig);
+      final DatabaseEntry key = new DatabaseEntry();
+      final DatabaseEntry value = new DatabaseEntry();
+
       OperationStatus status = cursor.getFirst(key, value, LockMode.DEFAULT);
       while (status == OperationStatus.SUCCESS)
       {
         try
         {
-          JobFolder folder = JobFolder.decode(value.getData());
+          final JobFolder folder = JobFolder.decode(value.getData());
           if (folder.getFolderName().equals(Constants.FOLDER_NAME_UNCLASSIFIED))
           {
             folderList.add(0, folder);
@@ -2156,14 +2082,14 @@ public class SLAMDDB
           {
             folderList.add(folder);
           }
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         status = cursor.getNext(key, value, LockMode.DEFAULT);
       }
 
       cursor.close();
 
-      JobFolder[] folders = new JobFolder[folderList.size()];
+      final JobFolder[] folders = new JobFolder[folderList.size()];
       folderList.toArray(folders);
       return folders;
     }
@@ -2181,7 +2107,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void writeFolder(JobFolder jobFolder)
+  public void writeFolder(final JobFolder jobFolder)
          throws DatabaseException
   {
     put(null, folderDB, jobFolder.getFolderName(), jobFolder.encode());
@@ -2203,18 +2129,19 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeFolder(String folderName, boolean deleteContents)
+  public void removeFolder(final String folderName,
+                           final boolean deleteContents)
          throws DatabaseException
   {
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
-    JobFolder folder;
+    final JobFolder folder;
     try
     {
-      byte[] folderBytes = get(txn, folderDB, folderName, true);
+      final byte[] folderBytes = get(txn, folderDB, folderName, true);
       folder = JobFolder.decode(folderBytes);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       txn.abort();
       throw new SLAMDDatabaseException(
@@ -2222,7 +2149,7 @@ public class SLAMDDB
     }
 
 
-    String[] childNames = folder.getChildNames();
+    final String[] childNames = folder.getChildNames();
     if ((childNames != null) && (childNames.length > 0))
     {
       abortTransaction(txn);
@@ -2231,19 +2158,19 @@ public class SLAMDDB
     }
 
 
-    String[] jobIDs = folder.getJobIDs();
+    final String[] jobIDs = folder.getJobIDs();
     if ((jobIDs != null) && (jobIDs.length > 0))
     {
       if (deleteContents)
       {
         try
         {
-          for (int i=0; i < jobIDs.length; i++)
+          for (final String jobID : jobIDs)
           {
-            delete(txn, jobDB, jobIDs[i]);
+            delete(txn, jobDB, jobID);
           }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           abortTransaction(txn);
           throw new SLAMDDatabaseException(
@@ -2261,19 +2188,19 @@ public class SLAMDDB
     }
 
 
-    String[] optimizingJobIDs = folder.getOptimizingJobIDs();
+    final String[] optimizingJobIDs = folder.getOptimizingJobIDs();
     if ((optimizingJobIDs != null) && (optimizingJobIDs.length > 0))
     {
       if (deleteContents)
       {
         try
         {
-          for (int i=0; i < optimizingJobIDs.length; i++)
+          for (final String optimizingJobID : optimizingJobIDs)
           {
-            delete(txn, optimizingJobDB, optimizingJobIDs[i]);
+            delete(txn, optimizingJobDB, optimizingJobID);
           }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           abortTransaction(txn);
           throw new SLAMDDatabaseException(
@@ -2292,19 +2219,19 @@ public class SLAMDDB
     }
 
 
-    String[] fileNames = folder.getFileNames();
+    final String[] fileNames = folder.getFileNames();
     if ((fileNames != null) && (fileNames.length > 0))
     {
       if (deleteContents)
       {
         try
         {
-          for (int i=0; i < fileNames.length; i++)
+          for (final String fileName : fileNames)
           {
-            delete(txn, fileDB, folderName + '\t' + fileNames[i]);
+            delete(txn, fileDB, folderName + '\t' + fileName);
           }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           abortTransaction(txn);
           throw new SLAMDDatabaseException(
@@ -2328,7 +2255,7 @@ public class SLAMDDB
       delete(txn, folderDB, folderName);
       commitTransaction(txn);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
       throw new SLAMDDatabaseException(
@@ -2343,7 +2270,7 @@ public class SLAMDDB
    *
    * @param  folderName  The name of the virtual folder to retrieve.
    *
-   * @return  The requested virtual folder, or <CODE>null</CODE> if no such
+   * @return  The requested virtual folder, or {@code null} if no such
    *          folder exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -2352,10 +2279,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           virtual folder from the configuration database.
    */
-  public JobFolder getVirtualFolder(String folderName)
+  public JobFolder getVirtualFolder(final String folderName)
          throws DatabaseException, DecodeException
   {
-    byte[] folderBytes = get(null, virtualFolderDB, folderName, false);
+    final byte[] folderBytes = get(null, virtualFolderDB, folderName, false);
     if (folderBytes == null)
     {
       return null;
@@ -2381,27 +2308,28 @@ public class SLAMDDB
   {
     synchronized (dbMutex)
     {
-      ArrayList<JobFolder> folderList = new ArrayList<JobFolder>();
+      final ArrayList<JobFolder> folderList = new ArrayList<JobFolder>();
 
-      CursorConfig cursorConfig = new CursorConfig();
+      final CursorConfig cursorConfig = new CursorConfig();
       cursorConfig.setReadUncommitted(false);
 
-      Cursor          cursor = virtualFolderDB.openCursor(null, cursorConfig);
-      DatabaseEntry   key    = new DatabaseEntry();
-      DatabaseEntry   value  = new DatabaseEntry();
+      final Cursor cursor = virtualFolderDB.openCursor(null, cursorConfig);
+      final DatabaseEntry key = new DatabaseEntry();
+      final DatabaseEntry value = new DatabaseEntry();
+
       OperationStatus status = cursor.getFirst(key, value, LockMode.DEFAULT);
       while (status == OperationStatus.SUCCESS)
       {
         try
         {
           folderList.add(JobFolder.decode(value.getData()));
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         status = cursor.getNext(key, value, LockMode.DEFAULT);
       }
       cursor.close();
 
-      JobFolder[] folders = new JobFolder[folderList.size()];
+      final JobFolder[] folders = new JobFolder[folderList.size()];
       folderList.toArray(folders);
       return folders;
     }
@@ -2420,7 +2348,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void writeVirtualFolder(JobFolder jobFolder)
+  public void writeVirtualFolder(final JobFolder jobFolder)
          throws DatabaseException
   {
     put(null, virtualFolderDB, jobFolder.getFolderName(), jobFolder.encode());
@@ -2439,7 +2367,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeVirtualFolder(String folderName)
+  public void removeVirtualFolder(final String folderName)
          throws DatabaseException
   {
     delete(null, virtualFolderDB, folderName);
@@ -2453,7 +2381,7 @@ public class SLAMDDB
    * @param  jobID  The job ID of the job to retrieve from the database.
    *
    * @return  The requested job from the configuration database, or
-   *          <CODE>null</CODE> if no such job exists.
+   *          {@code null} if no such job exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -2461,10 +2389,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while decoding the job
    *                           information.
    */
-  public Job getJob(String jobID)
+  public Job getJob(final String jobID)
          throws DatabaseException, DecodeException
   {
-    byte[] jobBytes = get(null, jobDB, jobID, false);
+    final byte[] jobBytes = get(null, jobDB, jobID, false);
     if (jobBytes == null)
     {
       return null;
@@ -2482,7 +2410,7 @@ public class SLAMDDB
    * @param  jobID  The job ID of the job to retrieve from the database.
    *
    * @return  Summary information for the requested job from the configuration
-   *          database, or <CODE>null</CODE> if no such job exists.
+   *          database, or {@code null} if no such job exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -2490,10 +2418,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while decoding the job
    *                           information.
    */
-  public Job getSummaryJob(String jobID)
+  public Job getSummaryJob(final String jobID)
          throws DatabaseException, DecodeException
   {
-    byte[] jobBytes = get(null, jobDB, jobID, false);
+    final byte[] jobBytes = get(null, jobDB, jobID, false);
     if (jobBytes == null)
     {
       return null;
@@ -2512,7 +2440,7 @@ public class SLAMDDB
    *                     associated jobs.
    *
    * @return  The set of jobs contained in the specified folder of the
-   *          configuration database, or <CODE>null</CODE> if there is no such
+   *          configuration database, or {@code null} if there is no such
    *          folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -2521,30 +2449,30 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public Job[] getJobs(String folderName)
+  public Job[] getJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs  = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        Job job = getJob(jobIDs[i]);
+        Job job = getJob(jobID);
         if (job != null)
         {
           jobList.add(job);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2560,7 +2488,7 @@ public class SLAMDDB
    *                     associated jobs.
    *
    * @return  The set of completed jobs contained in the specified folder of the
-   *          configuration database, or <CODE>null</CODE> if there is no such
+   *          configuration database, or {@code null} if there is no such
    *          folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -2569,30 +2497,30 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public Job[] getCompletedJobs(String folderName)
+  public Job[] getCompletedJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        Job job = getJob(jobIDs[i]);
+        Job job = getJob(jobID);
         if (job.doneRunning())
         {
           jobList.add(job);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2608,7 +2536,7 @@ public class SLAMDDB
    *                     the associated jobs.
    *
    * @return  The set of jobs contained in the specified virtual folder of the
-   *          configuration database, or <CODE>null</CODE> if there is no such
+   *          configuration database, or {@code null} if there is no such
    *          folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -2617,30 +2545,30 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified virtual folder.
    */
-  public Job[] getVirtualJobs(String folderName)
+  public Job[] getVirtualJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getVirtualFolder(folderName);
+    final JobFolder folder = getVirtualFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs  = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        Job job = getJob(jobIDs[i]);
+        Job job = getJob(jobID);
         if (job != null)
         {
           jobList.add(job);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2657,7 +2585,7 @@ public class SLAMDDB
    *
    * @return  Summary information about the set of jobs contained in the
    *          specified folder of the configuration database, or
-   *          <CODE>null</CODE> if there is no such folder.
+   *          {@code null} if there is no such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -2665,30 +2593,30 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public Job[] getSummaryJobs(String folderName)
+  public Job[] getSummaryJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs  = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        Job job = getSummaryJob(jobIDs[i]);
+        Job job = getSummaryJob(jobID);
         if (job != null)
         {
           jobList.add(job);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2705,7 +2633,7 @@ public class SLAMDDB
    *
    * @return  Summary information about the set of completed jobs contained in
    *          the specified folder of the configuration database, or
-   *          <CODE>null</CODE> if there is no such folder.
+   *          {@code null} if there is no such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -2713,30 +2641,30 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public Job[] getCompletedSummaryJobs(String folderName)
+  public Job[] getCompletedSummaryJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        Job job = getSummaryJob(jobIDs[i]);
+        Job job = getSummaryJob(jobID);
         if (job.doneRunning())
         {
           jobList.add(job);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2753,7 +2681,7 @@ public class SLAMDDB
    *
    * @return  Summary information about the set of jobs contained in the
    *          specified virtual folder of the configuration database, or
-   *          <CODE>null</CODE> if there is no such folder.
+   *          {@code null} if there is no such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -2761,26 +2689,26 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified virtual folder.
    */
-  public Job[] getSummaryVirtualJobs(String folderName)
+  public Job[] getSummaryVirtualJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getVirtualFolder(folderName);
+    final JobFolder folder = getVirtualFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  jobIDs  = folder.getJobIDs();
-    ArrayList<Job> jobList = new ArrayList<Job>(jobIDs.length);
-    for (int i=0; i < jobIDs.length; i++)
+    final String[] jobIDs = folder.getJobIDs();
+    final ArrayList<Job> jobList = new ArrayList<>(jobIDs.length);
+    for (final String jobID : jobIDs)
     {
       try
       {
-        jobList.add(getSummaryJob(jobIDs[i]));
-      } catch (Exception e) {}
+        jobList.add(getSummaryJob(jobID));
+      } catch (final Exception e) {}
     }
 
-    Job[] jobs = new Job[jobList.size()];
+    final Job[] jobs = new Job[jobList.size()];
     jobList.toArray(jobs);
     Arrays.sort(jobs);
     return jobs;
@@ -2798,16 +2726,16 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while attempting to write
    *                             the job information.
    */
-  public void writeJob(Job job)
+  public void writeJob(final Job job)
          throws DatabaseException
   {
     // First, see if the job already exists in the configuration database.
-    Job j = null;
+    Job j;
     try
     {
       j = getJob(job.getJobID());
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       // The job exists but could not be decoded for some reason.  That's fine,
       // since we're going to overwrite it anyway.
@@ -2823,30 +2751,31 @@ public class SLAMDDB
     }
     else
     {
-      Transaction txn = getTransaction();
+      final Transaction txn = getTransaction();
 
       try
       {
-        byte[] folderBytes = get(txn, folderDB, job.getFolderName(), true);
-        JobFolder folder = JobFolder.decode(folderBytes);
+        final byte[] folderBytes =
+             get(txn, folderDB, job.getFolderName(), true);
+        final JobFolder folder = JobFolder.decode(folderBytes);
         folder.addJobID(job.getJobID());
         put(txn, folderDB, job.getFolderName(), folder.encode());
         put(txn, jobDB, job.getJobID(), job.encode());
         commitTransaction(txn);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         abortTransaction(txn);
         throw de;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         abortTransaction(txn);
-        String message = "Unexpected exception caught while adding job " +
-                         "data:  " + e;
+        final String message =
+             "Unexpected exception caught while adding job data:  " + e;
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new SLAMDDatabaseException(message, e);
       }
     }
@@ -2854,10 +2783,12 @@ public class SLAMDDB
 
     // Check to see if the job is in the disabled, pending, or running job lists
     // and update them as necessary.
-    boolean isDisabled = (job.getJobState() == Constants.JOB_STATE_DISABLED);
-    boolean isPending =
+    final boolean isDisabled =
+         (job.getJobState() == Constants.JOB_STATE_DISABLED);
+    final boolean isPending =
          (job.getJobState() == Constants.JOB_STATE_NOT_YET_STARTED);
-    boolean isRunning = (job.getJobState() == Constants.JOB_STATE_RUNNING);
+    final boolean isRunning =
+         (job.getJobState() == Constants.JOB_STATE_RUNNING);
 
     if (disabledJobs.contains(job.getJobID()))
     {
@@ -2931,10 +2862,10 @@ public class SLAMDDB
   private void writeDisabledJobList()
           throws DatabaseException
   {
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     if (! disabledJobs.isEmpty())
     {
-      Iterator<String> iterator = disabledJobs.iterator();
+      final Iterator<String> iterator = disabledJobs.iterator();
       buffer.append(iterator.next());
 
       while (iterator.hasNext())
@@ -2944,7 +2875,7 @@ public class SLAMDDB
       }
     }
 
-    byte[] disabledJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] disabledJobBytes = ASN1Element.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_DISABLED_JOBS, disabledJobBytes);
   }
 
@@ -2961,7 +2892,7 @@ public class SLAMDDB
   {
     synchronized (disabledJobs)
     {
-      String[] disabledJobIDs = new String[disabledJobs.size()];
+      final String[] disabledJobIDs = new String[disabledJobs.size()];
       return disabledJobs.toArray(disabledJobIDs);
     }
   }
@@ -2981,16 +2912,15 @@ public class SLAMDDB
   {
     synchronized (disabledJobs)
     {
-      ArrayList<Job> disabledJobList = new ArrayList<>();
-      Iterator<String> iterator = disabledJobs.iterator();
-      while (iterator.hasNext())
+      final ArrayList<Job> disabledJobList = new ArrayList<>();
+      final Iterator<String> iterator = disabledJobs.iterator();
+      for (final String jobID : disabledJobs)
       {
-        String jobID = iterator.next();
-        byte[] jobBytes = get(null, jobDB, jobID, false);
+        final byte[] jobBytes = get(null, jobDB, jobID, false);
         if (jobBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find disabled job " + jobID);
+               "Could not find disabled job " + jobID);
           continue;
         }
 
@@ -2998,16 +2928,16 @@ public class SLAMDDB
         {
           disabledJobList.add(Job.decode(slamdServer, jobBytes));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to decode job " + jobID + " -- " + e);
+               "Unable to decode job " + jobID + " -- " + e);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
         }
       }
 
-      Job[] disabledJobs = new Job[disabledJobList.size()];
+      final Job[] disabledJobs = new Job[disabledJobList.size()];
       disabledJobList.toArray(disabledJobs);
       Arrays.sort(disabledJobs);
       return disabledJobs;
@@ -3025,10 +2955,10 @@ public class SLAMDDB
   private void writePendingJobList()
           throws DatabaseException
   {
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     if (! pendingJobs.isEmpty())
     {
-      Iterator<String> iterator = pendingJobs.iterator();
+      final Iterator<String> iterator = pendingJobs.iterator();
       buffer.append(iterator.next());
 
       while (iterator.hasNext())
@@ -3038,7 +2968,7 @@ public class SLAMDDB
       }
     }
 
-    byte[] pendingJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] pendingJobBytes = ASN1Element.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_PENDING_JOBS, pendingJobBytes);
   }
 
@@ -3055,7 +2985,7 @@ public class SLAMDDB
   {
     synchronized (pendingJobs)
     {
-      String[] pendingJobIDs = new String[pendingJobs.size()];
+      final String[] pendingJobIDs = new String[pendingJobs.size()];
       return pendingJobs.toArray(pendingJobIDs);
     }
   }
@@ -3077,16 +3007,14 @@ public class SLAMDDB
   {
     synchronized (pendingJobs)
     {
-      ArrayList<Job> pendingJobList = new ArrayList<Job>();
-      Iterator<String> iterator = pendingJobs.iterator();
-      while (iterator.hasNext())
+      final ArrayList<Job> pendingJobList = new ArrayList<Job>();
+      for (final String jobID : pendingJobs)
       {
-        String jobID = iterator.next();
         byte[] jobBytes = get(null, jobDB, jobID, false);
         if (jobBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find pending job " + jobID);
+               "Could not find pending job " + jobID);
           continue;
         }
 
@@ -3094,16 +3022,16 @@ public class SLAMDDB
         {
           pendingJobList.add(Job.decode(slamdServer, jobBytes));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to decode job " + jobID + " -- " + e);
+               "Unable to decode job " + jobID + " -- " + e);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
         }
       }
 
-      Job[] pendingJobs = new Job[pendingJobList.size()];
+      final Job[] pendingJobs = new Job[pendingJobList.size()];
       pendingJobList.toArray(pendingJobs);
       Arrays.sort(pendingJobs);
       return pendingJobs;
@@ -3121,10 +3049,10 @@ public class SLAMDDB
   private void writeRunningJobList()
           throws DatabaseException
   {
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     if (! runningJobs.isEmpty())
     {
-      Iterator<String> iterator = runningJobs.iterator();
+      final Iterator<String> iterator = runningJobs.iterator();
       buffer.append(iterator.next());
 
       while (iterator.hasNext())
@@ -3134,7 +3062,7 @@ public class SLAMDDB
       }
     }
 
-    byte[] runningJobBytes = ASN1Element.getBytes(buffer.toString());
+    final byte[] runningJobBytes = ASN1Element.getBytes(buffer.toString());
     put(null, configDB, Constants.PARAM_RUNNING_JOBS, runningJobBytes);
   }
 
@@ -3151,7 +3079,7 @@ public class SLAMDDB
   {
     synchronized (runningJobs)
     {
-      String[] runningJobIDs = new String[runningJobs.size()];
+      final String[] runningJobIDs = new String[runningJobs.size()];
       return runningJobs.toArray(runningJobIDs);
     }
   }
@@ -3171,16 +3099,14 @@ public class SLAMDDB
   {
     synchronized (runningJobs)
     {
-      ArrayList<Job> runningJobList = new ArrayList<Job>();
-      Iterator<String> iterator = runningJobs.iterator();
-      while (iterator.hasNext())
+      final ArrayList<Job> runningJobList = new ArrayList<Job>();
+      for (final String jobID : runningJobs)
       {
-        String jobID = iterator.next();
         byte[] jobBytes = get(null, jobDB, jobID, false);
         if (jobBytes == null)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Could not find running job " + jobID);
+               "Could not find running job " + jobID);
           continue;
         }
 
@@ -3188,16 +3114,16 @@ public class SLAMDDB
         {
           runningJobList.add(Job.decode(slamdServer, jobBytes));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to decode job " + jobID + " -- " + e);
+               "Unable to decode job " + jobID + " -- " + e);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
         }
       }
 
-      Job[] runningJobs = new Job[runningJobList.size()];
+      final Job[] runningJobs = new Job[runningJobList.size()];
       runningJobList.toArray(runningJobs);
       Arrays.sort(runningJobs);
       return runningJobs;
@@ -3216,15 +3142,15 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeJob(String jobID)
+  public void removeJob(final String jobID)
          throws DatabaseException
   {
-    Job j = null;
+    final Job j;
     try
     {
       j = getJob(jobID);
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       // This means that the job exists but can't be decoded for some reason.
       // In this case, just remove the job.
@@ -3236,30 +3162,31 @@ public class SLAMDDB
     // At this point, we need to remove the job as well as the reference to the
     // job in its corresponding folder.  First, create a transaction to use to
     // protect the entire operation.
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
     try
     {
-      byte[] folderBytes = get(txn, folderDB, j.getFolderName(), true);
-      JobFolder folder = JobFolder.decode(folderBytes);
+      final byte[] folderBytes = get(txn, folderDB, j.getFolderName(), true);
+      final JobFolder folder = JobFolder.decode(folderBytes);
       folder.removeJobID(jobID);
       put(txn, folderDB, j.getFolderName(), folder.encode());
       delete(txn, jobDB, jobID);
       commitTransaction(txn);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       abortTransaction(txn);
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
 
-      String message = "Unexpected exception caught while removing job:  " + e;
+      final String message =
+           "Unexpected exception caught while removing job:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new SLAMDDatabaseException(message, e);
     }
   }
@@ -3275,22 +3202,23 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void moveJob(String jobID, String folderName)
+  public void moveJob(final String jobID, final String folderName)
          throws DatabaseException
   {
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
     try
     {
-      Job j = getJob(jobID);
+      final Job j = getJob(jobID);
 
-      byte[] currentFolderBytes = get(txn, folderDB, j.getFolderName(), true);
-      JobFolder currentFolder = JobFolder.decode(currentFolderBytes);
+      final byte[] currentFolderBytes =
+           get(txn, folderDB, j.getFolderName(), true);
+      final JobFolder currentFolder = JobFolder.decode(currentFolderBytes);
       currentFolder.removeJobID(jobID);
       put(txn, folderDB, j.getFolderName(), currentFolder.encode());
 
-      byte[] newFolderBytes = get(txn, folderDB, folderName, true);
-      JobFolder newFolder = JobFolder.decode(newFolderBytes);
+      final byte[] newFolderBytes = get(txn, folderDB, folderName, true);
+      final JobFolder newFolder = JobFolder.decode(newFolderBytes);
       newFolder.addJobID(jobID);
       put(txn, folderDB, folderName, newFolder.encode());
 
@@ -3299,20 +3227,20 @@ public class SLAMDDB
 
       commitTransaction(txn);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       abortTransaction(txn);
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
 
-      String message = "Unexpected exception caught while attempting to move " +
-                       "job:  " + e;
+      final String message =
+           "Unexpected exception caught while attempting to move job:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new SLAMDDatabaseException(message, e);
     }
   }
@@ -3326,7 +3254,7 @@ public class SLAMDDB
    *                          database.
    *
    * @return  The requested optimizing job from the configuration database, or
-   *          <CODE>null</CODE> if no such job exists.
+   *          {@code null} if no such job exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -3334,10 +3262,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while decoding the optimizing
    *                           job information.
    */
-  public OptimizingJob getOptimizingJob(String optimizingJobID)
+  public OptimizingJob getOptimizingJob(final String optimizingJobID)
          throws DatabaseException, DecodeException
   {
-    byte[] jobBytes = get(null, optimizingJobDB, optimizingJobID, false);
+    final byte[] jobBytes = get(null, optimizingJobDB, optimizingJobID, false);
     if (jobBytes == null)
     {
       return null;
@@ -3356,7 +3284,7 @@ public class SLAMDDB
    *                          database.
    *
    * @return  Summary information for the requested optimizing job from the
-   *          configuration database, or <CODE>null</CODE> if no such job
+   *          configuration database, or {@code null} if no such job
    *          exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -3365,10 +3293,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while decoding the optimizing
    *                           job information.
    */
-  public OptimizingJob getSummaryOptimizingJob(String optimizingJobID)
+  public OptimizingJob getSummaryOptimizingJob(final String optimizingJobID)
          throws DatabaseException, DecodeException
   {
-    byte[] jobBytes = get(null, optimizingJobDB, optimizingJobID, false);
+    final byte[] jobBytes = get(null, optimizingJobDB, optimizingJobID, false);
     if (jobBytes == null)
     {
       return null;
@@ -3387,7 +3315,7 @@ public class SLAMDDB
    *                     associated optimizing jobs.
    *
    * @return  The set of optimizing jobs contained in the specified folder of
-   *          the configuration database, or <CODE>null</CODE> if there is no
+   *          the configuration database, or {@code null} if there is no
    *          such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -3396,31 +3324,31 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public OptimizingJob[] getOptimizingJobs(String folderName)
+  public OptimizingJob[] getOptimizingJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  optimizingJobIDs  = folder.getOptimizingJobIDs();
-    ArrayList<OptimizingJob> optimizingJobList =
-         new ArrayList<OptimizingJob>(optimizingJobIDs.length);
-    for (int i=0; i < optimizingJobIDs.length; i++)
+    final String[] optimizingJobIDs  = folder.getOptimizingJobIDs();
+    final ArrayList<OptimizingJob> optimizingJobList =
+         new ArrayList<>(optimizingJobIDs.length);
+    for (final String optimizingJobID : optimizingJobIDs)
     {
       try
       {
-        OptimizingJob oj = getOptimizingJob(optimizingJobIDs[i]);
+        final OptimizingJob oj = getOptimizingJob(optimizingJobID);
         if (oj != null)
         {
           optimizingJobList.add(oj);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    OptimizingJob[] optimizingJobs =
+    final OptimizingJob[] optimizingJobs =
          new OptimizingJob[optimizingJobList.size()];
     optimizingJobList.toArray(optimizingJobs);
     Arrays.sort(optimizingJobs);
@@ -3438,7 +3366,7 @@ public class SLAMDDB
    *
    * @return  Summary information for the set of optimizing jobs contained in
    *          the specified folder of the configuration database, or
-   *          <CODE>null</CODE> if there is no such folder.
+   *          {@code null} if there is no such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
@@ -3446,31 +3374,31 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the specified folder.
    */
-  public OptimizingJob[] getSummaryOptimizingJobs(String folderName)
+  public OptimizingJob[] getSummaryOptimizingJobs(final String folderName)
          throws DatabaseException, DecodeException
   {
-    JobFolder folder = getFolder(folderName);
+    final JobFolder folder = getFolder(folderName);
     if (folder == null)
     {
       return null;
     }
 
-    String[]  optimizingJobIDs  = folder.getOptimizingJobIDs();
-    ArrayList<OptimizingJob> optimizingJobList =
-         new ArrayList<OptimizingJob>(optimizingJobIDs.length);
-    for (int i=0; i < optimizingJobIDs.length; i++)
+    final String[] optimizingJobIDs  = folder.getOptimizingJobIDs();
+    final ArrayList<OptimizingJob> optimizingJobList =
+         new ArrayList<>(optimizingJobIDs.length);
+    for (final String optimizingJobID : optimizingJobIDs)
     {
       try
       {
-        OptimizingJob oj = getSummaryOptimizingJob(optimizingJobIDs[i]);
+        final OptimizingJob oj = getSummaryOptimizingJob(optimizingJobID);
         if (oj != null)
         {
           optimizingJobList.add(oj);
         }
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
-    OptimizingJob[] optimizingJobs =
+    final OptimizingJob[] optimizingJobs =
          new OptimizingJob[optimizingJobList.size()];
     optimizingJobList.toArray(optimizingJobs);
     Arrays.sort(optimizingJobs);
@@ -3489,17 +3417,17 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while attempting to write
    *                             the optimizing job information.
    */
-  public void writeOptimizingJob(OptimizingJob optimizingJob)
+  public void writeOptimizingJob(final OptimizingJob optimizingJob)
          throws DatabaseException
   {
     // First, see if the optimizing job already exists in the configuration
     // database.
-    OptimizingJob oj = null;
+    OptimizingJob oj;
     try
     {
       oj = getOptimizingJob(optimizingJob.getOptimizingJobID());
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       // The job exists but could not be decoded for some reason.  That's fine,
       // since we're going to overwrite it anyway.
@@ -3516,33 +3444,33 @@ public class SLAMDDB
     }
     else
     {
-      Transaction txn = getTransaction();
+      final Transaction txn = getTransaction();
 
       try
       {
-        byte[] folderBytes = get(txn, folderDB, optimizingJob.getFolderName(),
-                                 true);
-        JobFolder folder = JobFolder.decode(folderBytes);
+        final byte[] folderBytes =
+             get(txn, folderDB, optimizingJob.getFolderName(), true);
+        final JobFolder folder = JobFolder.decode(folderBytes);
         folder.addOptimizingJobID(optimizingJob.getOptimizingJobID());
         put(txn, folderDB, optimizingJob.getFolderName(), folder.encode());
         put(txn, optimizingJobDB, optimizingJob.getOptimizingJobID(),
             optimizingJob.encode());
         commitTransaction(txn);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         abortTransaction(txn);
         throw de;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         abortTransaction(txn);
 
-        String message = "Unexpected exception caught while adding " +
-                         "optimizing job data:  " + e;
+        final String message = "Unexpected exception caught while adding " +
+             "optimizing job data:  " + e;
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new SLAMDDatabaseException(message, e);
       }
     }
@@ -3560,15 +3488,15 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeOptimizingJob(String optimizingJobID)
+  public void removeOptimizingJob(final String optimizingJobID)
          throws DatabaseException
   {
-    OptimizingJob oj = null;
+    OptimizingJob oj;
     try
     {
       oj = getOptimizingJob(optimizingJobID);
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       // This means that the job exists but can't be decoded for some reason.
       // In this case, just remove the job.
@@ -3580,31 +3508,31 @@ public class SLAMDDB
     // At this point, we need to remove the job as well as the reference to the
     // job in its corresponding folder.  First, create a transaction to use to
     // protect the entire operation.
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
     try
     {
-      byte[] folderBytes = get(txn, folderDB, oj.getFolderName(), true);
-      JobFolder folder = JobFolder.decode(folderBytes);
+      final byte[] folderBytes = get(txn, folderDB, oj.getFolderName(), true);
+      final JobFolder folder = JobFolder.decode(folderBytes);
       folder.removeOptimizingJobID(optimizingJobID);
       put(txn, folderDB, oj.getFolderName(), folder.encode());
       delete(txn, optimizingJobDB, optimizingJobID);
       commitTransaction(txn);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       abortTransaction(txn);
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
 
-      String message = "Unexpected exception caught while removing " +
-                       "optimizing job:  " + e;
+      final String message = "Unexpected exception caught while removing " +
+           "optimizing job:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new SLAMDDatabaseException(message, e);
     }
   }
@@ -3622,22 +3550,24 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void moveOptimizingJob(String optimizingJobID, String folderName)
+  public void moveOptimizingJob(final String optimizingJobID,
+                                final String folderName)
          throws DatabaseException
   {
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
     try
     {
-      OptimizingJob oj = getOptimizingJob(optimizingJobID);
+      final OptimizingJob oj = getOptimizingJob(optimizingJobID);
 
-      byte[] currentFolderBytes = get(txn, folderDB, oj.getFolderName(), true);
-      JobFolder currentFolder = JobFolder.decode(currentFolderBytes);
+      final byte[] currentFolderBytes =
+           get(txn, folderDB, oj.getFolderName(), true);
+      final JobFolder currentFolder = JobFolder.decode(currentFolderBytes);
       currentFolder.removeOptimizingJobID(optimizingJobID);
       put(txn, folderDB, oj.getFolderName(), currentFolder.encode());
 
-      byte[] newFolderBytes = get(txn, folderDB, folderName, true);
-      JobFolder newFolder = JobFolder.decode(newFolderBytes);
+      final byte[] newFolderBytes = get(txn, folderDB, folderName, true);
+      final JobFolder newFolder = JobFolder.decode(newFolderBytes);
       newFolder.addOptimizingJobID(optimizingJobID);
       put(txn, folderDB, folderName, newFolder.encode());
 
@@ -3646,20 +3576,20 @@ public class SLAMDDB
 
       commitTransaction(txn);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       abortTransaction(txn);
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
 
-      String message = "Unexpected exception caught while attempting to move " +
-                       "optimizing job:  " + e;
+      final String message = "Unexpected exception caught while attempting to " +
+           "move optimizing job:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new SLAMDDatabaseException(message, e);
     }
   }
@@ -3679,14 +3609,15 @@ public class SLAMDDB
   {
     synchronized (dbMutex)
     {
-      ArrayList<JobGroup> jobGroupList = new ArrayList<JobGroup>();
+      final ArrayList<JobGroup> jobGroupList = new ArrayList<>();
 
-      CursorConfig cursorConfig = new CursorConfig();
+      final CursorConfig cursorConfig = new CursorConfig();
       cursorConfig.setReadUncommitted(false);
 
-      Cursor          cursor = jobGroupDB.openCursor(null, cursorConfig);
-      DatabaseEntry   key    = new DatabaseEntry();
-      DatabaseEntry   value  = new DatabaseEntry();
+      final Cursor cursor = jobGroupDB.openCursor(null, cursorConfig);
+      final DatabaseEntry key = new DatabaseEntry();
+      final DatabaseEntry value = new DatabaseEntry();
+
       OperationStatus status = cursor.getFirst(key, value, LockMode.DEFAULT);
       while (status == OperationStatus.SUCCESS)
       {
@@ -3694,15 +3625,15 @@ public class SLAMDDB
         {
           jobGroupList.add(JobGroup.decode(slamdServer, value.getData()));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
 
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to decode job the job group with " +
-                                 "name " + (new String(key.getData())) + ":  " +
-                                 e.getMessage());
+               "Unable to decode job the job group with name " +
+                    StaticUtils.toUTF8String(key.getData()) + ":  " +
+                    e.getMessage());
         }
 
         status = cursor.getNext(key, value, LockMode.DEFAULT);
@@ -3710,7 +3641,7 @@ public class SLAMDDB
 
       cursor.close();
 
-      JobGroup[] jobGroups = new JobGroup[jobGroupList.size()];
+      final JobGroup[] jobGroups = new JobGroup[jobGroupList.size()];
       jobGroupList.toArray(jobGroups);
       return jobGroups;
     }
@@ -3732,14 +3663,15 @@ public class SLAMDDB
   {
     synchronized (dbMutex)
     {
-      ArrayList<JobGroup> jobGroupList = new ArrayList<JobGroup>();
+      final ArrayList<JobGroup> jobGroupList = new ArrayList<>();
 
-      CursorConfig cursorConfig = new CursorConfig();
+      final CursorConfig cursorConfig = new CursorConfig();
       cursorConfig.setReadUncommitted(false);
 
-      Cursor          cursor = jobGroupDB.openCursor(null, cursorConfig);
-      DatabaseEntry   key    = new DatabaseEntry();
-      DatabaseEntry   value  = new DatabaseEntry();
+      final Cursor cursor = jobGroupDB.openCursor(null, cursorConfig);
+      final DatabaseEntry key = new DatabaseEntry();
+      final DatabaseEntry value = new DatabaseEntry();
+
       OperationStatus status = cursor.getFirst(key, value, LockMode.DEFAULT);
       while (status == OperationStatus.SUCCESS)
       {
@@ -3747,15 +3679,15 @@ public class SLAMDDB
         {
           jobGroupList.add(JobGroup.decodeSummary(value.getData()));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
 
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to decode job the job group with " +
-                                 "name " + (new String(key.getData())) + ":  " +
-                                 e.getMessage());
+               "Unable to decode job the job group with name " +
+                    StaticUtils.toUTF8String(key.getData()) + ":  " +
+                    e.getMessage());
         }
 
         status = cursor.getNext(key, value, LockMode.DEFAULT);
@@ -3763,7 +3695,7 @@ public class SLAMDDB
 
       cursor.close();
 
-      JobGroup[] jobGroups = new JobGroup[jobGroupList.size()];
+      final JobGroup[] jobGroups = new JobGroup[jobGroupList.size()];
       jobGroupList.toArray(jobGroups);
       return jobGroups;
     }
@@ -3776,7 +3708,7 @@ public class SLAMDDB
    *
    * @param  jobGroupName  The name of the job group to retrieve.
    *
-   * @return  The requested job group, or <CODE>null</CODE> if no such job group
+   * @return  The requested job group, or {@code null} if no such job group
    *          exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -3785,10 +3717,10 @@ public class SLAMDDB
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           requested job group information.
    */
-  public JobGroup getJobGroup(String jobGroupName)
+  public JobGroup getJobGroup(final String jobGroupName)
          throws DatabaseException, DecodeException
   {
-    byte[] jobGroupBytes = get(null, jobGroupDB, jobGroupName, false);
+    final byte[] jobGroupBytes = get(null, jobGroupDB, jobGroupName, false);
     if (jobGroupBytes == null)
     {
       return null;
@@ -3810,7 +3742,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void writeJobGroup(JobGroup jobGroup)
+  public void writeJobGroup(final JobGroup jobGroup)
          throws DatabaseException
   {
     put(null, jobGroupDB, jobGroup.getName(), jobGroup.encode());
@@ -3828,7 +3760,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeJobGroup(String jobGroupName)
+  public void removeJobGroup(final String jobGroupName)
          throws DatabaseException
   {
     delete(null, jobGroupDB, jobGroupName);
@@ -3843,7 +3775,7 @@ public class SLAMDDB
    *                     located.
    * @param  fileName    The name of the uploaded file to retrieve.
    *
-   * @return  The requested uploaded file, or <CODE>null</CODE> if no such file
+   * @return  The requested uploaded file, or {@code null} if no such file
    *          exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -3852,11 +3784,12 @@ public class SLAMDDB
    * @throws  DecodeException  If the uploaded file cannot be decoded for some
    *                           reason.
    */
-  public UploadedFile getUploadedFile(String folderName, String fileName)
+  public UploadedFile getUploadedFile(final String folderName,
+                                      final String fileName)
          throws DatabaseException, DecodeException
   {
-    String key = folderName + '\t' + fileName;
-    byte[] fileBytes = get(null, fileDB, key, false);
+    final String key = folderName + '\t' + fileName;
+    final byte[] fileBytes = get(null, fileDB, key, false);
     if (fileBytes == null)
     {
       return null;
@@ -3875,7 +3808,7 @@ public class SLAMDDB
    *                     located.
    * @param  fileName    The name of the uploaded file to retrieve.
    *
-   * @return  The requested uploaded file, or <CODE>null</CODE> if no such file
+   * @return  The requested uploaded file, or {@code null} if no such file
    *          exists.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
@@ -3884,12 +3817,12 @@ public class SLAMDDB
    * @throws  DecodeException  If the uploaded file cannot be decoded for some
    *                           reason.
    */
-  public UploadedFile getUploadedFileWithoutData(String folderName,
-                                                 String fileName)
+  public UploadedFile getUploadedFileWithoutData(final String folderName,
+                                                 final String fileName)
          throws DatabaseException, DecodeException
   {
-    String key = folderName + '\t' + fileName;
-    byte[] fileBytes = get(null, fileDB, key, false);
+    final String key = folderName + '\t' + fileName;
+    final byte[] fileBytes = get(null, fileDB, key, false);
     if (fileBytes == null)
     {
       return null;
@@ -3908,25 +3841,25 @@ public class SLAMDDB
    *                     uploaded files.
    *
    * @return  The set of uploaded files associated with the specified folder, or
-   *          <CODE>null</CODE> if there is no such folder.
+   *          {@code null} if there is no such folder.
    *
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public UploadedFile[] getUploadedFiles(String folderName)
+  public UploadedFile[] getUploadedFiles(final String folderName)
          throws DatabaseException
   {
-    JobFolder folder = null;
+    final JobFolder folder;
     try
     {
       folder = getFolder(folderName);
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
-      String message = "Unable to decode job folder:  " + de;
+      final String message = "Unable to decode job folder:  " + de;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(de));
+           JobClass.stackTraceToString(de));
       throw new SLAMDDatabaseException(message, de);
     }
 
@@ -3937,18 +3870,18 @@ public class SLAMDDB
     }
 
 
-    String[] fileNames = folder.getFileNames();
-    ArrayList<UploadedFile> fileList = new ArrayList<UploadedFile>();
-    for (int i=0; i < fileNames.length; i++)
+    final String[] fileNames = folder.getFileNames();
+    ArrayList<UploadedFile> fileList = new ArrayList<>();
+    for (final String fileName : fileNames)
     {
       try
       {
-        fileList.add(getUploadedFileWithoutData(folderName, fileNames[i]));
-      } catch (Exception e) {}
+        fileList.add(getUploadedFileWithoutData(folderName, fileName));
+      } catch (final Exception e) {}
     }
 
 
-    UploadedFile[] uploadedFiles = new UploadedFile[fileList.size()];
+    final UploadedFile[] uploadedFiles = new UploadedFile[fileList.size()];
     fileList.toArray(uploadedFiles);
     return uploadedFiles;
   }
@@ -3969,23 +3902,24 @@ public class SLAMDDB
    *                             about the specified file to the configuration
    *                             database.
    */
-  public void writeUploadedFile(UploadedFile uploadedFile, String folderName)
+  public void writeUploadedFile(final UploadedFile uploadedFile,
+                                final String folderName)
          throws DatabaseException
   {
-    String key = folderName + '\t' + uploadedFile.getFileName();
+    final String key = folderName + '\t' + uploadedFile.getFileName();
 
-    UploadedFile currentFile;
+    final UploadedFile currentFile;
     try
     {
       currentFile = getUploadedFileWithoutData(folderName,
-                                               uploadedFile.getFileName());
+           uploadedFile.getFileName());
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       // This means that the file exists but cannot be decoded for some reason.
       // In this case, just overwrite that file.
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(de));
+           JobClass.stackTraceToString(de));
       put(null, fileDB, key, uploadedFile.encode());
       return;
     }
@@ -3995,35 +3929,35 @@ public class SLAMDDB
     {
       // The file does not exist, so add it and also update the corresponding
       // folder.  Use a transaction to wrap all these operations.
-      Transaction txn = getTransaction();
+      final Transaction txn = getTransaction();
 
       try
       {
-        byte[] folderBytes = get(txn, folderDB, folderName, true);
-        JobFolder folder = JobFolder.decode(folderBytes);
+        final byte[] folderBytes = get(txn, folderDB, folderName, true);
+        final JobFolder folder = JobFolder.decode(folderBytes);
         folder.addFileName(uploadedFile.getFileName());
         put(txn, folderDB, folderName, folder.encode());
         put(txn, fileDB, key, uploadedFile.encode());
         commitTransaction(txn);
       }
-      catch (DatabaseException de)
+      catch (final DatabaseException de)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(de));
+             JobClass.stackTraceToString(de));
         abortTransaction(txn);
         throw de;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         abortTransaction(txn);
 
-        String message = "Unexpected exception caught while adding uploaded " +
-                         "file to DB:  " + e;
+        final String message = "Unexpected exception caught while adding " +
+             "uploaded file to DB:  " + e;
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new SLAMDDatabaseException(message, e);
       }
     }
@@ -4046,36 +3980,36 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeUploadedFile(String folderName, String fileName)
+  public void removeUploadedFile(final String folderName, final String fileName)
          throws DatabaseException
   {
     // We need to both remove the file and update the associated folder.  Do
     // this under a transaction.
-    Transaction txn = getTransaction();
+    final Transaction txn = getTransaction();
 
     try
     {
-      byte[] folderBytes = get(txn, folderDB, folderName, true);
-      JobFolder folder = JobFolder.decode(folderBytes);
+      final byte[] folderBytes = get(txn, folderDB, folderName, true);
+      final JobFolder folder = JobFolder.decode(folderBytes);
       folder.removeFileName(fileName);
       put(txn, folderDB, folderName, folder.encode());
       delete(txn, fileDB, folderName + '\t' + fileName);
       commitTransaction(txn);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       abortTransaction(txn);
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       abortTransaction(txn);
 
-      String message = "Unexpected exception caught while removing uploaded " +
-                       "file:  " + e;
+      final String message =
+           "Unexpected exception caught while removing uploaded file:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new SLAMDDatabaseException(message, e);
     }
   }
@@ -4093,36 +4027,36 @@ public class SLAMDDB
   public JobClass[] getJobClasses()
          throws DatabaseException
   {
-    boolean useCustomClassLoader =
+    final boolean useCustomClassLoader =
          getConfigParameter(Constants.PARAM_USE_CUSTOM_CLASS_LOADER, false);
     JobClassLoader classLoader = null;
     if (useCustomClassLoader)
     {
       classLoader = new JobClassLoader(getClass().getClassLoader(),
-                                       slamdServer.getClassPath());
+           slamdServer.getClassPath());
     }
 
-    String classListStr = getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
-    StringTokenizer tokenizer = new StringTokenizer(classListStr, "\n");
-    ArrayList<JobClass> jobClassList = new ArrayList<JobClass>();
+    final String classListStr =
+         getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
+    final StringTokenizer tokenizer = new StringTokenizer(classListStr, "\n");
+    final ArrayList<JobClass> jobClassList = new ArrayList<>();
     while (tokenizer.hasMoreTokens())
     {
-      String className = tokenizer.nextToken();
+      final String className = tokenizer.nextToken();
 
-      JobClass jobClass;
+      final JobClass jobClass;
       if (useCustomClassLoader)
       {
         try
         {
           jobClassList.add(classLoader.getJobClass(className));
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to load job class " + className +
-                                 ":  " + e);
+               "Unable to load job class " + className + ":  " + e);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
         }
       }
       else
@@ -4132,18 +4066,17 @@ public class SLAMDDB
           jobClass = (JobClass) Constants.classForName(className).newInstance();
           jobClassList.add(jobClass);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG,
-                                 "Unable to load job class " + className +
-                                 ":  " + e);
+               "Unable to load job class " + className + ":  " + e);
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
         }
       }
     }
 
-    JobClass[] jobClasses = new JobClass[jobClassList.size()];
+    final JobClass[] jobClasses = new JobClass[jobClassList.size()];
     jobClassList.toArray(jobClasses);
     return jobClasses;
   }
@@ -4160,10 +4093,11 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void addJobClass(String className)
+  public void addJobClass(final String className)
          throws DatabaseException
   {
-    String classListStr = getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
+    final String classListStr =
+         getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
     putConfigParameter(Constants.PARAM_JOB_CLASSES,
                        classListStr + '\n' + className, false);
   }
@@ -4179,15 +4113,16 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             configuration database.
    */
-  public void removeJobClass(String className)
+  public void removeJobClass(final String className)
          throws DatabaseException
   {
-    String classListStr = getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
-    StringTokenizer tokenizer = new StringTokenizer(classListStr, "\n");
-    StringBuilder classNameBuffer = new StringBuilder();
+    final String classListStr =
+         getConfigParameter(Constants.PARAM_JOB_CLASSES, "");
+    final StringTokenizer tokenizer = new StringTokenizer(classListStr, "\n");
+    final StringBuilder classNameBuffer = new StringBuilder();
     while (tokenizer.hasMoreTokens())
     {
-      String jobClassName = tokenizer.nextToken();
+      final String jobClassName = tokenizer.nextToken();
       if (! jobClassName.equals(className))
       {
         if (classNameBuffer.length() > 0)
@@ -4200,7 +4135,7 @@ public class SLAMDDB
     }
 
     putConfigParameter(Constants.PARAM_JOB_CLASSES, classNameBuffer.toString(),
-                       false);
+         false);
   }
 
 
@@ -4216,7 +4151,7 @@ public class SLAMDDB
   {
     synchronized (configSubscribers)
     {
-      ConfigSubscriber[] subscribers =
+      final ConfigSubscriber[] subscribers =
            new ConfigSubscriber[configSubscribers.size()];
       configSubscribers.toArray(subscribers);
       return subscribers;
@@ -4234,7 +4169,7 @@ public class SLAMDDB
    *
    * @return  The safe name for the provided configuration subscriber.
    */
-  public static String getSafeName(ConfigSubscriber subscriber)
+  public static String getSafeName(final ConfigSubscriber subscriber)
   {
     return subscriber.getSubscriberName().toLowerCase().replace(' ', '_');
   }
@@ -4250,16 +4185,16 @@ public class SLAMDDB
    *               subscriber.
    *
    * @return  The config subscriber for the provided safe name, or
-   *          <CODE>null</CODE> if there is no such subscriber.
+   *          {@code null} if there is no such subscriber.
    */
-  public ConfigSubscriber subscriberForSafeName(String name)
+  public ConfigSubscriber subscriberForSafeName(final String name)
   {
     synchronized (configSubscribers)
     {
-      Iterator<ConfigSubscriber> iterator = configSubscribers.iterator();
+      final Iterator<ConfigSubscriber> iterator = configSubscribers.iterator();
       while (iterator.hasNext())
       {
-        ConfigSubscriber subscriber = iterator.next();
+        final ConfigSubscriber subscriber = iterator.next();
         if (subscriber.getSubscriberName().toLowerCase().replace(' ', '_').
                  equals(name))
         {
@@ -4279,13 +4214,13 @@ public class SLAMDDB
    *
    * @param  subscriber  The configuration subscriber with which to register.
    */
-  public void registerAsSubscriber(ConfigSubscriber subscriber)
+  public void registerAsSubscriber(final ConfigSubscriber subscriber)
   {
     synchronized (configSubscribers)
     {
       for (int i=0; i < configSubscribers.size(); i++)
       {
-        ConfigSubscriber s = configSubscribers.get(i);
+        final ConfigSubscriber s = configSubscribers.get(i);
         if (s.getSubscriberName().equals(subscriber.getSubscriberName()))
         {
           return;
@@ -4316,21 +4251,21 @@ public class SLAMDDB
       // transaction.
       if (! environmentOpen)
       {
-        String message = "Cannot create a transaction when the database " +
-                         "environment is not open.";
+        final String message = "Cannot create a transaction when the " +
+             "database environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
 
 
       // Specify the configuration to use for the transaction.
-      TransactionConfig txnConfig = new TransactionConfig();
+      final TransactionConfig txnConfig = new TransactionConfig();
       txnConfig.setReadUncommitted(false);
       txnConfig.setNoWait(false);
 
 
       // Try to create the transaction.
-      Transaction txn = dbEnv.beginTransaction(null, txnConfig);
+      final Transaction txn = dbEnv.beginTransaction(null, txnConfig);
       activeTransactions.add(txn);
       return txn;
     }
@@ -4346,7 +4281,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to commit the
    *                             transaction.
    */
-  private void commitTransaction(Transaction txn)
+  private void commitTransaction(final Transaction txn)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -4355,8 +4290,8 @@ public class SLAMDDB
       // commit.
       if (! environmentOpen)
       {
-        String message = "Cannot commit a transaction when the database " +
-                         "environment is not open.";
+        final String message = "Cannot commit a transaction when the " +
+             "database environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -4381,7 +4316,7 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to abort the
    *                             transaction.
    */
-  private void abortTransaction(Transaction txn)
+  private void abortTransaction(final Transaction txn)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -4390,8 +4325,8 @@ public class SLAMDDB
       // transaction.
       if (! environmentOpen)
       {
-        String message = "Cannot abort a transaction when the database " +
-                         "environment is not open.";
+        final String message = "Cannot abort a transaction when the database " +
+             "environment is not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
@@ -4414,21 +4349,21 @@ public class SLAMDDB
    * provided key from the specified database.
    *
    * @param  txn        The transaction to use to protect the read.  This may be
-   *                    <CODE>null</CODE> if no transaction is needed.
+   *                    {@code null} if no transaction is needed.
    * @param  db         The database in which to perform the get.
    * @param  key        The key for the record to retrieve.
    * @param  writeLock  Indicates whether to acquire a write lock on the
    *                    specified key.
    *
    * @return  A byte array containing the contents of the record with the
-   *          provided key from the specified database, or <CODE>null</CODE> if
+   *          provided key from the specified database, or {@code null} if
    *          the specified key does not exist.
    *
    * @throws  DatabaseException  If a problem occurs while trying to perform
    *                             the get.
    */
-  private byte[] get(Transaction txn, Database db, String key,
-                     boolean writeLock)
+  private byte[] get(final Transaction txn, final Database db,
+                     final String key, final boolean writeLock)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -4436,17 +4371,18 @@ public class SLAMDDB
       // Make sure that the databases are open before trying to perform the get.
       if (! dbsOpen)
       {
-        String message = "Cannot perform the get because the databases are " +
-                         "not open.";
+        final String message =
+             "Cannot perform the get because the databases are not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
 
 
       // Perform the get and return the associated data.
-      DatabaseEntry keyEntry  = new DatabaseEntry(ASN1Element.getBytes(key));
-      DatabaseEntry dataEntry = new DatabaseEntry();
-      LockMode      lockMode  = (writeLock ? LockMode.RMW : LockMode.DEFAULT);
+      final DatabaseEntry keyEntry =
+           new DatabaseEntry(ASN1Element.getBytes(key));
+      final DatabaseEntry dataEntry = new DatabaseEntry();
+      final LockMode lockMode = (writeLock ? LockMode.RMW : LockMode.DEFAULT);
 
       if (db.get(txn, keyEntry, dataEntry, lockMode) == OperationStatus.SUCCESS)
       {
@@ -4467,7 +4403,7 @@ public class SLAMDDB
    * new record will be created.
    *
    * @param  txn   The transaction to use to protect the update.  This may be
-   *               <CODE>null</CODE> if no transaction is needed.
+   *               {@code null} if no transaction is needed.
    * @param  db    The database into which to perform the update.
    * @param  key   The key to use for the provided data.
    * @param  data  The byte array containing the data to use for the record.
@@ -4478,8 +4414,8 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to update the
    *                             database.
    */
-  private OperationStatus put(Transaction txn, Database db, String key,
-                              byte[] data)
+  private OperationStatus put(final Transaction txn, final Database db,
+                              final String key, final byte[] data)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -4487,16 +4423,17 @@ public class SLAMDDB
       // Make sure that the databases are open before trying to perform the put.
       if (! dbsOpen)
       {
-        String message = "Cannot perform the put because the databases are " +
-                         "not open.";
+        final String message =
+             "Cannot perform the put because the databases are not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
 
 
       // Perform the put and return the status.
-      DatabaseEntry keyEntry  = new DatabaseEntry(ASN1Element.getBytes(key));
-      DatabaseEntry dataEntry = new DatabaseEntry(data);
+      final DatabaseEntry keyEntry =
+           new DatabaseEntry(ASN1Element.getBytes(key));
+      final DatabaseEntry dataEntry = new DatabaseEntry(data);
       return db.put(txn, keyEntry, dataEntry);
     }
   }
@@ -4520,20 +4457,23 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to update the
    *                             database.
    */
-  private static OperationStatus put(Database db, String key, String data)
+  private static OperationStatus put(final Database db, final String key,
+                                     final String data)
          throws DatabaseException
   {
     try
     {
-      DatabaseEntry keyEntry  = new DatabaseEntry(ASN1Element.getBytes(key));
-      DatabaseEntry dataEntry = new DatabaseEntry(ASN1Element.getBytes(data));
+      final DatabaseEntry keyEntry =
+           new DatabaseEntry(ASN1Element.getBytes(key));
+      final DatabaseEntry dataEntry =
+           new DatabaseEntry(ASN1Element.getBytes(data));
       return db.put(null, keyEntry, dataEntry);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new SLAMDDatabaseException("Unable to update the database:  " + e,
            e);
@@ -4559,20 +4499,22 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while trying to update the
    *                             database.
    */
-  private static OperationStatus put(Database db, String key, byte[] data)
+  private static OperationStatus put(final Database db, final String key,
+                                     final byte[] data)
          throws DatabaseException
   {
     try
     {
-      DatabaseEntry keyEntry  = new DatabaseEntry(ASN1Element.getBytes(key));
-      DatabaseEntry dataEntry = new DatabaseEntry(data);
+      final DatabaseEntry keyEntry =
+           new DatabaseEntry(ASN1Element.getBytes(key));
+      final DatabaseEntry dataEntry = new DatabaseEntry(data);
       return db.put(null, keyEntry, dataEntry);
     }
-    catch (DatabaseException de)
+    catch (final DatabaseException de)
     {
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new SLAMDDatabaseException("Unable to update the database:  " + e,
            e);
@@ -4594,7 +4536,8 @@ public class SLAMDDB
    * @throws  DatabaseException  If a problem occurs while interacting with the
    *                             database.
    */
-  private OperationStatus delete(Transaction txn, Database db, String key)
+  private OperationStatus delete(final Transaction txn, final Database db,
+                                 final String key)
          throws DatabaseException
   {
     synchronized (dbMutex)
@@ -4603,15 +4546,16 @@ public class SLAMDDB
       // delete.
       if (! dbsOpen)
       {
-        String message = "Cannot perform the delete because the databases " +
-                         "are not open.";
+        final String message =
+             "Cannot perform the delete because the databases are not open.";
         slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
         throw new SLAMDDatabaseException(message);
       }
 
 
       // Perform the put and return the status.
-      DatabaseEntry keyEntry  = new DatabaseEntry(ASN1Element.getBytes(key));
+      final DatabaseEntry keyEntry =
+           new DatabaseEntry(ASN1Element.getBytes(key));
       return db.delete(txn, keyEntry);
     }
   }

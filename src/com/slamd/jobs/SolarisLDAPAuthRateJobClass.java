@@ -1647,7 +1647,7 @@ public class SolarisLDAPAuthRateJobClass
    * @param  userID  The user ID for which to retrieve the entry.
    *
    * @return  The DN of the entry matching the provided criteria, or
-   *          <CODE>null</CODE> if no entry was found.
+   *          {@code null} if no entry was found.
    *
    * @throws  LDAPException  If a problem occurs while processing the query, or
    *                         if multiple entries matched the given query.
@@ -1694,7 +1694,7 @@ public class SolarisLDAPAuthRateJobClass
    *
    * @param  userID  The user ID for which to retrieve the entry.
    *
-   * @return  <CODE>true</CODE> if a match was found, or <CODE>false</CODE> if
+   * @return  {@code true} if a match was found, or {@code false} if
    *          there were no matches.
    *
    * @throws  LDAPException  If a problem occurs while processing the query, or

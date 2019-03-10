@@ -910,8 +910,8 @@ public class CommandLineJobScheduler
    * Parses the configuration file and assigns its contents to instance
    * variables.
    *
-   * @return  <CODE>true</CODE> if the file was parsed successfully and the job
-   *          configuration is valid, or <CODE>false</CODE> if there was a
+   * @return  {@code true} if the file was parsed successfully and the job
+   *          configuration is valid, or {@code false} if there was a
    *          problem of some kind.
    */
   public boolean parseConfigFile()
@@ -1665,7 +1665,7 @@ public class CommandLineJobScheduler
   /**
    * Handles all processing required to schedule a job for execution.
    *
-   * @return  The job ID of the job that was scheduled, or <CODE>null</CODE> if
+   * @return  The job ID of the job that was scheduled, or {@code null} if
    *          an error occurred to prevent the job from being scheduled
    *          properly.
    */
@@ -1926,7 +1926,7 @@ public class CommandLineJobScheduler
    * execution.
    *
    * @return  The job ID of the optimizing job that was scheduled, or
-   *          <CODE>null</CODE> if an error occurred to prevent the job from
+   *          {@code null} if an error occurred to prevent the job from
    *          being scheduled properly.
    */
   public String scheduleOptimizingJob()

@@ -142,8 +142,8 @@ public class AddJobClass
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the job class was registered properly, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the job class was registered properly, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

@@ -128,8 +128,8 @@ public class ListFolders
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the folder list was retrieved successfully,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if the folder list was retrieved successfully,
+   *          or {@code false} if not.
    */
   public boolean sendRequest()
   {

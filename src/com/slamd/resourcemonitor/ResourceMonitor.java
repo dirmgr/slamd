@@ -195,7 +195,7 @@ public abstract class ResourceMonitor
    * Retrieves the resource monitor job that is currently running.
    *
    * @return  The resource monitor job that is currently running, or
-   *          <CODE>null</CODE> if there is none.
+   *          {@code null} if there is none.
    */
   public final ResourceMonitorJob getMonitorJob()
   {
@@ -211,7 +211,7 @@ public abstract class ResourceMonitor
    *                       value.
    *
    * @return  The configuration property with the specified name, or
-   *          <CODE>null</CODE> if no property exists with that name.
+   *          {@code null} if no property exists with that name.
    */
   public final String getProperty(String propertyName)
   {
@@ -323,8 +323,8 @@ public abstract class ResourceMonitor
    * Indicates whether the current client system is supported for this resource
    * monitor.
    *
-   * @return  <CODE>true</CODE> if the current client system is supported for
-   *          this resource monitor, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current client system is supported for
+   *          this resource monitor, or {@code false} if not.
    */
   public abstract boolean clientSupported();
 
@@ -426,8 +426,8 @@ public abstract class ResourceMonitor
   /**
    * Indicates whether this monitor thread should stop collecting statistics.
    *
-   * @return  <CODE>true</CODE> if this monitor thread should stop collecting
-   *          statistics, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this monitor thread should stop collecting
+   *          statistics, or {@code false} if not.
    */
   public final boolean shouldStop()
   {

@@ -271,7 +271,7 @@ public class BooleanParameter
    * Indicates whether this parameter has a value.  In this case, it will always
    * return true, because a Boolean parameter will always have a value.
    *
-   * @return  <CODE>true</CODE>, because Boolean parameters always have a value.
+   * @return  {@code true}, because Boolean parameters always have a value.
    */
   @Override()
   public boolean hasValue()
@@ -287,7 +287,7 @@ public class BooleanParameter
    * @param  value  The value for which to make the determination.
    *
    * @return  The reason that the specified value is not valid, or
-   *          <CODE>null</CODE> if it is valid.
+   *          {@code null} if it is valid.
    */
   @Override()
   public String getInvalidReason(Object value)
@@ -405,7 +405,7 @@ public class BooleanParameter
    * posting the request.
    *
    * @return  The value of this parameter as it would be submitted by a browser
-   *          posting the request, or <CODE>null</CODE> if this parameter should
+   *          posting the request, or {@code null} if this parameter should
    *          not be included in the post.
    */
   @Override()

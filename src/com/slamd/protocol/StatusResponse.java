@@ -87,7 +87,7 @@ public class StatusResponse
    * @param  stateMessage     A message providing additional information about
    *                          the state of the client.
    * @param  jobID            The job ID of any job with which the client might
-   *                          be associated, or <CODE>null</CODE> if the client
+   *                          be associated, or {@code null} if the client
    *                          is not associated with any job.
    * @param  jobState         The current state of the associated job, or -1 if
    *                          the client is not associated with any job.
@@ -161,7 +161,7 @@ public class StatusResponse
    * client.
    *
    * @return  A message with additional information about the state of the
-   *          client, or <CODE>null</CODE> if none was provided.
+   *          client, or {@code null} if none was provided.
    */
   public String getStateMessage()
   {
@@ -188,7 +188,7 @@ public class StatusResponse
    * Retrieves the job ID for any job with which the client might be associated.
    *
    * @return  The job ID for any job with which the client might be associated,
-   *          or <CODE>null</CODE> if the client is not associated with any job.
+   *          or {@code null} if the client is not associated with any job.
    */
   public String getJobID()
   {

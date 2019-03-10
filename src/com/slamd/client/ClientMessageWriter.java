@@ -50,8 +50,8 @@ public interface ClientMessageWriter
    * Indicates whether the message writer is using verbose mode and therefore
    * will display messages written with the <CODE>writeVerbose</CODE> method.
    *
-   * @return  <CODE>true</CODE> if the message writer is using verbose mode, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the message writer is using verbose mode, or
+   *          {@code false} if not.
    */
   public boolean usingVerboseMode();
 }

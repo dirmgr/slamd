@@ -323,7 +323,7 @@ public class FileURLParameter
 
   /**
    * Creates a new file URL parameter based on a string representation of the
-   * URL.  If the URL is not accepted, then <CODE>null</CODE> will be returned.
+   * URL.  If the URL is not accepted, then {@code null} will be returned.
    *
    * @param  name         The name to use for this parameter.
    * @param  displayName  The display name to use for this parameter.
@@ -981,7 +981,7 @@ public class FileURLParameter
    * @param  value  The value for which to make the determination.
    *
    * @return  The reason that the specified value is not acceptable for use
-   *          with this parameter, or <CODE>null</CODE> if it is acceptable.
+   *          with this parameter, or {@code null} if it is acceptable.
    */
   @Override()
   public String getInvalidReason(Object value)

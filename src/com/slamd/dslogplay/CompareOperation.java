@@ -81,7 +81,7 @@ public class CompareOperation
    * @param  line       The line to be parsed and converted to a log operation.
    *
    * @return  The log operation created from the provided log line, or
-   *          <CODE>null</CODE> if a problem prevented the line from being
+   *          {@code null} if a problem prevented the line from being
    *          parsed properly.
    */
   public static LogOperation parseLogLine(LogPlaybackJobClass jobThread,

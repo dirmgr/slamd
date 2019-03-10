@@ -24,7 +24,7 @@ package com.slamd.db;
  *
  * @author   Neil A. Wilson
  */
-public class DecodeException
+public final class DecodeException
        extends Exception
 {
   /**

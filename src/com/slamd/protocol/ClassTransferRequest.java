@@ -119,8 +119,8 @@ public class ClassTransferRequest
    * Indicates whether the server should include any dependencies associated
    * with the requested classes.
    *
-   * @return  <CODE>true</CODE> if the server should include any dependencies
-   *          associated with the requested classes, or <CODE>false</CODE> if
+   * @return  {@code true} if the server should include any dependencies
+   *          associated with the requested classes, or {@code false} if
    *          not.
    */
   public boolean getIncludeDependencies()

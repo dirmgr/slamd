@@ -114,7 +114,7 @@ public class StartClientResponse
    * Retrieves the error message for the start client request.
    *
    * @return  The error message for the start client request, or
-   *          <CODE>null</CODE> if none was provided.
+   *          {@code null} if none was provided.
    */
   public String getErrorMessage()
   {

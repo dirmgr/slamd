@@ -217,8 +217,8 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *
    * @param  jobClass  The job class for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this optimization algorithm may be used with
-   *          the provided job class, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this optimization algorithm may be used with
+   *          the provided job class, or {@code false} if not.
    */
   @Override()
   public boolean availableWithJobClass(JobClass jobClass)
@@ -555,8 +555,8 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    * @param  iteration      The job iteration for which to make the
    *                        determination.
    *
-   * @return  <CODE>true</CODE> if the provided iteration is the best one seen
-   *          so far for the optimizing job, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the provided iteration is the best one seen
+   *          so far for the optimizing job, or {@code false} if not.
    *
    * @throws  SLAMDException  If a problem occurs that prevents a valid
    *                          determination from being made.  If this exception
@@ -741,8 +741,8 @@ public class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
    *
    * @param  iteration  The iteration for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the CPU utilization for the provided
-   *          iteration is acceptable, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the CPU utilization for the provided
+   *          iteration is acceptable, or {@code false} if not.
    *
    * @throws  SLAMDException  If the provided iteration does not include
    *                          sufficient CPU utilization data to make the

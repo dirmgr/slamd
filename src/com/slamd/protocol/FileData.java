@@ -147,7 +147,7 @@ public class FileData
   /**
    * Retrieves the description for the file.
    *
-   * @return  The description for the file, or <CODE>null</CODE> if none was
+   * @return  The description for the file, or {@code null} if none was
    *          provided.
    */
   public String getFileDescription()

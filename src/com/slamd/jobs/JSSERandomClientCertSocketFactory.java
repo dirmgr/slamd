@@ -315,7 +315,7 @@ public class JSSERandomClientCertSocketFactory
    *
    * @return  The alias of the client certificate that will be used the next
    *          time the client must present a certificate to an SSL server, or
-   *          <CODE>null</CODE> if the next certificate will be chosen at
+   *          {@code null} if the next certificate will be chosen at
    *          random.
    */
   public String getCurrentAlias()
@@ -340,7 +340,7 @@ public class JSSERandomClientCertSocketFactory
    *
    * @param  alias  The alias of the client certificate that should be used the
    *                next time the client must present a certificate to an SSL
-   *                server.  A value of <CODE>null</CODE> indicates that the
+   *                server.  A value of {@code null} indicates that the
    *                next selection should be random.
    */
   public void setCurrentAlias(String alias)
@@ -381,8 +381,8 @@ public class JSSERandomClientCertSocketFactory
    * certificate is needed or after the <CODE>chooseNewClientCert</CODE> method
    * is called.
    *
-   * @return  <CODE>true</CODE> if the client certificate selection will always
-   *          be random, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client certificate selection will always
+   *          be random, or {@code false} if not.
    */
   public boolean alwaysRandom()
   {
@@ -410,8 +410,8 @@ public class JSSERandomClientCertSocketFactory
    * Indicates whether session caching has been disabled for SSL sockets created
    * using this socket factory.
    *
-   * @return  <CODE>true</CODE> if session caching has been disabled, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if session caching has been disabled, or
+   *          {@code false} if not.
    */
   public boolean disableSessionCaching()
   {
@@ -532,7 +532,7 @@ public class JSSERandomClientCertSocketFactory
    * @param  alias  The alias of the certificate for which to retrieve the
    *                private key.
    *
-   * @return  The private key of the requested certificate, or <CODE>null</CODE>
+   * @return  The private key of the requested certificate, or {@code null}
    *          if the specified certificate cannot be found.
    */
   public PrivateKey getPrivateKey(String alias)
@@ -551,7 +551,7 @@ public class JSSERandomClientCertSocketFactory
    *                certificate chain.
    *
    * @return  The certificate chain for the certificate with the given alias, or
-   *          <CODE>null</CODE> if the specified certificate cannot be found.
+   *          {@code null} if the specified certificate cannot be found.
    */
   public X509Certificate[] getCertificateChain(String alias)
   {

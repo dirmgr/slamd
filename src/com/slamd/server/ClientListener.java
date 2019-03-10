@@ -519,8 +519,8 @@ public class ClientListener
    *
    * @param  job  The job for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this client listener has an appropriate set
-   *          of clients available, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this client listener has an appropriate set
+   *          of clients available, or {@code false} if not.
    */
   public boolean connectionsAvailable(Job job)
   {
@@ -596,7 +596,7 @@ public class ClientListener
    * @param  job  The job for which the connections are to be retrieved.
    *
    * @return  The appropriate set of clients for the specified job, or
-   *          <CODE>null</CODE> if there is not an appropriate set of
+   *          {@code null} if there is not an appropriate set of
    *          connections available.
    */
   public ClientConnection[] getClientConnections(Job job)
@@ -790,8 +790,8 @@ public class ClientListener
   /**
    * Indicates whether this client listener requires clients to authenticate.
    *
-   * @return  <CODE>true</CODE> if clients are required to authenticate, or
-   *          <CODE>false</CODE> if they are not.
+   * @return  {@code true} if clients are required to authenticate, or
+   *          {@code false} if they are not.
    */
   public boolean requireAuthentication()
   {
@@ -809,8 +809,8 @@ public class ClientListener
    * @param  clientID  The client ID of the client to which the request is to be
    *                   sent.
    *
-   * @return  <CODE>true</CODE> if a request was sent to the specified client,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if a request was sent to the specified client,
+   *          or {@code false} if not.
    */
   public boolean requestDisconnect(String clientID)
   {
@@ -872,8 +872,8 @@ public class ClientListener
    *
    * @param  clientID  The client ID of the client to be disconnected.
    *
-   * @return  <CODE>true</CODE> if the client was disconnected, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the client was disconnected, or
+   *          {@code false} if not.
    */
   public boolean forceDisconnect(String clientID)
   {
@@ -1098,8 +1098,8 @@ public class ClientListener
   /**
    * Indicates whether this client listener is configured to use SSL.
    *
-   * @return  <CODE>true</CODE> if this client listener is configured to use
-   *          SSL, or <CODE>false</CODE> if it is not.
+   * @return  {@code true} if this client listener is configured to use
+   *          SSL, or {@code false} if it is not.
    */
   public boolean useSSL()
   {

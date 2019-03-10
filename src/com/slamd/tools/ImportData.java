@@ -148,8 +148,8 @@ public class ImportData
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the job data was imported successfully, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the job data was imported successfully, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

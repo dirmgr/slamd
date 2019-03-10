@@ -195,7 +195,7 @@ public class UploadedFile
   /**
    * Retrieves the actual file data.
    *
-   * @return  The actual file data, or <CODE>null</CODE> if no file data has
+   * @return  The actual file data, or {@code null} if no file data has
    *          been provided.
    */
   public byte[] getFileData()

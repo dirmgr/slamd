@@ -148,7 +148,7 @@ public class RealTimeJobStats
    *                   data.
    *
    * @return  The data currently available for the specified statistic, or
-   *          <CODE>null</CODE> if no data is available for the specified
+   *          {@code null} if no data is available for the specified
    *          statistic.
    */
   public double[] getStatValues(String statName)

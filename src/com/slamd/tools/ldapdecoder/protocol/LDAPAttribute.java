@@ -180,8 +180,8 @@ public class LDAPAttribute
    *
    * @param  value  The value for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the value should be base64-encoded in LDIF
-   *          form, or <CODE>false</CODE> if that is not necessary.
+   * @return  {@code true} if the value should be base64-encoded in LDIF
+   *          form, or {@code false} if that is not necessary.
    */
   public static boolean valueNeedsBase64Encoding(ASN1OctetString value)
   {

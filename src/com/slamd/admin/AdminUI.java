@@ -4989,8 +4989,8 @@ public class AdminUI
    * @param  parameterName  The name of the request parameter for which to make
    *                        the determination.
    *
-   * @return  <CODE>true</CODE> if the checkbox has been checked, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the checkbox has been checked, or
+   *          {@code false} if not.
    */
   static boolean isChecked(RequestInfo requestInfo, String parameterName)
   {
@@ -5020,8 +5020,8 @@ public class AdminUI
    * Indicates whether the SLAMD server is currently operating in read-only
    * mode.
    *
-   * @return  <CODE>true</CODE> if the SLAMD server is operating in read-only
-   *          mode, and <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the SLAMD server is operating in read-only
+   *          mode, and {@code false} if it is not.
    */
   static boolean readOnlyMode()
   {
@@ -5034,8 +5034,8 @@ public class AdminUI
    * Indicates whether the SLAMD server is currently operating in read-only mode
    * and should restrict which jobs and folders should be published.
    *
-   * @return  <CODE>true</CODE> if the SLAMD server is operating in restricted
-   *          read-only mode, and <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the SLAMD server is operating in restricted
+   *          read-only mode, and {@code false} if it is not.
    */
   static boolean restrictedReadOnlyMode()
   {

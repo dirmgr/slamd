@@ -206,8 +206,8 @@ public abstract class Parameter
   /**
    * Indicates whether this parameter is required to have a value.
    *
-   * @return  <CODE>true</CODE> if this parameter is required to have a value,
-   *          or <CODE>false</CODE> if it does not need a value.
+   * @return  {@code true} if this parameter is required to have a value,
+   *          or {@code false} if it does not need a value.
    */
   public final boolean isRequired()
   {
@@ -232,8 +232,8 @@ public abstract class Parameter
   /**
    * Indicates whether this parameter should be considered sensitive.
    *
-   * @return  <CODE>true</CODE> if this parameter should be considered
-   *          sensitive, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this parameter should be considered
+   *          sensitive, or {@code false} if not.
    */
   public boolean isSensitive()
   {
@@ -329,8 +329,8 @@ public abstract class Parameter
   /**
    * Indicates whether a value has been specified for this parameter.
    *
-   * @return  <CODE>true</CODE> if a value has been specified for this parameter
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if a value has been specified for this parameter
+   *          or {@code false} if not.
    */
   public boolean hasValue()
   {
@@ -342,8 +342,8 @@ public abstract class Parameter
   /**
    * Indicates whether the current value for this parameter is valid.
    *
-   * @return  <CODE>true</CODE> if the current value for this parameter is
-   *          valid, or <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the current value for this parameter is
+   *          valid, or {@code false} if it is not.
    */
   public final boolean isValid()
   {
@@ -358,8 +358,8 @@ public abstract class Parameter
    *
    * @param  value  The value for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the specified value would be a valid value
-   *          for this parameter, or <CODE>false</CODE> if it would not be.
+   * @return  {@code true} if the specified value would be a valid value
+   *          for this parameter, or {@code false} if it would not be.
    */
   public final boolean isValid(Object value)
   {
@@ -372,7 +372,7 @@ public abstract class Parameter
    * Retrieves the reason that the current value is not valid.
    *
    * @return  The reason that the current value is not valid, or
-   *           <CODE>null</CODE> if it is valid.
+   *           {@code null} if it is valid.
    */
   public final String getInvalidReason()
   {
@@ -387,7 +387,7 @@ public abstract class Parameter
    * @param  value  The value for which to make the determination.
    *
    * @return  The reason that the specified value is not valid, or
-   *          <CODE>null</CODE> if it is valid.
+   *          {@code null} if it is valid.
    */
   public abstract String getInvalidReason(Object value);
 

@@ -224,8 +224,8 @@ public class ClientHelloMessage
   /**
    * Indicates whether the client is requesting server authentication.
    *
-   * @return  <CODE>true</CODE> if the client is requesting server
-   *          authentication, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client is requesting server
+   *          authentication, or {@code false} if not.
    */
   public boolean requestServerAuth()
   {
@@ -239,8 +239,8 @@ public class ClientHelloMessage
    * the server should only give it jobs for which the client was explicitly
    * requested.
    *
-   * @return  <CODE>true</CODE> if the client is operating in restricted mode,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client is operating in restricted mode,
+   *          or {@code false} if not.
    */
   public boolean restrictedMode()
   {
@@ -253,8 +253,8 @@ public class ClientHelloMessage
    * Indicates whether this client supports time synchronization with the
    * server.
    *
-   * @return  <CODE>true</CODE> if the client supports time synchronization, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the client supports time synchronization, or
+   *          {@code false} if not.
    */
   public boolean supportsTimeSync()
   {

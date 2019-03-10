@@ -364,13 +364,13 @@ public abstract class JobClass
    * Indicates whether this job class implements logic that makes it possible to
    * test the validity of job parameters before scheduling the job for execution
    * (e.g., to see if the server is reachable using the information provided).
-   * By default, this method returns <CODE>false</CODE> to indicate that this is
+   * By default, this method returns {@code false} to indicate that this is
    * not provided, but actual implementations may override this method to
-   * return <CODE>true</CODE> and should also override the
+   * return {@code true} and should also override the
    * <CODE>testJobParameters</CODE> method to implement the actual test.
    *
-   * @return  <CODE>true</CODE> if this job provides a means of testing the job
-   *          parameters, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job provides a means of testing the job
+   *          parameters, or {@code false} if not.
    */
   public boolean providesParameterTest()
   {
@@ -389,15 +389,15 @@ public abstract class JobClass
    * @param  outputMessages  The lines of output that were generated as part of
    *                         the testing process.  Each line of output should
    *                         be added to this list as a separate string, and
-   *                         empty strings (but not <CODE>null</CODE> values)
+   *                         empty strings (but not {@code null} values)
    *                         are allowed to provide separation between
    *                         different messages.  No formatting should be
    *                         provided for these messages, however, since they
    *                         may be displayed in either an HTML or plain text
    *                         interface.
    *
-   * @return  <CODE>true</CODE> if the test completed successfully, or
-   *          <CODE>false</CODE> if not.  Note that even if the test did not
+   * @return  {@code true} if the test completed successfully, or
+   *          {@code false} if not.  Note that even if the test did not
    *          complete successfully, the user will be presented with a warning
    *          but will still be allowed to schedule the job using the provided
    *          parameters.  This is necessary because the parameters may still be
@@ -426,8 +426,8 @@ public abstract class JobClass
    * @param  message  The buffer to which a message may be appended that
    *                  provides additional information about the deprecation.
    *
-   * @return  <CODE>true</CODE> if this job class has been deprecated, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this job class has been deprecated, or
+   *          {@code false} if not.
    */
   public boolean isDeprecated(StringBuilder message)
   {
@@ -579,7 +579,7 @@ public abstract class JobClass
    *                             should be allowed to run.  A value of -1
    *                             indicates an unlimited duration.
    * @param  stopTime            The time at which the job should stop running.
-   *                             A value of <CODE>null</CODE> indicates no
+   *                             A value of {@code null} indicates no
    *                             specified stop time.
    * @param  startTimeMillis     The time this thread should start running in
    *                             milliseconds since January 1, 1970.
@@ -665,7 +665,7 @@ public abstract class JobClass
    * associated.
    *
    * @return  The job ID of the job with which this job thread is currently
-   *          associated, or <CODE>null</CODE> if this thread is not associated
+   *          associated, or {@code null} if this thread is not associated
    *          with any job.
    */
   public String getJobID()
@@ -816,7 +816,7 @@ public abstract class JobClass
   /**
    * Indicates whether the job is currently running.
    *
-   * @return  <CODE>true</CODE> if the job is running, or <CODE>false</CODE> if
+   * @return  {@code true} if the job is running, or {@code false} if
    *          it is not.
    */
   public final boolean isRunning()
@@ -834,8 +834,8 @@ public abstract class JobClass
    * <CODE>shouldStop</CODE> method should be used to determine whether the job
    * should stop processing altogether.
    *
-   * @return  <CODE>true</CODE> if a request has been made to stop this job, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if a request has been made to stop this job, or
+   *          {@code false} if not.
    */
   public final boolean stopRequested()
   {
@@ -849,8 +849,8 @@ public abstract class JobClass
    * should be checked periodically from the <CODE>runJob</CODE> method to
    * determine whether it is time to stop running.
    *
-   * @return  <CODE>true</CODE> if the job should stop running, or
-   *          <CODE>false</CODE> if there is no reason for it to stop.
+   * @return  {@code true} if the job should stop running, or
+   *          {@code false} if there is no reason for it to stop.
    */
   public final boolean shouldStop()
   {
@@ -882,8 +882,8 @@ public abstract class JobClass
    * Indicates whether real-time statistics collection has been enabled in the
    * client with which this job is associated.
    *
-   * @return  <CODE>true</CODE> if the associated client has enabled real-time
-   *          statistics collection, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the associated client has enabled real-time
+   *          statistics collection, or {@code false} if not.
    */
   public final boolean enableRealTimeStats()
   {
@@ -903,7 +903,7 @@ public abstract class JobClass
    * Retrieves the real-time stat reporter that should be used for this job.
    *
    * @return  The real-time stat reporter that should be used for this job, or
-   *          <CODE>null</CODE> if none should be used.
+   *          {@code null} if none should be used.
    */
   public final RealTimeStatReporter getStatReporter()
   {

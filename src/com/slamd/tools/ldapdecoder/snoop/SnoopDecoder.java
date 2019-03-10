@@ -193,7 +193,7 @@ public class SnoopDecoder
    * Reads the next packet record from the input stream.
    *
    * @return  The next packet record from the input stream, or
-   *          <CODE>null</CODE> if the end of the stream has been reached.
+   *          {@code null} if the end of the stream has been reached.
    *
    * @throws  IOException     If a problem occurs while reading data from the
    *                          input stream.
@@ -215,7 +215,7 @@ public class SnoopDecoder
    * @param  numBytes     The number of bytes to read from the input stream.
    *
    * @return  A byte array containing the requested number of bytes, or
-   *          <CODE>null</CODE> if the end of the input stream has been
+   *          {@code null} if the end of the input stream has been
    *          reached.
    *
    * @throws  IOException  If a problem occurs while trying to read the
@@ -384,8 +384,8 @@ public class SnoopDecoder
    * @param  array1  The first byte array to compare.
    * @param  array2  The second byte array to compare.
    *
-   * @return  <CODE>true</CODE> if the byte arrays are equal, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the byte arrays are equal, or
+   *          {@code false} if not.
    */
   public static boolean byteArraysAreEqual(byte[] array1, byte[] array2)
   {

@@ -279,7 +279,7 @@ public class FloatParameter
 
   /**
    * Retrieves the value associated with this parameter.  If it does not have a
-   * value, then <CODE>null</CODE> will be returned.  If it does have a value,
+   * value, then {@code null} will be returned.  If it does have a value,
    * then that value will be returned as a Java Float object.
    *
    * @return  The value associated with this parameter.
@@ -509,8 +509,8 @@ public class FloatParameter
   /**
    * Indicates whether a lower bound will be enforced for this parameter.
    *
-   * @return  <CODE>true</CODE> if a lower bound will be enforced, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if a lower bound will be enforced, or
+   *          {@code false} if not.
    */
   public boolean hasLowerBound()
   {
@@ -561,8 +561,8 @@ public class FloatParameter
   /**
    * Indicates whether an upper bound will be enforced for this parameter.
    *
-   * @return  <CODE>true</CODE> if an upper bound will be enforced, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if an upper bound will be enforced, or
+   *          {@code false} if not.
    */
   public boolean hasUpperBound()
   {
@@ -577,7 +577,7 @@ public class FloatParameter
    * @param  value  The value for which to make the determination.
    *
    * @return  The reason that the specified value is not valid, or
-   *          <CODE>null</CODE> if it is valid.
+   *          {@code null} if it is valid.
    */
   @Override()
   public String getInvalidReason(Object value)

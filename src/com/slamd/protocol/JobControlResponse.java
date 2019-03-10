@@ -144,7 +144,7 @@ public class JobControlResponse
    * Retrieves the error message for the job control request.
    *
    * @return  The error message for the job control request, or
-   *          <CODE>null</CODE> if none was provided.
+   *          {@code null} if none was provided.
    */
   public String getErrorMessage()
   {

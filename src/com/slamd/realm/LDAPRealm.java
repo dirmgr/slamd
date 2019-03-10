@@ -556,8 +556,8 @@ public class LDAPRealm
    * Indicates whether SSL will be used to communicate with the directory
    * server.
    *
-   * @return  <CODE>true</CODE> if SSL will be used to communicate with the
-   *          directory server, or <CODE>false</CODE> if not.
+   * @return  {@code true} if SSL will be used to communicate with the
+   *          directory server, or {@code false} if not.
    */
   public boolean getUseSSL()
   {
@@ -584,8 +584,8 @@ public class LDAPRealm
    * Indicates whether to blindly trust any SSL certificate presented by the
    * directory server.
    *
-   * @return  <CODE>true</CODE> if the certificate should be blindly trusted, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the certificate should be blindly trusted, or
+   *          {@code false} if not.
    */
   public boolean getBlindTrust()
   {
@@ -731,7 +731,7 @@ public class LDAPRealm
   /**
    * Retrieves the Principal associated with the specified username and
    * credentials.  If no user could be found with the specified username, or if
-   * the provided credentials are invalid, then <CODE>null</CODE> will be
+   * the provided credentials are invalid, then {@code null} will be
    * returned.
    *
    * @param  username     The provided username that will be used to find the
@@ -847,7 +847,7 @@ public class LDAPRealm
    *                   find the user's entry.
    *
    * @return  The DN for the user with the specified user name, or
-   *          <CODE>null</CODE> if the user DN could not be determined.
+   *          {@code null} if the user DN could not be determined.
    */
   private LDAPEntry getUserEntry(String username)
   {
@@ -940,8 +940,8 @@ public class LDAPRealm
    * @param  credentials  The password to use when binding as the specified
    *                      user.
    *
-   * @return  <CODE>true</CODE> if the user's credentials are valid, or
-   *          <CODE>false</CODE> if they are not or if the validity could not be
+   * @return  {@code true} if the user's credentials are valid, or
+   *          {@code false} if they are not or if the validity could not be
    *          verified.
    */
   private boolean credentialsAreValid(String userDN, String credentials)
@@ -1030,7 +1030,7 @@ public class LDAPRealm
    *
    * @param  credentials  The password provided by the end user.
    *
-   * @return  The hashed version of the password, or <CODE>null</CODE> if a
+   * @return  The hashed version of the password, or {@code null} if a
    *          problem occurs.
    */
   private byte[] hashPassword(String credentials)
@@ -1060,8 +1060,8 @@ public class LDAPRealm
    * @param  b1  The first byte array for which to make the determination.
    * @param  b2  The second byte array for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the contents of the provided byte arrays are
-   *          equal, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the contents of the provided byte arrays are
+   *          equal, or {@code false} if not.
    */
   private static boolean byteArraysAreEqual(byte[] b1, byte[] b2)
   {
@@ -1195,8 +1195,8 @@ public class LDAPRealm
    *
    * @param  userEntry  The user entry for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if it is determined that the user is a member,
-   *          or <CODE>false</CODE> if the membership could not be determined.
+   * @return  {@code true} if it is determined that the user is a member,
+   *          or {@code false} if the membership could not be determined.
    */
   private boolean isMember(LDAPEntry userEntry)
   {

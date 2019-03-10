@@ -60,37 +60,34 @@ import com.slamd.stat.StatTracker;
  */
 public class DSMigrator
 {
-  // Indicates whether to use SSL to communicate with the directory server.
-  boolean useSSL;
-
   // The port to use to communicate with the directory server.
-  int serverPort;
+  private final int serverPort;
 
   // The connection to use to communicate with the directory server.  Note that
   // it may not actually be connected.
-  LDAPConnection conn;
+  private final LDAPConnection conn;
 
   // The date formatter used to parse date information.
-  SimpleDateFormat dateFormat;
+  private final SimpleDateFormat dateFormat;
 
   // The configuration database used by the SLAMD server.
-  SLAMDDB configDB;
+  private final SLAMDDB configDB;
 
   // The SLAMD server instance into which the data will be imported.
-  SLAMDServer slamdServer;
+  private final SLAMDServer slamdServer;
 
   // The base DN for the SLAMD configuration information in the directory
   // server.
-  String baseDN;
+  private final String baseDN;
 
   // The DN to use to bind to the directory server.
-  String bindDN;
+  private final String bindDN;
 
   // The password to use to bind to the directory server.
-  String bindPW;
+  private final String bindPW;
 
   // The address of the directory server.
-  String serverAddress;
+  private final String serverAddress;
 
 
 
@@ -114,15 +111,15 @@ public class DSMigrator
    *                         problem occurs while trying to perform the SSL
    *                         initialization.
    */
-  public DSMigrator(SLAMDServer slamdServer, String serverAddress,
-                    int serverPort, boolean useSSL, String bindDN,
-                    String bindPW, String baseDN)
+  public DSMigrator(final SLAMDServer slamdServer, final String serverAddress,
+                    final int serverPort, final boolean useSSL,
+                    final String bindDN, final String bindPW,
+                    final String baseDN)
          throws LDAPException
   {
     this.slamdServer   = slamdServer;
     this.serverAddress = serverAddress;
     this.serverPort    = serverPort;
-    this.useSSL        = useSSL;
     this.bindDN        = bindDN;
     this.bindPW        = bindPW;
     this.baseDN        = baseDN;
@@ -160,17 +157,17 @@ public class DSMigrator
     {
       conn.connect(3, serverAddress, serverPort, bindDN, bindPW);
 
-      String filter = "(objectClass=" + Constants.JOB_FOLDER_OC + ')';
-      String[] attrs = new String[] { Constants.JOB_FOLDER_NAME_AT };
-      LDAPSearchResults results = conn.search(baseDN, LDAPConnection.SCOPE_SUB,
-                                              filter, attrs, false);
+      final String filter = "(objectClass=" + Constants.JOB_FOLDER_OC + ')';
+      final String[] attrs = new String[] { Constants.JOB_FOLDER_NAME_AT };
+      final LDAPSearchResults results =
+           conn.search(baseDN, LDAPConnection.SCOPE_SUB, filter, attrs, false);
 
-      ArrayList<String> folderList = new ArrayList<String>();
+      final ArrayList<String> folderList = new ArrayList<>();
       folderList.add(Constants.FOLDER_NAME_UNCLASSIFIED);
 
       while (results.hasMoreElements())
       {
-        Object element = results.nextElement();
+        final Object element = results.nextElement();
         if (element instanceof LDAPEntry)
         {
           LDAPEntry entry = (LDAPEntry) element;
@@ -182,88 +179,26 @@ public class DSMigrator
         }
       }
 
-      String[] folderNames = new String[folderList.size()];
+      final String[] folderNames = new String[folderList.size()];
       folderList.toArray(folderNames);
       Arrays.sort(folderNames);
       return folderNames;
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       throw le;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new LDAPException("Unexpected exception caught while retrieving " +
-                              "job folder names:  " + e);
+           "job folder names:  " + e);
     }
     finally
     {
       try
       {
         conn.disconnect();
-      } catch (Exception e) {}
-    }
-  }
-
-
-
-  /**
-   * Retrieves a list of the virtual job folders that have been defined in the
-   * configuration directory.
-   *
-   * @return  A list of the virtual job folders that have been defined in the
-   *         configuration directory.
-   *
-   * @throws  LDAPException  If a problem occurs while attempting to interact
-   *                         with the configuration directory.
-   */
-  public String[] getVirtualFolderNames()
-         throws LDAPException
-  {
-    try
-    {
-      conn.connect(3, serverAddress, serverPort, bindDN, bindPW);
-
-      String filter = "(objectClass=" + Constants.VIRTUAL_JOB_FOLDER_OC + ')';
-      String[] attrs = new String[] { Constants.JOB_FOLDER_NAME_AT };
-      LDAPSearchResults results = conn.search(baseDN, LDAPConnection.SCOPE_SUB,
-                                              filter, attrs, false);
-
-      ArrayList<String> folderList = new ArrayList<String>();
-      while (results.hasMoreElements())
-      {
-        Object element = results.nextElement();
-        if (element instanceof LDAPEntry)
-        {
-          LDAPEntry entry = (LDAPEntry) element;
-          String folderName = getValue(entry, Constants.JOB_FOLDER_NAME_AT);
-          if (folderName != null)
-          {
-            folderList.add(folderName);
-          }
-        }
-      }
-
-      String[] folderNames = new String[folderList.size()];
-      folderList.toArray(folderNames);
-      Arrays.sort(folderNames);
-      return folderNames;
-    }
-    catch (LDAPException le)
-    {
-      throw le;
-    }
-    catch (Exception e)
-    {
-      throw new LDAPException("Unexpected exception caught while retrieving " +
-                              "job folder names:  " + e);
-    }
-    finally
-    {
-      try
-      {
-        conn.disconnect();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
   }
 
@@ -279,12 +214,14 @@ public class DSMigrator
    * @param  writer      The print writer that should be used to output
    *                     information about the progress of the migration.
    *
-   * @return  <CODE>true</CODE> if the migration was completely successful, or
-   *          <CODE>false</CODE> if there may have been problems along the way
+   * @return  {@code true} if the migration was completely successful, or
+   *          {@code false} if there may have been problems along the way
    *          that could have interfered with the migration.
    */
-  public boolean migrateJobFolder(String folderName, PrintWriter writer)
+  public boolean migrateJobFolder(final String folderName,
+                                  final PrintWriter writer)
   {
+    String actualFolderName = folderName;
     try
     {
       // First, establish the connection to the directory server.
@@ -292,35 +229,35 @@ public class DSMigrator
 
 
       // Get the DN of the specified folder in the configuration directory.
-      if ((folderName == null) || (folderName.length() == 0))
+      if ((actualFolderName == null) || (actualFolderName.length() == 0))
       {
-        folderName = Constants.FOLDER_NAME_UNCLASSIFIED;
+        actualFolderName = Constants.FOLDER_NAME_UNCLASSIFIED;
       }
-      LDAPEntry folderEntry = getFolderEntry(folderName);
+      LDAPEntry folderEntry = getFolderEntry(actualFolderName);
       if (folderEntry == null)
       {
         writer.println("Unable to find any information about job folder \"" +
-                       folderName + "\" in the directory server.");
+             actualFolderName + "\" in the directory server.");
         return false;
       }
 
       boolean successful = true;
-      String  folderDN   = folderEntry.getDN();
+      final String folderDN = folderEntry.getDN();
 
 
       // Next, see if there already exists a folder with the specified name in
       // the configuration database.
-      JobFolder folder = configDB.getFolder(folderName);
+      JobFolder folder = configDB.getFolder(actualFolderName);
       if (folder == null)
       {
-        folder = decodeJobFolder(folderName, folderEntry);
+        folder = decodeJobFolder(actualFolderName, folderEntry);
         configDB.writeFolder(folder);
-        writer.println("Successfully created job folder \"" + folderName +
+        writer.println("Successfully created job folder \"" + actualFolderName +
                        "\".");
       }
       else
       {
-        writer.println("A job folder named \"" + folderName +
+        writer.println("A job folder named \"" + actualFolderName +
                        "\" already exists in the configuration database.");
         writer.println("It will be updated to include the specified jobs " +
                        "jobs from the directory server.");
@@ -328,18 +265,17 @@ public class DSMigrator
 
 
       // Get the set of jobs for the folder and migrate them.
-      String[] jobIDs = getJobIDs(folderDN);
-      for (int i=0; i < jobIDs.length; i++)
+      for (final String jobID : getJobIDs(folderDN))
       {
-        writer.print("Migrating information for job " + jobIDs[i] + " ... ");
+        writer.print("Migrating information for job " + jobID + " ... ");
 
         try
         {
-          Job job = getJob(folderName, folderDN, jobIDs[i]);
+          final Job job = getJob(actualFolderName, folderDN, jobID);
           configDB.writeJob(job);
           writer.println("Success");
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           writer.println("Failed:  " + e);
           successful = false;
@@ -348,23 +284,22 @@ public class DSMigrator
 
 
       // Get the set of optimizing jobs for the folder and migrate them.
-      String[] optimizingJobIDs = getOptimizingJobIDs(folderDN);
-      for (int i=0; i < optimizingJobIDs.length; i++)
+      for (final String optimizingJobID : getOptimizingJobIDs(folderDN))
       {
         writer.print("Migrating information for optimizing job " +
-                     optimizingJobIDs[i] +  " ... ");
+             optimizingJobID +  " ... ");
 
         try
         {
-          OptimizingJob optimizingJob = getOptimizingJob(folderName, folderDN,
-                                                         optimizingJobIDs[i]);
+          final OptimizingJob optimizingJob =
+               getOptimizingJob(actualFolderName, folderDN, optimizingJobID);
           configDB.writeOptimizingJob(optimizingJob);
           writer.println("Success");
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           writer.println("Failed:  " + e);
           successful = false;
         }
@@ -372,19 +307,18 @@ public class DSMigrator
 
 
       // Get the set of uploaded files for the folder and migrate them.
-      String[] fileNames = getUploadedFileNames(folderDN);
-      for (int i=0; i < fileNames.length; i++)
+      for (final String filename : getUploadedFileNames(folderDN))
       {
-        writer.print("Migrating information for uploaded file " + fileNames[i] +
-                     " ... ");
+        writer.print("Migrating information for uploaded file " + filename +
+             " ... ");
 
         try
         {
-          UploadedFile file = getUploadedFile(folderDN, fileNames[i]);
-          configDB.writeUploadedFile(file, folderName);
+          final UploadedFile file = getUploadedFile(folderDN, filename);
+          configDB.writeUploadedFile(file, actualFolderName);
           writer.println("Success");
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           writer.println("Failed:  " + e);
           successful = false;
@@ -394,10 +328,10 @@ public class DSMigrator
 
       return successful;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       writer.println("Unable to complete migration of job folder " +
-                     folderName + " because an unexpected error occurred:");
+           actualFolderName + " because an unexpected error occurred:");
       writer.println(JobClass.stackTraceToString(e));
       return false;
     }
@@ -406,7 +340,7 @@ public class DSMigrator
       try
       {
         conn.disconnect();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
   }
 
@@ -418,12 +352,12 @@ public class DSMigrator
    *
    * @param  folderName  The name of the job folder for which to obtain the DN.
    *
-   * @return  The DN of the requested job folder, or <CODE>null</CODE> if it
+   * @return  The DN of the requested job folder, or {@code null} if it
    *          could not be found.
    *
    * @throws  LDAPException  If a problem occurs while making the determination.
    */
-  private LDAPEntry getFolderEntry(String folderName)
+  private LDAPEntry getFolderEntry(final String folderName)
           throws LDAPException
   {
     LDAPEntry folderEntry = null;
@@ -434,18 +368,20 @@ public class DSMigrator
     if ((folderName == null) || (folderName.length() == 0) ||
         folderName.equals(Constants.FOLDER_NAME_UNCLASSIFIED))
     {
-      String filter = "(&(objectClass=" + Constants.CONFIG_PARAMETER_OC + ")(" +
-                      Constants.PARAMETER_NAME_AT + '=' +
-                      Constants.PARAM_CONFIG_SCHEDULED_JOB_BASE + "))";
-      LDAPSearchResults results = conn.search(baseDN, LDAPConnection.SCOPE_SUB,
-                                              filter, null, false);
+      final String filter =
+           "(&(objectClass=" + Constants.CONFIG_PARAMETER_OC + ")(" +
+                Constants.PARAMETER_NAME_AT + '=' +
+                Constants.PARAM_CONFIG_SCHEDULED_JOB_BASE + "))";
+      final LDAPSearchResults results =
+           conn.search(baseDN, LDAPConnection.SCOPE_SUB, filter, null, false);
       while (results.hasMoreElements())
       {
-        Object element = results.nextElement();
+        final Object element = results.nextElement();
         if (element instanceof LDAPEntry)
         {
-          LDAPEntry entry = (LDAPEntry) element;
-          String folderEntryDN = getValue(entry, Constants.PARAMETER_VALUE_AT);
+          final LDAPEntry entry = (LDAPEntry) element;
+          final String folderEntryDN =
+               getValue(entry, Constants.PARAMETER_VALUE_AT);
           folderEntry = conn.read(folderEntryDN);
         }
       }
@@ -461,13 +397,13 @@ public class DSMigrator
 
     // If we've gotten here, then it was not for the base folder.  Just find the
     // folder entry the easy way.
-    String filter = "(&(objectClass=" + Constants.JOB_FOLDER_OC + ")(" +
-                    Constants.JOB_FOLDER_NAME_AT + '=' + folderName + "))";
-    LDAPSearchResults results = conn.search(baseDN, LDAPConnection.SCOPE_SUB,
-                                            filter, null, false);
+    final String filter = "(&(objectClass=" + Constants.JOB_FOLDER_OC + ")(" +
+         Constants.JOB_FOLDER_NAME_AT + '=' + folderName + "))";
+    final LDAPSearchResults results =
+         conn.search(baseDN, LDAPConnection.SCOPE_SUB, filter, null, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
         folderEntry = ((LDAPEntry) element);
@@ -486,26 +422,23 @@ public class DSMigrator
    * @param  folderEntry  The entry to decode as a job folder.
    *
    * @return  The job folder decoded from the provided entry.
-   *
-   * @throws  DecodeException  If a problem occurred while trying to decode the
-   *                           provided entry as a job folder.
    */
-  private JobFolder decodeJobFolder(String folderName, LDAPEntry folderEntry)
-          throws DecodeException
+  private JobFolder decodeJobFolder(final String folderName,
+                                    final LDAPEntry folderEntry)
   {
     boolean displayInReadOnly = false;
-    String valueStr = getValue(folderEntry, Constants.DISPLAY_IN_READ_ONLY_AT);
+    final String valueStr =
+         getValue(folderEntry, Constants.DISPLAY_IN_READ_ONLY_AT);
     if (valueStr != null)
     {
       displayInReadOnly = (valueStr.equalsIgnoreCase("true") ||
-                           valueStr.equalsIgnoreCase("yes") ||
-                           valueStr.equalsIgnoreCase("on") ||
-                           valueStr.equalsIgnoreCase("1"));
+           valueStr.equalsIgnoreCase("yes") ||
+           valueStr.equalsIgnoreCase("on") ||
+           valueStr.equalsIgnoreCase("1"));
     }
 
-    String description = getValue(folderEntry,
-                                  Constants.JOB_FOLDER_DESCRIPTION_AT);
-
+    final String description =
+         getValue(folderEntry, Constants.JOB_FOLDER_DESCRIPTION_AT);
     return new JobFolder(folderName, displayInReadOnly, false, null, null,
                          description, null, null, null, null);
   }
@@ -524,21 +457,21 @@ public class DSMigrator
    * @throws  LDAPException  If a problem occurs while interacting with the
    *                         directory server.
    */
-  private String[] getJobIDs(String folderDN)
+  private String[] getJobIDs(final String folderDN)
           throws LDAPException
   {
-    ArrayList<String> idList = new ArrayList<String>();
+    final ArrayList<String> idList = new ArrayList<>();
 
-    String filter = "(objectClass=" + Constants.SCHEDULED_JOB_OC + ')';
-    String[] attrs = { Constants.JOB_ID_AT };
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_ONE,
-                                            filter, attrs, false);
+    final String filter = "(objectClass=" + Constants.SCHEDULED_JOB_OC + ')';
+    final String[] attrs = { Constants.JOB_ID_AT };
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_ONE, filter, attrs, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
-        String jobID = getValue((LDAPEntry) element, Constants.JOB_ID_AT);
+        final String jobID = getValue((LDAPEntry) element, Constants.JOB_ID_AT);
         if (jobID != null)
         {
           idList.add(jobID);
@@ -546,7 +479,7 @@ public class DSMigrator
       }
     }
 
-    String[] jobIDs = new String[idList.size()];
+    final String[] jobIDs = new String[idList.size()];
     idList.toArray(jobIDs);
     return jobIDs;
   }
@@ -570,17 +503,18 @@ public class DSMigrator
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           job data.
    */
-  private Job getJob(String folderName, String folderDN, String jobID)
+  private Job getJob(final String folderName, final String folderDN,
+                     final String jobID)
           throws LDAPException, DecodeException
   {
     LDAPEntry entry = null;
-    String filter = "(&(objectClass=" + Constants.SCHEDULED_JOB_OC + ")(" +
-                    Constants.JOB_ID_AT + '=' + jobID + "))";
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_SUB,
-                                            filter, null, false);
+    final String filter = "(&(objectClass=" + Constants.SCHEDULED_JOB_OC + ")(" +
+         Constants.JOB_ID_AT + '=' + jobID + "))";
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_SUB, filter, null, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
         entry = (LDAPEntry) element;
@@ -595,18 +529,18 @@ public class DSMigrator
 
 
     // Get the job class name
-    String className = getValue(entry, Constants.JOB_CLASS_NAME_AT);
+    final String className = getValue(entry, Constants.JOB_CLASS_NAME_AT);
     if (className == null)
     {
       throw new DecodeException("Entry has no job class name");
     }
 
     // Get the job description
-    String jobDescription = getValue(entry, Constants.JOB_DESCRIPTION_AT);
+    final String jobDescription = getValue(entry, Constants.JOB_DESCRIPTION_AT);
 
     // Get the number of clients
     int numClients = -1;
-    String numClientStr = getValue(entry, Constants.JOB_NUM_CLIENTS_AT);
+    final String numClientStr = getValue(entry, Constants.JOB_NUM_CLIENTS_AT);
     if (numClientStr == null)
     {
       throw new DecodeException("Entry has no number of clients");
@@ -617,45 +551,45 @@ public class DSMigrator
       {
         numClients = Integer.parseInt(numClientStr);
       }
-      catch (NumberFormatException nfe)
+      catch (final NumberFormatException nfe)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(nfe));
+             JobClass.stackTraceToString(nfe));
         throw new DecodeException("Invalid number of clients:  " + numClientStr,
-                                  nfe);
+             nfe);
       }
     }
 
     // Get whether to wait for clients to be available
     boolean waitForClients = false;
-    String waitStr = getValue(entry, Constants.JOB_WAIT_FOR_CLIENTS_AT);
+    final String waitStr = getValue(entry, Constants.JOB_WAIT_FOR_CLIENTS_AT);
     if ((waitStr != null) && (waitStr.length() > 0))
     {
       waitForClients = (waitStr.equalsIgnoreCase("true") ||
-                        waitStr.equalsIgnoreCase("on") ||
-                        waitStr.equalsIgnoreCase("yes") ||
-                        waitStr.equals("1"));
+           waitStr.equalsIgnoreCase("on") ||
+           waitStr.equalsIgnoreCase("yes") ||
+           waitStr.equals("1"));
     }
 
     // Get whether to automatically monitor any clients used.
     boolean monitorClientsIfAvailable = false;
-    String monitorStr = getValue(entry,
-                             Constants.JOB_MONITOR_CLIENTS_IF_AVAILABLE_AT);
+    final String monitorStr = getValue(entry,
+         Constants.JOB_MONITOR_CLIENTS_IF_AVAILABLE_AT);
     if ((monitorStr != null) && (monitorStr.length() > 0))
     {
       monitorClientsIfAvailable = (monitorStr.equalsIgnoreCase("true") ||
-                                   monitorStr.equalsIgnoreCase("on") ||
-                                   monitorStr.equalsIgnoreCase("yes") ||
-                                   monitorStr.equals("1"));
+           monitorStr.equalsIgnoreCase("on") ||
+           monitorStr.equalsIgnoreCase("yes") ||
+           monitorStr.equals("1"));
     }
 
     // Get the set of requested clients.
     String[] requestedClients = null;
-    String clientsStr = getValue(entry, Constants.JOB_CLIENTS_AT);
+    final String clientsStr = getValue(entry, Constants.JOB_CLIENTS_AT);
     if ((clientsStr != null) && (clientsStr.length() > 0))
     {
-      ArrayList<String> clientList = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(clientsStr);
+      final ArrayList<String> clientList = new ArrayList<>();
+      final StringTokenizer tokenizer = new StringTokenizer(clientsStr);
       while (tokenizer.hasMoreTokens())
       {
         clientList.add(tokenizer.nextToken());
@@ -670,11 +604,12 @@ public class DSMigrator
 
     // Get the set of resource monitor clients.
     String[] monitorClients = null;
-    clientsStr = getValue(entry, Constants.JOB_MONITOR_CLIENTS_AT);
-    if ((clientsStr != null) && (clientsStr.length() > 0))
+    final String monitorClientStr =
+         getValue(entry, Constants.JOB_MONITOR_CLIENTS_AT);
+    if ((monitorClientStr != null) && (monitorClientStr.length() > 0))
     {
       ArrayList<String> clientList = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(clientsStr);
+      StringTokenizer tokenizer = new StringTokenizer(monitorClientStr);
       while (tokenizer.hasMoreTokens())
       {
         clientList.add(tokenizer.nextToken());
@@ -689,7 +624,8 @@ public class DSMigrator
 
     // Get the number of threads per client
     int threadsPerClient = -1;
-    String numThreadStr = getValue(entry, Constants.JOB_THREADS_PER_CLIENT_AT);
+    final String numThreadStr =
+         getValue(entry, Constants.JOB_THREADS_PER_CLIENT_AT);
     if (numThreadStr == null)
     {
       throw new DecodeException("Entry has no number of threads per client");
@@ -700,18 +636,18 @@ public class DSMigrator
       {
         threadsPerClient = Integer.parseInt(numThreadStr);
       }
-      catch (NumberFormatException nfe)
+      catch (final NumberFormatException nfe)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(nfe));
-        throw new DecodeException("Invalid number of threads per client:  " +
-                                  numThreadStr, nfe);
+             JobClass.stackTraceToString(nfe));
+        throw new DecodeException(
+             "Invalid number of threads per client:  " + numThreadStr, nfe);
       }
     }
 
     // Get the thread startup delay
     int threadStartupDelay = 0;
-    String threadDelayStr =
+    final String threadDelayStr =
          getValue(entry, Constants.JOB_THREAD_STARTUP_DELAY_AT);
     if (threadDelayStr != null)
     {
@@ -722,43 +658,44 @@ public class DSMigrator
     }
 
     // Get the set of dependencies.
-    String[] dependencies = getValues(entry, Constants.JOB_DEPENDENCY_AT);
+    final String[] dependencies = getValues(entry, Constants.JOB_DEPENDENCY_AT);
 
     // Get the set of notify addresses.
-    String[] notifyAddresses = getValues(entry,
-                                         Constants.JOB_NOTIFY_ADDRESS_AT);
+    final String[] notifyAddresses = getValues(entry,
+         Constants.JOB_NOTIFY_ADDRESS_AT);
 
     // Get the job state
     int jobState = Constants.JOB_STATE_UNKNOWN;
-    String jobStateStr = getValue(entry, Constants.JOB_STATE_AT);
+    final String jobStateStr = getValue(entry, Constants.JOB_STATE_AT);
     if (jobStateStr != null)
     {
       try
       {
         jobState = Integer.parseInt(jobStateStr);
-      } catch (NumberFormatException nfe) {}
+      } catch (final NumberFormatException nfe) {}
     }
 
     // Determine whether this job should be displayed in read-only mode.
     boolean displayInReadOnlyMode = false;
-    String displayStr = getValue(entry, Constants.DISPLAY_IN_READ_ONLY_AT);
+    final String displayStr =
+         getValue(entry, Constants.DISPLAY_IN_READ_ONLY_AT);
     if (displayStr != null)
     {
       displayInReadOnlyMode = (displayStr.equalsIgnoreCase("true") ||
-                               displayStr.equalsIgnoreCase("yes") ||
-                               displayStr.equalsIgnoreCase("on") ||
-                               displayStr.equalsIgnoreCase("1"));
+           displayStr.equalsIgnoreCase("yes") ||
+           displayStr.equalsIgnoreCase("on") ||
+           displayStr.equalsIgnoreCase("1"));
     }
 
     // Get the start time
     Date startTime = null;
-    String startTimeStr = getValue(entry, Constants.JOB_START_TIME_AT);
+    final String startTimeStr = getValue(entry, Constants.JOB_START_TIME_AT);
     if (startTimeStr != null)
     {
       try
       {
         startTime = dateFormat.parse(startTimeStr);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
     if (startTime == null)
     {
@@ -767,47 +704,49 @@ public class DSMigrator
 
     // Get the stop time
     Date stopTime = null;
-    String stopTimeStr = getValue(entry, Constants.JOB_STOP_TIME_AT);
+    final String stopTimeStr = getValue(entry, Constants.JOB_STOP_TIME_AT);
     if (stopTimeStr != null)
     {
       try
       {
         stopTime = dateFormat.parse(stopTimeStr);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
     // Get the duration
     int duration = -1;
-    String durationStr = getValue(entry, Constants.JOB_DURATION_AT);
+    final String durationStr = getValue(entry, Constants.JOB_DURATION_AT);
     if (durationStr != null)
     {
       try
       {
         duration = Integer.parseInt(durationStr);
-      } catch (NumberFormatException nfe) {}
+      } catch (final NumberFormatException nfe) {}
     }
 
     // Get the optimizing job ID.
-    String optimizingJobID = getValue(entry, Constants.OPTIMIZING_JOB_ID_AT);
+    final String optimizingJobID =
+         getValue(entry, Constants.OPTIMIZING_JOB_ID_AT);
 
-    ParameterList pList = new ParameterList();
-    String[] paramStrs = getValues(entry, Constants.JOB_PARAM_AT);
+    final ParameterList pList = new ParameterList();
+    final String[] paramStrs = getValues(entry, Constants.JOB_PARAM_AT);
     if (paramStrs != null)
     {
       try
       {
-        Job stub = new Job(slamdServer, className);
-        ArrayList<Parameter> paramList = new ArrayList<Parameter>();
-        ParameterList stubParams = stub.getClientSideParameterStubs().clone();
+        final Job stub = new Job(slamdServer, className);
+        final ArrayList<Parameter> paramList = new ArrayList<>();
+        final ParameterList stubParams =
+             stub.getClientSideParameterStubs().clone();
         for (int i=0; i < paramStrs.length; i++)
         {
-          int delimPos =
+          final int delimPos =
                paramStrs[i].indexOf(Constants.JOB_PARAM_DELIMITER_STRING);
-          String paramName = paramStrs[i].substring(0, delimPos);
-          String paramValue =
+          final String paramName = paramStrs[i].substring(0, delimPos);
+          final String paramValue =
                paramStrs[i].substring(delimPos +
                     Constants.JOB_PARAM_DELIMITER_STRING.length());
-          Parameter p = stubParams.getParameter(paramName);
+          final Parameter p = stubParams.getParameter(paramName);
           if (p != null)
           {
             p.setValue(paramValue);
@@ -815,17 +754,17 @@ public class DSMigrator
           }
         }
 
-        Parameter[] pArray = new Parameter[paramList.size()];
+        final Parameter[] pArray = new Parameter[paramList.size()];
         for (int i=0; i < pArray.length; i++)
         {
           pArray[i] = paramList.get(i);
         }
         pList.setParameters(pArray);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Error getting job parameters:  " + e, e);
       }
     }
@@ -833,22 +772,23 @@ public class DSMigrator
 
     // Get the stat tracker information
     StatTracker[] statTrackers = new StatTracker[0];
-    LDAPAttribute attr = entry.getAttribute(Constants.JOB_STAT_TRACKER_AT);
+    LDAPAttribute attr =
+         entry.getAttribute(Constants.JOB_STAT_TRACKER_AT);
     if (attr != null)
     {
-      byte[][] values = attr.getByteValueArray();
+      final byte[][] values = attr.getByteValueArray();
       if ((values != null) && (values.length > 0))
       {
         try
         {
-          ASN1Sequence trackerSequence =
+          final ASN1Sequence trackerSequence =
                ASN1Element.decode(values[0]).decodeAsSequence();
           statTrackers = StatEncoder.sequenceToTrackers(trackerSequence);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           throw new DecodeException("Error getting stat trackers:  " + e, e);
         }
       }
@@ -859,21 +799,21 @@ public class DSMigrator
     attr = entry.getAttribute(Constants.JOB_MONITOR_STAT_AT);
     if (attr != null)
     {
-      byte[][] values = attr.getByteValueArray();
+      final byte[][] values = attr.getByteValueArray();
       if ((values != null) && (values.length > 0))
       {
         try
         {
-          ASN1Sequence trackerSequence =
+          final ASN1Sequence trackerSequence =
                ASN1Element.decode(values[0]).decodeAsSequence();
           monitorTrackers = StatEncoder.sequenceToTrackers(trackerSequence);
         }
         catch (Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           throw new DecodeException("Error getting monitor statistics:  " + e,
-                                    e);
+               e);
         }
       }
     }
@@ -881,31 +821,32 @@ public class DSMigrator
 
     // Get the collection interval information
     int collectionInterval = Constants.DEFAULT_COLLECTION_INTERVAL;
-    String intervalStr = getValue(entry, Constants.JOB_COLLECTION_INTERVAL_AT);
+    final String intervalStr =
+         getValue(entry, Constants.JOB_COLLECTION_INTERVAL_AT);
     if (intervalStr != null)
     {
       try
       {
         collectionInterval = Integer.parseInt(intervalStr);
       }
-      catch (NumberFormatException nfe)
+      catch (final NumberFormatException nfe)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(nfe));
-        throw new DecodeException("Invalid collection interval:  " +
-                                  intervalStr, nfe);
+             JobClass.stackTraceToString(nfe));
+        throw new DecodeException(
+             "Invalid collection interval:  " + intervalStr, nfe);
       }
     }
 
 
     // Get the log messages information
-    ArrayList<String> messagesList = new ArrayList<String>();
-    String logMessages = getValue(entry, Constants.JOB_LOG_MESSAGES_AT);
+    final ArrayList<String> messagesList = new ArrayList<>();
+    final String logMessages = getValue(entry, Constants.JOB_LOG_MESSAGES_AT);
     if (logMessages != null)
     {
-      StringTokenizer tokenizer =
+      final StringTokenizer tokenizer =
            new StringTokenizer(logMessages,
-                               Constants.JOB_LOG_MESSAGES_DELIMITER);
+                Constants.JOB_LOG_MESSAGES_DELIMITER);
       while (tokenizer.hasMoreTokens())
       {
         messagesList.add(tokenizer.nextToken());
@@ -914,45 +855,45 @@ public class DSMigrator
 
 
     // Get the comments information
-    String comments = getValue(entry, Constants.JOB_COMMENTS_AT);
+    final String comments = getValue(entry, Constants.JOB_COMMENTS_AT);
 
 
     // Get the actual start time
     Date actualStartTime = null;
-    String actualStartTimeStr = getValue(entry,
-                                         Constants.JOB_ACTUAL_START_TIME_AT);
+    final String actualStartTimeStr =
+         getValue(entry, Constants.JOB_ACTUAL_START_TIME_AT);
     if (actualStartTimeStr != null)
     {
       try
       {
         actualStartTime = dateFormat.parse(actualStartTimeStr);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
     // Get the actual stop time
     Date actualStopTime = null;
-    String actualStopTimeStr = getValue(entry,
-                                    Constants.JOB_ACTUAL_STOP_TIME_AT);
+    final String actualStopTimeStr =
+         getValue(entry, Constants.JOB_ACTUAL_STOP_TIME_AT);
     if (actualStopTimeStr != null)
     {
       try
       {
         actualStopTime = dateFormat.parse(actualStopTimeStr);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
 
     // Get the actual duration.  Try to read it from the entry first, and if
     // it's not there, then read it from the
     int actualDuration = -1;
-    String actualDurationStr = getValue(entry,
-                                    Constants.JOB_ACTUAL_DURATION_AT);
+    final String actualDurationStr =
+         getValue(entry, Constants.JOB_ACTUAL_DURATION_AT);
     if (actualDurationStr != null)
     {
       try
       {
         actualDuration = Integer.parseInt(actualDurationStr);
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
     if ((actualDuration == -1) && (actualStartTime != null) &&
@@ -964,7 +905,7 @@ public class DSMigrator
 
 
     // Create the job
-    Job job = null;
+    final Job job;
     try
     {
       job = new Job(slamdServer, className, numClients, threadsPerClient,
@@ -989,7 +930,7 @@ public class DSMigrator
       job.setJobComments(comments);
       job.setOptimizingJobID(optimizingJobID);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                              JobClass.stackTraceToString(e));
@@ -1014,21 +955,21 @@ public class DSMigrator
    * @throws  LDAPException  If a problem occurs while interacting with the
    *                         directory server.
    */
-  private String[] getOptimizingJobIDs(String folderDN)
+  private String[] getOptimizingJobIDs(final String folderDN)
           throws LDAPException
   {
-    ArrayList<String> idList = new ArrayList<String>();
+    final ArrayList<String> idList = new ArrayList<>();
 
-    String filter = "(objectClass=" + Constants.OPTIMIZING_JOB_OC + ')';
-    String[] attrs = { Constants.OPTIMIZING_JOB_ID_AT };
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_ONE,
-                                            filter, attrs, false);
+    final String filter = "(objectClass=" + Constants.OPTIMIZING_JOB_OC + ')';
+    final String[] attrs = { Constants.OPTIMIZING_JOB_ID_AT };
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_ONE, filter, attrs, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
-        String optimizingJobID =
+        final String optimizingJobID =
              getValue((LDAPEntry) element, Constants.OPTIMIZING_JOB_ID_AT);
         if (optimizingJobID != null)
         {
@@ -1037,7 +978,7 @@ public class DSMigrator
       }
     }
 
-    String[] optimizingJobIDs = new String[idList.size()];
+    final String[] optimizingJobIDs = new String[idList.size()];
     idList.toArray(optimizingJobIDs);
     return optimizingJobIDs;
   }
@@ -1063,19 +1004,19 @@ public class DSMigrator
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           optimizing job data.
    */
-  private OptimizingJob getOptimizingJob(String folderName, String folderDN,
-                                         String optimizingJobID)
+  private OptimizingJob getOptimizingJob(final String folderName,
+                                         final String folderDN,
+                                         final String optimizingJobID)
           throws LDAPException, DecodeException
   {
     LDAPEntry entry = null;
-    String filter = "(&(objectClass=" + Constants.OPTIMIZING_JOB_OC + ")(" +
-                    Constants.OPTIMIZING_JOB_ID_AT + '=' + optimizingJobID +
-                    "))";
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_ONE,
-                                            filter, null, false);
+    final String filter = "(&(objectClass=" + Constants.OPTIMIZING_JOB_OC +
+         ")(" + Constants.OPTIMIZING_JOB_ID_AT + '=' + optimizingJobID + "))";
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_ONE, filter, null, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
         entry = (LDAPEntry) element;
@@ -1085,7 +1026,7 @@ public class DSMigrator
     if (entry == null)
     {
       throw new DecodeException("Could not retrieve the optimizing job entry " +
-                                "from the directory server.");
+           "from the directory server.");
     }
 
 
@@ -1098,20 +1039,20 @@ public class DSMigrator
     // version of the constructor.
     JobClass      jobClass   = null;
     ParameterList parameters = null;
-    String        baseJobID  = getValue(entry, Constants.BASE_JOB_ID_AT);
+    final String baseJobID  = getValue(entry, Constants.BASE_JOB_ID_AT);
     if ((baseJobID != null) && (baseJobID.length() > 0))
     {
-      Job baseJob = getJob(folderName, baseDN, baseJobID);
+      final Job baseJob = getJob(folderName, baseDN, baseJobID);
       jobClass    = baseJob.getJobClass();
       parameters  = baseJob.getParameterList().clone();
     }
     else
     {
-      String jobClassName = getValue(entry, Constants.JOB_CLASS_NAME_AT);
+      final String jobClassName = getValue(entry, Constants.JOB_CLASS_NAME_AT);
       if ((jobClassName == null) || (jobClassName.length() == 0))
       {
         throw new DecodeException("Entry has neither a base job ID nor a job " +
-                                  "class name.");
+             "class name.");
       }
 
       try
@@ -1121,27 +1062,27 @@ public class DSMigrator
       if (jobClass == null)
       {
         throw new DecodeException("Entry references unknown job class \"" +
-                                  jobClassName + '"');
+             jobClassName + '"');
       }
 
       parameters = new ParameterList();
-      String[] paramStrs = getValues(entry, Constants.JOB_PARAM_AT);
+      final String[] paramStrs = getValues(entry, Constants.JOB_PARAM_AT);
       if (paramStrs != null)
       {
         try
         {
-          Job stub = new Job(slamdServer, jobClassName);
-          ArrayList<Parameter> paramList = new ArrayList<Parameter>();
-          ParameterList stubParams = stub.getParameterStubs().clone();
+          final Job stub = new Job(slamdServer, jobClassName);
+          final ArrayList<Parameter> paramList = new ArrayList<>();
+          final ParameterList stubParams = stub.getParameterStubs().clone();
           for (int i=0; i < paramStrs.length; i++)
           {
             int delimPos =
                  paramStrs[i].indexOf(Constants.JOB_PARAM_DELIMITER_STRING);
-            String paramName = paramStrs[i].substring(0, delimPos);
-            String paramValue =
+            final String paramName = paramStrs[i].substring(0, delimPos);
+            final String paramValue =
                  paramStrs[i].substring(delimPos +
                       Constants.JOB_PARAM_DELIMITER_STRING.length());
-            Parameter p = stubParams.getParameter(paramName);
+            final Parameter p = stubParams.getParameter(paramName);
             if (p != null)
             {
               p.setValue(paramValue);
@@ -1149,58 +1090,59 @@ public class DSMigrator
             }
           }
 
-          Parameter[] pArray = new Parameter[paramList.size()];
+          final Parameter[] pArray = new Parameter[paramList.size()];
           for (int i=0; i < pArray.length; i++)
           {
             pArray[i] = paramList.get(i);
           }
           parameters.setParameters(pArray);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           throw new DecodeException("Error getting job parameters:  " + e, e);
         }
       }
     }
 
-    boolean isUnknownJobClass = (jobClass instanceof UnknownJobClass);
+    final boolean isUnknownJobClass = (jobClass instanceof UnknownJobClass);
 
 
     // Get the description, if there is one.
-    String description = getValue(entry, Constants.JOB_DESCRIPTION_AT);
+    final String description = getValue(entry, Constants.JOB_DESCRIPTION_AT);
 
 
     // Get the flag that indicates whether to include the thread count in the
     // job description.
     boolean includeThreads = false;
-    String includeThreadStr =
+    final String includeThreadStr =
          getValue(entry, Constants.JOB_INCLUDE_THREAD_IN_DESCRIPTION_AT);
     if (includeThreadStr != null)
     {
       includeThreads = (includeThreadStr.equalsIgnoreCase("true") ||
-                        includeThreadStr.equalsIgnoreCase("yes") ||
-                        includeThreadStr.equalsIgnoreCase("on") ||
-                        includeThreadStr.equalsIgnoreCase("1"));
+           includeThreadStr.equalsIgnoreCase("yes") ||
+           includeThreadStr.equalsIgnoreCase("on") ||
+           includeThreadStr.equalsIgnoreCase("1"));
     }
 
 
     // Determine whether this job should be displayed in read-only mode.
     boolean displayInReadOnlyMode = false;
-    String displayStr = getValue(entry, Constants.DISPLAY_IN_READ_ONLY_AT);
+    final String displayStr =
+         getValue(entry, Constants.DISPLAY_IN_READ_ONLY_AT);
     if (displayStr != null)
     {
       displayInReadOnlyMode = (displayStr.equalsIgnoreCase("true") ||
-                               displayStr.equalsIgnoreCase("yes") ||
-                               displayStr.equalsIgnoreCase("on") ||
-                               displayStr.equalsIgnoreCase("1"));
+           displayStr.equalsIgnoreCase("yes") ||
+           displayStr.equalsIgnoreCase("on") ||
+           displayStr.equalsIgnoreCase("1"));
     }
 
 
     // Get the start time.
     Date startTime = null;
-    String startTimeStr = getValue(entry, Constants.JOB_START_TIME_AT);
+    final String startTimeStr = getValue(entry, Constants.JOB_START_TIME_AT);
     if (startTimeStr == null)
     {
       throw new DecodeException("Entry has no start time.");
@@ -1211,10 +1153,10 @@ public class DSMigrator
       {
         startTime = dateFormat.parse(startTimeStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse the start time.", e);
       }
     }
@@ -1222,17 +1164,17 @@ public class DSMigrator
 
     // Get the duration.
     int duration = -1;
-    String durationStr = getValue(entry, Constants.JOB_DURATION_AT);
+    final String durationStr = getValue(entry, Constants.JOB_DURATION_AT);
     if (durationStr != null)
     {
       try
       {
         duration = Integer.parseInt(durationStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse the job duration.", e);
       }
     }
@@ -1240,26 +1182,27 @@ public class DSMigrator
 
     // Get the delay between iterations.
     int delay = 0;
-    String delayStr = getValue(entry, Constants.DELAY_BETWEEN_ITERATIONS_AT);
+    final String delayStr =
+         getValue(entry, Constants.DELAY_BETWEEN_ITERATIONS_AT);
     if (delayStr != null)
     {
       try
       {
         delay = Integer.parseInt(delayStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse the delay between job " +
-                                  "iterations.", e);
+             "iterations.", e);
       }
     }
 
 
     // Get the number of clients.
     int numClients = -1;
-    String numClientsStr = getValue(entry, Constants.JOB_NUM_CLIENTS_AT);
+    final String numClientsStr = getValue(entry, Constants.JOB_NUM_CLIENTS_AT);
     if (numClientsStr == null)
     {
       throw new DecodeException("Entry has no number of clients.");
@@ -1270,10 +1213,10 @@ public class DSMigrator
       {
         numClients = Integer.parseInt(numClientsStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse the number of clients.", e);
       }
     }
@@ -1281,24 +1224,24 @@ public class DSMigrator
 
     // Get whether to automatically monitor any clients used.
     boolean monitorClientsIfAvailable = false;
-    String monitorStr = getValue(entry,
-                             Constants.JOB_MONITOR_CLIENTS_IF_AVAILABLE_AT);
+    final String monitorStr =
+         getValue(entry, Constants.JOB_MONITOR_CLIENTS_IF_AVAILABLE_AT);
     if ((monitorStr != null) && (monitorStr.length() > 0))
     {
       monitorClientsIfAvailable = (monitorStr.equalsIgnoreCase("true") ||
-                                   monitorStr.equalsIgnoreCase("on") ||
-                                   monitorStr.equalsIgnoreCase("yes") ||
-                                   monitorStr.equals("1"));
+           monitorStr.equalsIgnoreCase("on") ||
+           monitorStr.equalsIgnoreCase("yes") ||
+           monitorStr.equals("1"));
     }
 
 
     // Get the set of requested clients.
     String[] requestedClients = null;
-    String clientsStr = getValue(entry, Constants.JOB_CLIENTS_AT);
+    final String clientsStr = getValue(entry, Constants.JOB_CLIENTS_AT);
     if ((clientsStr != null) && (clientsStr.length() > 0))
     {
-      ArrayList<String> clientList = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(clientsStr);
+      final ArrayList<String> clientList = new ArrayList<>();
+      final StringTokenizer tokenizer = new StringTokenizer(clientsStr);
       while (tokenizer.hasMoreTokens())
       {
         clientList.add(tokenizer.nextToken());
@@ -1310,11 +1253,12 @@ public class DSMigrator
 
     // Get the set of resource monitor clients.
     String[] monitorClients = null;
-    clientsStr = getValue(entry, Constants.JOB_MONITOR_CLIENTS_AT);
-    if ((clientsStr != null) && (clientsStr.length() > 0))
+    final String monitorClientsStr =
+         getValue(entry, Constants.JOB_MONITOR_CLIENTS_AT);
+    if ((monitorClientsStr != null) && (monitorClientsStr.length() > 0))
     {
-      ArrayList<String> clientList = new ArrayList<String>();
-      StringTokenizer tokenizer = new StringTokenizer(clientsStr);
+      final ArrayList<String> clientList = new ArrayList<>();
+      final StringTokenizer tokenizer = new StringTokenizer(monitorClientsStr);
       while (tokenizer.hasMoreTokens())
       {
         clientList.add(tokenizer.nextToken());
@@ -1326,7 +1270,7 @@ public class DSMigrator
 
     // Get the minimum number of threads to use.
     int minThreads = 1;
-    String minThreadStr = getValue(entry, Constants.JOB_MIN_THREADS_AT);
+    final String minThreadStr = getValue(entry, Constants.JOB_MIN_THREADS_AT);
     if (minThreadStr == null)
     {
       throw new DecodeException("Entry has no minimum number of threads.");
@@ -1337,38 +1281,39 @@ public class DSMigrator
       {
         minThreads = Integer.parseInt(minThreadStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new DecodeException("Unable to parse the minimum number of " +
-                                  "threads.", e);
+             JobClass.stackTraceToString(e));
+        throw new DecodeException(
+             "Unable to parse the minimum number of threads.", e);
       }
     }
 
 
     // Get the maximum number of threads to use, if specified.
     int maxThreads = -1;
-    String maxThreadStr = getValue(entry, Constants.JOB_MAX_THREADS_AT);
+    final String maxThreadStr = getValue(entry, Constants.JOB_MAX_THREADS_AT);
     if (maxThreadStr != null)
     {
       try
       {
         maxThreads = Integer.parseInt(maxThreadStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new DecodeException("Unable to parse the maximum number of " +
-                                  "threads.", e);
+             JobClass.stackTraceToString(e));
+        throw new DecodeException(
+             "Unable to parse the maximum number of threads.", e);
       }
     }
 
 
     // Get the thread increment.
     int threadIncrement = 0;
-    String incrementStr = getValue(entry, Constants.JOB_THREAD_INCREMENT_AT);
+    final String incrementStr =
+         getValue(entry, Constants.JOB_THREAD_INCREMENT_AT);
     if (incrementStr == null)
     {
       throw new DecodeException("Entry has no thread increment.");
@@ -1379,10 +1324,10 @@ public class DSMigrator
       {
         threadIncrement = Integer.parseInt(incrementStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse the thread increment.", e);
       }
     }
@@ -1390,7 +1335,8 @@ public class DSMigrator
 
     // Get the collection interval.
     int collectionInterval = -1;
-    String intervalStr = getValue(entry, Constants.JOB_COLLECTION_INTERVAL_AT);
+    final String intervalStr =
+         getValue(entry, Constants.JOB_COLLECTION_INTERVAL_AT);
     if (intervalStr == null)
     {
       throw new DecodeException("Entry has no collection interval.");
@@ -1401,10 +1347,10 @@ public class DSMigrator
       {
         collectionInterval = Integer.parseInt(intervalStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse collection interval.", e);
       }
     }
@@ -1412,12 +1358,12 @@ public class DSMigrator
 
     // Get the maximum number of consecutive non-improving iterations.
     int maxNonImproving = 1;
-    String nonImprovingStr =
+    final String nonImprovingStr =
          getValue(entry, Constants.JOB_MAX_NON_IMPROVING_ITERATIONS_AT);
     if (nonImprovingStr == null)
     {
       throw new DecodeException("Entry has no maximum number of " +
-                                "non-improving iterations.");
+           "non-improving iterations.");
     }
     else
     {
@@ -1425,18 +1371,18 @@ public class DSMigrator
       {
         maxNonImproving = Integer.parseInt(nonImprovingStr);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new DecodeException("Unable to parse number of non-improving " +
-                                  "iterations.", e);
+             JobClass.stackTraceToString(e));
+        throw new DecodeException(
+             "Unable to parse number of non-improving iterations.", e);
       }
     }
 
 
     // Get the addresses to notify.
-    String[] notifyAddresses =
+    final String[] notifyAddresses =
          getValues(entry, Constants.JOB_NOTIFY_ADDRESS_AT);
 
 
@@ -1448,15 +1394,15 @@ public class DSMigrator
     {
       reRunBestStr = reRunBestStr.toLowerCase();
       reRunBestIteration = (reRunBestStr.equals("true") ||
-                            reRunBestStr.equals("yes") ||
-                            reRunBestStr.equals("on") ||
-                            reRunBestStr.equals("1"));
+           reRunBestStr.equals("yes") ||
+           reRunBestStr.equals("on") ||
+           reRunBestStr.equals("1"));
     }
 
 
     // Determine what the duration should be when re-running the best iteration.
     int reRunDuration = -1;
-    String reRunDurationStr =
+    final String reRunDurationStr =
          getValue(entry, Constants.OPTIMIZING_JOB_RERUN_DURATION_AT);
     if ((reRunDurationStr != null) && (reRunDurationStr.length() > 0))
     {
@@ -1467,23 +1413,27 @@ public class DSMigrator
       catch (Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
-        throw new DecodeException("Unable to parse the duration to use when " +
-                                  "re-running the best iteration.", e);
+             JobClass.stackTraceToString(e));
+        throw new DecodeException(
+             "Unable to parse the duration to use when re-running the best " +
+                  "iteration.",
+             e);
       }
     }
 
 
     // Get the name of the statistic to optimize and the optimization type.
     // These are for legacy purposes and are no longer required.
-    String optimizeStat = getValue(entry, Constants.JOB_OPTIMIZATION_STAT_AT);
-    String optimizeType = getValue(entry, Constants.JOB_OPTIMIZATION_TYPE_AT);
+    final String optimizeStat =
+         getValue(entry, Constants.JOB_OPTIMIZATION_STAT_AT);
+    final String optimizeType =
+         getValue(entry, Constants.JOB_OPTIMIZATION_TYPE_AT);
 
 
     // Determine the optimization algorithm to use.
     boolean legacyOptimizingJob = false;
     OptimizationAlgorithm optimizationAlgorithm;
-    String optimizationAlgorithmName =
+    final String optimizationAlgorithmName =
          getValue(entry, Constants.OPTIMIZATION_ALGORITHM_AT);
     if (optimizationAlgorithmName == null)
     {
@@ -1503,7 +1453,7 @@ public class DSMigrator
         // used an algorithm that is no longer available for users to schedule.
         try
         {
-          Class<?> algorithmClass =
+          final Class<?> algorithmClass =
                Constants.classForName(optimizationAlgorithmName);
           optimizationAlgorithm =
                (OptimizationAlgorithm) algorithmClass.newInstance();
@@ -1513,14 +1463,13 @@ public class DSMigrator
           // This is fatal, because we couldn't load the optimization algorithm
           // class anywhere.
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_PROCESSING,
-                                 "Unable to load the optimization algorithm " +
-                                 "class \"" + optimizationAlgorithmName +
-                                 "\" -- " + e);
-          throw new DecodeException("Unable to load the optimization " +
-                                    "algorithm class \"" +
-                                    optimizationAlgorithmName + "\" -- " + e);
+               "Unable to load the optimization algorithm class \"" +
+                    optimizationAlgorithmName + "\" -- " + e);
+          throw new DecodeException(
+               "Unable to load the optimization algorithm class \"" +
+                    optimizationAlgorithmName + "\" -- " + e);
         }
       }
     }
@@ -1530,26 +1479,26 @@ public class DSMigrator
     ParameterList optimizationParameters = null;
     if (! legacyOptimizingJob)
     {
-      String[] paramStrs =
+      final String[] paramStrs =
            getValues(entry, Constants.OPTIMIZATION_ALGORITHM_PARAMETER_AT);
       optimizationParameters = optimizationAlgorithm.
            getOptimizationAlgorithmParameterStubs(jobClass).clone();
       for (int i=0; i < paramStrs.length; i++)
       {
-        int delimPos =
+        final int delimPos =
                  paramStrs[i].indexOf(Constants.JOB_PARAM_DELIMITER_STRING);
         if (delimPos > 0)
         {
-          String name = paramStrs[i].substring(0, delimPos);
-          String valueStr = paramStrs[i].substring(delimPos +
-                                 Constants.JOB_PARAM_DELIMITER_STRING.length());
-          Parameter p = optimizationParameters.getParameter(name);
+          final String name = paramStrs[i].substring(0, delimPos);
+          final String valueStr = paramStrs[i].substring(delimPos +
+               Constants.JOB_PARAM_DELIMITER_STRING.length());
+          final Parameter p = optimizationParameters.getParameter(name);
           if (p != null)
           {
             try
             {
               p.setValueFromString(valueStr);
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
           }
         }
       }
@@ -1557,15 +1506,13 @@ public class DSMigrator
 
 
     // Now we have enough to create the optimizing job, so do it.
-    OptimizingJob optimizingJob =
-         new OptimizingJob(slamdServer, optimizingJobID, optimizationAlgorithm,
-                           jobClass, folderName, description, includeThreads,
-                           startTime, duration, delay, numClients,
-                           requestedClients, monitorClients,
-                           monitorClientsIfAvailable, minThreads, maxThreads,
-                           threadIncrement, collectionInterval, maxNonImproving,
-                           notifyAddresses, reRunBestIteration, reRunDuration,
-                           parameters, displayInReadOnlyMode);
+    final OptimizingJob optimizingJob = new OptimizingJob(slamdServer,
+         optimizingJobID, optimizationAlgorithm, jobClass, folderName,
+         description, includeThreads, startTime, duration, delay, numClients,
+         requestedClients, monitorClients, monitorClientsIfAvailable,
+         minThreads, maxThreads, threadIncrement, collectionInterval,
+         maxNonImproving, notifyAddresses, reRunBestIteration, reRunDuration,
+         parameters, displayInReadOnlyMode);
     if (legacyOptimizingJob)
     {
       int optType = SingleStatisticOptimizationAlgorithm.OPTIMIZE_TYPE_MAXIMIZE;
@@ -1586,58 +1533,59 @@ public class DSMigrator
           optimizationAlgorithm.initializeOptimizationAlgorithm(
                optimizingJob, optimizationParameters);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                                 JobClass.stackTraceToString(e));
+               JobClass.stackTraceToString(e));
           slamdServer.logMessage(Constants.LOG_LEVEL_JOB_PROCESSING,
-                                 "Unable to initialize optimization " +
-                                 "algorithm for optimizing job \"" +
-                                 optimizingJobID + "\" -- " + e);
+               "Unable to initialize optimization algorithm for " +
+                    "optimizing job \"" + optimizingJobID + "\" -- " + e);
           throw new DecodeException("Unable to initialize optimization " +
-                                    "algorithm for optimizing job \"" +
-                                    optimizingJobID +  "\" -- " + e);
+               "algorithm for optimizing job \"" + optimizingJobID +  "\" -- " +
+               e);
         }
       }
     }
 
 
     // Set the actual start time, if available.
-    startTimeStr = getValue(entry, Constants.JOB_ACTUAL_START_TIME_AT);
-    if ((startTimeStr != null) && (startTimeStr.length() > 0))
+    final String atualStartTimeStr =
+         getValue(entry, Constants.JOB_ACTUAL_START_TIME_AT);
+    if ((atualStartTimeStr != null) && (atualStartTimeStr.length() > 0))
     {
       try
       {
-        optimizingJob.setActualStartTime(dateFormat.parse(startTimeStr));
+        optimizingJob.setActualStartTime(dateFormat.parse(atualStartTimeStr));
       }
       catch (Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse actual start time.", e);
       }
     }
 
 
     // Set the actual stop time, if available.
-    String stopTimeStr = getValue(entry, Constants.JOB_ACTUAL_STOP_TIME_AT);
+    final String stopTimeStr =
+         getValue(entry, Constants.JOB_ACTUAL_STOP_TIME_AT);
     if ((stopTimeStr != null) && (stopTimeStr.length() > 0))
     {
       try
       {
         optimizingJob.setActualStopTime(dateFormat.parse(stopTimeStr));
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse actual stop time.", e);
       }
     }
 
 
     // Set the stop reason, if available.
-    String stopReason = getValue(entry, Constants.JOB_STOP_REASON_AT);
+    final String stopReason = getValue(entry, Constants.JOB_STOP_REASON_AT);
     if ((stopReason != null) && (stopReason.length() > 0))
     {
       optimizingJob.setStopReason(stopReason);
@@ -1645,7 +1593,7 @@ public class DSMigrator
 
 
     // Set the job state.
-    String jobStateStr = getValue(entry, Constants.JOB_STATE_AT);
+    final String jobStateStr = getValue(entry, Constants.JOB_STATE_AT);
     if (jobStateStr == null)
     {
       throw new DecodeException("Entry has no job state.");
@@ -1656,33 +1604,33 @@ public class DSMigrator
       {
         optimizingJob.setJobState(Integer.parseInt(jobStateStr));
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                               JobClass.stackTraceToString(e));
+             JobClass.stackTraceToString(e));
         throw new DecodeException("Unable to parse job state.", e);
       }
     }
 
 
     // Set the list of associated jobs.
-    String[] associatedJobIDs = getValues(entry, Constants.JOB_ID_AT);
+    final String[] associatedJobIDs = getValues(entry, Constants.JOB_ID_AT);
     if ((associatedJobIDs != null) && (associatedJobIDs.length > 0))
     {
-      Job[] associatedJobs = new Job[associatedJobIDs.length];
+      final Job[] associatedJobs = new Job[associatedJobIDs.length];
       for (int i=0; i < associatedJobs.length; i++)
       {
         associatedJobs[i] = getJob(folderName, baseDN, associatedJobIDs[i]);
         if (associatedJobs[i] == null)
         {
-          throw new DecodeException("Unable to retrieve associated job " +
-                                    associatedJobIDs[i]);
+          throw new DecodeException(
+               "Unable to retrieve associated job " + associatedJobIDs[i]);
         }
 
         try
         {
           configDB.writeJob(associatedJobs[i]);
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
       }
       optimizingJob.setAssociatedJobs(associatedJobs);
     }
@@ -1690,7 +1638,7 @@ public class DSMigrator
 
     // See if a re-run iteration has been specified.
     Job reRunIteration = null;
-    String reRunIterationID =
+    final String reRunIterationID =
          getValue(entry, Constants.OPTIMIZING_JOB_RERUN_ITERATION_AT);
     if ((reRunIterationID != null) && (reRunIterationID.length() > 0))
     {
@@ -1702,21 +1650,20 @@ public class DSMigrator
         try
         {
           configDB.writeJob(reRunIteration);
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
       }
       catch (Exception e)
       {
         slamdServer.logMessage(Constants.LOG_LEVEL_ANY,
-                               "WARNING:  Unable to retrieve job " +
-                               reRunIterationID +
-                               " as the best iteration of optimizing job " +
-                               optimizingJobID);
+             "WARNING:  Unable to retrieve job " + reRunIterationID +
+                  " as the best iteration of optimizing job " +
+                  optimizingJobID);
       }
     }
 
 
     // Set the list of dependencies.
-    String[] dependencies = getValues(entry, Constants.JOB_DEPENDENCY_AT);
+    final String[] dependencies = getValues(entry, Constants.JOB_DEPENDENCY_AT);
     if ((dependencies != null) && (dependencies.length > 0))
     {
       optimizingJob.setDependencies(dependencies);
@@ -1740,21 +1687,20 @@ public class DSMigrator
    * @throws  LDAPException  If a problem occurs while interacting with the
    *                         directory server.
    */
-  public String[] getUploadedFileNames(String folderDN)
-         throws LDAPException
+  private String[] getUploadedFileNames(final String folderDN)
+          throws LDAPException
   {
-    ArrayList<String> fileList = new ArrayList<String>();
-
-    String filter = "(objectClass=" + Constants.UPLOADED_FILE_OC + ')';
-    String[] attrs = { Constants.UPLOADED_FILE_NAME_AT };
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_ONE,
-                                            filter, attrs, false);
+    final ArrayList<String> fileList = new ArrayList<>();
+    final String filter = "(objectClass=" + Constants.UPLOADED_FILE_OC + ')';
+    final String[] attrs = { Constants.UPLOADED_FILE_NAME_AT };
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_ONE, filter, attrs, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
-        String optimizingJobID =
+        final String optimizingJobID =
              getValue((LDAPEntry) element, Constants.UPLOADED_FILE_NAME_AT);
         if (optimizingJobID != null)
         {
@@ -1763,7 +1709,7 @@ public class DSMigrator
       }
     }
 
-    String[] fileNames = new String[fileList.size()];
+    final String[] fileNames = new String[fileList.size()];
     fileList.toArray(fileNames);
     return fileNames;
   }
@@ -1786,17 +1732,18 @@ public class DSMigrator
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the file information.
    */
-  private UploadedFile getUploadedFile(String folderDN, String fileName)
+  private UploadedFile getUploadedFile(final String folderDN,
+                                       final String fileName)
           throws LDAPException, DecodeException
   {
     LDAPEntry entry = null;
-    String filter = "(&(objectClass=" + Constants.UPLOADED_FILE_OC + ")(" +
-                    Constants.UPLOADED_FILE_NAME_AT + '=' + fileName + "))";
-    LDAPSearchResults results = conn.search(folderDN, LDAPConnection.SCOPE_ONE,
-                                            filter, null, false);
+    final String filter = "(&(objectClass=" + Constants.UPLOADED_FILE_OC + ")(" +
+         Constants.UPLOADED_FILE_NAME_AT + '=' + fileName + "))";
+    final LDAPSearchResults results =
+         conn.search(folderDN, LDAPConnection.SCOPE_ONE, filter, null, false);
     while (results.hasMoreElements())
     {
-      Object element = results.nextElement();
+      final Object element = results.nextElement();
       if (element instanceof LDAPEntry)
       {
         entry = (LDAPEntry) element;
@@ -1806,32 +1753,31 @@ public class DSMigrator
     if (entry == null)
     {
       throw new DecodeException("Could not retrieve the uploaded file entry " +
-                                "from the directory server.");
+           "from the directory server.");
     }
 
 
-    String fileType = getValue(entry, Constants.UPLOADED_FILE_TYPE_AT);
+    final String fileType = getValue(entry, Constants.UPLOADED_FILE_TYPE_AT);
     if ((fileType == null) || (fileType.length() == 0))
     {
       throw new DecodeException("Entry \"" + entry.getDN() +
-                                "\" missing value for required attribute \"" +
-                                Constants.UPLOADED_FILE_TYPE_AT + '"');
+           "\" missing value for required attribute \"" +
+           Constants.UPLOADED_FILE_TYPE_AT + '"');
     }
 
     int fileSize;
-    String sizeStr = getValue(entry, Constants.UPLOADED_FILE_SIZE_AT);
+    final String sizeStr = getValue(entry, Constants.UPLOADED_FILE_SIZE_AT);
     try
     {
       fileSize = Integer.parseInt(sizeStr);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
-                             JobClass.stackTraceToString(e));
+           JobClass.stackTraceToString(e));
       throw new DecodeException("Entry \"" + entry.getDN() +
-                                "\" has a missing or invalid value for " +
-                                "required attribute \"" +
-                                Constants.UPLOADED_FILE_SIZE_AT + '"', e);
+           "\" has a missing or invalid value for \required attribute \"" +
+           Constants.UPLOADED_FILE_SIZE_AT + '"', e);
     }
 
     String fileDescription =
@@ -1842,11 +1788,11 @@ public class DSMigrator
     }
 
     byte[] fileData = null;
-    LDAPAttribute dataAttr =
+    final LDAPAttribute dataAttr =
          entry.getAttribute(Constants.UPLOADED_FILE_DATA_AT);
     if (dataAttr != null)
     {
-      byte[][] values = dataAttr.getByteValueArray();
+      final byte[][] values = dataAttr.getByteValueArray();
       if ((values != null) && (values.length == 1))
       {
         fileData = values[0];
@@ -1854,7 +1800,7 @@ public class DSMigrator
     }
 
     return new UploadedFile(fileName, fileType, fileSize, fileDescription,
-                            fileData);
+         fileData);
   }
 
 
@@ -1867,10 +1813,10 @@ public class DSMigrator
    * @param  attributeName  The name of the attribute for which to retrieve the
    *                        value.
    *
-   * @return  The value of the requested attribute, or <CODE>null</CODE> if no
+   * @return  The value of the requested attribute, or {@code null} if no
    *          such attribute exists in the given entry.
    */
-  private String getValue(LDAPEntry entry, String attributeName)
+  private String getValue(final LDAPEntry entry, final String attributeName)
   {
     if ((entry == null) || (attributeName == null) ||
         (attributeName.length() == 0))
@@ -1878,13 +1824,13 @@ public class DSMigrator
       return null;
     }
 
-    LDAPAttribute attr = entry.getAttribute(attributeName);
+    final LDAPAttribute attr = entry.getAttribute(attributeName);
     if (attr == null)
     {
       return null;
     }
 
-    String[] values = attr.getStringValueArray();
+    final String[] values = attr.getStringValueArray();
     if ((values == null) || (values.length == 0))
     {
       return null;
@@ -1903,10 +1849,10 @@ public class DSMigrator
    * @param  attributeName  The name of the attribute for which to retrieve the
    *                        values.
    *
-   * @return  The values of the requested attribute, or <CODE>null</CODE> if no
+   * @return  The values of the requested attribute, or {@code null} if no
    *          such attribute exists in the given entry.
    */
-  private String[] getValues(LDAPEntry entry, String attributeName)
+  private String[] getValues(final LDAPEntry entry, final String attributeName)
   {
     if ((entry == null) || (attributeName == null) ||
         (attributeName.length() == 0))
@@ -1914,13 +1860,13 @@ public class DSMigrator
       return null;
     }
 
-    LDAPAttribute attr = entry.getAttribute(attributeName);
+    final LDAPAttribute attr = entry.getAttribute(attributeName);
     if (attr == null)
     {
       return null;
     }
 
-    String[] values = attr.getStringValueArray();
+    final String[] values = attr.getStringValueArray();
     if ((values == null) || (values.length == 0))
     {
       return null;

@@ -389,8 +389,8 @@ public class StatListener
    * @param  clientID  The client ID of the client to which the request is to be
    *                   sent.
    *
-   * @return  <CODE>true</CODE> if a request was sent to the specified client,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if a request was sent to the specified client,
+   *          or {@code false} if not.
    */
   public boolean requestDisconnect(String clientID)
   {
@@ -444,8 +444,8 @@ public class StatListener
    *
    * @param  clientID  The client ID of the client to be disconnected.
    *
-   * @return  <CODE>true</CODE> if the client was disconnected, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the client was disconnected, or
+   *          {@code false} if not.
    */
   public boolean forceDisconnect(String clientID)
   {
@@ -552,8 +552,8 @@ public class StatListener
   /**
    * Indicates whether this listener is configured to require authentication.
    *
-   * @return  <CODE>true</CODE> if this listener is configured to require
-   *          authentication, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this listener is configured to require
+   *          authentication, or {@code false} if not.
    */
   public boolean requireAuthentication()
   {

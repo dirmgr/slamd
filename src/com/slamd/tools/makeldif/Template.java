@@ -311,7 +311,7 @@ public class Template
    *
    * @param  counterName  The name of the counter to retrieve.
    *
-   * @return  The counter with the specified name, or <CODE>null</CODE> if that
+   * @return  The counter with the specified name, or {@code null} if that
    *          counter has not yet been created for this template.
    */
   public Counter getCounter(String counterName)
@@ -339,7 +339,7 @@ public class Template
    *
    * @param  tagName  The name of the custom tag to retrieve.
    *
-   * @return  The custom tag with the specified name, or <CODE>null</CODE> if
+   * @return  The custom tag with the specified name, or {@code null} if
    *          that tag has not been created for this template.
    */
   public CustomTag getCustomTag(String tagName)
@@ -367,8 +367,8 @@ public class Template
    * Indicates whether this template entry has subtemplate definitions and
    * therefore should have entries created beneath it.
    *
-   * @return  <CODE>true</CODE> if this template does have subordinate entries,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if this template does have subordinate entries,
+   *          or {@code false} if not.
    */
   public boolean hasSubordinates()
   {

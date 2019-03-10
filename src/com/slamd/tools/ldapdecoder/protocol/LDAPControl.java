@@ -99,8 +99,8 @@ public class LDAPControl
   /**
    * Indicates whether this control is marked critical.
    *
-   * @return  <CODE>true</CODE> if this control is marked critical, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this control is marked critical, or
+   *          {@code false} if not.
    */
   public boolean isCritical()
   {
@@ -112,7 +112,7 @@ public class LDAPControl
   /**
    * Retrieves the value for this control.
    *
-   * @return  The value for this control, or <CODE>null</CODE> if it does not
+   * @return  The value for this control, or {@code null} if it does not
    *          have a value.
    */
   public ASN1OctetString getValue()

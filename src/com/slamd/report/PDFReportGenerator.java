@@ -525,8 +525,8 @@ public class PDFReportGenerator
    *
    * @param  document  The document to which the contents are to be written.
    *
-   * @return  <CODE>true</CODE> if the contents information was written to the
-   *          PDF document, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the contents information was written to the
+   *          PDF document, or {@code false} if not.
    *
    * @throws  DocumentException  If a problem occurs while writing the contents.
    */

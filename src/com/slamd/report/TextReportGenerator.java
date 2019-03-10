@@ -462,8 +462,8 @@ public class TextReportGenerator
    * @param  job     The job to include in the report.
    * @param  buffer  The buffer to which the job information should be written.
    *
-   * @return  <CODE>true</CODE> if information about the job was actually
-   *          included in the report, or <CODE>false</CODE> if not.
+   * @return  {@code true} if information about the job was actually
+   *          included in the report, or {@code false} if not.
    */
   private boolean addJob(Job job, StringBuilder buffer)
   {
@@ -712,8 +712,8 @@ public class TextReportGenerator
    * @param  buffer         The buffer to which the optimizing job information
    *                        should be written.
    *
-   * @return  <CODE>true</CODE> if information about the optimizing job was
-   *          actually included in the report, or <CODE>false</CODE> if not.
+   * @return  {@code true} if information about the optimizing job was
+   *          actually included in the report, or {@code false} if not.
    */
   private boolean addOptimizingJob(OptimizingJob optimizingJob,
                                    StringBuilder buffer)

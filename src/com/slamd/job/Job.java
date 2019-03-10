@@ -539,7 +539,7 @@ public class Job
    * Retrieves an instance of the job class with which this job is associated.
    *
    * @return  An instance of the job class with which this job is associated,
-   *          or <CODE>null</CODE> if it could not be retrieved for some reason.
+   *          or {@code null} if it could not be retrieved for some reason.
    */
   public JobClass getJobClass()
   {
@@ -588,7 +588,7 @@ public class Job
    * Retrieves the ID of the optimizing job with which this job is associated.
    *
    * @return  The ID of the optimizing job with which this job is associated, or
-   *          <CODE>null</CODE> if it is not associated with an optimizing job.
+   *          {@code null} if it is not associated with an optimizing job.
    */
   public String getOptimizingJobID()
   {
@@ -614,7 +614,7 @@ public class Job
    * Retrieves the name of the job group with which this job is associated.
    *
    * @return  The name of the job group with which this job is associated, or
-   *          <CODE>null</CODE> if it was not scheduled as part of any job
+   *          {@code null} if it was not scheduled as part of any job
    *          group.
    */
   public String getJobGroup()
@@ -664,7 +664,7 @@ public class Job
   /**
    * Retrieves the user-specified comments for this job.
    *
-   * @return  The user-specified comments for this job, or <CODE>null</CODE> if
+   * @return  The user-specified comments for this job, or {@code null} if
    *          no comments have been made.
    */
   public String getJobComments()
@@ -689,7 +689,7 @@ public class Job
   /**
    * Retrieves a user-specified description for this job.
    *
-   * @return  A description for this job, or <CODE>null</CODE> if no description
+   * @return  A description for this job, or {@code null} if no description
    *          has been provided.
    */
   public String getJobDescription()
@@ -1027,8 +1027,8 @@ public class Job
    * available clients to start running, or whether it will be cancelled if
    * there are not enough clients available when the start time arrives.
    *
-   * @return  <CODE>true</CODE> if this job will wait for the requested number
-   *          of clients before starting, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job will wait for the requested number
+   *          of clients before starting, or {@code false} if not.
    */
   public boolean waitForClients()
   {
@@ -1056,8 +1056,8 @@ public class Job
    * Indicates whether this job should be displayed in restricted read-only
    * mode.
    *
-   * @return  <CODE>true</CODE> if this job should be displayed in restricted
-   *          read-only mode, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job should be displayed in restricted
+   *          read-only mode, or {@code false} if not.
    */
   public boolean displayInReadOnlyMode()
   {
@@ -1085,7 +1085,7 @@ public class Job
    * be eligible for processing.
    *
    * @return  The job IDs of the jobs that must complete before this job will be
-   *          eligible for processing, or <CODE>null</CODE> if there are no such
+   *          eligible for processing, or {@code null} if there are no such
    *          dependencies.
    */
   public String[] getDependencies()
@@ -1202,8 +1202,8 @@ public class Job
    * Indicates whether an attempt will be made to use resource monitor clients
    * on the same systems as the clients used to run this job.
    *
-   * @return  <CODE>true</CODE> if resource monitor clients on the same systems
-   *          as the clients will be used, or <CODE>false</CODE> if not.
+   * @return  {@code true} if resource monitor clients on the same systems
+   *          as the clients will be used, or {@code false} if not.
    */
   public boolean monitorClientsIfAvailable()
   {
@@ -1266,8 +1266,8 @@ public class Job
   /**
    * Indicates whether all possible processing has been done for this job.
    *
-   * @return  <CODE>true</CODE> if there is no more processing to be done, or
-   *          <CODE>false</CODE> if the job is still running or pending
+   * @return  {@code true} if there is no more processing to be done, or
+   *          {@code false} if the job is still running or pending
    *          execution.
    */
   public boolean doneRunning()
@@ -1283,7 +1283,7 @@ public class Job
    * Indicates whether enough information is available for this job to generate
    * graphs of the results.
    *
-   * @return  <CODE>true</CODE> if graphs are available, or <CODE>false</CODE>
+   * @return  {@code true} if graphs are available, or {@code false}
    *          if not.
    */
   public boolean graphsAvailable()
@@ -1306,7 +1306,7 @@ public class Job
    * Indicates whether enough information is available for this job to generate
    * graphs of the resource monitor statistics.
    *
-   * @return  <CODE>true</CODE> if graphs are available, or <CODE>false</CODE>
+   * @return  {@code true} if graphs are available, or {@code false}
    *          if not.
    */
   public boolean resourceGraphsAvailable()
@@ -1328,8 +1328,8 @@ public class Job
   /**
    * Indicates whether this job has real-time stat data associated with it.
    *
-   * @return  <CODE>true</CODE> if this job has real-time stat data associated
-   *          with it, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job has real-time stat data associated
+   *          with it, or {@code false} if not.
    */
   public boolean hasRealTimeStats()
   {
@@ -1354,7 +1354,7 @@ public class Job
    * Retrieves the real-time stat data associated with this job.
    *
    * @return  The real-time stat data associated with this job, or
-   *          <CODE>null</CODE> if no real-time stat data is being collected.
+   *          {@code null} if no real-time stat data is being collected.
    */
   public RealTimeJobStats getRealTimeStats()
   {
@@ -1366,8 +1366,8 @@ public class Job
   /**
    * Indicates whether this job has statistical information associated with it.
    *
-   * @return  <CODE>true</CODE> if this job has statistical information
-   *          associated with it, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job has statistical information
+   *          associated with it, or {@code false} if not.
    */
   public boolean hasStats()
   {
@@ -1380,8 +1380,8 @@ public class Job
    * Indicates whether this job has resource monitor information associated with
    * it.
    *
-   * @return  <CODE>true</CODE> if this job has resource monitor information
-   *          associated with it, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job has resource monitor information
+   *          associated with it, or {@code false} if not.
    */
   public boolean hasResourceStats()
   {

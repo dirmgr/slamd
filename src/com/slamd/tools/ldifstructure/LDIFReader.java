@@ -91,7 +91,7 @@ public class LDIFReader
   /**
    * Reads the next entry from the LDIF file.
    *
-   * @return  The next entry from the LDIF file, or <CODE>null</CODE> if there
+   * @return  The next entry from the LDIF file, or {@code null} if there
    *          is no more data to read.
    *
    * @throws  IOException  If a problem occurs while reading data from the file.

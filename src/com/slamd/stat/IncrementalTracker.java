@@ -397,8 +397,8 @@ public class IncrementalTracker
    * Indicates whether this stat tracker has been started, regardless of whether
    * it is currently running.
    *
-   * @return  <CODE>true</CODE> if this stat tracker has been started, or
-   *          <CODE>false</CODE> if it has not yet been started.
+   * @return  {@code true} if this stat tracker has been started, or
+   *          {@code false} if it has not yet been started.
    */
   public boolean hasBeenStarted()
   {
@@ -410,8 +410,8 @@ public class IncrementalTracker
   /**
    * Indicates whether this stat tracker is currently running.
    *
-   * @return  <CODE>true</CODE> if this stat tracker is currently running, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this stat tracker is currently running, or
+   *          {@code false} if not.
    */
   public boolean isRunning()
   {
@@ -947,8 +947,8 @@ public class IncrementalTracker
    * this stat tracker.  The search will be "greater than" and "less than" some
    * user-specified value.
    *
-   * @return  <CODE>true</CODE> if statistics collected by this stat tracker
-   *          should be searchable, or <CODE>false</CODE> if not.
+   * @return  {@code true} if statistics collected by this stat tracker
+   *          should be searchable, or {@code false} if not.
    */
   public boolean isSearchable()
   {
@@ -960,15 +960,15 @@ public class IncrementalTracker
   /**
    * Indicates whether the value associated with this stat tracker is greater
    * than or equal to the provided value.  This is only applicable if
-   * <CODE>isSearchable</CODE> returns <CODE>true</CODE>, and what exactly
+   * <CODE>isSearchable</CODE> returns {@code true}, and what exactly
    * "the value of this stat tracker" means will be left up to those stat
    * trackers that are searchable.
    *
    * @param  value  The value against which the value of this stat tracker is to
    *                be compared.
    *
-   * @return  <CODE>true</CODE> if the value of this stat tracker is greater
-   *          than or equal to the provided value, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the value of this stat tracker is greater
+   *          than or equal to the provided value, or {@code false} if not.
    */
   public boolean isAtLeast(double value)
   {
@@ -980,15 +980,15 @@ public class IncrementalTracker
   /**
    * Indicates whether the value associated with this stat tracker is less than
    * or equal to the provided value.  This is only applicable if
-   * <CODE>isSearchable</CODE> returns <CODE>true</CODE>, and what exactly
+   * <CODE>isSearchable</CODE> returns {@code true}, and what exactly
    * "the value of this stat tracker" means will be left up to those stat
    * trackers that are searchable.
    *
    * @param  value  The value against which the value of this stat tracker is to
    *                be compared.
    *
-   * @return  <CODE>true</CODE> if the value of this stat tracker is less than
-   *          or equal to the provided value, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the value of this stat tracker is less than
+   *          or equal to the provided value, or {@code false} if not.
    */
   public boolean isAtMost(double value)
   {
@@ -999,7 +999,7 @@ public class IncrementalTracker
 
   /**
    * Retrieves the value associated with this stat tracker.  This is only
-   * applicable if <CODE>isSearchable</CODE> returns <CODE>true</CODE>, and what
+   * applicable if <CODE>isSearchable</CODE> returns {@code true}, and what
    * exactly "the value associated with this stat tracker" means will be left up
    * to those stat trackers that are searchable.
    *
@@ -1741,10 +1741,10 @@ public class IncrementalTracker
   /**
    * Retrieves the data that represents the points in a line graph for this
    * stat tracker.    This is only applicable if <CODE>isSearchable</CODE>
-   * returns <CODE>true</CODE>.
+   * returns {@code true}.
    *
    * @return  The data that represents the points in a line graph for this stat
-   *          tracker, or <CODE>null</CODE> if that data is not available.
+   *          tracker, or {@code null} if that data is not available.
    */
   public double[] getGraphData()
   {
@@ -1763,10 +1763,10 @@ public class IncrementalTracker
   /**
    * Retrieves the label that should be included along the vertical axis in a
    * line graph for this stat tracker.  This is only applicable if
-   * <CODE>isSearchable</CODE> returns <CODE>true</CODE>.
+   * <CODE>isSearchable</CODE> returns {@code true}.
    *
    * @return  The label that should be included along the vertical axis in a
-   *          line graph for this stat tracker, or <CODE>null</CODE> if that
+   *          line graph for this stat tracker, or {@code null} if that
    *          data is not applicable.
    */
   public String getAxisLabel()

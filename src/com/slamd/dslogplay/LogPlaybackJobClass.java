@@ -1453,7 +1453,7 @@ public class LogPlaybackJobClass
    * directory server.
    *
    * @return  The next log operation that should be replayed against the
-   *          directory server, or <CODE>null</CODE> if there are no more
+   *          directory server, or {@code null} if there are no more
    *          operations to replay.
    */
   public LogOperation getNextOperation()

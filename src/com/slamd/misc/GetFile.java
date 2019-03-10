@@ -306,7 +306,7 @@ public class GetFile
    * @param  filename  The name of the file to be cached.
    *
    * @return  The cache item with information about the specified file, or
-   *          <CODE>null</CODE> if the file does not exist.
+   *          {@code null} if the file does not exist.
    */
   public GetFileCacheItem createCacheItem(String filename)
   {

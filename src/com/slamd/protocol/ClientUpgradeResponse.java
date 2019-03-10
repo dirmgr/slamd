@@ -122,7 +122,7 @@ public class ClientUpgradeResponse
    * Retrieves the error message for the client upgrade operation.
    *
    * @return  The error message for the client upgrade operation, or
-   *          <CODE>null</CODE> if none was provided.
+   *          {@code null} if none was provided.
    */
   public String getErrorMessage()
   {
@@ -146,7 +146,7 @@ public class ClientUpgradeResponse
   /**
    * Retrieves the data for the requested upgrade file.
    *
-   * @return  The data for the requested upgrade file, or <CODE>null</CODE> if
+   * @return  The data for the requested upgrade file, or {@code null} if
    *          it was not provided.
    */
   public byte[] getUpgradeFileData()

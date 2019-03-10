@@ -535,7 +535,7 @@ public class MultiLineTextParameter
    *
    * @param  value  The value for which to make the determination.
    *
-   * @return  The reason that the value is not valid, or <CODE>null</CODE> if it
+   * @return  The reason that the value is not valid, or {@code null} if it
    *          is valid.
    */
   @Override()

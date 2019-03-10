@@ -123,7 +123,7 @@ public class ClassTransferResponse
    * Retrieves the error message for the class transfer operation.
    *
    * @return  The error message for the class transfer operation, or
-   *          <CODE>null</CODE> if none was provided.
+   *          {@code null} if none was provided.
    */
   public String getErrorMessage()
   {
@@ -148,7 +148,7 @@ public class ClassTransferResponse
    * Retrieves the class data structures for the requested classes.
    *
    * @return  The class data structures for the requested classes, or
-   *          <CODE>null</CODE> if no class data is available.
+   *          {@code null} if no class data is available.
    */
   public ClassData[] getClassData()
   {

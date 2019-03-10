@@ -300,8 +300,8 @@ public class MultiValuedParameter
    * @param  optionValue  The numeric value of the option for which to make the
    *                      determination.
    *
-   * @return  <CODE>true</CODE> if the specified value is selected, or
-   *          <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the specified value is selected, or
+   *          {@code false} if it is not.
    */
   public boolean isSelected(int optionValue)
   {
@@ -456,7 +456,7 @@ public class MultiValuedParameter
    * @param  value  The value for which to obtain the invalid reason.
    *
    * @return  The reason that the specified value is invalid, or
-   *          <CODE>null</CODE> if the value is valid.
+   *          {@code null} if the value is valid.
    */
   @Override()
   public String getInvalidReason(Object value)
@@ -548,8 +548,8 @@ public class MultiValuedParameter
   /**
    * Indicates whether this parameter has one or more values.
    *
-   * @return  <CODE>true</CODE> if this parameter has one or more values, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this parameter has one or more values, or
+   *          {@code false} if not.
    */
   @Override()
   public boolean hasValue()

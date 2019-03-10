@@ -188,8 +188,8 @@ public class ProcessSizeResourceMonitor
    * Indicates whether the current client system is supported for this resource
    * monitor.
    *
-   * @return  <CODE>true</CODE> if the current client system is supported for
-   *          this resource monitor, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current client system is supported for
+   *          this resource monitor, or {@code false} if not.
    */
   @Override()
   public boolean clientSupported()
@@ -564,8 +564,8 @@ public class ProcessSizeResourceMonitor
    * Performs all necessary processing to determine the process size for the
    * process on a Solaris system.
    *
-   * @return  <CODE>true</CODE> if the current size of the process was found, or
-   *          <CODE>false</CODE> if not for some reason (e.g., the process is no
+   * @return  {@code true} if the current size of the process was found, or
+   *          {@code false} if not for some reason (e.g., the process is no
    *          longer running).
    *
    * @throws  IOException  If a problem occurs executing the appropriate command
@@ -639,8 +639,8 @@ public class ProcessSizeResourceMonitor
    * process on a Linux system.  Note that this will only be accurate for
    * multithreaded applications on systems with NPTL support.
    *
-   * @return  <CODE>true</CODE> if the current size of the process was found, or
-   *          <CODE>false</CODE> if not for some reason (e.g., the process is no
+   * @return  {@code true} if the current size of the process was found, or
+   *          {@code false} if not for some reason (e.g., the process is no
    *          longer running).
    *
    * @throws  IOException  If a problem occurs executing the appropriate command

@@ -78,13 +78,13 @@ public class ParameterList
 
   /**
    * Retrieves the parameter with the specified name from the parameter list.
-   * If there is no parameter with that name, then <CODE>null</CODE> will be
+   * If there is no parameter with that name, then {@code null} will be
    * returned.  The parameter name is case sensitive.
    *
    * @param  parameterName  The name of the parameter to retrieve from the
    *                        parameter list.
    *
-   * @return  The parameter with the specified name, or <CODE>null</CODE> if
+   * @return  The parameter with the specified name, or {@code null} if
    *          there is no such parameter.
    */
   public Parameter getParameter(String parameterName)
@@ -109,13 +109,13 @@ public class ParameterList
   /**
    * Retrieves the Boolean parameter with the specified name.  If there is no
    * parameter with that name, or if it is not a Boolean parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the Boolean parameter to retrieve from
    *                        the parameter list.
    *
    * @return  The Boolean parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public BooleanParameter getBooleanParameter(String parameterName)
   {
@@ -146,12 +146,12 @@ public class ParameterList
   /**
    * Retrieves the file parameter with the specified name.  If there is no
    * parameter with that name, or if it is not a file parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the file parameter to retrieve from the
    *                        parameter list.
    *
-   * @return  The file parameter with the specified name, or <CODE>null</CODE>
+   * @return  The file parameter with the specified name, or {@code null}
    *          if there is no such parameter.
    */
   public FileURLParameter getFileURLParameter(String parameterName)
@@ -183,13 +183,13 @@ public class ParameterList
   /**
    * Retrieves the floating-point parameter with the specified name.  If there
    * is no parameter with that name, or if it is not a floating-point parameter,
-   * then <CODE>null</CODE> is returned.
+   * then {@code null} is returned.
    *
    * @param  parameterName  The name of the floating-point parameter to retrieve
    *                        from the parameter list.
    *
    * @return  The floating-point parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public FloatParameter getFloatParameter(String parameterName)
   {
@@ -220,13 +220,13 @@ public class ParameterList
   /**
    * Retrieves the integer parameter with the specified name.  If there is no
    * parameter with that name, or if it is not an integer parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the integer parameter to retrieve from
    *                        the parameter list.
    *
    * @return  The integer parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public IntegerParameter getIntegerParameter(String parameterName)
   {
@@ -257,13 +257,13 @@ public class ParameterList
   /**
    * Retrieves the integer with unit parameter with the specified name.  If
    * there is no parameter with that name, or if it is not an integer wit unit
-   * parameter, then <CODE>null</CODE> is returned.
+   * parameter, then {@code null} is returned.
    *
    * @param  parameterName  The name of the integer with unit parameter to
    *                        retrieve from the parameter list.
    *
    * @return  The integer with unit parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public IntegerWithUnitParameter
               getIntegerWithUnitParameter(String parameterName)
@@ -295,12 +295,12 @@ public class ParameterList
   /**
    * Retrieves the long parameter with the specified name.  If there is no
    * parameter with that name, or if it is not a long parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the long parameter to retrieve from the
    *                        parameter list.
    *
-   * @return  The long parameter with the specified name, or <CODE>null</CODE>
+   * @return  The long parameter with the specified name, or {@code null}
    *          if there is no such parameter.
    */
   public LongParameter getLongParameter(String parameterName)
@@ -332,13 +332,13 @@ public class ParameterList
   /**
    * Retrieves the multichoice parameter with the specified name.  If there
    * is no parameter with that name, or if it is not a multichoice parameter,
-   * then <CODE>null</CODE> is returned.
+   * then {@code null} is returned.
    *
    * @param  parameterName  The name of the multichoice parameter to retrieve
    *                        from the parameter list.
    *
    * @return  The multichoice parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public MultiChoiceParameter getMultiChoiceParameter(String parameterName)
   {
@@ -369,13 +369,13 @@ public class ParameterList
   /**
    * Retrieves the multi-line text parameter with the specified name.  If there
    * is no parameter with that name, or if it is not a multi-line text
-   * parameter, then <CODE>null</CODE> is returned.
+   * parameter, then {@code null} is returned.
    *
    * @param  parameterName  The name of the multi-line text parameter to
    *                        retrieve from the parameter list.
    *
    * @return  The multi-line text parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public MultiLineTextParameter getMultiLineTextParameter(String parameterName)
   {
@@ -406,13 +406,13 @@ public class ParameterList
   /**
    * Retrieves the multivalued parameter with the specified name.  If there is
    * no parameter with that name, or if it is not a multivalued parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the multivalued parameter to retrieve
    *                        from the parameter list.
    *
    * @return  The multivalued parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public MultiValuedParameter getMultiValuedParameter(String parameterName)
   {
@@ -443,13 +443,13 @@ public class ParameterList
   /**
    * Retrieves the password parameter with the specified name.  If there is no
    * parameter with that name, or if it is not a password parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the password parameter to retrieve from
    *                        the parameter list.
    *
    * @return  The password parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public PasswordParameter getPasswordParameter(String parameterName)
   {
@@ -480,13 +480,13 @@ public class ParameterList
   /**
    * Retrieves the string parameter with the specified name.  If there is no
    * parameter with that name, or if it is not a string parameter, then
-   * <CODE>null</CODE> is returned.
+   * {@code null} is returned.
    *
    * @param  parameterName  The name of the string parameter to retrieve from
    *                        the parameter list.
    *
    * @return  The string parameter with the specified name, or
-   *          <CODE>null</CODE> if there is no such parameter.
+   *          {@code null} if there is no such parameter.
    */
   public StringParameter getStringParameter(String parameterName)
   {
@@ -552,8 +552,8 @@ public class ParameterList
    * @param  parameterName  The name of the parameter for which to make the
    *                        determination.
    *
-   * @return  <CODE>true</CODE> if a parameter exists with the specified name,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if a parameter exists with the specified name,
+   *          or {@code false} if not.
    */
   public boolean hasParameter(String parameterName)
   {

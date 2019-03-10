@@ -148,8 +148,8 @@ public class DisableJob
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the job was disabled properly, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the job was disabled properly, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

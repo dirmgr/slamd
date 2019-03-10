@@ -243,8 +243,8 @@ public class FileURLVariable
    *
    * @param  methodName  The name of the method.
    *
-   * @return  <CODE>true</CODE> if this variable has a method with the specified
-   *          name, or <CODE>false</CODE> if it does not.
+   * @return  {@code true} if this variable has a method with the specified
+   *          name, or {@code false} if it does not.
    */
   @Override()
   public boolean hasMethod(String methodName)
@@ -295,7 +295,7 @@ public class FileURLVariable
    * @param  methodName     The name of the method.
    * @param  argumentTypes  The set of argument types for the method.
    *
-   * @return  The return type for the method, or <CODE>null</CODE> if there is
+   * @return  The return type for the method, or {@code null} if there is
    *          no such method defined.
    */
   @Override()
@@ -324,7 +324,7 @@ public class FileURLVariable
    * @param  methodNumber  The method number of the method to execute.
    * @param  arguments     The set of arguments to use for the method.
    *
-   * @return  The value returned from the method, or <CODE>null</CODE> if it
+   * @return  The value returned from the method, or {@code null} if it
    *          does not return a value.
    *
    * @throws  ScriptException  If the specified method does not exist, or if a

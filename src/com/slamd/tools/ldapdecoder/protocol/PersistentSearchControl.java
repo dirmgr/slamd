@@ -153,9 +153,9 @@ public class PersistentSearchControl
    * returned, or whether existing entries matching the criteria should also be
    * included.
    *
-   * @return  <CODE>false</CODE> if existing entries matching the search
+   * @return  {@code false} if existing entries matching the search
    *          criteria should be returned as well as changes, or
-   *          <CODE>true</CODE> if only changes should be returned.
+   *          {@code true} if only changes should be returned.
    */
   public boolean changesOnly()
   {
@@ -168,8 +168,8 @@ public class PersistentSearchControl
    * Indicates whether entry change notification controls should be included
    * with the change notifications.
    *
-   * @return  <CODE>true</CODE> if change notification controls should be
-   *          included with the change notifications, or <CODE>false</CODE> if
+   * @return  {@code true} if change notification controls should be
+   *          included with the change notifications, or {@code false} if
    *          not.
    */
   public boolean returnChangeControls()

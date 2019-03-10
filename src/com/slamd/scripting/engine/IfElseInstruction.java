@@ -120,7 +120,7 @@ public class IfElseInstruction
    * to false.
    *
    * @return  The instruction that will be executed if the condition evaluates
-   *          to false, or <CODE>null</CODE> if no such instruction has been
+   *          to false, or {@code null} if no such instruction has been
    *          defined.
    */
   public Instruction getInstructionIfFalse()

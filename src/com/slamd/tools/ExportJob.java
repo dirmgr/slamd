@@ -196,8 +196,8 @@ public class ExportJob
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the job was cancelled successfully, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the job was cancelled successfully, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

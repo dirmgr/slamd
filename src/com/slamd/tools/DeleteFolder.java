@@ -146,8 +146,8 @@ public class DeleteFolder
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the job folder was removed successfully, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the job folder was removed successfully, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

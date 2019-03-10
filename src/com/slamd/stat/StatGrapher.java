@@ -2138,7 +2138,7 @@ public class StatGrapher
    *                                the horizontal axis for this graph.
    * @param  jobIDs                 The set of job IDs that correspond to each
    *                                data point in each value set.  This should
-   *                                be <CODE>null</CODE> unless each data point
+   *                                be {@code null} unless each data point
    *                                represents a different job.
    *
    * @return  A buffered image containing the generated line graph.

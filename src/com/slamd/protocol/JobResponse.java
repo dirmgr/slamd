@@ -142,7 +142,7 @@ public class JobResponse
   /**
    * Retrieves the error message for the job request.
    *
-   * @return  The error message for the job request, or <CODE>null</CODE> if
+   * @return  The error message for the job request, or {@code null} if
    *          none was provided.
    */
   public String getErrorMessage()

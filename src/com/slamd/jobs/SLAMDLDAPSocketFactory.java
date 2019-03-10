@@ -102,8 +102,8 @@ public class SLAMDLDAPSocketFactory
    * Indicates whether the SO_KEEPALIVE socket option should be used for new
    * connections.
    *
-   * @return  <CODE>true</CODE> if the SO_KEEPALIVE socket option should be
-   *          used, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the SO_KEEPALIVE socket option should be
+   *          used, or {@code false} if not.
    */
   public boolean getKeepAlive()
   {
@@ -129,8 +129,8 @@ public class SLAMDLDAPSocketFactory
    * Indicates whether the SO_LINGER socket option should be used for new
    * connections.
    *
-   * @return  <CODE>true</CODE> if the SO_LINGER socket option should be used,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if the SO_LINGER socket option should be used,
+   *          or {@code false} if not.
    */
   public boolean getLinger()
   {
@@ -155,8 +155,8 @@ public class SLAMDLDAPSocketFactory
    * Indicates whether the SO_REUSEADDR socket option should be used for new
    * connections.
    *
-   * @return  <CODE>true</CODE> if the SO_REUSEADDR socket option should be
-   *          used, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the SO_REUSEADDR socket option should be
+   *          used, or {@code false} if not.
    */
   public boolean getReuseAddress()
   {
@@ -182,8 +182,8 @@ public class SLAMDLDAPSocketFactory
    * Indicates whether the TCP_NODELAY socket option should be used for new
    * connections.
    *
-   * @return  <CODE>true</CODE> if the TCP_NODELAY socket option should be used,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if the TCP_NODELAY socket option should be used,
+   *          or {@code false} if not.
    */
   public boolean getTCPNoDelay()
   {

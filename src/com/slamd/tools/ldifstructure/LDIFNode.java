@@ -60,7 +60,7 @@ public class LDIFNode
    * @param  normalizedDN  The normalized DN of the entry associated with this
    *                       LDIF node.
    * @param  parentNode    The reference to the parent node.  It may be
-   *                       <CODE>null</CODE> if this node does not have a
+   *                       {@code null} if this node does not have a
    *                       parent.
    */
   public LDIFNode(String normalizedDN, LDIFNode parentNode)
@@ -91,7 +91,7 @@ public class LDIFNode
    * Retrieves the reference to the parent node for this LDIF node.
    *
    * @return  The reference to the parent node for this LDIF node, or
-   *          <CODE>null</CODE> if this node does not have a parent.
+   *          {@code null} if this node does not have a parent.
    */
   public LDIFNode getParentNode()
   {
@@ -183,7 +183,7 @@ public class LDIFNode
    * entry types associated with this node.
    *
    * @return  An entry type definition that is constructed from all the child
-   *          entry types associated with this node, or <CODE>null</CODE> if
+   *          entry types associated with this node, or {@code null} if
    *          there are no child entry types.
    */
   public LDIFEntryType getAggregateChildEntryType()

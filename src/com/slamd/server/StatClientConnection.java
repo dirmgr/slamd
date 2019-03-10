@@ -390,7 +390,7 @@ public class StatClientConnection
    *
    * @param  messageID  The message ID of the message to retrieve.
    *
-   * @return  The requested message, or <CODE>null</CODE> if an appropriate
+   * @return  The requested message, or {@code null} if an appropriate
    *          response does not arrive within an appropriate timeout period.
    */
   public Message getMessage(int messageID)

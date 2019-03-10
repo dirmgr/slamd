@@ -197,7 +197,7 @@ public class ServerHello
    * processing.
    *
    * @return  The message with additional information about the client hello
-   *          processing, or <CODE>null</CODE> if there is no additional
+   *          processing, or {@code null} if there is no additional
    *          information.
    */
   public String getClientHelloResultMessage()
@@ -298,7 +298,7 @@ public class ServerHello
    * authenticate to the client.
    *
    * @return  The name of the method that the server wishes to use to
-   *          authenticate to the client, or <CODE>null</CODE> if no
+   *          authenticate to the client, or {@code null} if no
    *          authentication is to be performed.
    */
   public String getAuthMethod()
@@ -327,7 +327,7 @@ public class ServerHello
    * authenticate to the client.
    *
    * @return  The authentication ID that the server wishes to use to
-   *          authenticate to the client, or <CODE>null</CODE> if no
+   *          authenticate to the client, or {@code null} if no
    *          authentication is to be performed or no auth ID is required for
    *          the selected authentication method.
    */
@@ -357,7 +357,7 @@ public class ServerHello
    * the client.
    *
    * @return  The credentials that the server wishes to use to authenticate to
-   *          the client, or <CODE>null</CODE> if no authentication is to be
+   *          the client, or {@code null} if no authentication is to be
    *          performed or no credentials are required for the selected
    *          authentication method.
    */

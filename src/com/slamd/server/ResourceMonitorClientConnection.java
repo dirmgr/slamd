@@ -421,8 +421,8 @@ public class ResourceMonitorClientConnection
   /**
    * Indicates whether at least one job is in progress.
    *
-   * @return  <CODE>true</CODE> if at least one job is in progress, or
-   *          <CODE>false</CODE> if there are no jobs in progress.
+   * @return  {@code true} if at least one job is in progress, or
+   *          {@code false} if there are no jobs in progress.
    */
   public boolean jobInProgress()
   {
@@ -492,7 +492,7 @@ public class ResourceMonitorClientConnection
    * @param  jobID  The job ID of the job for which to retrieve information.
    *
    * @return  Information about the specified job in progress, or
-   *          <CODE>null</CODE> if no information is available.
+   *          {@code null} if no information is available.
    */
   public Job getJobInProgress(String jobID)
   {
@@ -824,7 +824,7 @@ public class ResourceMonitorClientConnection
    * Retrieves a message with the specified message ID and type from the queue
    * used to hold responses to solicited messages.  This will wait for a
    * configurable maximum amount of time for the message to appear before
-   * returning <CODE>null</CODE>.
+   * returning {@code null}.
    *
    * @param  messageID    The message ID for the message that is expected.
    * @param  messageType  The type of message that is expected.

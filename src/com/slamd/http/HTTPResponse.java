@@ -154,7 +154,7 @@ public class HTTPResponse
    * @param  headerName  The name of the header to retrieve.
    *
    * @return  The value of the header with the specified name, or
-   *          <CODE>null</CODE> if no such header is available.
+   *          {@code null} if no such header is available.
    */
   public String getHeader(String headerName)
   {
@@ -330,7 +330,7 @@ public class HTTPResponse
    * Retrieves the content type associated with this response.
    *
    * @return  The content type associated with this response, or
-   *          <CODE>null</CODE> if no content type is available.
+   *          {@code null} if no content type is available.
    */
   public String getContentType()
   {
@@ -359,7 +359,7 @@ public class HTTPResponse
    * Retrieves the HTML document associated with this response.
    *
    * @return  The HTML document associated with this response, or
-   *          <CODE>null</CODE> if no HTML document is available.
+   *          {@code null} if no HTML document is available.
    */
   public HTMLDocument getHTMLDocument()
   {

@@ -35,12 +35,12 @@ import com.slamd.asn1.ASN1Sequence;
  *
  * @author  Neil A. Wilson
  */
-public class JobFolder
+public final class JobFolder
 {
   /**
    * The name of the encoded element that holds the name of this job folder.
    */
-  public static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_NAME = "name";
 
 
 
@@ -48,7 +48,7 @@ public class JobFolder
    * The name of the encoded element that indicates whether this folder should
    * be visible in restricted read-only mode.
    */
-  public static final String ELEMENT_DISPLAY_IN_READ_ONLY =
+  private static final String ELEMENT_DISPLAY_IN_READ_ONLY =
        "display_in_read_only";
 
 
@@ -57,92 +57,89 @@ public class JobFolder
    * The name of the encoded element that indicates whether this is a virtual
    * folder.
    */
-  public static final String ELEMENT_IS_VIRTUAL = "is_virtual";
+  private static final String ELEMENT_IS_VIRTUAL = "is_virtual";
 
 
 
   /**
    * The name of the encoded element that holds the name of the parent folder.
    */
-  public static final String ELEMENT_PARENT = "parent";
+  private static final String ELEMENT_PARENT = "parent";
 
 
 
   /**
    * The name of the encoded element that holds the names of the child folders.
    */
-  public static final String ELEMENT_CHILDREN = "children";
+  private static final String ELEMENT_CHILDREN = "children";
 
 
 
   /**
    * The name of the encoded element that holds the description for this folder.
    */
-  public static final String ELEMENT_DESCRIPTION = "description";
+  private static final String ELEMENT_DESCRIPTION = "description";
 
 
 
   /**
    * The name of the encoded element that holds the job IDs.
    */
-  public static final String ELEMENT_JOB_IDS = "jobs";
+  private static final String ELEMENT_JOB_IDS = "jobs";
 
 
 
   /**
    * The name of the encoded element that holds the optimizing job IDs.
    */
-  public static final String ELEMENT_OPTIMIZING_JOB_IDS = "optimizing_jobs";
+  private static final String ELEMENT_OPTIMIZING_JOB_IDS = "optimizing_jobs";
 
 
 
   /**
    * The name of the encoded element that holds the names of the uploaded files.
    */
-  public static final String ELEMENT_FILE_NAMES = "files";
+  private static final String ELEMENT_FILE_NAMES = "files";
 
 
 
   /**
    * The name of the encoded element that holds the permissions.
    */
-  public static final String ELEMENT_PERMISSIONS = "permissions";
+  private static final String ELEMENT_PERMISSIONS = "permissions";
 
 
 
   // Indicates whether this folder should be displayed in restricted read-only
   // mode.
-  boolean displayInReadOnly;
+  private boolean displayInReadOnly;
 
   // Indicates whether this is a virtual job folder.
-  boolean isVirtual;
+  private final boolean isVirtual;
 
   // The set of permissions associated with this job folder.
-  SLAMDPermission[] permissions;
+  private SLAMDPermission[] permissions;
 
   // The description for this job folder.
-  String description;
+  private String description;
 
   // The name of this job folder.
-  String folderName;
-
-  // The name of the owner of this job folder.
-  String ownerName;
+  private final String folderName;
 
   // The name of the parent folder.
-  String parentName;
+  private final String parentName;
 
   // The names of all the child folders below this folder.
-  String[] childNames;
+  private String[] childNames;
 
   // The names of the uploaded files associated with this folder.
-  String[] fileNames;
+  private String[] fileNames;
 
   // The job IDs of the jobs stored in this folder.
-  String[] jobIDs;
+  private String[] jobIDs;
 
   // The optimizing job IDs of the optimizing jobs stored in this folder.
-  String[] optimizingJobIDs;
+  private String[] optimizingJobIDs;
 
 
 
@@ -167,11 +164,12 @@ public class JobFolder
    * @param  permissions        The set of permissions that have been granted
    *                            for this folder.
    */
-  public JobFolder(String folderName, boolean displayInReadOnly,
-                   boolean isVirtual, String parentName, String[] childNames,
-                   String description, String[] jobIDs,
-                   String[] optimizingJobIDs, String[] fileNames,
-                   SLAMDPermission[] permissions)
+  public JobFolder(final String folderName, final boolean displayInReadOnly,
+                   final boolean isVirtual, final String parentName,
+                   final String[] childNames, final String description,
+                   final String[] jobIDs, final String[] optimizingJobIDs,
+                   final String[] fileNames,
+                   final SLAMDPermission[] permissions)
   {
     this.folderName        = folderName;
     this.displayInReadOnly = displayInReadOnly;
@@ -243,8 +241,8 @@ public class JobFolder
    * Indicates whether this folder should be visible in restricted read-only
    * mode.
    *
-   * @return  <CODE>true</CODE> if this folder should be visible in restricted
-   *          read-only mode, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this folder should be visible in restricted
+   *          read-only mode, or {@code false} if not.
    */
   public boolean displayInReadOnlyMode()
   {
@@ -260,7 +258,7 @@ public class JobFolder
    * @param  displayInReadOnly  Indicates whether this folder should be visible
    *                            in restricted read-only mode.
    */
-  public void setDisplayInReadOnlyMode(boolean displayInReadOnly)
+  public void setDisplayInReadOnlyMode(final boolean displayInReadOnly)
   {
     this.displayInReadOnly = displayInReadOnly;
   }
@@ -270,8 +268,8 @@ public class JobFolder
   /**
    * Indicates whether this is a virtual job folder.
    *
-   * @return  <CODE>true</CODE> if this is a virtual job folder, or
-   *          <CODE>false</CODE> if it is a real job folder.
+   * @return  {@code true} if this is a virtual job folder, or
+   *          {@code false} if it is a real job folder.
    */
   public boolean isVirtual()
   {
@@ -283,7 +281,7 @@ public class JobFolder
   /**
    * Retrieves the name of the job folder that is the parent of this job folder.
    *
-   * @return  The name of the parent job folder, or <CODE>null</CODE> if it is a
+   * @return  The name of the parent job folder, or {@code null} if it is a
    *          top-level folder.
    */
   public String getParentName()
@@ -312,10 +310,10 @@ public class JobFolder
    * @param  childName  The name of the child folder for which to make the
    *                    determination.
    *
-   * @return  <CODE>true</CODE> if this job folder contains a child folder with
-   *          the specified name, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job folder contains a child folder with
+   *          the specified name, or {@code false} if not.
    */
-  public boolean containsChildName(String childName)
+  public boolean containsChildName(final String childName)
   {
     if (childNames == null)
     {
@@ -341,11 +339,12 @@ public class JobFolder
    * @param  childNames  The names of the job folders that are children of this
    *                     folder.
    */
-  public void setChildNames(String[] childNames)
+  public void setChildNames(final String[] childNames)
   {
     if (childNames == null)
     {
-      childNames = new String[0];
+      this.childNames = new String[0];
+      return;
     }
 
     Arrays.sort(childNames);
@@ -360,7 +359,7 @@ public class JobFolder
    * @param  childName  The name of the job folder to add as a child of this
    *                    folder.
    */
-  public void addChildName(String childName)
+  public void addChildName(final String childName)
   {
     String[] newChildNames = new String[childNames.length+1];
     for (int i=0; i < childNames.length; i++)
@@ -388,7 +387,7 @@ public class JobFolder
    * @param  childName  The name of the job folder to remove from the set of
    *                    children for this folder.
    */
-  public void removeChildName(String childName)
+  public void removeChildName(final String childName)
   {
     int pos = -1;
     for (int i=0; i < childNames.length; i++)
@@ -405,7 +404,7 @@ public class JobFolder
       return;
     }
 
-    String[] newChildNames = new String[childNames.length-1];
+    final String[] newChildNames = new String[childNames.length-1];
     System.arraycopy(childNames, 0, newChildNames, 0, pos);
     System.arraycopy(childNames, pos+1, newChildNames, pos,
                      (newChildNames.length - pos));
@@ -431,7 +430,7 @@ public class JobFolder
    *
    * @param  description  The description for this job folder.
    */
-  public void setDescription(String description)
+  public void setDescription(final String description)
   {
     this.description = description;
   }
@@ -455,10 +454,10 @@ public class JobFolder
    *
    * @param  jobID  The job ID for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this job folder contains a job with the
-   *          specified job ID, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job folder contains a job with the
+   *          specified job ID, or {@code false} if not.
    */
-  public boolean containsJobID(String jobID)
+  public boolean containsJobID(final String jobID)
   {
     if (jobIDs == null)
     {
@@ -483,11 +482,12 @@ public class JobFolder
    *
    * @param  jobIDs  The job IDs of all jobs associated with this folder.
    */
-  public void setJobIDs(String[] jobIDs)
+  public void setJobIDs(final String[] jobIDs)
   {
     if (jobIDs == null)
     {
-      jobIDs = new String[0];
+      this.jobIDs = new String[0];
+      return;
     }
 
     Arrays.sort(jobIDs);
@@ -502,9 +502,9 @@ public class JobFolder
    * @param  jobID  The job ID to add to the set of jobs associated with this
    *                folder.
    */
-  public void addJobID(String jobID)
+  public void addJobID(final String jobID)
   {
-    String[] newIDs = new String[jobIDs.length+1];
+    final String[] newIDs = new String[jobIDs.length+1];
     for (int i=0; i < jobIDs.length; i++)
     {
       if (jobIDs[i].equals(jobID))
@@ -531,7 +531,7 @@ public class JobFolder
    * @param  jobID  The job ID to remove from the set of jobs associated with
    *                this folder.
    */
-  public void removeJobID(String jobID)
+  public void removeJobID(final String jobID)
   {
     int pos = -1;
     for (int i=0; i < jobIDs.length; i++)
@@ -548,7 +548,7 @@ public class JobFolder
       return;
     }
 
-    String[] newJobIDs = new String[jobIDs.length-1];
+    final String[] newJobIDs = new String[jobIDs.length-1];
     System.arraycopy(jobIDs, 0, newJobIDs, 0, pos);
     System.arraycopy(jobIDs, pos+1, newJobIDs, pos,
                      (newJobIDs.length - pos));
@@ -578,10 +578,10 @@ public class JobFolder
    * @param  optimizingJobID  The optimizing job ID for which to make the
    *                          determination.
    *
-   * @return  <CODE>true</CODE> if this job folder contains an optimizing job
-   *          with the specified ID, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this job folder contains an optimizing job
+   *          with the specified ID, or {@code false} if not.
    */
-  public boolean containsOptimizingJobID(String optimizingJobID)
+  public boolean containsOptimizingJobID(final String optimizingJobID)
   {
     if (optimizingJobIDs == null)
     {
@@ -608,11 +608,12 @@ public class JobFolder
    * @param  optimizingJobIDs  The optimizing job IDs of all optimizing jobs
    *                           associated with this folder.
    */
-  public void setOptimzizingJobIDs(String[] optimizingJobIDs)
+  public void setOptimzizingJobIDs(final String[] optimizingJobIDs)
   {
     if (optimizingJobIDs == null)
     {
-      optimizingJobIDs = new String[0];
+      this.optimizingJobIDs = new String[0];
+      return;
     }
 
     Arrays.sort(optimizingJobIDs);
@@ -628,9 +629,9 @@ public class JobFolder
    * @param  optimizingJobID  The optimizing job ID to add to the set of
    *                          optimizing jobs associated with this folder.
    */
-  public void addOptimizingJobID(String optimizingJobID)
+  public void addOptimizingJobID(final String optimizingJobID)
   {
-    String[] newIDs = new String[optimizingJobIDs.length+1];
+    final String[] newIDs = new String[optimizingJobIDs.length+1];
     for (int i=0; i < optimizingJobIDs.length; i++)
     {
       if (optimizingJobIDs[i].equals(optimizingJobID))
@@ -657,7 +658,7 @@ public class JobFolder
    * @param  optimizingJobID  The optimizing job ID to remove from the set of
    *                          optimizing jobs associated with this folder.
    */
-  public void removeOptimizingJobID(String optimizingJobID)
+  public void removeOptimizingJobID(final String optimizingJobID)
   {
     int pos = -1;
     for (int i=0; i < optimizingJobIDs.length; i++)
@@ -674,7 +675,7 @@ public class JobFolder
       return;
     }
 
-    String[] newOptimizingIDs = new String[optimizingJobIDs.length-1];
+    final String[] newOptimizingIDs = new String[optimizingJobIDs.length-1];
     System.arraycopy(optimizingJobIDs, 0, newOptimizingIDs, 0, pos);
     System.arraycopy(optimizingJobIDs, pos+1, newOptimizingIDs, pos,
                      (newOptimizingIDs.length - pos));
@@ -701,10 +702,10 @@ public class JobFolder
    *
    * @param  fileName  The file name for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this job folder contains an uploaded file
-   *          with the specified name, or <CODE>false</CODE> if it does not.
+   * @return  {@code true} if this job folder contains an uploaded file
+   *          with the specified name, or {@code false} if it does not.
    */
-  public boolean containsFileName(String fileName)
+  public boolean containsFileName(final String fileName)
   {
     if (fileNames == null)
     {
@@ -730,14 +731,16 @@ public class JobFolder
    * @param  fileNames  The names of the uploaded files associated with this job
    *                    folder.
    */
-  public void setFileNames(String[] fileNames)
+  public void setFileNames(final String[] fileNames)
   {
     if (fileNames == null)
     {
-      fileNames = new String[0];
+      this.fileNames = new String[0];
     }
-
-    this.fileNames = fileNames;
+    else
+    {
+      this.fileNames = fileNames;
+    }
   }
 
 
@@ -749,9 +752,9 @@ public class JobFolder
    * @param  fileName  The name of the file to add to the uploaded files for
    *                   this job folder.
    */
-  public void addFileName(String fileName)
+  public void addFileName(final String fileName)
   {
-    String[] newFiles = new String[fileNames.length+1];
+    final String[] newFiles = new String[fileNames.length+1];
     for (int i=0; i < fileNames.length; i++)
     {
       if (fileNames[i].equals(fileName))
@@ -778,7 +781,7 @@ public class JobFolder
    * @param  fileName  The name of the file to remove from the set of uploaded
    *                   files for this job folder.
    */
-  public void removeFileName(String fileName)
+  public void removeFileName(final String fileName)
   {
     int pos = -1;
     for (int i=0; i < fileNames.length; i++)
@@ -795,7 +798,7 @@ public class JobFolder
       return;
     }
 
-    String[] newFileNames = new String[fileNames.length-1];
+    final String[] newFileNames = new String[fileNames.length-1];
     System.arraycopy(fileNames, 0, newFileNames, 0, pos);
     System.arraycopy(fileNames, pos+1, newFileNames, pos,
                      (newFileNames.length - pos));
@@ -824,10 +827,11 @@ public class JobFolder
    * @param  permissionName  The name of the permission to check for the
    *                         provided user.
    *
-   * @return  <CODE>true</CODE> if the user has the specified permission or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the user has the specified permission or
+   *          {@code false} if not.
    */
-  public boolean userHasPermission(SLAMDUser user, String permissionName)
+  public boolean userHasPermission(final SLAMDUser user,
+                                   final String permissionName)
   {
     for (int i=0; i < permissions.length; i++)
     {
@@ -847,14 +851,16 @@ public class JobFolder
    *
    * @param  permissions  The set of permissions to use for this folder.
    */
-  public void setPermissions(SLAMDPermission[] permissions)
+  public void setPermissions(final SLAMDPermission[] permissions)
   {
     if (permissions == null)
     {
-      permissions = new SLAMDPermission[0];
+      this.permissions = new SLAMDPermission[0];
     }
-
-    this.permissions = permissions;
+    else
+    {
+      this.permissions = permissions;
+    }
   }
 
 
@@ -866,7 +872,7 @@ public class JobFolder
    *
    * @param  permission  The permission to set for this folder.
    */
-  public void setPermission(SLAMDPermission permission)
+  public void setPermission(final SLAMDPermission permission)
   {
     for (int i=0; i < permissions.length; i++)
     {
@@ -877,7 +883,7 @@ public class JobFolder
       }
     }
 
-    SLAMDPermission[] newPermissions =
+    final SLAMDPermission[] newPermissions =
          new SLAMDPermission[permissions.length+1];
     System.arraycopy(permissions, 0, newPermissions, 0, permissions.length);
     newPermissions[permissions.length] = permission;
@@ -892,7 +898,7 @@ public class JobFolder
    * @param  permissionName  The name of the permission to remove from this
    *                         folder.
    */
-  public void removePermission(String permissionName)
+  public void removePermission(final String permissionName)
   {
     int pos = -1;
     for (int i=0; i < permissions.length; i++)
@@ -926,37 +932,39 @@ public class JobFolder
    */
   public byte[] encode()
   {
-    ASN1Element[] childElements = new ASN1Element[childNames.length];
+    final ASN1Element[] childElements = new ASN1Element[childNames.length];
     for (int i=0; i < childNames.length; i++)
     {
       childElements[i] = new ASN1OctetString(childNames[i]);
     }
 
-    ASN1Element[] jobElements = new ASN1Element[jobIDs.length];
+    final ASN1Element[] jobElements = new ASN1Element[jobIDs.length];
     for (int i=0; i < jobIDs.length; i++)
     {
       jobElements[i] = new ASN1OctetString(jobIDs[i]);
     }
 
-    ASN1Element[] optimizingElements = new ASN1Element[optimizingJobIDs.length];
+    final ASN1Element[] optimizingElements =
+         new ASN1Element[optimizingJobIDs.length];
     for (int i=0; i < optimizingJobIDs.length; i++)
     {
       optimizingElements[i] = new ASN1OctetString(optimizingJobIDs[i]);
     }
 
-    ASN1Element[] fileElements = new ASN1Element[fileNames.length];
+    final ASN1Element[] fileElements = new ASN1Element[fileNames.length];
     for (int i=0; i < fileNames.length; i++)
     {
       fileElements[i] = new ASN1OctetString(fileNames[i]);
     }
 
-    ASN1Element[] permissionElements = new ASN1Element[permissions.length];
+    final ASN1Element[] permissionElements =
+         new ASN1Element[permissions.length];
     for (int i=0; i < permissions.length; i++)
     {
       permissionElements[i] = permissions[i].encodeAsSequence();
     }
 
-    ASN1Element[] folderElements = new ASN1Element[]
+    final ASN1Element[] folderElements = new ASN1Element[]
     {
       new ASN1OctetString(ELEMENT_NAME),
       new ASN1OctetString(folderName),
@@ -995,7 +1003,7 @@ public class JobFolder
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the job folder.
    */
-  public static JobFolder decode(byte[] encodedFolder)
+  public static JobFolder decode(final byte[] encodedFolder)
          throws DecodeException
   {
     try
@@ -1011,11 +1019,12 @@ public class JobFolder
       String[]          jobIDs            = new String[0];
       String[]          optimizingJobIDs  = new String[0];
 
-      ASN1Element   element  = ASN1Element.decode(encodedFolder);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element   element  = ASN1Element.decode(encodedFolder);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
           folderName = elements[i+1].decodeAsOctetString().getStringValue();
@@ -1034,7 +1043,7 @@ public class JobFolder
         }
         else if (elementName.equals(ELEMENT_CHILDREN))
         {
-          ASN1Element[] childElements =
+          final ASN1Element[] childElements =
                elements[i+1].decodeAsSequence().getElements();
           childNames = new String[childElements.length];
           for (int j=0; j < childNames.length; j++)
@@ -1049,7 +1058,7 @@ public class JobFolder
         }
         else if (elementName.equals(ELEMENT_JOB_IDS))
         {
-          ASN1Element[] jobElements =
+          final ASN1Element[] jobElements =
                elements[i+1].decodeAsSequence().getElements();
           jobIDs = new String[jobElements.length];
           for (int j=0; j < jobIDs.length; j++)
@@ -1059,7 +1068,7 @@ public class JobFolder
         }
         else if (elementName.equals(ELEMENT_OPTIMIZING_JOB_IDS))
         {
-          ASN1Element[] optimizingElements =
+          final ASN1Element[] optimizingElements =
                elements[i+1].decodeAsSequence().getElements();
           optimizingJobIDs = new String[optimizingElements.length];
           for (int j=0; j < optimizingJobIDs.length; j++)
@@ -1070,7 +1079,7 @@ public class JobFolder
         }
         else if (elementName.equals(ELEMENT_FILE_NAMES))
         {
-          ASN1Element[] fileElements =
+          final ASN1Element[] fileElements =
                elements[i+1].decodeAsSequence().getElements();
           fileNames = new String[fileElements.length];
           for (int j=0; j < fileNames.length; j++)
@@ -1081,7 +1090,7 @@ public class JobFolder
         }
         else if (elementName.equals(ELEMENT_PERMISSIONS))
         {
-          ASN1Element[] permissionElements =
+          final ASN1Element[] permissionElements =
                elements[i+1].decodeAsSequence().getElements();
           permissions = new SLAMDPermission[permissionElements.length];
           for (int j=0; j < permissions.length; j++)
@@ -1097,7 +1106,7 @@ public class JobFolder
                            childNames, description, jobIDs, optimizingJobIDs,
                            fileNames, permissions);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       e.printStackTrace();
       throw new DecodeException("Unable to decode job folder:  " + e, e);

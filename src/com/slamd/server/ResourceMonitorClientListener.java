@@ -419,7 +419,7 @@ public class ResourceMonitorClientListener
    * @param  job  The job for which the connections are to be retrieved.
    *
    * @return  The appropriate set of monitor clients for the specified job, or
-   *          <CODE>null</CODE> if the requested set of monitor clients are not
+   *          {@code null} if the requested set of monitor clients are not
    *          available.
    */
   public ResourceMonitorClientConnection[] getMonitorClientConnections(Job job)
@@ -551,8 +551,8 @@ public class ResourceMonitorClientListener
   /**
    * Indicates whether this client listener requires clients to authenticate.
    *
-   * @return  <CODE>true</CODE> if clients are required to authenticate, or
-   *          <CODE>false</CODE> if they are not.
+   * @return  {@code true} if clients are required to authenticate, or
+   *          {@code false} if they are not.
    */
   public boolean requireAuthentication()
   {
@@ -781,8 +781,8 @@ public class ResourceMonitorClientListener
    *
    * @param  job  The job that specifies which monitor clients are needed.
    *
-   * @return  <CODE>true</CODE> if all requested monitor clients are available,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if all requested monitor clients are available,
+   *          or {@code false} if not.
    */
   public boolean connectionsAvailable(Job job)
   {

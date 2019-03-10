@@ -794,7 +794,7 @@ public class SLAMDServer
    *
    * @param  className  The Java class name for the class to retrieve.
    *
-   * @return  The SLAMD job class with the specified name, or <CODE>null</CODE>
+   * @return  The SLAMD job class with the specified name, or {@code null}
    *          if the specified job class is not known to the SLAMD server.
    */
   public JobClass getJobClass(String className)
@@ -822,8 +822,8 @@ public class SLAMDServer
    * Indicates whether a custom class loader should be used for loading job
    * classes.
    *
-   * @return  <CODE>true</CODE> if a custom class loader should be used for
-   *          loading job classes, or <CODE>false</CODE> if not.
+   * @return  {@code true} if a custom class loader should be used for
+   *          loading job classes, or {@code false} if not.
    */
   public boolean useCustomClassLoader()
   {
@@ -1119,7 +1119,7 @@ public class SLAMDServer
    *                         provides the optimization algorithm.
    *
    * @return  The optimization algorithm with the specified class name, or
-   *          <CODE>null</CODE> if no such algorithm is defined.
+   *          {@code null} if no such algorithm is defined.
    */
   public OptimizationAlgorithm getOptimizationAlgorithm(String algorithmClass)
   {
@@ -1435,8 +1435,8 @@ public class SLAMDServer
   /**
    * Indicates whether the logging subsystem has been initialized.
    *
-   * @return  <CODE>true</CODE> if the logging system has been initialized, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the logging system has been initialized, or
+   *          {@code false} if not.
    */
   public boolean loggerInitialized()
   {

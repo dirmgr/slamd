@@ -427,8 +427,8 @@ public class VMStatResourceMonitor
    * Indicates whether the current client system is supported for this resource
    * monitor.
    *
-   * @return  <CODE>true</CODE> if the current client system is supported for
-   *          this resource monitor, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current client system is supported for
+   *          this resource monitor, or {@code false} if not.
    */
   @Override()
   public boolean clientSupported()
@@ -471,8 +471,8 @@ public class VMStatResourceMonitor
    * because some Linux systems may not come with vmstat and of those that do
    * there may be different styles of output.
    *
-   * @return  <CODE>true</CODE> if the current Linux client system has a
-   *          supported vmstat, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current Linux client system has a
+   *          supported vmstat, or {@code false} if not.
    */
   private boolean linuxSupported()
   {

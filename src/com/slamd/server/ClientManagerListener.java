@@ -382,7 +382,7 @@ public class ClientManagerListener
    * @param  clientID  The client ID associated with the client manager for
    *                   which to retrieve the connection.
    *
-   * @return  The requested client manager connection, or <CODE>null</CODE> if
+   * @return  The requested client manager connection, or {@code null} if
    *          no client manager is connected with the specified client ID.
    */
   public ClientManagerConnection getClientManager(String clientID)

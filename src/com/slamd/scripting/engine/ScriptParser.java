@@ -452,7 +452,7 @@ public class ScriptParser
    *
    * @param  argumentName  The name of the script argument to retrieve.
    *
-   * @return  The value of the requested script argument, or <CODE>null</CODE>
+   * @return  The value of the requested script argument, or {@code null}
    *          if it was not defined.
    */
   public String getScriptArgument(String argumentName)
@@ -2103,8 +2103,8 @@ public class ScriptParser
    *
    * @param  token  The token for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if the specified token is one of the reserved
-   *          words, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the specified token is one of the reserved
+   *          words, or {@code false} if not.
    */
   public static boolean isReservedWord(String token)
   {

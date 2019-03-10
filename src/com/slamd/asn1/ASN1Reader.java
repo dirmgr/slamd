@@ -123,7 +123,7 @@ public class ASN1Reader
   /**
    * Reads an ASN.1 element from the provided input stream.
    *
-   * @return  The ASN.1 element that was read, or <CODE>null</CODE> if there was
+   * @return  The ASN.1 element that was read, or {@code null} if there was
    *          no more data to read.
    *
    * @throws  ASN1Exception  If the data read from the input stream does not

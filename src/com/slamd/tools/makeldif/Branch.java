@@ -91,8 +91,8 @@ public class Branch
   /**
    * Indicates whether this branch has subordinate entries.
    *
-   * @return  <CODE>true</CODE> if this branch does have subordinate entries, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this branch does have subordinate entries, or
+   *          {@code false} if not.
    */
   public boolean hasSubordinates()
   {

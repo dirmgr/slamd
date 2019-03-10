@@ -111,8 +111,8 @@ public class ServerSortKey
   /**
    * Indicates whether the entries should be returned in reverse order.
    *
-   * @return  <CODE>true</CODE> if the entries should be returned in reverse
-   *          order, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the entries should be returned in reverse
+   *          order, or {@code false} if not.
    */
   public boolean reverseOrder()
   {

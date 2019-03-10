@@ -32,12 +32,12 @@ import com.slamd.asn1.ASN1Sequence;
  *
  * @author  Neil A. Wilson
  */
-public class SLAMDPermission
+public final class SLAMDPermission
 {
   /**
    * The name of the encoded element that holds the name of this permission.
    */
-  public static final String ELEMENT_NAME = "name";
+  private static final String ELEMENT_NAME = "name";
 
 
 
@@ -45,7 +45,7 @@ public class SLAMDPermission
    * The name of the encoded element that holds the user names associated with
    * this permission.
    */
-  public static final String ELEMENT_USERS = "users";
+  private static final String ELEMENT_USERS = "users";
 
 
 
@@ -53,18 +53,18 @@ public class SLAMDPermission
    * The name of the encoded element that holds the groups names associated with
    * this permission.
    */
-  public static final String ELEMENT_GROUPS = "groups";
+  private static final String ELEMENT_GROUPS = "groups";
 
 
 
   // The name associated with this permission.
-  String name;
+  private final String name;
 
   // The names of the groups that have been assigned this permission.
-  String[] groupNames;
+  private String[] groupNames;
 
   // The names of the users that have been assigned this permission.
-  String[] userNames;
+  private String[] userNames;
 
 
 
@@ -77,7 +77,8 @@ public class SLAMDPermission
    * @param  groupNames  The names of the groups that have been assigned this
    *                     permission.
    */
-  public SLAMDPermission(String name, String[] userNames, String[] groupNames)
+  public SLAMDPermission(final String name, final String[] userNames,
+                         final String[] groupNames)
   {
     this.name       = name;
 
@@ -132,15 +133,17 @@ public class SLAMDPermission
    * @param  userNames  The names of the users that have been assigned this
    *                    permission.
    */
-  public void setUserNames(String[] userNames)
+  public void setUserNames(final String[] userNames)
   {
     if (userNames == null)
     {
-      userNames = new String[0];
+      this.userNames = new String[0];
     }
-
-    Arrays.sort(userNames);
-    this.userNames = userNames;
+    else
+    {
+      Arrays.sort(userNames);
+      this.userNames = userNames;
+    }
   }
 
 
@@ -152,21 +155,18 @@ public class SLAMDPermission
    * @param  userName  The user name to add to the set of users that have been
    *                   assigned this permission.
    */
-  public void addUserName(String userName)
+  public void addUserName(final String userName)
   {
-    String[] newUserNames = new String[userNames.length+1];
-    for (int i=0; i < userNames.length; i++)
+    for (final String n : userNames)
     {
-      if (userNames[i].equals(userName))
+      if (n.equalsIgnoreCase(userName))
       {
         return;
       }
-      else
-      {
-        newUserNames[i] = userName;
-      }
     }
 
+    final String[] newUserNames = new String[userNames.length+1];
+    System.arraycopy(userNames, 0, newUserNames, 0, userNames.length);
     newUserNames[userNames.length] = userName;
     Arrays.sort(newUserNames);
     userNames = newUserNames;
@@ -181,7 +181,7 @@ public class SLAMDPermission
    * @param  userName  The user name to remove from the set of users that have
    *                   been assigned this permission.
    */
-  public void removeUserName(String userName)
+  public void removeUserName(final String userName)
   {
     int pos = -1;
     for (int i=0; i < userNames.length; i++)
@@ -198,10 +198,10 @@ public class SLAMDPermission
       return;
     }
 
-    String[] newUserNames = new String[userNames.length-1];
+    final String[] newUserNames = new String[userNames.length-1];
     System.arraycopy(userNames, 0, newUserNames, 0, pos);
     System.arraycopy(userNames, pos+1, newUserNames, pos,
-                     (newUserNames.length - pos));
+         (newUserNames.length - pos));
     userNames = newUserNames;
   }
 
@@ -225,15 +225,17 @@ public class SLAMDPermission
    * @param  groupNames  The names of the groups that have been assigned this
    *                     permission.
    */
-  public void setGroupNames(String[] groupNames)
+  public void setGroupNames(final String[] groupNames)
   {
     if (groupNames == null)
     {
       this.groupNames = new String[0];
     }
-
-    Arrays.sort(groupNames);
-    this.groupNames = groupNames;
+    else
+    {
+      Arrays.sort(groupNames);
+      this.groupNames = groupNames;
+    }
   }
 
 
@@ -245,21 +247,18 @@ public class SLAMDPermission
    * @param  groupName  The group name to add to the set of groups that have
    *                    been assigned this permission.
    */
-  public void addGroupName(String groupName)
+  public void addGroupName(final String groupName)
   {
-    String[] newGroupNames = new String[groupNames.length+1];
-    for (int i=0; i < groupNames.length; i++)
+    for (final String n : groupNames)
     {
-      if (groupNames[i].equals(groupName))
+      if (n.equals(groupName))
       {
         return;
       }
-      else
-      {
-        newGroupNames[i] = groupName;
-      }
     }
 
+    String[] newGroupNames = new String[groupNames.length+1];
+    System.arraycopy(groupNames, 0, newGroupNames, 0, groupNames.length);
     newGroupNames[groupNames.length] = groupName;
     Arrays.sort(newGroupNames);
     groupNames = newGroupNames;
@@ -274,7 +273,7 @@ public class SLAMDPermission
    * @param  groupName  The group name to remove from the set of groups that
    *                    have been assigned this permission.
    */
-  public void removeGroupName(String groupName)
+  public void removeGroupName(final String groupName)
   {
     int pos = -1;
     for (int i=0; i < groupNames.length; i++)
@@ -291,10 +290,10 @@ public class SLAMDPermission
       return;
     }
 
-    String[] newGroupNames = new String[groupNames.length-1];
+    final String[] newGroupNames = new String[groupNames.length-1];
     System.arraycopy(groupNames, 0, newGroupNames, 0, pos);
     System.arraycopy(groupNames, pos+1, newGroupNames, pos,
-                     (newGroupNames.length - pos));
+         (newGroupNames.length - pos));
     groupNames = newGroupNames;
   }
 
@@ -305,26 +304,26 @@ public class SLAMDPermission
    *
    * @param  user  The user for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this permission is granted for the provided
-   *          user, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this permission is granted for the provided
+   *          user, or {@code false} if not.
    */
-  public boolean appliesToUser(SLAMDUser user)
+  public boolean appliesToUser(final SLAMDUser user)
   {
-    String userName = user.getUserName();
-    for (int i=0; i < userNames.length; i++)
+    final String userName = user.getUserName();
+    for (final String n : userNames)
     {
-      if (userName.equals(userNames[i]))
+      if (n.equals(userName))
       {
         return true;
       }
     }
 
-    String[] userGroups = user.getGroupNames();
-    for (int i=0; i < userGroups.length; i++)
+    final String[] userGroups = user.getGroupNames();
+    for (final String permissionGroupName : groupNames)
     {
-      for (int j=0; j < groupNames.length; j++)
+      for (final String userGroupName : userGroups)
       {
-        if (groupNames[j].equals(userGroups[i]))
+        if (userGroupName.equals(permissionGroupName))
         {
           return true;
         }
@@ -344,19 +343,19 @@ public class SLAMDPermission
    */
   public ASN1Sequence encodeAsSequence()
   {
-    ASN1Element[] userElements  = new ASN1Element[userNames.length];
+    final ASN1Element[] userElements  = new ASN1Element[userNames.length];
     for (int i=0; i < userNames.length; i++)
     {
       userElements[i] = new ASN1OctetString(userNames[i]);
     }
 
-    ASN1Element[] groupElements = new ASN1Element[groupNames.length];
+    final ASN1Element[] groupElements = new ASN1Element[groupNames.length];
     for (int i=0; i < groupNames.length; i++)
     {
       groupElements[i] = new ASN1OctetString(groupNames[i]);
     }
 
-    ASN1Element[] elementsToEncode = new ASN1Element[]
+    final ASN1Element[] elementsToEncode = new ASN1Element[]
     {
       new ASN1OctetString(ELEMENT_NAME),
       new ASN1OctetString(name),
@@ -393,7 +392,8 @@ public class SLAMDPermission
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the permission.
    */
-  public static SLAMDPermission decodeSequence(ASN1Sequence permissionSequence)
+  public static SLAMDPermission decodeSequence(
+                                     final ASN1Sequence permissionSequence)
          throws DecodeException
   {
     try
@@ -402,17 +402,18 @@ public class SLAMDPermission
       String[] users  = new String[0];
       String[] groups = new String[0];
 
-      ASN1Element[] elements = permissionSequence.getElements();
+      final ASN1Element[] elements = permissionSequence.getElements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
         if (elementName.equals(ELEMENT_NAME))
         {
           name = elements[i+1].decodeAsOctetString().getStringValue();
         }
         else if (elementName.equals(ELEMENT_USERS))
         {
-          ASN1Element[] userElements =
+          final ASN1Element[] userElements =
                elements[i+1].decodeAsSequence().getElements();
           users = new String[userElements.length];
           for (int j=0; j < users.length; j++)
@@ -422,7 +423,7 @@ public class SLAMDPermission
         }
         else if (elementName.equals(ELEMENT_GROUPS))
         {
-          ASN1Element[] groupElements =
+          final ASN1Element[] groupElements =
                elements[i+1].decodeAsSequence().getElements();
           groups = new String[groupElements.length];
           for (int j=0; j < groups.length; j++)
@@ -434,7 +435,7 @@ public class SLAMDPermission
 
       return new SLAMDPermission(name, users, groups);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode the permission:  " + e, e);
     }
@@ -452,18 +453,18 @@ public class SLAMDPermission
    * @throws  DecodeException  If a problem occurs while attempting to decode
    *                           the permission.
    */
-  public static SLAMDPermission decode(byte[] encodedPermission)
+  public static SLAMDPermission decode(final byte[] encodedPermission)
          throws DecodeException
   {
     try
     {
       return decodeSequence(ASN1Element.decodeAsSequence(encodedPermission));
     }
-    catch (DecodeException de)
+    catch (final DecodeException de)
     {
       throw de;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode the permission:  " + e, e);
     }

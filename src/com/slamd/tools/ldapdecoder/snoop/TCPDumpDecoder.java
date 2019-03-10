@@ -270,7 +270,7 @@ public class TCPDumpDecoder
    * Reads the next packet record from the input stream.
    *
    * @return  The next packet record from the input stream, or
-   *          <CODE>null</CODE> if the end of the stream has been reached.
+   *          {@code null} if the end of the stream has been reached.
    *
    * @throws  IOException     If a problem occurs while reading data from the
    *                          input stream.

@@ -150,7 +150,7 @@ public abstract class SLAMDMessage
    * @param  name  The name of the property to retrieve.
    *
    * @return  The value of the "extra" property with the specified name, or
-   *          <CODE>null</CODE> if there is no such property.
+   *          {@code null} if there is no such property.
    */
   public String getExtraProperty(String name)
   {

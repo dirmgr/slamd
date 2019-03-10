@@ -203,8 +203,8 @@ public class MPStatResourceMonitor
    * Indicates whether the current client system is supported for this resource
    * monitor.
    *
-   * @return  <CODE>true</CODE> if the current client system is supported for
-   *          this resource monitor, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current client system is supported for
+   *          this resource monitor, or {@code false} if not.
    */
   @Override()
   public boolean clientSupported()

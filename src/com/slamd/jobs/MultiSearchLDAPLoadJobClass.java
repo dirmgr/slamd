@@ -2817,7 +2817,7 @@ public class MultiSearchLDAPLoadJobClass
    * RDN operations will only be performed on entries that have been added.
    *
    * @return  The DN of an entry that can be deleted or renamed.  If there are
-   *          no available DNs, then <CODE>null</CODE> will be returned.
+   *          no available DNs, then {@code null} will be returned.
    */
   private static String getDNToDelete()
   {

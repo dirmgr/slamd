@@ -30,7 +30,7 @@ public interface JobItem
    * Retrieves an instance of the job class with which this job is associated.
    *
    * @return  An instance of the job class with which this job is associated,
-   *          or <CODE>null</CODE> if it could not be retrieved for some reason.
+   *          or {@code null} if it could not be retrieved for some reason.
    */
   public JobClass getJobClass();
 
@@ -40,7 +40,7 @@ public interface JobItem
    * Retrieves the name of the job group with which this job is associated.
    *
    * @return  The name of the job group with which this job is associated, or
-   *          <CODE>null</CODE> if it was not scheduled as part of any job
+   *          {@code null} if it was not scheduled as part of any job
    *          group.
    */
   public String getJobGroup();

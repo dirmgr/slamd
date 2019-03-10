@@ -180,8 +180,8 @@ public class SnoopPacketRecord
    * Indicates whether this packet is truncated (i.e., the amount of data
    * captured is less than the amount of data in the original packet).
    *
-   * @return  <CODE>true</CODE> if this packet is truncated, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this packet is truncated, or
+   *          {@code false} if not.
    */
   public boolean isTruncated()
   {

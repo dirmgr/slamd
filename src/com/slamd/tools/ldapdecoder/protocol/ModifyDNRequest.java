@@ -126,8 +126,8 @@ public class ModifyDNRequest
    * Indicates whether the old RDN value should be removed from the entry when
    * it is renamed.
    *
-   * @return  <CODE>true</CODE> if the old RDN value should be removed from the
-   *          entry, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the old RDN value should be removed from the
+   *          entry, or {@code false} if not.
    */
   public boolean deleteOldRDN()
   {

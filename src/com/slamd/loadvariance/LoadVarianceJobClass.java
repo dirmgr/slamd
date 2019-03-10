@@ -386,8 +386,8 @@ public abstract class LoadVarianceJobClass
    * were active at the end of the load variance definition will continue to be
    * used for the remainder of the job.
    *
-   * @return  <CODE>true</CODE> if the job should loop back through the load
-   *          variance definition when the end is reached, or <CODE>false</CODE>
+   * @return  {@code true} if the job should loop back through the load
+   *          variance definition when the end is reached, or {@code false}
    *          if not.
    */
   public boolean loopVarianceDefinition()
@@ -462,11 +462,11 @@ public abstract class LoadVarianceJobClass
   /**
    * Indicates whether this thread should temporarily pause its execution or
    * stop altogether.  This method should be periodically called by the
-   * <CODE>doProcessing</CODE> method, and if it returns <CODE>true</CODE> then
+   * <CODE>doProcessing</CODE> method, and if it returns {@code true} then
    * <CODE>doProcessing</CODE> should exit.
    *
-   * @return  <CODE>true</CODE> if the thread should pause or stop its
-   *          execution, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the thread should pause or stop its
+   *          execution, or {@code false} if not.
    */
   public final boolean shouldPauseOrStop()
   {
@@ -533,7 +533,7 @@ public abstract class LoadVarianceJobClass
   /**
    * Performs the actual processing for this job.  It should periodically call
    * the <CODE>shouldPauseOrStop</CODE> method and if it returns
-   * <CODE>true</CODE> then this method should exit.
+   * {@code true} then this method should exit.
    */
   public abstract void doProcessing();
 }

@@ -107,7 +107,7 @@ public class CaptureData
    *                      to decode.
    *
    * @return  The capture data decoded from the provided input stream, or
-   *          <CODE>null</CODE> if there is no more data to read from the input
+   *          {@code null} if there is no more data to read from the input
    *          stream.
    *
    * @throws  IOException  If a problem occurs while trying to read the data

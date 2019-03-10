@@ -636,8 +636,8 @@ public class JobGroupOptimizingJob
   /**
    * Indicates whether to re-run the best iteration of this optimizing job.
    *
-   * @return  <CODE>true</CODE> if the best iteration of this optimizing job
-   *          should be re-run, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the best iteration of this optimizing job
+   *          should be re-run, or {@code false} if not.
    */
   public boolean reRunBestIteration()
   {

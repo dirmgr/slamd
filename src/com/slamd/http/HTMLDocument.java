@@ -189,8 +189,8 @@ public class HTMLDocument
   /**
    * Actually parses the HTML document and extracts useful elements from it.
    *
-   * @return  <CODE>true</CODE> if the page could be parsed successfully, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the page could be parsed successfully, or
+   *          {@code false} if not.
    */
   public boolean parse()
   {
@@ -633,7 +633,7 @@ public class HTMLDocument
    * Retrieves the contents of the HTML document with all tags removed.
    *
    * @return  The contents of the HTML document with all tags removed, or
-   *          <CODE>null</CODE> if a problem occurs while trying to parse the
+   *          {@code null} if a problem occurs while trying to parse the
    *          HTML.
    */
   public String getTextData()
@@ -658,7 +658,7 @@ public class HTMLDocument
    * sheets.
    *
    * @return  An array containing a set of URLs to files associated with the
-   *          HTML document, or <CODE>null</CODE> if a problem occurs while
+   *          HTML document, or {@code null} if a problem occurs while
    *          trying to parse the HTML.
    */
   public String[] getAssociatedFiles()
@@ -684,7 +684,7 @@ public class HTMLDocument
    *
    * @return  An array containing a set of URLs parsed from the HTML document
    *          that are in the form of links to other content, or
-   *          <CODE>null</CODE> if a problem occurs while trying to parse the
+   *          {@code null} if a problem occurs while trying to parse the
    *          HTML.
    */
   public String[] getDocumentLinks()

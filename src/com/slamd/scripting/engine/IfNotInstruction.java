@@ -106,7 +106,7 @@ public class IfNotInstruction
    * to true.
    *
    * @return  The instruction that will be executed if the condition evaluates
-   *          to true, or <CODE>null</CODE> if no such instruction has been
+   *          to true, or {@code null} if no such instruction has been
    *          defined.
    */
   public Instruction getInstructionIfTrue()

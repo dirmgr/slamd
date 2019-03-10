@@ -271,7 +271,7 @@ public class ClientHello
    * client connection is associated.
    *
    * @return  The client manager ID for the client manager with which this
-   *          client connection is associated, or <CODE>null</CODE> if it is not
+   *          client connection is associated, or {@code null} if it is not
    *          associated with a client manager.
    */
   public String getClientManagerID()
@@ -371,8 +371,8 @@ public class ClientHello
    * Indicates whether the client is running in restricted mode and should only
    * be assigned jobs for which it is explicitly requested.
    *
-   * @return  <CODE>true</CODE> if this client is running in restricted mode, or
-   *          <CODE>false</CODE> if it is not.
+   * @return  {@code true} if this client is running in restricted mode, or
+   *          {@code false} if it is not.
    */
   public boolean getRestrictedMode()
   {
@@ -400,7 +400,7 @@ public class ClientHello
    * authenticate to the server.
    *
    * @return  The name of the method that the client wishes to use to
-   *          authenticate to the server, or <CODE>null</CODE> if no
+   *          authenticate to the server, or {@code null} if no
    *          authentication is to be performed.
    */
   public String getAuthMethod()
@@ -429,7 +429,7 @@ public class ClientHello
    * authenticate to the server.
    *
    * @return  The authentication ID that the client wishes to use to
-   *          authenticate to the server, or <CODE>null</CODE> if no
+   *          authenticate to the server, or {@code null} if no
    *          authentication is to be performed or no auth ID is required for
    *          the selected authentication method.
    */
@@ -459,7 +459,7 @@ public class ClientHello
    * the server.
    *
    * @return  The credentials that the client wishes to use to authenticate to
-   *          the server, or <CODE>null</CODE> if no authentication is to be
+   *          the server, or {@code null} if no authentication is to be
    *          performed or no credentials are required for the selected
    *          authentication method.
    */
@@ -488,8 +488,8 @@ public class ClientHello
    * Indicates whether the client requires the server to authenticate itself to
    * the client.
    *
-   * @return  <CODE>true</CODE> if the client requires the server to
-   *          authenticate itself to the client, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client requires the server to
+   *          authenticate itself to the client, or {@code false} if not.
    */
   public boolean getRequireServerAuth()
   {

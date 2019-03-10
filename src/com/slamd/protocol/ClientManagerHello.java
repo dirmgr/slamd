@@ -399,7 +399,7 @@ public class ClientManagerHello
    * authenticate to the server.
    *
    * @return  The name of the method that the client wishes to use to
-   *          authenticate to the server, or <CODE>null</CODE> if no
+   *          authenticate to the server, or {@code null} if no
    *          authentication is to be performed.
    */
   public String getAuthMethod()
@@ -428,7 +428,7 @@ public class ClientManagerHello
    * authenticate to the server.
    *
    * @return  The authentication ID that the client wishes to use to
-   *          authenticate to the server, or <CODE>null</CODE> if no
+   *          authenticate to the server, or {@code null} if no
    *          authentication is to be performed or no auth ID is required for
    *          the selected authentication method.
    */
@@ -458,7 +458,7 @@ public class ClientManagerHello
    * the server.
    *
    * @return  The credentials that the client wishes to use to authenticate to
-   *          the server, or <CODE>null</CODE> if no authentication is to be
+   *          the server, or {@code null} if no authentication is to be
    *          performed or no credentials are required for the selected
    *          authentication method.
    */
@@ -487,8 +487,8 @@ public class ClientManagerHello
    * Indicates whether the client requires the server to authenticate itself to
    * the client.
    *
-   * @return  <CODE>true</CODE> if the client requires the server to
-   *          authenticate itself to the client, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client requires the server to
+   *          authenticate itself to the client, or {@code false} if not.
    */
   public boolean getRequireServerAuth()
   {

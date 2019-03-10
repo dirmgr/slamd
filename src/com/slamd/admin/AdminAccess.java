@@ -345,8 +345,8 @@ public class AdminAccess
    * @param  resourceName  The name of the protected resource for which to make
    *                       the determination.
    *
-   * @return  <CODE>true</CODE> if the user should be allowed to access the
-   *          specified resource, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the user should be allowed to access the
+   *          specified resource, or {@code false} if not.
    */
   static boolean mayAccess(RequestInfo requestInfo, String resourceName)
   {

@@ -224,8 +224,8 @@ public class SearchRequest
    * Indicates whether only attribute types and no values should be included in
    * matching entries.
    *
-   * @return  <CODE>true</CODE> if only attribute types and no values should be
-   *          included in matching entries, or <CODE>false</CODE> if not.
+   * @return  {@code true} if only attribute types and no values should be
+   *          included in matching entries, or {@code false} if not.
    */
   public boolean getTypesOnly()
   {

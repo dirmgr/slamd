@@ -537,8 +537,8 @@ public class CommandLineClientManager
   /**
    * Indicates whether this message writer is operating in verbose mode.
    *
-   * @return  <CODE>true</CODE> if this message writer is operating in verbose
-   *          mode, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this message writer is operating in verbose
+   *          mode, or {@code false} if not.
    */
   public boolean usingVerboseMode()
   {

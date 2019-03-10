@@ -759,7 +759,7 @@ public class OptimizingJob
    * associated.
    *
    * @return  The name of the job group with which this optimizing job is
-   *          associated, or <CODE>null</CODE> if it was not scheduled as part
+   *          associated, or {@code null} if it was not scheduled as part
    *          of a job group.
    */
   public String getJobGroup()
@@ -787,8 +787,8 @@ public class OptimizingJob
    * Indicates whether this optimizing job should be displayed in restricted
    * read-only mode.
    *
-   * @return  <CODE>true</CODE> if this optimizing job should be displayed in
-   *          restricted read-only mode, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this optimizing job should be displayed in
+   *          restricted read-only mode, or {@code false} if not.
    */
   public boolean displayInReadOnlyMode()
   {
@@ -905,7 +905,7 @@ public class OptimizingJob
   /**
    * Retrieves the comments for this optimizing job.
    *
-   * @return  The comments for this optimizing job, or <CODE>null</CODE> if
+   * @return  The comments for this optimizing job, or {@code null} if
    *          there are none.
    */
   public String getComments()
@@ -931,8 +931,8 @@ public class OptimizingJob
    * Indicates whether the number of threads should be included in the
    * description for each iteration of this optimizing job.
    *
-   * @return  <CODE>true</CODE> if the number of threads should be included
-   *          in the description for this optimizing job, or <CODE>false</CODE>
+   * @return  {@code true} if the number of threads should be included
+   *          in the description for this optimizing job, or {@code false}
    *          if not.
    */
   public boolean includeThreadsInDescription()
@@ -987,8 +987,8 @@ public class OptimizingJob
    * Indicates whether the best iteration should be re-run once the job has
    * completed.
    *
-   * @return  <CODE>true</CODE> if the best iteration should be re-run after the
-   *          job has completed, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the best iteration should be re-run after the
+   *          job has completed, or {@code false} if not.
    */
   public boolean reRunBestIteration()
   {
@@ -1016,7 +1016,7 @@ public class OptimizingJob
    * this optimizing job.
    *
    * @return  The job iteration that was a re-run of the best iteration for this
-   *          optimizing job, or <CODE>null</CODE> if there is none or it hasn't
+   *          optimizing job, or {@code null} if there is none or it hasn't
    *          run yet.
    */
   public Job getReRunIteration()
@@ -1086,8 +1086,8 @@ public class OptimizingJob
    * Indicates whether an attempt will be made to use resource monitor clients
    * on the same systems as the clients used to run this job.
    *
-   * @return  <CODE>true</CODE> if resource monitor clients on the same systems
-   *          as the clients will be used, or <CODE>false</CODE> if not.
+   * @return  {@code true} if resource monitor clients on the same systems
+   *          as the clients will be used, or {@code false} if not.
    */
   public boolean monitorClientsIfAvailable()
   {
@@ -1493,8 +1493,8 @@ public class OptimizingJob
    * Indicates whether the optimization process has completed (i.e., no
    * additional iterations will be performed, for whatever reason).
    *
-   * @return  <CODE>true</CODE> if the optimization process has completed, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the optimization process has completed, or
+   *          {@code false} if not.
    */
   public boolean doneRunning()
   {
@@ -1516,8 +1516,8 @@ public class OptimizingJob
    * Indicates whether at least some statistical information is available for
    * this optimizing job.
    *
-   * @return  <CODE>true</CODE> if there is statistical information available
-   *          for this optimizing job, or <CODE>false</CODE> if not.
+   * @return  {@code true} if there is statistical information available
+   *          for this optimizing job, or {@code false} if not.
    */
   public boolean hasStats()
   {
@@ -1592,7 +1592,7 @@ public class OptimizingJob
    * Retrieves the job ID of the optimal iteration.  Note that this may not be
    * accurate if the job has not yet completed.
    *
-   * @return  The job ID of the optimal iteration, or <CODE>null</CODE> if no
+   * @return  The job ID of the optimal iteration, or {@code null} if no
    *          optimal iteration has been determined.
    */
   public String getOptimalJobID()
@@ -1766,8 +1766,8 @@ public class OptimizingJob
    * Indicates whether a request has been submitted to pause this optimizing
    * job.
    *
-   * @return  <CODE>true</CODE> if a request has been made to pause this
-   *          optimizing job, or <CODE>false</CODE> if not.
+   * @return  {@code true} if a request has been made to pause this
+   *          optimizing job, or {@code false} if not.
    */
   public boolean pauseRequested()
   {

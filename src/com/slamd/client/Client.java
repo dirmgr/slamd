@@ -885,9 +885,9 @@ public class Client
    * Indicates whether the client should aggregate the data collected from all
    * the threads before sending the results to the SLAMD server.
    *
-   * @return  <CODE>true</CODE> if the client should aggregate the thread data
+   * @return  {@code true} if the client should aggregate the thread data
    *          before sending the results to the SLAMD server, or
-   *          <CODE>false</CODE> if the data for each thread is to be reported
+   *          {@code false} if the data for each thread is to be reported
    *          separately.
    */
   public boolean aggregateThreadData()
@@ -916,8 +916,8 @@ public class Client
    * Indicates whether the connection between the client and the server is using
    * SSL.
    *
-   * @return  <CODE>true</CODE> if the communication between the client and the
-   *          server is using SSL, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the communication between the client and the
+   *          server is using SSL, or {@code false} if not.
    */
   public boolean usingSSL()
   {
@@ -1032,7 +1032,7 @@ public class Client
    * on disk.
    *
    * @return  The reference to the thread used for persisting statistical data
-   *          on disk, or <CODE>null</CODE> if client-side persistence is not
+   *          on disk, or {@code null} if client-side persistence is not
    *          enabled.
    */
   public static StatPersistenceThread getStatPersistenceThread()

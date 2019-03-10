@@ -403,7 +403,7 @@ public class RealTimeStatReporter
    * @param  message  The message to be sent.
    *
    * @return  The response received for the specified message, or
-   *          <CODE>null</CODE> if a problem occurred or the server is shutting
+   *          {@code null} if a problem occurred or the server is shutting
    *          down.
    */
   private Message sendMessageAndReadResponse(Message message)

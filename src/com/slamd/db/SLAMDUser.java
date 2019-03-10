@@ -35,13 +35,13 @@ import com.slamd.asn1.ASN1Sequence;
  *
  * @author  Neil A. Wilson
  */
-public class SLAMDUser
+public final class SLAMDUser
 {
   /**
    * The name of the encoded element that holds the name of the default folder
    * for this user.
    */
-  public static final String ELEMENT_DEFAULT_FOLDER = "folder";
+  private static final String ELEMENT_DEFAULT_FOLDER = "folder";
 
 
 
@@ -49,7 +49,7 @@ public class SLAMDUser
    * The name of the encoded element that holds the groups names associated with
    * this user.
    */
-  public static final String ELEMENT_GROUPS = "groups";
+  private static final String ELEMENT_GROUPS = "groups";
 
 
 
@@ -57,7 +57,7 @@ public class SLAMDUser
    * The name of the encoded element that holds the hashed password for this
    * user.
    */
-  public static final String ELEMENT_HASHED_PASSWORD = "password";
+  private static final String ELEMENT_HASHED_PASSWORD = "password";
 
 
 
@@ -65,34 +65,34 @@ public class SLAMDUser
    * The name of the encoded element that indicates whether this user is an
    * administrator.
    */
-  public static final String ELEMENT_IS_ADMIN = "isadmin";
+  private static final String ELEMENT_IS_ADMIN = "isadmin";
 
 
 
   /**
    * The name of the encoded element that holds the user name for this user.
    */
-  public static final String ELEMENT_USER_NAME = "username";
+  private static final String ELEMENT_USER_NAME = "username";
 
 
 
   // The SHA-1 digest used to hash passwords.
-  static MessageDigest shaDigest;
+  private static MessageDigest sha256Digest;
 
   // Indicates whether this user is an administrator.
-  boolean isAdmin;
+  private boolean isAdmin;
 
   // The hashed password for this user.
-  byte[] hashedPassword;
+  private byte[] hashedPassword;
 
   // The default folder for this user.
-  String defaultFolder;
+  private String defaultFolder;
 
   // The username for this user.
-  String userName;
+  private String userName;
 
   // The set of groups in which this user is a member.
-  String[] groupNames;
+  private String[] groupNames;
 
 
 
@@ -100,7 +100,7 @@ public class SLAMDUser
   {
     try
     {
-      shaDigest = MessageDigest.getInstance("SHA");
+      sha256Digest = MessageDigest.getInstance("SHA-256");
     } catch (Exception e) {}
   }
 
@@ -116,8 +116,9 @@ public class SLAMDUser
    * @param  isAdmin         Indicates whether this user is an administrator.
    * @param  defaultFolder   The default folder for this user.
    */
-  public SLAMDUser(String userName, byte[] hashedPassword, String[] groupNames,
-                   boolean isAdmin, String defaultFolder)
+  public SLAMDUser(final String userName, final byte[] hashedPassword,
+                   final String[] groupNames, final boolean isAdmin,
+                   final String defaultFolder)
   {
     this.userName       = userName;
     this.hashedPassword = hashedPassword;
@@ -154,12 +155,12 @@ public class SLAMDUser
    *
    * @param  password  The clear-text password to validate for this user.
    *
-   * @return  <CODE>true</CODE> if the provided password is correct, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the provided password is correct, or
+   *          {@code false} if not.
    */
-  public boolean checkPassword(String password)
+  public boolean checkPassword(final String password)
   {
-    byte[] pwHash = shaDigest.digest(ASN1Element.getBytes(password));
+    byte[] pwHash = sha256Digest.digest(ASN1Element.getBytes(password));
     if (pwHash.length != hashedPassword.length)
     {
       return false;
@@ -183,9 +184,9 @@ public class SLAMDUser
    *
    * @param  password  The password to use for the user.
    */
-  public void setPassword(String password)
+  public void setPassword(final String password)
   {
-    hashedPassword = shaDigest.digest(ASN1Element.getBytes(password));
+    hashedPassword = sha256Digest.digest(ASN1Element.getBytes(password));
   }
 
 
@@ -208,14 +209,14 @@ public class SLAMDUser
    * @param  groupName  The name of the group for which to make the
    *                    determination.
    *
-   * @return  <CODE>true</CODE> if this user is a member of the specified group,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if this user is a member of the specified group,
+   *          or {@code false} if not.
    */
-  public boolean memberOf(String groupName)
+  public boolean memberOf(final String groupName)
   {
-    for (int i=0; i < groupNames.length; i++)
+    for (final String n : groupNames)
     {
-      if (groupNames[i].equals(groupName))
+      if (n.equals(groupName))
       {
         return true;
       }
@@ -231,15 +232,17 @@ public class SLAMDUser
    *
    * @param  groupNames  The names of the groups in which this user is a member.
    */
-  public void setGroupNames(String[] groupNames)
+  public void setGroupNames(final String[] groupNames)
   {
     if (groupNames == null)
     {
-      groupNames = new String[0];
+      this.groupNames = new String[0];
     }
-
-    Arrays.sort(groupNames);
-    this.groupNames = groupNames;
+    else
+    {
+      Arrays.sort(groupNames);
+      this.groupNames = groupNames;
+    }
   }
 
 
@@ -251,21 +254,18 @@ public class SLAMDUser
    * @param  groupName  The name of the group to add to the set of groups for
    *                    this user.
    */
-  public void addGroupName(String groupName)
+  public void addGroupName(final String groupName)
   {
-    String[] newGroups = new String[groupNames.length+1];
-    for (int i=0; i < groupNames.length; i++)
+    for (final String n : groupNames)
     {
-      if (groupNames[i].equals(groupName))
+      if (n.equals(groupName))
       {
         return;
       }
-      else
-      {
-        newGroups[i] = groupNames[i];
-      }
     }
 
+    final String[] newGroups = new String[groupNames.length+1];
+    System.arraycopy(groupNames, 0, newGroups, 0, groupNames.length);
     newGroups[groupNames.length] = groupName;
     Arrays.sort(newGroups);
     groupNames = newGroups;
@@ -280,7 +280,7 @@ public class SLAMDUser
    * @param  groupName  The name of the group to remove from the set of groups
    *                    for this user.
    */
-  public void removeGroupName(String groupName)
+  public void removeGroupName(final String groupName)
   {
     int pos = -1;
     for (int i=0; i < groupNames.length; i++)
@@ -297,10 +297,10 @@ public class SLAMDUser
       return;
     }
 
-    String[] newGroupNames = new String[groupNames.length-1];
+    final String[] newGroupNames = new String[groupNames.length-1];
     System.arraycopy(groupNames, 0, newGroupNames, 0, pos);
     System.arraycopy(groupNames, pos+1, newGroupNames, pos,
-                     (newGroupNames.length - pos));
+         (newGroupNames.length - pos));
     groupNames = newGroupNames;
   }
 
@@ -309,8 +309,8 @@ public class SLAMDUser
   /**
    * Indicates whether this user is an administrator with full rights.
    *
-   * @return  <CODE>true</CODE> if this user is an administrator, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if this user is an administrator, or
+   *          {@code false} if not.
    */
   public boolean isAdmin()
   {
@@ -324,7 +324,7 @@ public class SLAMDUser
    *
    * @param  isAdmin  Specifies whether this user is an administrator.
    */
-  public void setAdmin(boolean isAdmin)
+  public void setAdmin(final boolean isAdmin)
   {
     this.isAdmin = isAdmin;
   }
@@ -348,7 +348,7 @@ public class SLAMDUser
    *
    * @param  defaultFolder  The name of the default folder for this user.
    */
-  public void setDefaultFolder(String defaultFolder)
+  public void setDefaultFolder(final String defaultFolder)
   {
     this.defaultFolder = defaultFolder;
   }
@@ -362,13 +362,13 @@ public class SLAMDUser
    */
   public byte[] encode()
   {
-    ASN1Element[] groupElements = new ASN1Element[groupNames.length];
+    final ASN1Element[] groupElements = new ASN1Element[groupNames.length];
     for (int i=0; i < groupNames.length; i++)
     {
       groupElements[i] = new ASN1OctetString(groupNames[i]);
     }
 
-    ASN1Element[] userElements = new ASN1Element[]
+    final ASN1Element[] userElements = new ASN1Element[]
     {
       new ASN1OctetString(ELEMENT_USER_NAME),
       new ASN1OctetString(userName),
@@ -398,7 +398,7 @@ public class SLAMDUser
    * @throws  DecodeException  If a problem occurs while trying to decode the
    *                           provided byte array.
    */
-  public static SLAMDUser decode(byte[] encodedUser)
+  public static SLAMDUser decode(final byte[] encodedUser)
          throws DecodeException
   {
     try
@@ -409,11 +409,12 @@ public class SLAMDUser
       String   userName       = null;
       String[] groupNames     = new String[0];
 
-      ASN1Element   element  = ASN1Element.decode(encodedUser);
-      ASN1Element[] elements = element.decodeAsSequence().getElements();
+      final ASN1Element element = ASN1Element.decode(encodedUser);
+      final ASN1Element[] elements = element.decodeAsSequence().getElements();
       for (int i=0; i < elements.length; i += 2)
       {
-        String elementName = elements[i].decodeAsOctetString().getStringValue();
+        final String elementName =
+             elements[i].decodeAsOctetString().getStringValue();
         if (elementName.equals(ELEMENT_USER_NAME))
         {
           userName = elements[i+1].decodeAsOctetString().getStringValue();
@@ -424,7 +425,7 @@ public class SLAMDUser
         }
         else if (elementName.equals(ELEMENT_GROUPS))
         {
-          ASN1Element[] groupElements =
+          final ASN1Element[] groupElements =
                elements[i+1].decodeAsSequence().getElements();
           groupNames = new String[groupElements.length];
           for (int j=0; j < groupNames.length; j++)
@@ -446,7 +447,7 @@ public class SLAMDUser
       return new SLAMDUser(userName, hashedPassword, groupNames, isAdmin,
                            defaultFolder);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new DecodeException("Unable to decode user information:  " + e, e);
     }

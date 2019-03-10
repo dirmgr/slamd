@@ -240,7 +240,7 @@ public class PasswordParameter
   /**
    * Indicates whether this parameter has a value.
    *
-   * @return  <CODE>true</CODE> if it does have a value, or <CODE>false</CODE>
+   * @return  {@code true} if it does have a value, or {@code false}
    *          if it does not.
    */
   @Override()
@@ -304,7 +304,7 @@ public class PasswordParameter
    * @param  value  The value for which to make the determination.
    *
    * @return  The reason that the specified value is not valid, or
-   *          <CODE>null</CODE> if it is valid.
+   *          {@code null} if it is valid.
    */
   @Override()
   public String getInvalidReason(Object value)

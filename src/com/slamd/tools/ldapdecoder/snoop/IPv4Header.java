@@ -272,8 +272,8 @@ public class IPv4Header
   /**
    * Indicates whether the originator will accept fragmented packets.
    *
-   * @return  <CODE>true</CODE> if the originator will accept fragmented
-   *          packets, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the originator will accept fragmented
+   *          packets, or {@code false} if not.
    */
   public boolean mayFragment()
   {
@@ -286,8 +286,8 @@ public class IPv4Header
    * Indicates whether this packet contains the last fragment in a fragmented
    * data stream.
    *
-   * @return  <CODE>true</CODE> if this packet contains the last fragment in a
-   *          fragmented data stream, or <CODE>false</CODE> if there are more
+   * @return  {@code true} if this packet contains the last fragment in a
+   *          fragmented data stream, or {@code false} if there are more
    *          fragments.
    */
   public boolean lastFragment()

@@ -481,8 +481,8 @@ public class LDAPDecoder
   /**
    * Indicates whether the LDAPDecoder is configured to operate in offline mode.
    *
-   * @return  <CODE>true</CODE> if it is configured to operate in offline mode,
-   *          or <CODE>false</CODE> if it is to operate in proxy mode.
+   * @return  {@code true} if it is configured to operate in offline mode,
+   *          or {@code false} if it is to operate in proxy mode.
    */
   public boolean offlineMode()
   {

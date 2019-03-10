@@ -82,7 +82,7 @@ public class ClientDisconnect
    * Retrieves the reason that the client has initiated the disconnect process.
    *
    * @return  The reason that the client has initiated the disconnect process,
-   *          or <CODE>null</CODE> if none was provided.
+   *          or {@code null} if none was provided.
    */
   public String getDisconnectReason()
   {

@@ -359,8 +359,8 @@ public class AccessManager
   /**
    * Indicates whether this access manager has been stopped.
    *
-   * @return  <CODE>true</CODE> if the access manager is stopped, or
-   *          <CODE>false</CODE> if it is running.
+   * @return  {@code true} if the access manager is stopped, or
+   *          {@code false} if it is running.
    */
   public boolean managerIsStopped()
   {
@@ -514,7 +514,7 @@ public class AccessManager
    *
    * @return  The names of all the protected resources that the specified user
    *          may access.  If no information is known about the specified user,
-   *          then <CODE>null</CODE> is returned.
+   *          then {@code null} is returned.
    *
    * @throws  AccessDeniedException  If it is necessary to go to the user
    *                                 directory to retrieve information for this
@@ -567,8 +567,8 @@ public class AccessManager
    * @param  resourceName    The name of the resource for which to check access
    *                         permissions.
    *
-   * @return  <CODE>true</CODE> if the user may access the indicated resource,
-   *          or <CODE>false</CODE> if not or if the manager is stopped.
+   * @return  {@code true} if the user may access the indicated resource,
+   *          or {@code false} if not or if the manager is stopped.
    *
    * @throws  AccessDeniedException  If it is necessary to go to the user
    *                                 directory to retrieve information for this
@@ -622,7 +622,7 @@ public class AccessManager
    *                         user directory.
    *
    * @return  The names of all the resources that the user may access, or
-   *          <CODE>null</CODE> if the user could not be found in the
+   *          {@code null} if the user could not be found in the
    *          directory.
    *
    * @throws  AccessDeniedException  If the user entry could not be found in the

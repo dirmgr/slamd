@@ -37,7 +37,7 @@ import com.slamd.stat.StatTracker;
  * single statistic within the job and finds the iteration with the highest or
  * lowest value for a given stat tracker.  This stat tracker must be one that is
  * searchable (i.e., the <CODE>isSearchable()</CODE> method returns
- * <CODE>true</CODE>).  No other statistics or resource monitor data are taken
+ * {@code true}).  No other statistics or resource monitor data are taken
  * into consideration in the decision-making process.
  * <BR><BR>
  * This is the default optimization algorithm used by the SLAMD server.  It
@@ -177,8 +177,8 @@ public class SingleStatisticOptimizationAlgorithm
    *
    * @param  jobClass  The job class for which to make the determination.
    *
-   * @return  <CODE>true</CODE> if this optimization algorithm may be used with
-   *          the provided job class, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this optimization algorithm may be used with
+   *          the provided job class, or {@code false} if not.
    */
   @Override()
   public boolean availableWithJobClass(JobClass jobClass)
@@ -540,8 +540,8 @@ public class SingleStatisticOptimizationAlgorithm
    * @param  iteration      The job iteration for which to make the
    *                        determination.
    *
-   * @return  <CODE>true</CODE> if the provided iteration is the best one seen
-   *          so far for the optimizing job, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the provided iteration is the best one seen
+   *          so far for the optimizing job, or {@code false} if not.
    *
    * @throws  SLAMDException  If a problem occurs that prevents a valid
    *                          determination from being made.  If this exception

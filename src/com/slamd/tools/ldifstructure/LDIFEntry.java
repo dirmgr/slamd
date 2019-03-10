@@ -108,7 +108,7 @@ public class LDIFEntry
    * Retrieves the normalized DN of the parent for this entry.
    *
    * @return  The normalized DN of the parent for this entry, or
-   *          <CODE>null</CODE> if it does not have a parent.
+   *          {@code null} if it does not have a parent.
    */
   public String getParentDN()
   {
@@ -120,7 +120,7 @@ public class LDIFEntry
   /**
    * Retrieves the normalized grandparent DN for this entry.
    *
-   * @return  The normalized grandparent DN for this entry, or <CODE>null</CODE>
+   * @return  The normalized grandparent DN for this entry, or {@code null}
    *          if it does not have a grandparent.
    */
   public String getGrandparentDN()
@@ -146,7 +146,7 @@ public class LDIFEntry
    *                       DN.
    *
    * @return  The DN of the parent entry for the entry with the given normalized
-   *          DN, or <CODE>null</CODE> if it does not have a parent.
+   *          DN, or {@code null} if it does not have a parent.
    */
   public static String getParentDN(String normalizedDN)
   {
@@ -186,8 +186,8 @@ public class LDIFEntry
    * @param  normalizedDN  The normalized DN of the entry for which to make the
    *                       determination.
    *
-   * @return  <CODE>true</CODE> if this entry is determined to be a descendant
-   *          of the specified entry, or <CODE>false</CODE> if not.
+   * @return  {@code true} if this entry is determined to be a descendant
+   *          of the specified entry, or {@code false} if not.
    */
   public boolean isDescendantOf(String normalizedDN)
   {
@@ -232,7 +232,7 @@ public class LDIFEntry
    *
    * @param  lowerName  The name of the attribute, converted to lowercase.
    *
-   * @return  The requested attribute, or <CODE>null</CODE> if the specified
+   * @return  The requested attribute, or {@code null} if the specified
    *          attribute does not exist in this entry.
    */
   public LDIFAttribute getAttribute(String lowerName)

@@ -199,8 +199,8 @@ public class IOStatResourceMonitor
    * Indicates whether the current client system is supported for this resource
    * monitor.
    *
-   * @return  <CODE>true</CODE> if the current client system is supported for
-   *          this resource monitor, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the current client system is supported for
+   *          this resource monitor, or {@code false} if not.
    */
   @Override()
   public boolean clientSupported()
@@ -228,8 +228,8 @@ public class IOStatResourceMonitor
    * disks has been given, then this will set the requested disks to all disks
    * in the system.
    *
-   * @return  <CODE>true</CODE> if the Solaris client system is supported, or
-   *          <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the Solaris client system is supported, or
+   *          {@code false} if it is not.
    */
   private boolean solarisSupported()
   {
@@ -315,8 +315,8 @@ public class IOStatResourceMonitor
    * disks has been given, then this will set the requested disks to all disks
    * in the system.
    *
-   * @return  <CODE>true</CODE> if the Linux client system is supported, or
-   *          <CODE>false</CODE> if it is not.
+   * @return  {@code true} if the Linux client system is supported, or
+   *          {@code false} if it is not.
    */
   private boolean linuxSupported()
   {
@@ -392,8 +392,8 @@ public class IOStatResourceMonitor
 
   /**
    * Creates a new instance of this resource monitor thread.  Note that the
-   * <CODE>initialize()</CODE> method should have been called on the new
-   * instance before it is returned.
+   * {@link #initialize} method should have been called on the new instance
+   * before it is returned.
    *
    * @return  A new instance of this resource monitor thread.
    *

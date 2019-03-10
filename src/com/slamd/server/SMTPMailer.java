@@ -131,7 +131,7 @@ public class SMTPMailer
   /**
    * Indicates whether this mailer is currently enabled.
    *
-   * @return  <CODE>true</CODE> if this mailer is enabled, or <CODE>false</CODE>
+   * @return  {@code true} if this mailer is enabled, or {@code false}
    *          if it is not.
    */
   public boolean isEnabled()

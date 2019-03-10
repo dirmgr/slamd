@@ -356,7 +356,7 @@ public class HTTPClient
    * by this HTTP client.
    *
    * @return  The client address that will be used for the connections created
-   *          by this HTTP client, or <CODE>null</CODE> if the default client
+   *          by this HTTP client, or {@code null} if the default client
    *          address should be used.
    */
   public InetAddress getClientAddress()
@@ -403,8 +403,8 @@ public class HTTPClient
   /**
    * Indicates whether this client should support GZIP-compressed data.
    *
-   * @return  <CODE>true</CODE> if this client should support GZIP compression,
-   *         or <CODE>false</CODE> if it should not.
+   * @return  {@code true} if this client should support GZIP compression,
+   *         or {@code false} if it should not.
    */
   public boolean enableGZIP()
   {
@@ -516,8 +516,8 @@ public class HTTPClient
    * Indicates whether the client will attempt to forward requests through an
    * HTTP proxy server.
    *
-   * @return  <CODE>true</CODE> if an HTTP proxy server will be used, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if an HTTP proxy server will be used, or
+   *          {@code false} if not.
    */
   public boolean proxyEnabled()
   {
@@ -531,9 +531,9 @@ public class HTTPClient
    * Indicates whether the client will attempt to authenticate to an HTTP proxy
    * server.
    *
-   * @return  <CODE>true</CODE> if an HTTP proxy server will be used and
+   * @return  {@code true} if an HTTP proxy server will be used and
    *          authentication information will be provided to it, or
-   *          <CODE>false</CODE> if not.
+   *          {@code false} if not.
    */
   public boolean proxyAuthenticationEnabled()
   {
@@ -549,7 +549,7 @@ public class HTTPClient
    * Retrieves the address of the proxy server that has been configured.
    *
    * @return  The address of the proxy server that has been configured, or
-   *          <CODE>null</CODE> if none has been specified.
+   *          {@code null} if none has been specified.
    */
   public String getProxyHost()
   {
@@ -576,7 +576,7 @@ public class HTTPClient
    * authentication will be performed.
    *
    * @return  The username that will be provided to the HTTP proxy server if
-   *          authentication will be performed, or <CODE>null</CODE> if no
+   *          authentication will be performed, or {@code null} if no
    *          authentication will be performed.
    */
   public String getProxyAuthID()
@@ -591,7 +591,7 @@ public class HTTPClient
    * authentication will be performed.
    *
    * @return  The password that will be provided to the HTTP proxy server if
-   *          authentication will be performed, or <CODE>null</CODE> if no
+   *          authentication will be performed, or {@code null} if no
    *          authentication will be performed.
    */
   public String getProxyAuthPassword()
@@ -634,8 +634,8 @@ public class HTTPClient
    * Indicates whether the client will attempt to provide authentication
    * information to the remote HTTP server.
    *
-   * @return  <CODE>true</CODE> if HTTP authentication will be performed, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if HTTP authentication will be performed, or
+   *          {@code false} if not.
    */
   public boolean authenticationEnabled()
   {
@@ -650,7 +650,7 @@ public class HTTPClient
    * authentication will be performed.
    *
    * @return  The username that will be provided to the remote HTTP server if
-   *          authentication will be performed, or <CODE>null</CODE> if no
+   *          authentication will be performed, or {@code null} if no
    *          authentication will be performed.
    */
   public String getAuthID()
@@ -665,7 +665,7 @@ public class HTTPClient
    * authentication will be performed.
    *
    * @return  The password that will be provided to the remote HTTP server if
-   *          authentication will be performed, or <CODE>null</CODE> if no
+   *          authentication will be performed, or {@code null} if no
    *          authentication will be performed.
    */
   public String getAuthPassword()
@@ -679,8 +679,8 @@ public class HTTPClient
    * Indicates whether this client will automatically delete any cookie whose
    * value is set to "LOGOUT".
    *
-   * @return  <CODE>true</CODE> if this client will automatically delete any
-   *          cookie whose value is set to "LOGOUT", or <CODE>false</CODE> if
+   * @return  {@code true} if this client will automatically delete any
+   *          cookie whose value is set to "LOGOUT", or {@code false} if
    *          not.
    */
   public boolean deleteLogoutCookies()
@@ -709,8 +709,8 @@ public class HTTPClient
    * Indicates whether this client will attempt to automatically follow
    * redirects returned by the server.
    *
-   * @return  <CODE>true</CODE> if this client will attempt to follow redirects,
-   *          or <CODE>false</CODE> if not.
+   * @return  {@code true} if this client will attempt to follow redirects,
+   *          or {@code false} if not.
    */
   public boolean followRedirects()
   {
@@ -737,8 +737,8 @@ public class HTTPClient
    * Indicates whether this connection will attempt to use HTTP 1.1 keepalive to
    * possibly re-use the same connection for multiple requests.
    *
-   * @return  <CODE>true</CODE> if the connection should attempt to use
-   *          keepalive, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the connection should attempt to use
+   *          keepalive, or {@code false} if not.
    */
   public boolean useKeepAlive()
   {
@@ -807,9 +807,9 @@ public class HTTPClient
    * <CODE>sendRequest()</CODE> -- only the contents of the primary document
    * requested.
    *
-   * @return  <CODE>true</CODE> if this client should automatically retrieve any
+   * @return  {@code true} if this client should automatically retrieve any
    *          additional files associated with the HTML documents that are
-   *          retrieved, or <CODE>false</CODE> if not.
+   *          retrieved, or {@code false} if not.
    */
   public boolean retrieveAssociatedFiles()
   {
@@ -867,7 +867,7 @@ public class HTTPClient
    * @param  name  The name of the common header whose value should be
    *               retrieved.
    *
-   * @return  The value of the specified common header, or <CODE>null</CODE> if
+   * @return  The value of the specified common header, or {@code null} if
    *          no such header has been defined.
    */
   public String getCommonHeader(String name)
@@ -911,7 +911,7 @@ public class HTTPClient
   /**
    * Adds a common header with the specified name and value.  If a header
    * already exists with the specified name, then the given value will replace
-   * the existing value.  If the given value is <CODE>null</CODE>, then any
+   * the existing value.  If the given value is {@code null}, then any
    * existing header with that name will be removed.
    *
    * @param  name   The name to use for the common header.
@@ -959,8 +959,8 @@ public class HTTPClient
   /**
    * Indicates whether support for cookies is enabled in this client.
    *
-   * @return  <CODE>true</CODE> if support for cookies is enabled, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if support for cookies is enabled, or
+   *          {@code false} if not.
    */
   public boolean cookiesEnabled()
   {
@@ -1086,8 +1086,8 @@ public class HTTPClient
    *
    * @param  name  The name of the cookie to remove.
    *
-   * @return  <CODE>true</CODE> if the requested cookie was found and removed,
-   *          or <CODE>false</CODE> if it was not.
+   * @return  {@code true} if the requested cookie was found and removed,
+   *          or {@code false} if it was not.
    */
   public boolean removeCookie(String name)
   {
@@ -1122,8 +1122,8 @@ public class HTTPClient
    * @param  name   The name of the cookie to remove.
    * @param  value  The value for the cookie to remove.
    *
-   * @return  <CODE>true</CODE> if the requested cookie was found and removed,
-   *          or <CODE>false</CODE> if it was not.
+   * @return  {@code true} if the requested cookie was found and removed,
+   *          or {@code false} if it was not.
    */
   public boolean removeCookie(String name, String value)
   {
@@ -1163,8 +1163,8 @@ public class HTTPClient
    * Indicates whether this HTTP client is currently configured to collect
    * statistics about the operations it performs.
    *
-   * @return  <CODE>true</CODE> if this HTTP client is configured to collect
-   *          statistics, or <CODE>false</CODE> if it is not.
+   * @return  {@code true} if this HTTP client is configured to collect
+   *          statistics, or {@code false} if it is not.
    */
   public boolean statisticsCollectionEnabled()
   {
@@ -1744,8 +1744,8 @@ public class HTTPClient
    * @param  statusCode  The HTTP status code for which to make the
    *                     determination.
    *
-   * @return  <CODE>true</CODE> if the provided status code will be used for a
-   *          redirect, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the provided status code will be used for a
+   *          redirect, or {@code false} if not.
    */
   public static boolean isRedirect(int statusCode)
   {

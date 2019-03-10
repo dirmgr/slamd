@@ -105,8 +105,8 @@ public class HTTPRequest
   /**
    * Indicates whether this is an HTTP GET request.
    *
-   * @return  <CODE>true</CODE> if this represents a GET request, or
-   *          <CODE>false</CODE> if it represents a POST request.
+   * @return  {@code true} if this represents a GET request, or
+   *          {@code false} if it represents a POST request.
    */
   public boolean isGet()
   {
@@ -152,7 +152,7 @@ public class HTTPRequest
    * @param  name  The name of the header to retrieve.
    *
    * @return  The value of the requested header for this request, or
-   *          <CODE>null</CODE> if no such header has been defined.
+   *          {@code null} if no such header has been defined.
    */
   public String getHeader(String name)
   {
@@ -272,7 +272,7 @@ public class HTTPRequest
   /**
    * Retrieves the value of the parameter with the specified name.  If the
    * given parameter has multiple values, then the first value will be returned.
-   * If there is no such parameter for this entry, then <CODE>null</CODE> will
+   * If there is no such parameter for this entry, then {@code null} will
    * be returned.
    *
    * @param  parameterName  The name of the parameter for which to retrieve the

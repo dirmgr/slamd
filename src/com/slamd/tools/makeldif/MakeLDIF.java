@@ -2893,7 +2893,7 @@ public class MakeLDIF
    * Reads the next line from the CSV file and splits it into separate fields.
    *
    * @return  An array containing the fields read from the next line of the CSV
-   *          file, or <CODE>null</CODE> if there is no more data in the file.
+   *          file, or {@code null} if there is no more data in the file.
    */
   public String[] nextCSVLine()
   {
@@ -3039,14 +3039,14 @@ public class MakeLDIF
 
   /**
    * Retrieves the template definition with the specified name.  If the
-   * requested template could not be found, <CODE>null</CODE> is returned.  If
+   * requested template could not be found, {@code null} is returned.  If
    * the requested template is a subordinate of some other template, then the
    * returned template will have the complete set of attributes from any parent
    * templates that it might have.
    *
    * @param  templateName  The name of the template to retrieve.
    *
-   * @return  The requested template, or <CODE>null</CODE> if the template could
+   * @return  The requested template, or {@code null} if the template could
    *          not be found.
    */
   public Template getTemplate(String templateName)

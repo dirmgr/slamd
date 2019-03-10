@@ -127,7 +127,7 @@ public class DeleteResponse
   /**
    * Retrieves the set of referrals for this result.
    *
-   * @return  The set of referrals for this result, or <CODE>null</CODE> if
+   * @return  The set of referrals for this result, or {@code null} if
    *          there were no referrals contained in the result.
    */
   public String[] getReferrals()

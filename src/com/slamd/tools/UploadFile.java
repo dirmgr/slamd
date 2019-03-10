@@ -164,8 +164,8 @@ public class UploadFile
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the file was uploaded successfully, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the file was uploaded successfully, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

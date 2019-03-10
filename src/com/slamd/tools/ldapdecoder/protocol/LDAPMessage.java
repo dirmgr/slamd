@@ -121,7 +121,7 @@ public class LDAPMessage
   /**
    * Retrieves the set of controls for this LDAP message.
    *
-   * @return  The set of controls for this LDAP message, or <CODE>null</CODE>
+   * @return  The set of controls for this LDAP message, or {@code null}
    *          if there are no controls.
    */
   public LDAPControl[] getControls()

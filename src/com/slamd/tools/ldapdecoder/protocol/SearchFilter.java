@@ -506,8 +506,8 @@ public class SearchFilter
    * Indicates whether to include DN attributes when performing the extensible
    * matching.
    *
-   * @return  <CODE>true</CODE> if DN attributes should be considered when
-   *          performing the extensible matching, or <CODE>false</CODE> if not.
+   * @return  {@code true} if DN attributes should be considered when
+   *          performing the extensible matching, or {@code false} if not.
    */
   public boolean includeDNAttributes()
   {

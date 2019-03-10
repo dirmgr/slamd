@@ -319,8 +319,8 @@ public class UniqueSortedList
   /**
    * Indicates whether the equality list is maintained.
    *
-   * @return  <CODE>true</CODE> if the equality list is maintained, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the equality list is maintained, or
+   *          {@code false} if not.
    */
   public boolean maintainEqualityList()
   {
@@ -332,8 +332,8 @@ public class UniqueSortedList
   /**
    * Indicates whether the lists for all substring types are maintained.
    *
-   * @return  <CODE>true</CODE> if the lists for all substring types are
-   *          maintained, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the lists for all substring types are
+   *          maintained, or {@code false} if not.
    */
   public boolean maintainSubstringList()
   {
@@ -345,8 +345,8 @@ public class UniqueSortedList
   /**
    * Indicates whether the subInitial list is maintained.
    *
-   * @return  <CODE>true</CODE> if the subInitial list is maintained, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the subInitial list is maintained, or
+   *          {@code false} if not.
    */
   public boolean maintainSubInitialList()
   {
@@ -358,8 +358,8 @@ public class UniqueSortedList
   /**
    * Indicates whether the subAny list is maintained.
    *
-   * @return  <CODE>true</CODE> if the subAny list is maintained, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the subAny list is maintained, or
+   *          {@code false} if not.
    */
   public boolean maintainSubAnyList()
   {
@@ -371,8 +371,8 @@ public class UniqueSortedList
   /**
    * Indicates whether the subFinal list is maintained.
    *
-   * @return  <CODE>true</CODE> if the subFinal list is maintained, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the subFinal list is maintained, or
+   *          {@code false} if not.
    */
   public boolean maintainSubFinalList()
   {

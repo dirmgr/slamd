@@ -190,8 +190,8 @@ public class ExportData
   /**
    * Sends the request to the SLAMD server and parses the response.
    *
-   * @return  <CODE>true</CODE> if the data was exported properly, or
-   *          <CODE>false</CODE> if not.
+   * @return  {@code true} if the data was exported properly, or
+   *          {@code false} if not.
    */
   public boolean sendRequest()
   {

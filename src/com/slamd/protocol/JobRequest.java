@@ -334,7 +334,7 @@ public class JobRequest
    * Retrieves the time at which processing should stop for the job.
    *
    * @return  The time at which processing should stop for the job, or
-   *          <CODE>null</CODE> if no stop time has been specified.
+   *          {@code null} if no stop time has been specified.
    */
   public Date getStopTime()
   {
@@ -464,8 +464,8 @@ public class JobRequest
    * Indicates whether the client should periodically report the collected
    * results to the server.
    *
-   * @return  <CODE>true</CODE> if the client should periodically report the
-   *          collected results to the server, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the client should periodically report the
+   *          collected results to the server, or {@code false} if not.
    */
   public boolean reportInProgressStats()
   {

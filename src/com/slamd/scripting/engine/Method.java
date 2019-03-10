@@ -99,8 +99,8 @@ public class Method
    *
    * @param  name  The name to compare against this method.
    *
-   * @return  <CODE>true</CODE> if the name of this method matches the specified
-   *          name, or <CODE>false</CODE> if not.
+   * @return  {@code true} if the name of this method matches the specified
+   *          name, or {@code false} if not.
    */
   public boolean isNamed(String name)
   {
@@ -117,8 +117,8 @@ public class Method
    * @param  argumentTypes  The set of argument types to compare against those
    *                        of this method.
    *
-   * @return  <CODE>true</CODE> if this method does have the specified name and
-   *          set of argument types, or <CODE>false</CODE> if it does not.
+   * @return  {@code true} if this method does have the specified name and
+   *          set of argument types, or {@code false} if it does not.
    */
   public boolean hasSignature(String name, String[] argumentTypes)
   {
@@ -155,8 +155,8 @@ public class Method
    * @param  returnType     The name of the return type to compare against that
    *                        of this method.
    *
-   * @return  <CODE>true</CODE> if this method does have the specified name, set
-   *          of argument types, and return type, or <CODE>false</CODE> if it
+   * @return  {@code true} if this method does have the specified name, set
+   *          of argument types, and return type, or {@code false} if it
    *          does not.
    */
   public boolean hasSignature(String name, String[] argumentTypes,

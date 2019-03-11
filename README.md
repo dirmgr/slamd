@@ -2,6 +2,14 @@
 
 ![Image](resources/slamd_logo.gif)
 
+---
+> **NOTE:** This code has undergone lots of changes and cleanup since I dusted it off after it sat dormant for many years.  I've updated many of the libraries that it uses (including Tomcat, the UnboundID LDAP SDK for Java, and the Apache Commons FileUpload), and I ripped out the ASN.1 parsing code in favor of the APIs provided by the UnboundID LDAP SDK.  I also performed a whole lot of code cleanup, which was sorely needed because the project was started in the Java 1.3 days, before generics and foreach and lots of other nice features.  I've done some basic testing and things seem to be working, but all of this overhauling may have introduced some bugs or instability.  If you find bugs, please report them.  I do know that some of the resource monitoring code doesn't work so well on Linux anymore, since it depends on being able to parse the output of commands run on the underlying system, and Linux doesn't care so much about preserving stable output.
+
+> **ALSO NOTE:** Although the functionality should largely be the same, I make no guarantees about backwards compatibility with the version that I last touched almost a decade ago.  I have made some minor updates to the API that could require you to update custom jobs you may have written.  I may make additional changes that could introduce further incompatibilities.  If you use a non-release version of SLAMD (and at this time, that's all that's available), just know that an upgrade might break things.
+---
+
+## About SLAMD
+
 This repository holds the source code for the SLAMD Distributed Load Generation Engine, which is a Java-based tool designed for benchmarking and performance analysis of network-based applications.  It provides a Web-based interface for scheduling and running jobs and viewing the results, and clients that can be installed on the systems you want to use to generate the load against whatever you're testing.  You can use multiple clients simultaneously to generate more load against the target server or service.
 
 SLAMD is especially good at benchmarking LDAP directory servers, but it can be used for other purposes as well, and includes minimal out-of-the-box support for HTTP, IMAP, POP3, SMTP, and SQL.  It offers an API for creating custom jobs, so you can write your own support for interacting with whatever you want.

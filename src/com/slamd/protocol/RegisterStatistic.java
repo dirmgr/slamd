@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class RegisterStatistic
+public final class RegisterStatistic
        extends SLAMDMessage
 {
   // The client ID of the client that will be reporting the data.
@@ -85,8 +85,8 @@ public class RegisterStatistic
    * @param  displayName  The display name of the stat tracker that will be
    *                      reported.
    */
-  public RegisterStatistic(String jobID, String clientID, String threadID,
-                           String displayName)
+  public RegisterStatistic(final String jobID, final String clientID,
+                           final String threadID, final String displayName)
   {
     this.jobID       = jobID;
     this.clientID    = clientID;
@@ -113,7 +113,7 @@ public class RegisterStatistic
    *
    * @param  jobID  The job ID of the job with which the data is associated.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -138,7 +138,7 @@ public class RegisterStatistic
    * @param  clientID  The client ID of the client that will be reporting the
    *                   data.
    */
-  public void setClientID(String clientID)
+  public void setClientID(final String clientID)
   {
     this.clientID = clientID;
   }
@@ -166,7 +166,7 @@ public class RegisterStatistic
    * @param  threadID  The thread ID of the client thread that will be reporting
    *                   the data.
    */
-  public void setThreadID(String threadID)
+  public void setThreadID(final String threadID)
   {
     this.threadID = threadID;
   }
@@ -191,7 +191,7 @@ public class RegisterStatistic
    * @param  displayName  The display name of the stat tracker that will be
    *                      reported.
    */
-  public void setDisplayName(String displayName)
+  public void setDisplayName(final String displayName)
   {
     this.displayName = displayName;
   }
@@ -207,16 +207,16 @@ public class RegisterStatistic
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_ID,
-                                        new ASN1OctetString(clientID)));
+         new ASN1OctetString(clientID)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_THREAD_ID,
-                                        new ASN1OctetString(threadID)));
+         new ASN1OctetString(threadID)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_DISPLAY_NAME,
-                                        new ASN1OctetString(displayName)));
+         new ASN1OctetString(displayName)));
 
     return new ASN1Sequence(elementList);
   }
@@ -235,18 +235,18 @@ public class RegisterStatistic
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Register statistic message does not include " +
-                               "a job ID.");
+      throw new SLAMDException(
+           "Register statistic message does not include a job ID.");
     }
     else
     {
@@ -254,7 +254,7 @@ public class RegisterStatistic
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -264,8 +264,8 @@ public class RegisterStatistic
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Register statistic message does not include " +
-                               "a client ID.");
+      throw new SLAMDException(
+           "Register statistic message does not include a client ID.");
     }
     else
     {
@@ -273,7 +273,7 @@ public class RegisterStatistic
       {
         clientID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the client ID:  " + e, e);
       }
@@ -283,8 +283,8 @@ public class RegisterStatistic
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_THREAD_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Register statistic message does not include " +
-                               "a thread ID.");
+      throw new SLAMDException(
+           "Register statistic message does not include a thread ID.");
     }
     else
     {
@@ -292,7 +292,7 @@ public class RegisterStatistic
       {
         threadID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the thread ID:  " + e, e);
       }
@@ -302,8 +302,8 @@ public class RegisterStatistic
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_DISPLAY_NAME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Register statistic message does not include " +
-                               "a display name.");
+      throw new SLAMDException(
+           "Register statistic message does not include a display name.");
     }
     else
     {
@@ -311,7 +311,7 @@ public class RegisterStatistic
       {
         displayName = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the display name:  " + e, e);
       }
@@ -330,7 +330,7 @@ public class RegisterStatistic
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
     StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)

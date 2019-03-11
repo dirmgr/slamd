@@ -41,14 +41,14 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class ThroughputTestJobClass
+public final class ThroughputTestJobClass
        extends JobClass
 {
   /**
    * The display name of the stat tracker used to track the number of bits read
    * per second.
    */
-  public static final String STAT_TRACKER_BITS_PER_SECOND =
+  private static final String STAT_TRACKER_BITS_PER_SECOND =
        "Average Bits Read per Second";
 
 
@@ -57,7 +57,7 @@ public class ThroughputTestJobClass
    * The display name of the stat tracker used to track the number of bytes read
    * per second.
    */
-  public static final String STAT_TRACKER_BYTES_PER_SECOND =
+  private static final String STAT_TRACKER_BYTES_PER_SECOND =
        "Average Bytes Read per Second";
 
 
@@ -66,7 +66,7 @@ public class ThroughputTestJobClass
    * The display name of the stat tracker used to track the number of kilobits
    * read per second.
    */
-  public static final String STAT_TRACKER_KILOBITS_PER_SECOND =
+  private static final String STAT_TRACKER_KILOBITS_PER_SECOND =
        "Average Kilobits Read per Second";
 
 
@@ -75,7 +75,7 @@ public class ThroughputTestJobClass
    * The display name of the stat tracker used to track the number of kilobytes
    * read per second.
    */
-  public static final String STAT_TRACKER_KILOBYTES_PER_SECOND =
+  private static final String STAT_TRACKER_KILOBYTES_PER_SECOND =
        "Average Kilobytes Read per Second";
 
 
@@ -84,7 +84,7 @@ public class ThroughputTestJobClass
    * The display name of the stat tracker used to track the number of megabits
    * read per second.
    */
-  public static final String STAT_TRACKER_MEGABITS_PER_SECOND =
+  private static final String STAT_TRACKER_MEGABITS_PER_SECOND =
        "Average Megabits Read per Second";
 
 
@@ -93,7 +93,7 @@ public class ThroughputTestJobClass
    * The display name of the stat tracker used to track the number of megabytes
    * read per second.
    */
-  public static final String STAT_TRACKER_MEGABYTES_PER_SECOND =
+  private static final String STAT_TRACKER_MEGABYTES_PER_SECOND =
        "Average Megabytes Read per Second";
 
 
@@ -214,7 +214,7 @@ public class ThroughputTestJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] params = new Parameter[]
+    final Parameter[] params = new Parameter[]
     {
       addressParameter,
       portParameter,
@@ -231,27 +231,24 @@ public class ThroughputTestJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new LongValueTracker(clientID, threadID,
-                           STAT_TRACKER_MEGABYTES_PER_SECOND,
-                           collectionInterval),
+           STAT_TRACKER_MEGABYTES_PER_SECOND, collectionInterval),
       new LongValueTracker(clientID, threadID,
-                           STAT_TRACKER_MEGABITS_PER_SECOND,
-                           collectionInterval),
+           STAT_TRACKER_MEGABITS_PER_SECOND, collectionInterval),
       new LongValueTracker(clientID, threadID,
-                           STAT_TRACKER_KILOBYTES_PER_SECOND,
-                           collectionInterval),
+           STAT_TRACKER_KILOBYTES_PER_SECOND, collectionInterval),
       new LongValueTracker(clientID, threadID,
-                           STAT_TRACKER_KILOBITS_PER_SECOND,
-                           collectionInterval),
+           STAT_TRACKER_KILOBITS_PER_SECOND, collectionInterval),
       new LongValueTracker(clientID, threadID, STAT_TRACKER_BYTES_PER_SECOND,
-                           collectionInterval),
+           collectionInterval),
       new LongValueTracker(clientID, threadID, STAT_TRACKER_BITS_PER_SECOND,
-                           collectionInterval),
+           collectionInterval),
     };
   }
 
@@ -291,7 +288,8 @@ public class ThroughputTestJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     addressParameter =
@@ -330,14 +328,14 @@ public class ThroughputTestJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Create the stat tracker that we will actually use.
     bytesRead = new LongValueTracker(clientID, threadID,
-                                     STAT_TRACKER_BYTES_PER_SECOND,
-                                     collectionInterval);
+         STAT_TRACKER_BYTES_PER_SECOND, collectionInterval);
 
 
     // Initialize the remaining variables we will use for this thread.
@@ -354,13 +352,13 @@ public class ThroughputTestJobClass
   public void runJob()
   {
     // Establish the connection to the throughput test server.
-    SocketChannel socketChannel;
+    final SocketChannel socketChannel;
     try
     {
       socketChannel =
            SocketChannel.open(new InetSocketAddress(serverAddress, serverPort));
     }
-    catch (IOException ioe)
+    catch (final IOException ioe)
     {
       logMessage("Unable to connect to throughput test server " +
                  serverAddress + ':' + serverPort + " -- " + ioe);
@@ -376,7 +374,7 @@ public class ThroughputTestJobClass
     {
       while (! shouldStop())
       {
-        long numBytesRead = socketChannel.read(readBuffer);
+        final long numBytesRead = socketChannel.read(readBuffer);
         readBuffer.clear();
 
         if (numBytesRead < 0)
@@ -394,7 +392,7 @@ public class ThroughputTestJobClass
         }
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       logMessage("Caught an exception while reading data from the server -- " +
                  stackTraceToString(e));
@@ -408,7 +406,7 @@ public class ThroughputTestJobClass
     try
     {
       socketChannel.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
   }
 }
 

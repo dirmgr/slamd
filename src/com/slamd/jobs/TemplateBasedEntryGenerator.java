@@ -34,19 +34,19 @@ import com.unboundid.util.Base64;
  *
  * @author   Neil A. Wilson
  */
-public class TemplateBasedEntryGenerator
+public final class TemplateBasedEntryGenerator
 {
   /**
    * The set of characters that should be included in numeric values.
    */
-  public static final char[] NUMERIC_CHARS = "0123456789".toCharArray();
+  private static final char[] NUMERIC_CHARS = "0123456789".toCharArray();
 
 
 
   /**
    * The set of characters that should be included in alphabetic values.
    */
-  public static final char[] ALPHA_CHARS =
+  private static final char[] ALPHA_CHARS =
        "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 
@@ -54,7 +54,7 @@ public class TemplateBasedEntryGenerator
   /**
    * The set of characters that should be included in alphanumeric values.
    */
-  public static final char[] ALPHANUMERIC_CHARS =
+  private static final char[] ALPHANUMERIC_CHARS =
        "abcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
 
 
@@ -62,14 +62,14 @@ public class TemplateBasedEntryGenerator
   /**
    * The set of characters that should be included in hexadecimal values.
    */
-  public static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
+  private static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
 
 
   /**
    * The set of characters that should be included in base64 values.
    */
-  public static final char[] BASE64_CHARS =
+  private static final char[] BASE64_CHARS =
        ("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" +
         "0123456789+/").toCharArray();
 
@@ -78,7 +78,7 @@ public class TemplateBasedEntryGenerator
   /**
    * The set of months that will be used if the name of a month is required.
    */
-  public static final String[] MONTH_NAMES =
+  private static final String[] MONTH_NAMES =
   {
     "January",
     "February",
@@ -190,13 +190,12 @@ public class TemplateBasedEntryGenerator
                            final String dn)
          throws SLAMDException
   {
-    Entry entry = new Entry(dn);
+    final Entry entry = new Entry(dn);
 
     for (int i=0; i < attributeNames.length; i++)
     {
-      String value = processValue(random, attributeValues[i], entry,
-                                  entryNumber,
-                                  (entryNumber - firstEntryNumber));
+      final String value = processValue(random, attributeValues[i], entry,
+           entryNumber, (entryNumber - firstEntryNumber));
       if (value != null)
       {
         entry.addAttribute(attributeNames[i], value);
@@ -240,14 +239,14 @@ public class TemplateBasedEntryGenerator
     // attribute
     if ((pos = v.indexOf("<presence:")) >= 0)
     {
-      int closePos = v.indexOf('>', pos);
+      final int closePos = v.indexOf('>', pos);
       if (closePos > pos)
       {
-        String numStr = v.substring(pos+10, closePos);
+        final String numStr = v.substring(pos+10, closePos);
         try
         {
-          int percentage = Integer.parseInt(numStr);
-          int randomValue = ((random.nextInt() & 0x7FFFFFFF) % 100) + 1;
+          final int percentage = Integer.parseInt(numStr);
+          final int randomValue = ((random.nextInt() & 0x7FFFFFFF) % 100) + 1;
           if (randomValue <= percentage)
           {
             // We have determined that this value should be included in the
@@ -262,7 +261,7 @@ public class TemplateBasedEntryGenerator
             return null;
           }
         }
-        catch (NumberFormatException nfe)
+        catch (final NumberFormatException nfe)
         {
           return null;
         }
@@ -274,15 +273,15 @@ public class TemplateBasedEntryGenerator
     // next attribute.
     if ((pos = v.indexOf("<ifpresent:")) >= 0)
     {
-      int closePos = v.indexOf('>', pos);
+      final int closePos = v.indexOf('>', pos);
       if (closePos > pos)
       {
-        int colonPos = v.indexOf(':', pos+11);
+        final int colonPos = v.indexOf(':', pos+11);
         if ((colonPos > 0) && (colonPos < closePos))
         {
           // Look for a specific value to be present
-          String attrName   = v.substring(pos+11, colonPos);
-          String matchValue = v.substring(colonPos+1, closePos);
+          final String attrName   = v.substring(pos+11, colonPos);
+          final String matchValue = v.substring(colonPos+1, closePos);
           if (! entry.hasAttributeValue(attrName, matchValue))
           {
             return null;
@@ -312,15 +311,15 @@ public class TemplateBasedEntryGenerator
     // next attribute.
     if ((pos = v.indexOf("<ifabsent:")) >= 0)
     {
-      int closePos = v.indexOf('>', pos);
+      final int closePos = v.indexOf('>', pos);
       if (closePos > pos)
       {
-        int colonPos = v.indexOf(':', pos+10);
+        final int colonPos = v.indexOf(':', pos+10);
         if ((colonPos > 0) && (colonPos < closePos))
         {
           // Look for a specific value to be present.
-          String attrName   = v.substring(pos+11, colonPos);
-          String matchValue = v.substring(colonPos+1, closePos);
+          final String attrName   = v.substring(pos+11, colonPos);
+          final String matchValue = v.substring(colonPos+1, closePos);
           if (entry.hasAttributeValue(attrName, matchValue))
           {
             return null;
@@ -369,19 +368,21 @@ public class TemplateBasedEntryGenerator
       if ((pos = v.indexOf("<random:chars:")) >= 0)
       {
         // Get the set of characters to use in the resulting value.
-        int colonPos = v.indexOf(':', pos+14);
-        int closePos = v.indexOf('>', colonPos+1);
-        String charSet = v.substring(pos+14, colonPos);
+        final int colonPos = v.indexOf(':', pos+14);
+        final int closePos = v.indexOf('>', colonPos+1);
+        final String charSet = v.substring(pos+14, colonPos);
 
         // See if there is an additional colon followed by a number.  If so,
         // then the length will be a random number between the two.
-        int count;
-        int colonPos2 = v.indexOf(':', colonPos+1);
+        final int count;
+        final int colonPos2 = v.indexOf(':', colonPos+1);
         if ((colonPos2 > 0) && (colonPos2 < closePos))
         {
-          int minValue = Integer.parseInt(v.substring(colonPos+1, colonPos2));
-          int maxValue = Integer.parseInt(v.substring(colonPos2+1, closePos));
-          int span = maxValue - minValue + 1;
+          final int minValue =
+               Integer.parseInt(v.substring(colonPos+1, colonPos2));
+          final int maxValue =
+               Integer.parseInt(v.substring(colonPos2+1, closePos));
+          final int span = maxValue - minValue + 1;
           count = (random.nextInt() & 0x7FFFFFFF) % span + minValue;
         }
         else
@@ -389,7 +390,7 @@ public class TemplateBasedEntryGenerator
           count = Integer.parseInt(v.substring(colonPos+1, closePos));
         }
 
-        String randVal =
+        final String randVal =
              generateRandomValue(random, charSet.toCharArray(), count);
         v = v.substring(0, pos) + randVal + v.substring(closePos+1);
         needReprocess = true;
@@ -401,14 +402,15 @@ public class TemplateBasedEntryGenerator
       {
         // See if there is an additional colon followed by a number.  If so,
         // then the length will be a random number between the two.
-        int count;
-        int closePos = v.indexOf('>', pos+14);
-        int colonPos = v.indexOf(':', pos+14);
+        final int count;
+        final int closePos = v.indexOf('>', pos+14);
+        final int colonPos = v.indexOf(':', pos+14);
         if ((colonPos > 0) && (colonPos < closePos))
         {
-          int minValue = Integer.parseInt(v.substring(pos+14, colonPos));
-          int maxValue = Integer.parseInt(v.substring(colonPos+1, closePos));
-          int span = maxValue - minValue + 1;
+          final int minValue = Integer.parseInt(v.substring(pos+14, colonPos));
+          final int maxValue =
+               Integer.parseInt(v.substring(colonPos+1, closePos));
+          final int span = maxValue - minValue + 1;
           count = (random.nextInt() & 0x7FFFFFFF) % span + minValue;
          }
         else
@@ -417,7 +419,7 @@ public class TemplateBasedEntryGenerator
         }
 
         // Generate the new value.
-        String randVal = generateRandomValue(random, ALPHA_CHARS, count);
+        final String randVal = generateRandomValue(random, ALPHA_CHARS, count);
         v = v.substring(0, pos) + randVal + v.substring(closePos + 1);
         needReprocess = true;
       }
@@ -427,28 +429,29 @@ public class TemplateBasedEntryGenerator
       // "<random:numeric:min:max>" or "<random:numeric:min:max:length>".
       if ((pos = v.indexOf("<random:numeric:")) >= 0)
       {
-        int closePos = v.indexOf('>', pos);
+        final int closePos = v.indexOf('>', pos);
 
         // See if there is an extra colon.  If so, then generate a random
         // number between x and y.  Otherwise, generate a random number with
         // the specified number of digits.
-        int extraColonPos = v.indexOf(':', pos+16);
+        final int extraColonPos = v.indexOf(':', pos+16);
         if ((extraColonPos > 0) && (extraColonPos < closePos))
         {
           // See if there is one more colon separating the max from the
           // length.  If so, then get it and create a padded value of at least
           // length digits.  If not, then just generate the random value.
-          int extraColonPos2 = v.indexOf(':', extraColonPos+1);
+          final int extraColonPos2 = v.indexOf(':', extraColonPos+1);
           if ((extraColonPos2 > 0) && (extraColonPos2 < closePos))
           {
-            String lowerBoundStr = v.substring(pos+16, extraColonPos);
-            String upperBoundStr = v.substring(extraColonPos+1, extraColonPos2);
-            String lengthStr = v.substring(extraColonPos2+1, closePos);
-            int lowerBound = Integer.parseInt(lowerBoundStr);
-            int upperBound = Integer.parseInt(upperBoundStr);
-            int length = Integer.parseInt(lengthStr);
-            int span = (upperBound - lowerBound + 1);
-            int randomValue = (random.nextInt() & 0x7FFFFFFF) % span +
+            final String lowerBoundStr = v.substring(pos+16, extraColonPos);
+            final String upperBoundStr =
+                 v.substring(extraColonPos+1, extraColonPos2);
+            final String lengthStr = v.substring(extraColonPos2+1, closePos);
+            final int lowerBound = Integer.parseInt(lowerBoundStr);
+            final int upperBound = Integer.parseInt(upperBoundStr);
+            final int length = Integer.parseInt(lengthStr);
+            final int span = (upperBound - lowerBound + 1);
+            final int randomValue = (random.nextInt() & 0x7FFFFFFF) % span +
                               lowerBound;
             String valueStr = String.valueOf(randomValue);
             while (valueStr.length() < length)
@@ -459,22 +462,23 @@ public class TemplateBasedEntryGenerator
           }
           else
           {
-            String lowerBoundStr = v.substring(pos+16, extraColonPos);
-            String upperBoundStr = v.substring(extraColonPos+1, closePos);
-            int lowerBound = Integer.parseInt(lowerBoundStr);
-            int upperBound = Integer.parseInt(upperBoundStr);
-            int span = (upperBound - lowerBound + 1);
-            int randomValue = (random.nextInt() & 0x7FFFFFFF) % span +
-                              lowerBound;
+            final String lowerBoundStr = v.substring(pos+16, extraColonPos);
+            final String upperBoundStr = v.substring(extraColonPos+1, closePos);
+            final int lowerBound = Integer.parseInt(lowerBoundStr);
+            final int upperBound = Integer.parseInt(upperBoundStr);
+            final int span = (upperBound - lowerBound + 1);
+            final int randomValue =
+                 (random.nextInt() & 0x7FFFFFFF) % span + lowerBound;
             v = v.substring(0, pos) + randomValue + v.substring(closePos+1);
           }
         }
         else
         {
           // Get the number of characters to include in the value
-          int numPos = pos + 16;
-          int count = Integer.parseInt(v.substring(numPos, closePos));
-          String randVal = generateRandomValue(random, NUMERIC_CHARS, count);
+          final int numPos = pos + 16;
+          final int count = Integer.parseInt(v.substring(numPos, closePos));
+          final String randVal =
+               generateRandomValue(random, NUMERIC_CHARS, count);
           v = v.substring(0, pos) + randVal + v.substring(closePos+1);
         }
 
@@ -487,15 +491,15 @@ public class TemplateBasedEntryGenerator
       {
         // See if there is an additional colon followed by a number.  If so,
         // then the length will be a random number between the two.
-        int count;
-        int closePos = v.indexOf('>', pos+21);
-        int colonPos = v.indexOf(':', pos+21);
+        final int count;
+        final int closePos = v.indexOf('>', pos+21);
+        final int colonPos = v.indexOf(':', pos+21);
         if ((colonPos > 0) && (colonPos < closePos))
         {
-          int minValue = Integer.parseInt(v.substring(pos+21, colonPos));
-          int maxValue = Integer.parseInt(v.substring(colonPos+1,
-                                                          closePos));
-          int span = maxValue - minValue + 1;
+          final int minValue = Integer.parseInt(v.substring(pos+21, colonPos));
+          final int maxValue =
+               Integer.parseInt(v.substring(colonPos+1, closePos));
+          final int span = maxValue - minValue + 1;
           count = (random.nextInt() & 0x7FFFFFFF) % span + minValue;
          }
         else
@@ -504,7 +508,8 @@ public class TemplateBasedEntryGenerator
         }
 
         // Generate the new value.
-        String randVal = generateRandomValue(random, ALPHANUMERIC_CHARS, count);
+        final String randVal =
+             generateRandomValue(random, ALPHANUMERIC_CHARS, count);
         v = v.substring(0, pos) + randVal + v.substring(closePos + 1);
         needReprocess = true;
       }
@@ -515,14 +520,15 @@ public class TemplateBasedEntryGenerator
       {
         // See if there is an additional colon followed by a number.  If so,
         // then the length will be a random number between the two.
-        int count;
-        int closePos = v.indexOf('>', pos+12);
-        int colonPos = v.indexOf(':', pos+12);
+        final int count;
+        final int closePos = v.indexOf('>', pos+12);
+        final int colonPos = v.indexOf(':', pos+12);
         if ((colonPos > 0) && (colonPos < closePos))
         {
-          int minValue = Integer.parseInt(v.substring(pos+12, colonPos));
-          int maxValue = Integer.parseInt(v.substring(colonPos+1, closePos));
-          int span = maxValue - minValue + 1;
+          final int minValue = Integer.parseInt(v.substring(pos+12, colonPos));
+          final int maxValue =
+               Integer.parseInt(v.substring(colonPos+1, closePos));
+          final int span = maxValue - minValue + 1;
           count = (random.nextInt() & 0x7FFFFFFF) % span + minValue;
          }
         else
@@ -531,7 +537,7 @@ public class TemplateBasedEntryGenerator
         }
 
         // Generate the new value.
-        String randVal = generateRandomValue(random, HEX_CHARS, count);
+        final String randVal = generateRandomValue(random, HEX_CHARS, count);
         v = v.substring(0, pos) + randVal + v.substring(closePos + 1);
         needReprocess = true;
       }
@@ -542,14 +548,15 @@ public class TemplateBasedEntryGenerator
       {
         // See if there is an additional colon followed by a number.  If so,
         // then the length will be a random number between the two.
-        int count;
-        int closePos = v.indexOf('>', pos+15);
-        int colonPos = v.indexOf(':', pos+15);
+        final int count;
+        final int closePos = v.indexOf('>', pos+15);
+        final int colonPos = v.indexOf(':', pos+15);
         if ((colonPos > 0) && (colonPos < closePos))
         {
-          int minValue = Integer.parseInt(v.substring(pos+15, colonPos));
-          int maxValue = Integer.parseInt(v.substring(colonPos+1, closePos));
-          int span = maxValue - minValue + 1;
+          final int minValue = Integer.parseInt(v.substring(pos+15, colonPos));
+          final int maxValue =
+               Integer.parseInt(v.substring(colonPos+1, closePos));
+          final int span = maxValue - minValue + 1;
           count = (random.nextInt() & 0x7FFFFFFF) % span + minValue;
          }
         else
@@ -577,7 +584,7 @@ public class TemplateBasedEntryGenerator
       if ((pos = v.indexOf("<random:telephone>")) >= 0)
       {
         // Get the number of characters to include in the value
-        String randVal = generateRandomValue(random, NUMERIC_CHARS, 10);
+        final String randVal = generateRandomValue(random, NUMERIC_CHARS, 10);
         v = v.substring(0, pos) + randVal.substring(0, 3) + '-' +
                 randVal.substring(3, 6) + '-' + randVal.substring(6) +
                 v.substring(pos + 18);
@@ -589,15 +596,15 @@ public class TemplateBasedEntryGenerator
       // length characters of the month name.
       if ((pos = v.indexOf("<random:month")) >= 0)
       {
-        int closePos = v.indexOf('>', pos+13);
+        final int closePos = v.indexOf('>', pos+13);
         String monthStr = MONTH_NAMES[(random.nextInt() & 0x7FFFFFFF) % 12];
 
         // See if there is another colon that specifies the length.
-        int colonPos = v.indexOf(':', pos+13);
+        final int colonPos = v.indexOf(':', pos+13);
         if ((colonPos > 0) && (colonPos < closePos))
         {
-          String lengthStr = v.substring(colonPos+1, closePos);
-          int length = Integer.parseInt(lengthStr);
+          final String lengthStr = v.substring(colonPos+1, closePos);
+          final int length = Integer.parseInt(lengthStr);
           if (monthStr.length() > length)
           {
             monthStr = monthStr.substring(0, length);
@@ -621,10 +628,10 @@ public class TemplateBasedEntryGenerator
       // value for that attribute
       if ((pos = v.indexOf("<sequential")) >= 0)
       {
-        int closePos = v.indexOf('>', pos);
+        final int closePos = v.indexOf('>', pos);
 
         // If a starting point was specified, then use it.  If not, then use 0.
-        int colonPos = v.indexOf(':', pos);
+        final int colonPos = v.indexOf(':', pos);
         int startingValue = 0;
         if ((colonPos > pos) && (colonPos < closePos))
         {
@@ -673,24 +680,26 @@ public class TemplateBasedEntryGenerator
       // properly for attributes that are defined in the template before the
       // attribute that attempts to use its value.  If the specified attribute
       // has more than one value, then the first value found will be used.
-      int closePos = v.indexOf('}', pos);
+      final int closePos = v.indexOf('}', pos);
       if (closePos > 0)
       {
-        int colonPos = v.indexOf(':', pos);
+        final int colonPos = v.indexOf(':', pos);
         int substringChars = -1;
-        String attrName;
+        final String attrName;
         if ((colonPos > 0) && (colonPos < closePos))
         {
           attrName = v.substring(pos+1, colonPos);
-          String numStr = v.substring(colonPos+1, closePos);
+          final String numStr = v.substring(colonPos+1, closePos);
           try
           {
             substringChars = Integer.parseInt(numStr);
           }
-          catch (NumberFormatException nfe)
+          catch (final NumberFormatException nfe)
           {
-            throw new SLAMDException("Could not parse an attribute value " +
-                                     "range as an integer:  " + nfe, nfe);
+            throw new SLAMDException(
+                 "Could not parse an attribute value range as an integer:  " +
+                      nfe,
+                 nfe);
           }
         }
         else
@@ -716,8 +725,8 @@ public class TemplateBasedEntryGenerator
 
     if ((pos = v.indexOf("<base64:")) >= 0)
     {
-      int closePos = v.indexOf('>', pos+8);
-      String valueToEncode = v.substring(pos+8, closePos);
+      final int closePos = v.indexOf('>', pos+8);
+      final String valueToEncode = v.substring(pos+8, closePos);
       v = v.substring(0, pos) + Base64.encode(valueToEncode) +
           v.substring(closePos+1);
     }
@@ -743,7 +752,7 @@ public class TemplateBasedEntryGenerator
                                             final char[] charSet,
                                             final int length)
   {
-    StringBuilder buffer = new StringBuilder(length);
+    final StringBuilder buffer = new StringBuilder(length);
     for (int i=0; i < length; i++)
     {
       buffer.append(charSet[random.nextInt(charSet.length)]);

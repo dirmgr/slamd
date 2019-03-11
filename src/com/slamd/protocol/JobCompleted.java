@@ -19,7 +19,7 @@ package com.slamd.protocol;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import com.unboundid.asn1.ASN1Element;
@@ -44,7 +44,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class JobCompleted
+public final class JobCompleted
        extends SLAMDMessage
 {
   // Information about any data files that might have been generated during job
@@ -116,10 +116,13 @@ public class JobCompleted
    *                          the job was running.
    * @param  logMessages      The set of log messages for the job.
    */
-  public JobCompleted(int messageID, HashMap<String,String> extraProperties,
-                      String jobID, int jobState, long actualStartTime,
-                      long actualStopTime, int actualDuration,
-                      StatTracker[] statTrackers, String[] logMessages)
+  public JobCompleted(final int messageID,
+                      final Map<String,String> extraProperties,
+                      final String jobID, final int jobState,
+                      final long actualStartTime, final long actualStopTime,
+                      final int actualDuration,
+                      final StatTracker[] statTrackers,
+                      final String[] logMessages)
   {
     super(messageID, extraProperties);
 
@@ -170,7 +173,7 @@ public class JobCompleted
    *
    * @param  jobID  The job ID for the associated job.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -194,7 +197,7 @@ public class JobCompleted
    *
    * @param  jobState  The final job state code for the job.
    */
-  public void setJobState(int jobState)
+  public void setJobState(final int jobState)
   {
     this.jobState = jobState;
   }
@@ -218,7 +221,7 @@ public class JobCompleted
    *
    * @param  actualStartTime  The time that the job actually started processing.
    */
-  public void setActualStartTime(long actualStartTime)
+  public void setActualStartTime(final long actualStartTime)
   {
     this.actualStartTime = actualStartTime;
   }
@@ -242,7 +245,7 @@ public class JobCompleted
    *
    * @param  actualStopTime  The time that the job actually stopped processing.
    */
-  public void setActualStopTime(long actualStopTime)
+  public void setActualStopTime(final long actualStopTime)
   {
     this.actualStopTime = actualStopTime;
   }
@@ -267,7 +270,7 @@ public class JobCompleted
    * @param  actualDuration  The length of time in seconds that the job was
    *                         active.
    */
-  public void setActualDuration(int actualDuration)
+  public void setActualDuration(final int actualDuration)
   {
     this.actualDuration = actualDuration;
   }
@@ -291,7 +294,7 @@ public class JobCompleted
    *
    * @param  statTrackers  The set of job statistics collected by the job.
    */
-  public void setStatTrackers(StatTracker[] statTrackers)
+  public void setStatTrackers(final StatTracker[] statTrackers)
   {
     if (statTrackers == null)
     {
@@ -323,8 +326,8 @@ public class JobCompleted
    * @param  monitorStatTrackers  The set of resource monitor statistics
    *                              collected by the job.
    */
-  public void setResourceMonitorStatTrackers(ResourceMonitorStatTracker[]
-                                                  monitorStatTrackers)
+  public void setResourceMonitorStatTrackers(
+                   final ResourceMonitorStatTracker[] monitorStatTrackers)
   {
     if (monitorStatTrackers == null)
     {
@@ -359,7 +362,7 @@ public class JobCompleted
    * @param  fileData  A set of information about any files generated during
    *                   job processing that should be uploaded to the server.
    */
-  public void setFileData(FileData[] fileData)
+  public void setFileData(final FileData[] fileData)
   {
     if (fileData == null)
     {
@@ -391,7 +394,7 @@ public class JobCompleted
    * @param  logMessages  The set of log messages generated during job
    *                      processing.
    */
-  public void setLogMessages(String[] logMessages)
+  public void setLogMessages(final String[] logMessages)
   {
     if (logMessages == null)
     {
@@ -414,27 +417,27 @@ public class JobCompleted
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_STATE,
-                                        new ASN1Enumerated(jobState)));
+         new ASN1Enumerated(jobState)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_ACTUAL_START_TIME,
-                         new ASN1OctetString(String.valueOf(actualStartTime))));
+         ProtocolConstants.PROPERTY_ACTUAL_START_TIME,
+         new ASN1OctetString(String.valueOf(actualStartTime))));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_ACTUAL_STOP_TIME,
-                         new ASN1OctetString(String.valueOf(actualStopTime))));
+         ProtocolConstants.PROPERTY_ACTUAL_STOP_TIME,
+         new ASN1OctetString(String.valueOf(actualStopTime))));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_ACTUAL_DURATION,
-                         new ASN1Integer(actualDuration)));
+         ProtocolConstants.PROPERTY_ACTUAL_DURATION,
+         new ASN1Integer(actualDuration)));
 
     if ((statTrackers != null) && (statTrackers.length > 0))
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_JOB_STATISTICS,
-                           StatEncoder.trackersToSequence(statTrackers)));
+           ProtocolConstants.PROPERTY_JOB_STATISTICS,
+           StatEncoder.trackersToSequence(statTrackers)));
     }
 
     if ((monitorStatTrackers != null) && (monitorStatTrackers.length > 0))
@@ -447,7 +450,7 @@ public class JobCompleted
     if ((fileData != null) && (fileData.length > 0))
     {
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_FILE_DATA,
-                                          FileData.encodeArray(fileData)));
+           FileData.encodeArray(fileData)));
     }
 
     if ((logMessages != null) && (logMessages.length > 0))
@@ -456,16 +459,16 @@ public class JobCompleted
       // very large performance hit for jobs with lots of log messages.
       // Instead, we'll concatenate it into a big string that we can decode
       // later.
-      StringBuilder buffer = new StringBuilder();
-      for (int i=0; i < logMessages.length; i++)
+      final StringBuilder buffer = new StringBuilder();
+      for (final String logMessage : logMessages)
       {
-        buffer.append(logMessages[i]);
+        buffer.append(logMessage);
         buffer.append('\n');
       }
 
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_LOG_MESSAGES,
-                           new ASN1OctetString(buffer.toString())));
+           ProtocolConstants.PROPERTY_LOG_MESSAGES,
+           new ASN1OctetString(buffer.toString())));
     }
 
     return new ASN1Sequence(elementList);
@@ -485,18 +488,18 @@ public class JobCompleted
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job completed message does not include a job " +
-                               "ID.");
+      throw new SLAMDException(
+           "Job completed message does not include a job ID.");
     }
     else
     {
@@ -504,7 +507,7 @@ public class JobCompleted
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -514,8 +517,8 @@ public class JobCompleted
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_JOB_STATE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job completed message does not include the " +
-                               "job state.");
+      throw new SLAMDException(
+           "Job completed message does not include the job state.");
     }
     else
     {
@@ -523,7 +526,7 @@ public class JobCompleted
       {
         jobState = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job state:  " + e, e);
       }
@@ -534,20 +537,20 @@ public class JobCompleted
          propertyMap.get(ProtocolConstants.PROPERTY_ACTUAL_START_TIME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job completed message does not include the " +
-                               "actual start time.");
+      throw new SLAMDException(
+           "Job completed message does not include the actual start time.");
     }
     else
     {
       try
       {
-        actualStartTime = Long.parseLong(valueElement.decodeAsOctetString().
-                                              stringValue());
+        actualStartTime =
+             Long.parseLong(valueElement.decodeAsOctetString().stringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the actual start time:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the actual start time:  " + e, e);
       }
     }
 
@@ -555,20 +558,20 @@ public class JobCompleted
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_ACTUAL_STOP_TIME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job completed message does not include the " +
-                               "actual stop time.");
+      throw new SLAMDException(
+           "Job completed message does not include the actual stop time.");
     }
     else
     {
       try
       {
-        actualStopTime = Long.parseLong(valueElement.decodeAsOctetString().
-                                             stringValue());
+        actualStopTime =
+             Long.parseLong(valueElement.decodeAsOctetString().stringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the actual stop time:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the actual stop time:  " + e, e);
       }
     }
 
@@ -576,20 +579,20 @@ public class JobCompleted
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_ACTUAL_DURATION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job completed message does not include the " +
-                               "actual duration.");
+      throw new SLAMDException(
+           "Job completed message does not include the actual duration.");
     }
     else
     {
       try
       {
-        actualDuration = Integer.parseInt(valueElement.decodeAsOctetString().
-                                               stringValue());
+        actualDuration =
+             Integer.parseInt(valueElement.decodeAsOctetString().stringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the actual duration:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the actual duration:  " + e, e);
       }
     }
 
@@ -602,10 +605,10 @@ public class JobCompleted
         statTrackers =
              StatEncoder.sequenceToTrackers(valueElement.decodeAsSequence());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the job statistics:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the job statistics:  " + e, e);
       }
     }
 
@@ -617,12 +620,12 @@ public class JobCompleted
       try
       {
         monitorStatTrackers = ResourceMonitorStatTracker.sequenceToTrackers(
-                                   valueElement.decodeAsSequence());
+             valueElement.decodeAsSequence());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the resource monitor " +
-                                 "statistics:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the resource monitor statistics:  " + e, e);
       }
     }
 
@@ -634,7 +637,7 @@ public class JobCompleted
       {
         fileData = FileData.decodeArray(valueElement);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the file data: " + e, e);
       }
@@ -646,10 +649,11 @@ public class JobCompleted
     {
       try
       {
-        String messagesString =
+        final String messagesString =
              valueElement.decodeAsOctetString().stringValue();
-        StringTokenizer tokenizer = new StringTokenizer(messagesString, "\r\n");
-        ArrayList<String> messageList = new ArrayList<String>();
+        final StringTokenizer tokenizer =
+             new StringTokenizer(messagesString, "\r\n");
+        final ArrayList<String> messageList = new ArrayList<>();
 
         while (tokenizer.hasMoreTokens())
         {
@@ -659,7 +663,7 @@ public class JobCompleted
         logMessages = new String[messageList.size()];
         messageList.toArray(logMessages);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the file data: " + e, e);
       }
@@ -678,9 +682,9 @@ public class JobCompleted
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');
@@ -719,12 +723,12 @@ public class JobCompleted
       buffer.append(indentBuf);
       buffer.append("jobStatistics =");
 
-      for (int i=0; i < statTrackers.length; i++)
+      for (final StatTracker statTracker : statTrackers)
       {
         buffer.append(Constants.EOL);
         buffer.append(indentBuf);
         buffer.append("     ");
-        buffer.append(statTrackers[i].getSummaryString());
+        buffer.append(statTracker.getSummaryString());
       }
     }
 
@@ -734,13 +738,13 @@ public class JobCompleted
       buffer.append(indentBuf);
       buffer.append("monitorStatistics =");
 
-      for (int i=0; i < monitorStatTrackers.length; i++)
+      for (final ResourceMonitorStatTracker monitorStatTracker :
+           monitorStatTrackers)
       {
         buffer.append(Constants.EOL);
         buffer.append(indentBuf);
         buffer.append("     ");
-        buffer.append(
-             monitorStatTrackers[i].getStatTracker().getSummaryString());
+        buffer.append(monitorStatTracker.getStatTracker().getSummaryString());
       }
     }
 
@@ -750,10 +754,10 @@ public class JobCompleted
       buffer.append(indentBuf);
       buffer.append("fileData =");
 
-      for (int i=0; i < fileData.length; i++)
+      for (final FileData fd : fileData)
       {
         buffer.append(Constants.EOL);
-        fileData[i].toString(buffer, indent+5);
+        fd.toString(buffer, indent+5);
       }
     }
 
@@ -763,12 +767,12 @@ public class JobCompleted
       buffer.append(indentBuf);
       buffer.append("logMessages =");
 
-      for (int i=0; i < logMessages.length; i++)
+      for (final String logMessage : logMessages)
       {
         buffer.append(Constants.EOL);
         buffer.append(indentBuf);
         buffer.append("     ");
-        buffer.append(logMessages[i]);
+        buffer.append(logMessage);
       }
     }
   }

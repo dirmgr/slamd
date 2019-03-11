@@ -26,8 +26,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import com.unboundid.util.FixedRateBarrier;
@@ -57,13 +57,13 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class SMTPSendRateJobClass
+public final class SMTPSendRateJobClass
        extends JobClass
 {
   /**
    * The set of characters that will be used when forming random "words".
    */
-  public static final char[] ALPHABET =
+  private static final char[] ALPHABET =
        "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 
@@ -78,7 +78,7 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to count the number of SMTP
    * sessions established.
    */
-  public static final String STAT_TRACKER_SMTP_SESSIONS = "SMTP Sessions";
+  private static final String STAT_TRACKER_SMTP_SESSIONS = "SMTP Sessions";
 
 
 
@@ -86,7 +86,8 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to count the total number of
    * SMTP sessions in which at least one message was sent successfully.
    */
-  public static final String STAT_TRACKER_SUCCESS_COUNT = "Successful Sessions";
+  private static final String STAT_TRACKER_SUCCESS_COUNT =
+       "Successful Sessions";
 
 
 
@@ -94,7 +95,7 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to count the total number of
    * SMTP sessions in which no messages were sent successfully.
    */
-  public static final String STAT_TRACKER_FAILURE_COUNT = "Failed Sessions";
+  private static final String STAT_TRACKER_FAILURE_COUNT = "Failed Sessions";
 
 
 
@@ -102,7 +103,8 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to keep track of the total number
    * of recipients specified for each message.
    */
-  public static final String STAT_TRACKER_TOTAL_RECIPIENTS = "Total Recipients";
+  private static final String STAT_TRACKER_TOTAL_RECIPIENTS =
+       "Total Recipients";
 
 
 
@@ -110,7 +112,7 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to keep track of the number of
    * recipient addresses that were accepted by the mail server for each message.
    */
-  public static final String STAT_TRACKER_ACCEPTED_RECIPIENTS =
+  private static final String STAT_TRACKER_ACCEPTED_RECIPIENTS =
        "Accepted Recipients";
 
 
@@ -119,7 +121,7 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to keep track of the number of
    * recipient addresses that were rejected by the mail server for each message.
    */
-  public static final String STAT_TRACKER_REJECTED_RECIPIENTS =
+  private static final String STAT_TRACKER_REJECTED_RECIPIENTS =
        "Rejected Recipients";
 
 
@@ -128,17 +130,17 @@ public class SMTPSendRateJobClass
    * The display name of the stat tracker used to time the process of
    * authenticating and retrieving the list of messages.
    */
-  public static final String STAT_TRACKER_SESSION_DURATION =
+  private static final String STAT_TRACKER_SESSION_DURATION =
        "Session Duration (ms)";
 
 
 
   // The length of time between initial requests.
-  private IntegerParameter delayParameter =
-       new IntegerParameter("delay", "Time Between SMTP Sessions (ms)",
-                            "The length of time in milliseconds between " +
-                            "attempts to access the SMTP server.",
-                            true, 0, true, 0, false, 0);
+  private IntegerParameter delayParameter = new IntegerParameter("delay",
+       "Time Between SMTP Sessions (ms)",
+       "The length of time in milliseconds between attempts to access the " +
+            "SMTP server.",
+       true, 0, true, 0, false, 0);
 
   // The parameter that specifies the maximum request rate.
   private IntegerParameter maxRateParameter = new IntegerParameter("maxRate",
@@ -151,25 +153,24 @@ public class SMTPSendRateJobClass
        true, -1);
 
   // The maximum number of recipients to include in the message.
-  private IntegerParameter maxRecipientsParameter =
-    new IntegerParameter("max_recipients", "Maximum Number of Recipients",
-                         "The maximum number of recipients that should be " +
-                         "used for any single message.", true, 1, true, 1,
-                         false, 0);
+  private IntegerParameter maxRecipientsParameter = new IntegerParameter(
+       "max_recipients", "Maximum Number of Recipients",
+       "The maximum number of recipients that should be used for any single " +
+            "message.",
+       true, 1, true, 1, false, 0);
 
   // The minimum number of recipients to include in the message.
-  private IntegerParameter minRecipientsParameter =
-    new IntegerParameter("min_recipients", "Minimum Number of Recipients",
-                         "The minimum number of recipients that should be " +
-                         "used for any single message.", true, 1, true, 1,
-                         false, 0);
+  private IntegerParameter minRecipientsParameter = new IntegerParameter(
+       "min_recipients", "Minimum Number of Recipients",
+       "The minimum number of recipients that should be used for any single " +
+            "message.",
+       true, 1, true, 1, false, 0);
 
   // The port number of the SMTP server.
-  private IntegerParameter portParameter =
-       new IntegerParameter("smtp_port", "SMTP Server Port",
-                            "The port number on which the SMTP server is " +
-                            "listening for requests.", true, 25, true, 1, true,
-                            65535);
+  private IntegerParameter portParameter = new IntegerParameter("smtp_port",
+       "SMTP Server Port",
+       "The port number on which the SMTP server is listening for requests.",
+       true, 25, true, 1, true, 65535);
 
   // The parameter that specifies the interval over which to enforce the maximum
   // request rate.
@@ -185,43 +186,43 @@ public class SMTPSendRateJobClass
        true, 0, true,0, false, 0);
 
   // The size in bytes that should be used for the message body.
-  private IntegerParameter sizeParameter =
-       new IntegerParameter("size", "Message Body Size (bytes)",
-                            "The size in bytes that should be used for the " +
-                            "body of the SMTP message.  Note that this will " +
-                            "be used as an approximation -- the actual " +
-                            "message size may deviate by a few bytes.  It " +
-                            "should also be noted that this does not " +
-                            "include the SMTP message headers.", true, 1024,
-                            true, 1, false, 0);
+  private IntegerParameter sizeParameter = new IntegerParameter("size",
+       "Message Body Size (bytes)",
+       "The size in bytes that should be used for the body of the SMTP " +
+            "message.  Note that this will be used as an approximation -- " +
+            "the actual message size may deviate by a few bytes.  It should " +
+            "also be noted that this does not include the SMTP message " +
+            "headers.",
+       true, 1024, true, 1, false, 0);
 
   // A placeholder parameter that is only used for formatting.
   private PlaceholderParameter placeholder = new PlaceholderParameter();
 
   // The address from which messages will originate.
-  private StringParameter fromParameter =
-       new StringParameter("from_address", "From Address",
-                           "The e-mail address from which messages sent by " +
-                           "this job will originate.", true, "");
+  private StringParameter fromParameter = new StringParameter("from_address",
+       "From Address",
+       "The e-mail address from which messages sent by this job will " +
+            "originate.",
+       true, "");
 
 
   // The address of the SMTP server.
-  private StringParameter hostParameter =
-       new StringParameter("smtp_host", "SMTP Server Address",
-                           "The fully-qualified domain name or IP address of " +
-                           "the system running the SMTP server.", true, "");
+  private StringParameter hostParameter = new StringParameter("smtp_host",
+       "SMTP Server Address",
+       "The fully-qualified domain name or IP address of the system running " +
+            "the SMTP server.",
+       true, "");
 
   // The recipient(s) to use for the messages.
-  private StringParameter recipientParameter =
-       new StringParameter("recipient", "Recipient Address",
-                           "The e-mail address of the recipient that should " +
-                           "be used for each mail message.  A range of " +
-                           "values may be specified by enclosing the range " +
-                           "in brackets and separating the minimum and " +
-                           "maximum values with a dash (e.g., [1-1000]), or " +
-                           "a sequential range may be specified by " +
-                           "separating the minimum and maximum values with a " +
-                           "colon (e.g., [1:1000]).", true, "");
+  private StringParameter recipientParameter = new StringParameter("recipient",
+       "Recipient Address",
+       "The e-mail address of the recipient that should be used for each " +
+            "mail message.  A range of values may be specified by enclosing " +
+            "the range in brackets and separating the minimum and maximum " +
+            "values with a dash (e.g., [1-1000]), or a sequential range may " +
+            "be specified by separating the minimum and maximum values with " +
+            "a colon (e.g., [1:1000]).",
+       true, "");
 
 
 
@@ -332,7 +333,7 @@ public class SMTPSendRateJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameters =
+    final Parameter[] parameters =
     {
       placeholder,
       hostParameter,
@@ -356,27 +357,26 @@ public class SMTPSendRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_SMTP_SESSIONS,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_SESSION_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_SUCCESS_COUNT,
-                             collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_FAILURE_COUNT,
-                             collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_TRACKER_TOTAL_RECIPIENTS,
-                              collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID,
-                              STAT_TRACKER_ACCEPTED_RECIPIENTS,
-                              collectionInterval),
+           STAT_TRACKER_ACCEPTED_RECIPIENTS, collectionInterval),
       new IntegerValueTracker(clientID, threadID,
-                              STAT_TRACKER_REJECTED_RECIPIENTS,
-                              collectionInterval)
+           STAT_TRACKER_REJECTED_RECIPIENTS, collectionInterval)
     };
   }
 
@@ -406,14 +406,15 @@ public class SMTPSendRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The recipient parameter must be parseable as a value pattern.
-    StringParameter p =
+    final StringParameter p =
          parameters.getStringParameter(recipientParameter.getName());
     if ((p != null) && p.hasValue())
     {
@@ -421,7 +422,7 @@ public class SMTPSendRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -429,22 +430,20 @@ public class SMTPSendRateJobClass
       }
     }
 
-    IntegerParameter minParam =
+    final IntegerParameter minParam =
          parameters.getIntegerParameter(minRecipientsParameter.getName());
     if (minParam == null)
     {
       throw new InvalidValueException("No value provided for required " +
-                                      "parameter " +
-                                      minRecipientsParameter.getDisplayName());
+           "parameter " + minRecipientsParameter.getDisplayName());
     }
 
-    IntegerParameter maxParam =
+    final IntegerParameter maxParam =
          parameters.getIntegerParameter(maxRecipientsParameter.getName());
     if (maxParam == null)
     {
       throw new InvalidValueException("No value provided for required " +
-                                      "parameter " +
-                                      maxRecipientsParameter.getDisplayName());
+           "parameter " + maxRecipientsParameter.getDisplayName());
     }
 
     int minRecip = minParam.getIntValue();
@@ -452,13 +451,12 @@ public class SMTPSendRateJobClass
     if ((minRecip <= 0) || (maxRecip <= 0))
     {
       throw new InvalidValueException("Minimum and maximum number of " +
-                                      "recipients must be greater than zero.");
+           "recipients must be greater than zero.");
     }
     else if (minRecip > maxRecip)
     {
       throw new InvalidValueException("Maximum number of recipients must be " +
-                                      "greater than or equal to the minimum " +
-                                      "number of recipients.");
+           "greater than or equal to the minimum number of recipients.");
     }
   }
 
@@ -479,38 +477,38 @@ public class SMTPSendRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get the parameters necessary to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No SMTP server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! portParam.hasValue()))
     {
       outputMessages.add("ERROR:  No SMTP server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
     // Try to establish a connection to the SMTP server.
-    Socket         socket;
-    BufferedReader reader;
-    BufferedWriter writer;
+    final Socket socket;
+    final BufferedReader reader;
+    final BufferedWriter writer;
     try
     {
       outputMessages.add("Trying to establish a connection to SMTP server " +
-                         host + ':' + port + "....");
+           host + ':' + port + "....");
 
       socket = new Socket(host, port);
       reader = new BufferedReader(new InputStreamReader(
@@ -521,10 +519,10 @@ public class SMTPSendRateJobClass
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to connect:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to connect:  " + stackTraceToString(e));
       return false;
     }
 
@@ -534,30 +532,30 @@ public class SMTPSendRateJobClass
     {
       outputMessages.add("Trying to read the hello string from the server....");
 
-      String line = reader.readLine();
+      final String line = reader.readLine();
 
       outputMessages.add("Hello string was '" + line + "'.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to read the hello string:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
 
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -572,22 +570,22 @@ public class SMTPSendRateJobClass
 
       writer.write("QUIT" + EOL);
       writer.flush();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       reader.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       writer.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       socket.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
 
     outputMessages.add("All tests completed.");
@@ -600,7 +598,8 @@ public class SMTPSendRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the parent random number generator.
@@ -639,7 +638,7 @@ public class SMTPSendRateJobClass
         recipientPattern =
              new ValuePattern(recipientParameter.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException(
              "Unable to parse the recipient pattern:  " + stackTraceToString(e),
@@ -723,36 +722,30 @@ public class SMTPSendRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Create the stat trackers for this thread.
     sessionCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SMTP_SESSIONS,
-                                            collectionInterval);
+         STAT_TRACKER_SMTP_SESSIONS, collectionInterval);
     sessionTimer = new TimeTracker(clientID, threadID,
-                                   STAT_TRACKER_SESSION_DURATION,
-                                   collectionInterval);
+         STAT_TRACKER_SESSION_DURATION, collectionInterval);
     successCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SUCCESS_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_SUCCESS_COUNT, collectionInterval);
     failureCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_FAILURE_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_FAILURE_COUNT, collectionInterval);
     totalRecipientTracker = new IntegerValueTracker(clientID, threadID,
-                                     STAT_TRACKER_TOTAL_RECIPIENTS,
-                                     collectionInterval);
+         STAT_TRACKER_TOTAL_RECIPIENTS, collectionInterval);
     acceptedRecipientTracker = new IntegerValueTracker(clientID, threadID,
-                                        STAT_TRACKER_ACCEPTED_RECIPIENTS,
-                                        collectionInterval);
+         STAT_TRACKER_ACCEPTED_RECIPIENTS, collectionInterval);
     rejectedRecipientTracker = new IntegerValueTracker(clientID, threadID,
-                                        STAT_TRACKER_REJECTED_RECIPIENTS,
-                                        collectionInterval);
+         STAT_TRACKER_REJECTED_RECIPIENTS, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -771,13 +764,13 @@ public class SMTPSendRateJobClass
     {
       localAddress = InetAddress.getLocalHost().getHostName();
     }
-    catch (IOException ioe)
+    catch (final IOException ioe)
     {
       try
       {
         localAddress = InetAddress.getLocalHost().getHostAddress();
       }
-      catch (IOException ioe2)
+      catch (final IOException ioe2)
       {
         localAddress = clientID;
       }
@@ -842,7 +835,7 @@ mainLoop:
           try
           {
             Thread.sleep(delay - prevTestTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
 
@@ -874,7 +867,7 @@ mainLoop:
         writer = new BufferedWriter(new OutputStreamWriter(
                                              socket.getOutputStream()));
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -889,7 +882,7 @@ mainLoop:
       {
         serverResponse = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -907,7 +900,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -920,7 +913,7 @@ mainLoop:
         sendLine(writer, "HELO " + localAddress);
         serverResponse = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -931,7 +924,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -947,7 +940,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -960,7 +953,7 @@ mainLoop:
         sendLine(writer, "MAIL FROM:<" + fromAddress + '>');
         serverResponse = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -971,7 +964,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -988,7 +981,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -1004,7 +997,7 @@ mainLoop:
           sendLine(writer, "RCPT TO:<" + recipients[i] + '>');
           serverResponse = reader.readLine();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
           sessionTimer.stopTimer();
           failureCounter.increment();
@@ -1015,7 +1008,7 @@ mainLoop:
             writer.close();
             reader.close();
             socket.close();
-          } catch (IOException ioe2) {}
+          } catch (final IOException ioe2) {}
 
           continue mainLoop;
         }
@@ -1044,7 +1037,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -1057,7 +1050,7 @@ mainLoop:
         sendLine(writer, "DATA");
         serverResponse = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1068,7 +1061,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -1084,7 +1077,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -1106,7 +1099,7 @@ mainLoop:
         }
         writer.write(EOL);
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1117,7 +1110,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -1130,7 +1123,7 @@ mainLoop:
         sendLine(writer, ".");
         serverResponse = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1141,7 +1134,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -1157,7 +1150,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe) {}
+        } catch (final IOException ioe) {}
 
         continue;
       }
@@ -1171,7 +1164,7 @@ mainLoop:
         reader.close();
         socket.close();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1182,7 +1175,7 @@ mainLoop:
           writer.close();
           reader.close();
           socket.close();
-        } catch (IOException ioe2) {}
+        } catch (final IOException ioe2) {}
 
         continue;
       }
@@ -1215,7 +1208,7 @@ mainLoop:
    * @throws  IOException  If a problem occurs while writing the data to the
    *                       SMTP server.
    */
-  private static void sendLine(BufferedWriter writer, String line)
+  private static void sendLine(final BufferedWriter writer, final String line)
           throws IOException
   {
     writer.write(line);
@@ -1231,8 +1224,8 @@ mainLoop:
    */
   private static void generateSubject()
   {
-    int          numWords      = (parentRandom.nextInt() & 0x7FFFFFFF) % 5 + 3;
-    StringBuilder subjectBuffer = new StringBuilder();
+    final int numWords = (parentRandom.nextInt() & 0x7FFFFFFF) % 5 + 3;
+    final StringBuilder subjectBuffer = new StringBuilder();
 
     String separator = "";
     for (int i=0; i < numWords; i++)
@@ -1258,12 +1251,12 @@ mainLoop:
     int totalSize              = 0;
     int wordsThisSentence      = 0;
     int charsThisLine          = 0;
-    StringBuilder messageBuffer = new StringBuilder();
+    final StringBuilder messageBuffer = new StringBuilder();
     int sentenceSize           = (parentRandom.nextInt() & 0x7FFFFFFF) % 11 + 5;
     while (totalSize < messageSize)
     {
-      int wordLength = (parentRandom.nextInt() & 0x7FFFFFFF) % 10 + 3;
-      String word = generateWord(wordLength);
+      final int wordLength = (parentRandom.nextInt() & 0x7FFFFFFF) % 10 + 3;
+      final String word = generateWord(wordLength);
       messageBuffer.append(word);
       totalSize += wordLength;
       charsThisLine += wordLength;
@@ -1310,9 +1303,9 @@ mainLoop:
    * @return  A word of the specified length comprised of characters randomly
    *          chosen from the provided character set.
    */
-  private static String generateWord(int numChars)
+  private static String generateWord(final int numChars)
   {
-    char[] chars = new char[numChars];
+    final char[] chars = new char[numChars];
     for (int i=0; i < chars.length; i++)
     {
       chars[i] = ALPHABET[(parentRandom.nextInt() & 0x7FFFFFFF) %

@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Enumerated;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class StatusResponse
+public final class StatusResponse
        extends SLAMDMessage
 {
   // The status code for the client.
@@ -93,9 +93,11 @@ public class StatusResponse
    * @param  jobState         The current state of the associated job, or -1 if
    *                          the client is not associated with any job.
    */
-  public StatusResponse(int messageID, HashMap<String,String> extraProperties,
-                        int resultCode, int clientState,
-                        String stateMessage, String jobID, int jobState)
+  public StatusResponse(final int messageID,
+                        final Map<String,String> extraProperties,
+                        final int resultCode, final int clientState,
+                        final String stateMessage, final String jobID,
+                        final int jobState)
   {
     super(messageID, extraProperties);
 
@@ -125,7 +127,7 @@ public class StatusResponse
    *
    * @param  resultCode  The result code for the status request.
    */
-  public void setResultCode(int resultCode)
+  public void setResultCode(final int resultCode)
   {
     this.resultCode = resultCode;
   }
@@ -150,7 +152,7 @@ public class StatusResponse
    * @param  clientState  A status code representing the current state for the
    *                      client.
    */
-  public void setClientState(int clientState)
+  public void setClientState(final int clientState)
   {
     this.clientState = clientState;
   }
@@ -178,7 +180,7 @@ public class StatusResponse
    * @param  stateMessage  A message with additional information about the state
    *                       of the client.
    */
-  public void setStateMessage(String stateMessage)
+  public void setStateMessage(final String stateMessage)
   {
     this.stateMessage = stateMessage;
   }
@@ -204,7 +206,7 @@ public class StatusResponse
    * @param  jobID  The job ID for a job with which the client might be
    *                associated.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -232,7 +234,7 @@ public class StatusResponse
    * @param  jobState  A status code for the job with whcih the client might be
    *                   associated.
    */
-  public void setJobState(int jobState)
+  public void setJobState(final int jobState)
   {
     this.jobState = jobState;
   }
@@ -248,28 +250,28 @@ public class StatusResponse
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_RESULT_CODE,
-                                        new ASN1Enumerated(resultCode)));
+         new ASN1Enumerated(resultCode)));
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_STATE,
-                                        new ASN1Enumerated(clientState)));
+         new ASN1Enumerated(clientState)));
 
     if (stateMessage != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_CLIENT_STATE_MESSAGE,
-                           new ASN1OctetString(stateMessage)));
+           ProtocolConstants.PROPERTY_CLIENT_STATE_MESSAGE,
+           new ASN1OctetString(stateMessage)));
     }
 
     if (jobID != null)
     {
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                          new ASN1OctetString(jobID)));
+           new ASN1OctetString(jobID)));
 
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_STATE,
-                                          new ASN1Enumerated(jobState)));
+           new ASN1Enumerated(jobState)));
     }
 
     return new ASN1Sequence(elementList);
@@ -289,18 +291,18 @@ public class StatusResponse
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_RESULT_CODE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Status response message does not include a " +
-                               "result code.");
+      throw new SLAMDException(
+           "Status response message does not include a result code.");
     }
     else
     {
@@ -308,7 +310,7 @@ public class StatusResponse
       {
         resultCode = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the result code:  " + e, e);
       }
@@ -317,8 +319,8 @@ public class StatusResponse
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_STATE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Status response message does not include " +
-                               "the client state.");
+      throw new SLAMDException(
+           "Status response message does not include the client state.");
     }
     else
     {
@@ -326,7 +328,7 @@ public class StatusResponse
       {
         clientState = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the client state:  " + e, e);
       }
@@ -340,10 +342,10 @@ public class StatusResponse
       {
         stateMessage = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client state " +
-                                 "message:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the client state message:  " + e, e);
       }
     }
 
@@ -354,7 +356,7 @@ public class StatusResponse
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -367,7 +369,7 @@ public class StatusResponse
       {
         jobState = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job state:  " + e, e);
       }
@@ -386,7 +388,7 @@ public class StatusResponse
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
     StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)

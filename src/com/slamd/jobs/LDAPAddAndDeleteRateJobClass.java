@@ -57,7 +57,7 @@ import com.unboundid.util.FixedRateBarrier;
  * This class provides a SLAMD job class that may be used to perform add and
  * delete operations against an LDAP directory server.
  */
-public class LDAPAddAndDeleteRateJobClass
+public final class LDAPAddAndDeleteRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -443,7 +443,7 @@ public class LDAPAddAndDeleteRateJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    ArrayList<StatTracker> statList = new ArrayList<StatTracker>(8);
+    ArrayList<StatTracker> statList = new ArrayList<>(8);
     if (performAdds)
     {
       statList.add(addsCompleted);
@@ -519,8 +519,7 @@ public class LDAPAddAndDeleteRateJobClass
     }
     catch (Exception e)
     {
-      throw new InvalidValueException("Unable to parse the template:  " +
-           String.valueOf(e), e);
+      throw new InvalidValueException("Unable to parse the template:  " + e, e);
     }
   }
 
@@ -532,7 +531,7 @@ public class LDAPAddAndDeleteRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -613,8 +612,8 @@ public class LDAPAddAndDeleteRateJobClass
     }
     catch (Exception e)
     {
-      throw new UnableToRunException("Unable to create the entry generator:  " +
-           String.valueOf(e), e);
+      throw new UnableToRunException(
+           "Unable to create the entry generator:  " + e, e);
     }
 
 

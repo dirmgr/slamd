@@ -22,7 +22,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.slamd.common.Constants;
@@ -52,14 +52,14 @@ import com.unboundid.util.FixedRateBarrier;
  *
  * @author   Neil A. Wilson
  */
-public class SQLSearchRateJobClass
+public final class SQLSearchRateJobClass
        extends JobClass
 {
   /**
    * The display name of the stat tracker that counts exceptions caught while
    * processing queries.
    */
-  public static final String STAT_TRACKER_EXCEPTIONS_CAUGHT =
+  private static final String STAT_TRACKER_EXCEPTIONS_CAUGHT =
        "Exceptions Caught";
 
 
@@ -68,7 +68,7 @@ public class SQLSearchRateJobClass
    * The display name of the stat tracker that tracks the rate at which queries
    * are able to be processed.
    */
-  public static  final String STAT_TRACKER_QUERIES_COMPLETED =
+  private static  final String STAT_TRACKER_QUERIES_COMPLETED =
        "Queries Completed";
 
 
@@ -77,7 +77,7 @@ public class SQLSearchRateJobClass
    * The display name of the stat tracker that tracks the average length of time
    * required to process a query.
    */
-  public static final String STAT_TRACKER_QUERY_DURATION =
+  private static final String STAT_TRACKER_QUERY_DURATION =
        "Query Duration (ms)";
 
 
@@ -86,7 +86,7 @@ public class SQLSearchRateJobClass
    * The display name of the stat tracker that tracks the average number of
    * rows returned from each query.
    */
-  public static final String STAT_TRACKER_ROWS_RETURNED = "Rows Returned";
+  private static final String STAT_TRACKER_ROWS_RETURNED = "Rows Returned";
 
 
 
@@ -295,7 +295,7 @@ public class SQLSearchRateJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameters = new Parameter[]
+    final Parameter[] parameters = new Parameter[]
     {
       placeholder,
       driverClassParameter,
@@ -322,19 +322,20 @@ public class SQLSearchRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_QUERIES_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_TRACKER_ROWS_RETURNED,
-                              collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_QUERY_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                             collectionInterval)
+           collectionInterval)
     };
   }
 
@@ -372,32 +373,32 @@ public class SQLSearchRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get the necessary parameter values.
-    StringParameter driverParam =
+    final StringParameter driverParam =
          parameters.getStringParameter(driverClassParameter.getName());
     if ((driverParam == null) || (! driverParam.hasValue()))
     {
       outputMessages.add("ERROR:  No JDBC driver class provided.");
       return false;
     }
-    String driverClass = driverParam.getStringValue();
+    final String driverClass = driverParam.getStringValue();
 
 
-    StringParameter urlParam =
+    final StringParameter urlParam =
          parameters.getStringParameter(jdbcURLParameter.getName());
     if ((urlParam == null) || (! urlParam.hasValue()))
     {
       outputMessages.add("ERROR:  No JDBC URL provided.");
       return false;
     }
-    String jdbcURL = urlParam.getStringValue();
+    final String jdbcURL = urlParam.getStringValue();
 
 
     String userName = "";
-    StringParameter usernameParam =
+    final StringParameter usernameParam =
          parameters.getStringParameter(userNameParameter.getName());
     if ((usernameParam != null) && usernameParam.hasValue())
     {
@@ -406,7 +407,7 @@ public class SQLSearchRateJobClass
 
 
     String userPW = "";
-    PasswordParameter pwParam =
+    final PasswordParameter pwParam =
          parameters.getPasswordParameter(passwordParameter.getName());
     if ((pwParam != null) && pwParam.hasValue())
     {
@@ -423,10 +424,10 @@ public class SQLSearchRateJobClass
       outputMessages.add("Driver class loaded successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to load driver class:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to load driver class:  " + stackTraceToString(e));
       return false;
     }
 
@@ -436,10 +437,10 @@ public class SQLSearchRateJobClass
     try
     {
       outputMessages.add("Trying to connect to database using JDBC URL '" +
-                         jdbcURL + "' as user '" + userName + "'....");
+           jdbcURL + "' as user '" + userName + "'....");
 
-      Connection connection = DriverManager.getConnection(jdbcURL, userName,
-                                                          userPW);
+      final Connection connection =
+           DriverManager.getConnection(jdbcURL, userName, userPW);
 
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
@@ -447,12 +448,12 @@ public class SQLSearchRateJobClass
       try
       {
         connection.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       outputMessages.add("Connection closed.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to connect:  " +
                          stackTraceToString(e));
@@ -469,7 +470,8 @@ public class SQLSearchRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
   {
     // Get the database driver class.
     driverClass = null;
@@ -516,7 +518,7 @@ public class SQLSearchRateJobClass
       useRange      = false;
       useSequential = false;
 
-      int openBracketPos = sqlQuery.indexOf('[');
+      final int openBracketPos = sqlQuery.indexOf('[');
       int dashPos = sqlQuery.indexOf('-', openBracketPos);
       if (dashPos < 0)
       {
@@ -524,7 +526,7 @@ public class SQLSearchRateJobClass
         useSequential = true;
       }
 
-      int closeBracketPos;
+      final int closeBracketPos;
       if ((openBracketPos >= 0) && (dashPos > 0) &&
           ((closeBracketPos = sqlQuery.indexOf(']', dashPos)) > 0))
       {
@@ -555,7 +557,7 @@ public class SQLSearchRateJobClass
 
           variableFinal = "";
           int closeSpacePos = sqlQuery.indexOf(' ', closeBracketPos);
-          int closeParenPos = sqlQuery.indexOf(')', closeBracketPos);
+          final int closeParenPos = sqlQuery.indexOf(')', closeBracketPos);
           if ((closeSpacePos < 0) ||
               ((closeParenPos > 0) && (closeParenPos < closeSpacePos)))
           {
@@ -590,7 +592,7 @@ public class SQLSearchRateJobClass
           useRange          = true;
           sequentialCounter = rangeMin;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           useRange        = false;
         }
@@ -684,26 +686,23 @@ public class SQLSearchRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
   {
     // Initialize the stat trackers.
     queriesCompleted = new IncrementalTracker(clientID, threadID,
-                                              STAT_TRACKER_QUERIES_COMPLETED,
-                                              collectionInterval);
+         STAT_TRACKER_QUERIES_COMPLETED, collectionInterval);
     queryTimer = new TimeTracker(clientID, threadID,
-                                 STAT_TRACKER_QUERY_DURATION,
-                                 collectionInterval);
+         STAT_TRACKER_QUERY_DURATION, collectionInterval);
     rowsReturned = new IntegerValueTracker(clientID, threadID,
-                                           STAT_TRACKER_ROWS_RETURNED,
-                                           collectionInterval);
+         STAT_TRACKER_ROWS_RETURNED, collectionInterval);
     exceptionsCaught = new IncrementalTracker(clientID, threadID,
-                                              STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                                              collectionInterval);
+         STAT_TRACKER_EXCEPTIONS_CAUGHT, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -732,10 +731,10 @@ public class SQLSearchRateJobClass
     {
       Constants.classForName(driverClass);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      logMessage("Unable to load the driver class \"" + driverClass + "\" -- " +
-                 e);
+      logMessage(
+           "Unable to load the driver class \"" + driverClass + "\" -- " + e);
       indicateStoppedDueToError();
       return;
     }
@@ -744,7 +743,7 @@ public class SQLSearchRateJobClass
     // Determine the range of time for which we should collect statistics.
     long    currentTime         = System.currentTimeMillis();
     boolean collectingStats     = false;
-    long    startCollectingTime = currentTime + (1000 * warmUpTime);
+    final long    startCollectingTime = currentTime + (1000 * warmUpTime);
     long    stopCollectingTime  = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0))
     {
@@ -753,10 +752,10 @@ public class SQLSearchRateJobClass
 
 
     // Set up variables that will be used throughout the job.
-    boolean           connected      = false;
-    boolean           infinite       = (iterations <= 0);
-    long              queryStartTime = 0;
-    PreparedStatement statement      = null;
+    boolean connected = false;
+    long queryStartTime = 0;
+    PreparedStatement statement = null;
+    final boolean infinite = (iterations <= 0);
     connection = null;
 
 
@@ -802,7 +801,7 @@ public class SQLSearchRateJobClass
                                                    userPassword);
           connected = true;
         }
-        catch (SQLException se)
+        catch (final SQLException se)
         {
           logMessage("Unable to connect to the database:  " + se);
           indicateStoppedDueToError();
@@ -813,7 +812,7 @@ public class SQLSearchRateJobClass
         {
           statement = connection.prepareStatement(sqlQuery);
         }
-        catch (SQLException se)
+        catch (final SQLException se)
         {
           logMessage("Unable to parse SQL query \"" + sqlQuery + "\".");
           indicateStoppedDueToError();
@@ -855,7 +854,7 @@ public class SQLSearchRateJobClass
           rowsReturned.addValue(matchingRows);
         }
       }
-      catch (SQLException se)
+      catch (final SQLException se)
       {
         writeVerbose("Caught SQL Exception:  " + se);
         if (collectingStats)
@@ -871,12 +870,12 @@ public class SQLSearchRateJobClass
         try
         {
           statement.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         try
         {
           connection.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
         connected = false;
       }
 
@@ -886,14 +885,14 @@ public class SQLSearchRateJobClass
       {
         if (! shouldStop())
         {
-          long now       = System.currentTimeMillis();
-          long sleepTime = timeBetweenQueries - (now - queryStartTime);
+          final long now = System.currentTimeMillis();
+          final long sleepTime = timeBetweenQueries - (now - queryStartTime);
           if (sleepTime > 0)
           {
             try
             {
               Thread.sleep(sleepTime);
-            } catch (InterruptedException ie) {}
+            } catch (final InterruptedException ie) {}
           }
         }
       }
@@ -906,12 +905,12 @@ public class SQLSearchRateJobClass
       try
       {
         statement.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       try
       {
         connection.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
     }
 
     if (collectingStats)
@@ -936,7 +935,7 @@ public class SQLSearchRateJobClass
       try
       {
         connection.close();
-      } catch (Exception e) {}
+      } catch (final Exception e) {}
 
       connection = null;
     }
@@ -953,7 +952,7 @@ public class SQLSearchRateJobClass
    */
   private String getQueryVariableComponent()
   {
-    int value;
+    final int value;
     if (useSequential)
     {
       value = sequentialCounter++;

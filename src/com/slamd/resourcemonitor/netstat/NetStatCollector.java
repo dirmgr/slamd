@@ -15,7 +15,8 @@
  */
 package com.slamd.resourcemonitor.netstat;
 
-import com.slamd.resourcemonitor.ResourceMonitor;
+
+
 
 import java.util.Set;
 import java.util.Map;
@@ -23,6 +24,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Collections;
 import java.io.IOException;
+
+import com.slamd.resourcemonitor.ResourceMonitor;
+
+
 
 /**
  * Abstract class for network interface statistics collection. This class is to

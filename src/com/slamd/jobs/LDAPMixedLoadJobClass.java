@@ -69,7 +69,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform a mix of
  * operations against an LDAP directory server.
  */
-public class LDAPMixedLoadJobClass
+public final class LDAPMixedLoadJobClass
        extends LDAPJobClass
 {
   /**
@@ -227,10 +227,6 @@ public class LDAPMixedLoadJobClass
   private static SearchScope scope;
   private static String      attributeName;
   private static String      baseDN;
-  private static String      entryDN1;
-  private static String      entryDN2;
-  private static String      filter1;
-  private static String      filter2;
   private static String      rdnAttribute;
   private static String      userPassword;
   private static String[]    attributes;
@@ -586,8 +582,8 @@ public class LDAPMixedLoadJobClass
                                            final String threadID,
                                            final int collectionInterval)
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>(33);
-    String[] ops =
+    final ArrayList<StatTracker> trackerList = new ArrayList<>(33);
+    final String[] ops =
     {
       "Overall",
       "Add",
@@ -599,7 +595,7 @@ public class LDAPMixedLoadJobClass
       "Search"
     };
 
-    for (String op : ops)
+    for (final String op : ops)
     {
       trackerList.add(new IncrementalTracker(clientID, threadID,
            op + STAT_SUFFIX_COMPLETED, collectionInterval));
@@ -628,7 +624,7 @@ public class LDAPMixedLoadJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>(33);
+    final ArrayList<StatTracker> trackerList = new ArrayList<>(33);
     trackerList.add(overallCompleted);
     trackerList.add(overallTimer);
     trackerList.add(overallResultCodes);
@@ -871,8 +867,7 @@ public class LDAPMixedLoadJobClass
     }
     catch (Exception e)
     {
-      throw new InvalidValueException("Unable to parse the template:  " +
-           String.valueOf(e), e);
+      throw new InvalidValueException("Unable to parse the template:  " + e, e);
     }
   }
 
@@ -884,7 +879,7 @@ public class LDAPMixedLoadJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -1042,11 +1037,11 @@ public class LDAPMixedLoadJobClass
 
 
     dn1Parameter = parameters.getStringParameter(dn1Parameter.getName());
-    entryDN1 = dn1Parameter.getStringValue();
+    final String entryDN1 = dn1Parameter.getStringValue();
 
 
     dn2Parameter = parameters.getStringParameter(dn2Parameter.getName());
-    entryDN2 = dn2Parameter.getStringValue();
+    final String entryDN2 = dn2Parameter.getStringValue();
 
 
     dn1Percentage = 50;
@@ -1086,12 +1081,12 @@ public class LDAPMixedLoadJobClass
 
     filter1Parameter =
          parameters.getStringParameter(filter1Parameter.getName());
-    filter1 = filter1Parameter.getStringValue();
+    final String filter1 = filter1Parameter.getStringValue();
 
 
     filter2Parameter =
          parameters.getStringParameter(filter2Parameter.getName());
-    filter2 = filter2Parameter.getStringValue();
+    final String filter2 = filter2Parameter.getStringValue();
 
 
     filter1Percentage = 50;
@@ -1154,7 +1149,7 @@ public class LDAPMixedLoadJobClass
     catch (Exception e)
     {
       throw new UnableToRunException(
-           "Cannot initialize the entry generator:  " + String.valueOf(e), e);
+           "Cannot initialize the entry generator:  " + e, e);
     }
 
 
@@ -1236,8 +1231,8 @@ public class LDAPMixedLoadJobClass
     }
     catch (Exception e)
     {
-      throw new UnableToRunException("Unable to parse DN pattern 1:  " +
-                                     stackTraceToString(e), e);
+      throw new UnableToRunException(
+           "Unable to parse DN pattern 1:  " + stackTraceToString(e), e);
     }
 
     try
@@ -1246,8 +1241,8 @@ public class LDAPMixedLoadJobClass
     }
     catch (Exception e)
     {
-      throw new UnableToRunException("Unable to parse DN pattern 2:  " +
-                                     stackTraceToString(e), e);
+      throw new UnableToRunException(
+           "Unable to parse DN pattern 2:  " + stackTraceToString(e), e);
     }
 
     try
@@ -1256,8 +1251,8 @@ public class LDAPMixedLoadJobClass
     }
     catch (Exception e)
     {
-      throw new UnableToRunException("Unable to parse filter pattern 1:  " +
-                                     stackTraceToString(e), e);
+      throw new UnableToRunException(
+           "Unable to parse filter pattern 1:  " + stackTraceToString(e), e);
     }
 
     try
@@ -1266,8 +1261,8 @@ public class LDAPMixedLoadJobClass
     }
     catch (Exception e)
     {
-      throw new UnableToRunException("Unable to parse filter pattern 2:  " +
-                                     stackTraceToString(e), e);
+      throw new UnableToRunException(
+           "Unable to parse filter pattern 2:  " + stackTraceToString(e), e);
     }
   }
 
@@ -1385,7 +1380,7 @@ public class LDAPMixedLoadJobClass
     random = new Random(parentRandom.nextLong());
 
     addCounter = 0;
-    addList = new LinkedList<String>();
+    addList = new LinkedList<>();
 
     Filter filter = Filter.createPresenceFilter("objectClass");
     searchRequest = new SearchRequest(baseDN, scope, filter, attributes);

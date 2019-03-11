@@ -17,8 +17,8 @@ package com.slamd.jobs;
 
 
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.Filter;
@@ -66,14 +66,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public class LDAPPrimeJobClass
+public final class LDAPPrimeJobClass
        extends JobClass
 {
   /**
    * The display name for the stat tracker that will be used to track the time
    * required to run each search.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME = "Search Time (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME = "Search Time (ms)";
 
 
 
@@ -81,7 +81,7 @@ public class LDAPPrimeJobClass
    * The display name for the stat tracker that will be used to track the number
    * of entries returned from each search.
    */
-  public static final String STAT_TRACKER_ENTRY_COUNT = "Entries Returned";
+  private static final String STAT_TRACKER_ENTRY_COUNT = "Entries Returned";
 
 
 
@@ -89,7 +89,7 @@ public class LDAPPrimeJobClass
    * The display name for the stat tracker that will be used to track the number
    * of successful searches.
    */
-  public static final String STAT_TRACKER_SEARCHES_COMPLETED =
+  private static final String STAT_TRACKER_SEARCHES_COMPLETED =
        "Searches Completed";
 
 
@@ -98,7 +98,7 @@ public class LDAPPrimeJobClass
    * The display name for the stat tracker that will be used to accumulate the
    * total number of successful searches.
    */
-  public static final String STAT_TRACKER_TOTAL_SEARCHES_COMPLETED =
+  private static final String STAT_TRACKER_TOTAL_SEARCHES_COMPLETED =
        "Total Searches Completed";
 
 
@@ -107,7 +107,7 @@ public class LDAPPrimeJobClass
    * The display name for the stat tracker that will be used to track the number
    * of exceptions caught.
    */
-  public static final String STAT_TRACKER_EXCEPTIONS_CAUGHT =
+  private static final String STAT_TRACKER_EXCEPTIONS_CAUGHT =
        "Exceptions Caught";
 
 
@@ -258,9 +258,6 @@ public class LDAPPrimeJobClass
   // Instance variables that correspond to the parameter values
   private static boolean useSSL;
   private static int     ldapPort;
-  private static int     numClients;
-  private static int     rangeStart;
-  private static int     rangeStop;
   private static int     timeLimit;
   private static String  attributeName;
   private static String  searchBase;
@@ -440,20 +437,20 @@ public class LDAPPrimeJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_SEARCHES_COMPLETED,
-                             collectionInterval),
+           STAT_TRACKER_SEARCHES_COMPLETED, collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                             collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_TRACKER_ENTRY_COUNT,
-                              collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_SEARCH_TIME,
-                      collectionInterval)
+           collectionInterval)
     };
   }
 
@@ -481,17 +478,19 @@ public class LDAPPrimeJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients,
+                              final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // This is sneaky.  We're going to pass the number of clients to the job as
     // a job parameter.  Otherwise, the job would have no idea how many clients
     // there are, and therefore would have no idea how to break up the work for
     // each client.
-    IntegerParameter clientsParameter =
+    final IntegerParameter clientsParameter =
          new IntegerParameter("num_clients", numClients);
     parameters.addParameter(clientsParameter);
   }
@@ -513,32 +512,32 @@ public class LDAPPrimeJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get all the parameters that we might need to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
     boolean useSSL = false;
-    BooleanParameter useSSLParam =
+    final BooleanParameter useSSLParam =
          parameters.getBooleanParameter(useSSLParameter.getName());
     if (useSSLParam != null)
     {
@@ -547,7 +546,7 @@ public class LDAPPrimeJobClass
 
 
     String bindDN = "";
-    StringParameter bindDNParam =
+    final StringParameter bindDNParam =
          parameters.getStringParameter(bindDNParameter.getName());
     if ((bindDNParam != null) && bindDNParam.hasValue())
     {
@@ -556,7 +555,7 @@ public class LDAPPrimeJobClass
 
 
     String bindPassword = "";
-    PasswordParameter bindPWParam =
+    final PasswordParameter bindPWParam =
          parameters.getPasswordParameter(bindPWParameter.getName());
     if ((bindPWParam != null) && bindPWParam.hasValue())
     {
@@ -564,27 +563,27 @@ public class LDAPPrimeJobClass
     }
 
 
-    StringParameter baseDNParam =
+    final StringParameter baseDNParam =
          parameters.getStringParameter(searchBaseParameter.getName());
     if ((baseDNParam == null) || (! baseDNParam.hasValue()))
     {
       outputMessages.add("ERROR:  No base DN was provided.");
       return false;
     }
-    String baseDN = baseDNParam.getStringValue();
+    final String baseDN = baseDNParam.getStringValue();
 
 
     // Create the LDAPConnection object that we will use to communicate with the
     // directory server.
-    LDAPConnection conn;
+    final LDAPConnection conn;
     if (useSSL)
     {
       try
       {
-        SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to instantiate the socket " +
              "factory for use in creating the SSL connection:  " +
@@ -601,12 +600,12 @@ public class LDAPPrimeJobClass
     try
     {
       outputMessages.add("Attempting to establish a connection to " + host +
-                         ':' + port + "....");
+           ':' + port + "....");
       conn.connect(host, port, 10000);
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to connect to the directory " +
                          "server:  " + stackTraceToString(e));
@@ -627,15 +626,11 @@ public class LDAPPrimeJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to bind to the directory server:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
       return false;
     }
 
@@ -644,15 +639,11 @@ public class LDAPPrimeJobClass
     try
     {
       outputMessages.add("Checking to make sure that the base DN entry '" +
-                         baseDN + "' exists in the directory....");
-      Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
+           baseDN + "' exists in the directory....");
+      final Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
       if (baseDNEntry == null)
       {
-        try
-        {
-          conn.close();
-        } catch (Exception e2) {}
-
+        conn.close();
         outputMessages.add("ERROR:  Unable to retrieve the base DN entry.");
         return false;
       }
@@ -662,26 +653,18 @@ public class LDAPPrimeJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to retrieve the base DN entry:   " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
       return false;
     }
 
 
     // At this point, all tests have passed.  Close the connection and return
     // true.
-    try
-    {
-      conn.close();
-    } catch (Exception e) {}
-
+    conn.close();
     outputMessages.add("All tests completed successfully.");
     return true;
   }
@@ -692,7 +675,8 @@ public class LDAPPrimeJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Get the address of the target directory server
@@ -747,7 +731,7 @@ public class LDAPPrimeJobClass
     }
 
     // Get the range start value.
-    rangeStart = 0;
+    int rangeStart = 0;
     rangeStartParameter =
          parameters.getIntegerParameter(rangeStartParameter.getName());
     if (rangeStartParameter != null)
@@ -756,7 +740,7 @@ public class LDAPPrimeJobClass
     }
 
     // Get the range end value.
-    rangeStop = Integer.MAX_VALUE;
+    int rangeStop = Integer.MAX_VALUE;
     rangeStopParameter =
          parameters.getIntegerParameter(rangeStopParameter.getName());
     if (rangeStopParameter != null)
@@ -831,7 +815,7 @@ public class LDAPPrimeJobClass
     }
 
     // Get the total number of clients.
-    numClients = 0;
+    int numClients = 0;
     clientsParameter =
          parameters.getIntegerParameter(clientsParameter.getName());
     if (clientsParameter != null)
@@ -841,21 +825,19 @@ public class LDAPPrimeJobClass
 
 
     // Calculate the range of values that will be used by this client.
-    int totalSpan     = rangeStop - rangeStart + 1;
+    final int totalSpan = rangeStop - rangeStart + 1;
     int spanPerClient = totalSpan / numClients;
     if ((totalSpan % numClients) != 0)
     {
       spanPerClient++;
     }
 
-    int clientNumber = getClientNumber();
+    final int clientNumber = getClientNumber();
     if (clientNumber >= numClients)
     {
       throw new UnableToRunException("Detected that this client is client " +
-                                     "number " + clientNumber +
-                                     ", but the reported number of clients " +
-                                     "was " + numClients +
-                                     " -- skipping this client");
+           "number " + clientNumber + ", but the reported number of clients " +
+           "was " + numClients + " -- skipping this client");
     }
     else if (clientNumber == (numClients - 1))
     {
@@ -874,33 +856,30 @@ public class LDAPPrimeJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Set up the status counters
     entryCount = new IntegerValueTracker(clientID, threadID,
-                                         STAT_TRACKER_ENTRY_COUNT,
-                                         collectionInterval);
+         STAT_TRACKER_ENTRY_COUNT, collectionInterval);
     exceptionsCaught = new IncrementalTracker(clientID, threadID,
-                                              STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                                              collectionInterval);
+         STAT_TRACKER_EXCEPTIONS_CAUGHT, collectionInterval);
     searchTime = new TimeTracker(clientID, threadID, STAT_TRACKER_SEARCH_TIME,
-                                 collectionInterval);
+         collectionInterval);
     successfulSearches = new IncrementalTracker(clientID, threadID,
-                                                STAT_TRACKER_SEARCHES_COMPLETED,
-                                                collectionInterval);
+         STAT_TRACKER_SEARCHES_COMPLETED, collectionInterval);
     totalSearches =
          new AccumulatingTracker(clientID, threadID,
-                                 STAT_TRACKER_TOTAL_SEARCHES_COMPLETED,
-                                 collectionInterval);
+              STAT_TRACKER_TOTAL_SEARCHES_COMPLETED, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
-      String jobID = getJobID();
+      final String jobID = getJobID();
       successfulSearches.enableRealTimeStats(statReporter, jobID);
       totalSearches.enableRealTimeStats(statReporter, jobID);
       exceptionsCaught.enableRealTimeStats(statReporter, jobID);
@@ -910,15 +889,15 @@ public class LDAPPrimeJobClass
 
 
     // Figure out the span to use for this particular thread.
-    int numThreads    = getClientSideJob().getThreadsPerClient();
-    int clientSpan    = clientMax - clientMin + 1;
+    final int numThreads    = getClientSideJob().getThreadsPerClient();
+    final int clientSpan    = clientMax - clientMin + 1;
     int spanPerThread = clientSpan / numThreads;
     if ((clientSpan % numThreads) != 0)
     {
       spanPerThread++;
     }
 
-    int threadNumber = getThreadNumber();
+    final int threadNumber = getThreadNumber();
     if (threadNumber == (numThreads - 1))
     {
       threadMin = (threadNumber * spanPerThread) + clientMin;
@@ -942,7 +921,7 @@ public class LDAPPrimeJobClass
     {
       try
       {
-        SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
 
         conn.connect(ldapHost, ldapPort, 10000);
@@ -971,10 +950,10 @@ public class LDAPPrimeJobClass
     {
       try
       {
-        SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         logMessage(e.getMessage());
         indicateStoppedDueToError();
@@ -993,14 +972,14 @@ public class LDAPPrimeJobClass
     catch (LDAPException le)
     {
       logMessage("Unable to connect to directory server " + ldapHost + ':' +
-                 ldapPort + ":  " + le);
+           ldapPort + ":  " + le);
       indicateCompletedWithErrors();
       return;
     }
 
     // Create the search request that will be used by this thread.
-    SearchRequest searchRequest = new SearchRequest(searchBase, SearchScope.SUB,
-         Filter.createEqualityFilter(attributeName, "x"));
+    final SearchRequest searchRequest = new SearchRequest(searchBase,
+         SearchScope.SUB, Filter.createEqualityFilter(attributeName, "x"));
     searchRequest.setTimeLimitSeconds(timeLimit);
     searchRequest.setResponseTimeoutMillis(1000L * timeLimit);
 
@@ -1042,13 +1021,13 @@ public class LDAPPrimeJobClass
         successfulSearch = true;
         matchingEntries = result.getEntryCount();
       }
-      catch (LDAPSearchException e)
+      catch (final LDAPSearchException e)
       {
         exceptionsCaught.increment();
         matchingEntries = e.getEntryCount();
         indicateCompletedWithErrors();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         exceptionsCaught.increment();
         indicateCompletedWithErrors();

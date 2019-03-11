@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -36,7 +36,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClientDisconnect
+public final class ClientDisconnect
        extends SLAMDMessage
 {
   // The reason that the connection needs to be closed.
@@ -69,8 +69,9 @@ public class ClientDisconnect
    * @param  disconnectReason  The reason that the client has initiated the
    *                           disconnect process.
    */
-  public ClientDisconnect(int messageID, HashMap<String,String> extraProperties,
-                          String disconnectReason)
+  public ClientDisconnect(final int messageID,
+                          final Map<String,String> extraProperties,
+                          final String disconnectReason)
   {
     super(messageID, extraProperties);
 
@@ -98,7 +99,7 @@ public class ClientDisconnect
    * @param  disconnectReason  The reason that the client has initiated the
    *                           disconnect process.
    */
-  public void setDisconnectReason(String disconnectReason)
+  public void setDisconnectReason(final String disconnectReason)
   {
     this.disconnectReason = disconnectReason;
   }
@@ -114,13 +115,13 @@ public class ClientDisconnect
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     if (disconnectReason != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_DISCONNECT_REASON,
-                           new ASN1OctetString(disconnectReason)));
+           ProtocolConstants.PROPERTY_DISCONNECT_REASON,
+           new ASN1OctetString(disconnectReason)));
     }
 
     return new ASN1Sequence(elementList);
@@ -140,13 +141,13 @@ public class ClientDisconnect
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
-    ASN1Element valueElement =
+    final ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_DISCONNECT_REASON);
     if (valueElement != null)
     {
@@ -154,10 +155,10 @@ public class ClientDisconnect
       {
         disconnectReason = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the disconnect reason:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the disconnect reason:  " + e, e);
       }
     }
   }
@@ -174,9 +175,9 @@ public class ClientDisconnect
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

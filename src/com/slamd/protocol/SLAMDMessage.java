@@ -19,6 +19,7 @@ package com.slamd.protocol;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Integer;
@@ -47,7 +48,7 @@ public abstract class SLAMDMessage
 {
   // The set of name-value pairs for the "extra" properties associated with this
   // message.  The name should be a string and the value an object.
-  private HashMap<String,String> extraProperties;
+  private Map<String,String> extraProperties;
 
   // The message ID for this SLAMD message.
   private int messageID;
@@ -76,7 +77,8 @@ public abstract class SLAMDMessage
    *                          Both the names and values for the properties must
    *                          be strings.
    */
-  protected SLAMDMessage(int messageID, HashMap<String,String> extraProperties)
+  protected SLAMDMessage(final int messageID,
+                         final Map<String,String> extraProperties)
   {
     this.messageID = messageID;
 
@@ -103,8 +105,8 @@ public abstract class SLAMDMessage
    *                          Both the names and values for the properties must
    *                          be strings.
    */
-  private void initializeDecodedMessage(int messageID,
-                                        HashMap<String,String> extraProperties)
+  private void initializeDecodedMessage(final int messageID,
+                                        final Map<String,String> extraProperties)
   {
     this.messageID = messageID;
 
@@ -138,7 +140,7 @@ public abstract class SLAMDMessage
    *
    * @return  The set of "extra" properties for this SLAMD message.
    */
-  public HashMap<String,String> getExtraProperties()
+  public Map<String,String> getExtraProperties()
   {
     return extraProperties;
   }
@@ -153,9 +155,9 @@ public abstract class SLAMDMessage
    * @return  The value of the "extra" property with the specified name, or
    *          {@code null} if there is no such property.
    */
-  public String getExtraProperty(String name)
+  public String getExtraProperty(final String name)
   {
-    Object value = extraProperties.get(name);
+    final Object value = extraProperties.get(name);
 
     if (value == null)
     {
@@ -175,7 +177,7 @@ public abstract class SLAMDMessage
    */
   public final ASN1Element encode()
   {
-    ASN1Element[] elements = new ASN1Element[4];
+    final ASN1Element[] elements = new ASN1Element[4];
 
     elements[0] = new ASN1Integer(messageID);
     elements[1] = new ASN1OctetString(getClass().getName());
@@ -187,17 +189,14 @@ public abstract class SLAMDMessage
     }
     else
     {
-      ASN1Element[] propsElements = new ASN1Element[extraProperties.size()];
+      final ASN1Element[] propsElements =
+           new ASN1Element[extraProperties.size()];
 
       int pos = 0;
-      Iterator<String> iterator = extraProperties.keySet().iterator();
-
-      while (iterator.hasNext())
+      for (final String name : extraProperties.keySet())
       {
-        String name = iterator.next();
-
-        String value;
-        Object valueObj = extraProperties.get(name);
+        final String value;
+        final Object valueObj = extraProperties.get(name);
         if (valueObj == null)
         {
           value = null;
@@ -207,8 +206,8 @@ public abstract class SLAMDMessage
           value = valueObj.toString();
         }
 
-        propsElements[pos++] = encodeNameValuePair(name,
-                                                   new ASN1OctetString(value));
+        propsElements[pos++] =
+             encodeNameValuePair(name, new ASN1OctetString(value));
       }
 
       elements[3] = new ASN1Sequence(propsElements);
@@ -230,89 +229,95 @@ public abstract class SLAMDMessage
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          provided ASN.1 element as a SLAMD message.
    */
-  public static SLAMDMessage decode(ASN1Element messageElement)
+  public static SLAMDMessage decode(final ASN1Element messageElement)
          throws SLAMDException
   {
     try
     {
-      ASN1Element[] elements = messageElement.decodeAsSequence().elements();
+      final ASN1Element[] elements =
+           messageElement.decodeAsSequence().elements();
 
       // First, get the message ID.
-      int messageID;
+      final int messageID;
       try
       {
         messageID = elements[0].decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Cannot decode the first message element as " +
-                                 "the message ID:  " +
-                                 JobClass.stackTraceToString(e), e);
+        throw new SLAMDException(
+             "Cannot decode the first message element as \the message ID:  " +
+                  JobClass.stackTraceToString(e),
+             e);
       }
 
 
       // Then, get the class name.
-      String className;
+      final String className;
       try
       {
         className = elements[1].decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Cannot decode the second message element " +
-                                 "as the message class:  " +
-                                 JobClass.stackTraceToString(e), e);
+        throw new SLAMDException(
+             "Cannot decode the second message element as the message " +
+                  "class:  " + JobClass.stackTraceToString(e),
+             e);
       }
 
 
       // If there are any "extra" message properties, then get them.
-      HashMap<String,String> extraProperties;
+      final HashMap<String,String> extraProperties;
       try
       {
-        ASN1Element[] propElements =
+        final ASN1Element[] propElements =
              elements[3].decodeAsSequence().elements();
         extraProperties = new HashMap<String,String>(propElements.length);
 
         for (int i=0; i < propElements.length; i++)
         {
-          ASN1Element[] e = propElements[i].decodeAsSequence().elements();
-          String name     = e[0].decodeAsOctetString().stringValue();
-          String value    = e[1].decodeAsOctetString().stringValue();
+          final ASN1Element[] e = propElements[i].decodeAsSequence().elements();
+          final String name     = e[0].decodeAsOctetString().stringValue();
+          final String value    = e[1].decodeAsOctetString().stringValue();
           extraProperties.put(name, value);
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Error while attempting to parse additional " +
-                                 "message properties:  " +
-                                 JobClass.stackTraceToString(e), e);
+        throw new SLAMDException(
+             "Error while attempting to parse additional message " +
+                  "properties:  " + JobClass.stackTraceToString(e),
+             e);
       }
 
 
       // Load, instantiate, and initialize the message class.
-      Class<?> messageClass;
+      final Class<?> messageClass;
       try
       {
         messageClass = Constants.classForName(className);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Cannot load specified message class " +
-                                 className + ":  " +
-                                 JobClass.stackTraceToString(e), e);
+        throw new SLAMDException(
+             "Cannot load specified message class " + className + ":  " +
+                  JobClass.stackTraceToString(e),
+             e);
       }
 
-      SLAMDMessage message;
+      final SLAMDMessage message;
       try
       {
         message = (SLAMDMessage) messageClass.newInstance();
         message.initializeDecodedMessage(messageID, extraProperties);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Cannot create an instance of class " +
-                                 className + " as a SLAMD message:  " +
-                                 JobClass.stackTraceToString(e), e);
+        throw new SLAMDException(
+             "Cannot create an instance of class " + className +
+                  " as a SLAMD message:  " + JobClass.stackTraceToString(e),
+             e);
       }
 
 
@@ -320,15 +325,16 @@ public abstract class SLAMDMessage
       message.decodeMessagePayload(elements[2]);
       return message;
     }
-    catch (SLAMDException se)
+    catch (final SLAMDException se)
     {
       throw se;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new SLAMDException("Cannot deocde the provided ASN.1 element as " +
-                               "a SLAMD message:  " +
-                               JobClass.stackTraceToString(e), e);
+      throw new SLAMDException(
+           "Cannot deocde the provided ASN.1 element as a SLAMD message:  " +
+                JobClass.stackTraceToString(e),
+           e);
     }
   }
 
@@ -355,7 +361,7 @@ public abstract class SLAMDMessage
    *                          provided ASN.1 element as the payload for this
    *                          SLAMD message.
    */
-  public abstract void decodeMessagePayload(ASN1Element payloadElement)
+  public abstract void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException;
 
 
@@ -369,7 +375,8 @@ public abstract class SLAMDMessage
    *                 appended.
    * @param  indent  The number of spaces to indent the payload content.
    */
-  public abstract void payloadToString(StringBuilder buffer, int indent);
+  public abstract void payloadToString(final StringBuilder buffer,
+                                       final int indent);
 
 
 
@@ -381,7 +388,7 @@ public abstract class SLAMDMessage
   @Override()
   public String toString()
   {
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     toString(buffer);
     return buffer.toString();
   }
@@ -395,9 +402,9 @@ public abstract class SLAMDMessage
    * @param  buffer  The buffer to which the string representation of this SLAMD
    *                 message should be appended.
    */
-  public void toString(StringBuilder buffer)
+  public void toString(final StringBuilder buffer)
   {
-    String EOL = Constants.EOL;
+    final String EOL = Constants.EOL;
 
     buffer.append("SLAMDMessage");
     buffer.append(EOL);
@@ -420,13 +427,10 @@ public abstract class SLAMDMessage
       buffer.append("     Extra Properties:");
       buffer.append(EOL);
 
-      Iterator<String> iterator = extraProperties.keySet().iterator();
-      while (iterator.hasNext())
+      for (final String name : extraProperties.keySet())
       {
-        String name = iterator.next();
-
-        String value;
-        Object valueObj = extraProperties.get(name);
+        final String value;
+        final Object valueObj = extraProperties.get(name);
         if (valueObj == null)
         {
           value = "";
@@ -455,10 +459,10 @@ public abstract class SLAMDMessage
    *
    * @return  The ASN.1 sequence element containing the encoded name-value pair.
    */
-  public static ASN1Sequence encodeNameValuePair(String name,
-                                                 ASN1Element value)
+  public static ASN1Sequence encodeNameValuePair(final String name,
+                                                 final ASN1Element value)
   {
-    ASN1Element[] elements =
+    final ASN1Element[] elements =
     {
       new ASN1OctetString(name),
       value
@@ -484,26 +488,27 @@ public abstract class SLAMDMessage
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          provided element as a name-value pair.
    */
-  public static ASN1Element decodeNameValuePair(ASN1Element sequenceElement,
-                                                StringBuilder nameBuffer)
+  public static ASN1Element decodeNameValuePair(
+                                 final ASN1Element sequenceElement,
+                                 final StringBuilder nameBuffer)
          throws SLAMDException
   {
-    ASN1Element[] elements;
+    final ASN1Element[] elements;
     try
     {
       elements = sequenceElement.decodeAsSequence().elements();
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new SLAMDException("Cannot decode the provided element as an " +
-                               "ASN.1 sequence:  " + e, e);
+      throw new SLAMDException(
+           "Cannot decode the provided element as an ASN.1 sequence:  " + e, e);
     }
 
     if (elements.length != 2)
     {
       throw new SLAMDException("The provided ASN.1 sequence contained an " +
-                               "invalid number of elements (expected 2, got " +
-                               elements.length + ").");
+           "invalid number of elements (expected 2, got " + elements.length +
+           ").");
     }
 
     String name;
@@ -511,11 +516,12 @@ public abstract class SLAMDMessage
     {
       name = elements[0].decodeAsOctetString().stringValue();
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new SLAMDException("Cannot decode the first sequence element as " +
-                               "an octet string containing the property " +
-                               "name:  " + e, e);
+      throw new SLAMDException(
+           "Cannot decode the first sequence element as an octet string " +
+                "containing the property name:  " + e,
+           e);
     }
 
     nameBuffer.append(name);
@@ -537,35 +543,36 @@ public abstract class SLAMDMessage
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          name-value pair elements.
    */
-  public static HashMap<String,ASN1Element> decodeNameValuePairSequence(
-                                                 ASN1Element sequenceElement)
+  public static Map<String,ASN1Element> decodeNameValuePairSequence(
+                                             final ASN1Element sequenceElement)
          throws SLAMDException
   {
-    ASN1Element[] elements;
+    final ASN1Element[] elements;
     try
     {
       elements = sequenceElement.decodeAsSequence().elements();
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new SLAMDException("Unable to decode the provided ASN.1 element " +
-                               "as a sequence of name-value pair elements:  " +
-                               e, e);
+      throw new SLAMDException(
+           "Unable to decode the provided ASN.1 element as a sequence of " +
+                "name-value pair elements:  " + e,
+           e);
     }
 
-    HashMap<String,ASN1Element> propertyMap =
+    final HashMap<String,ASN1Element> propertyMap =
          new HashMap<String,ASN1Element>(elements.length);
     for (int i=0; i < elements.length; i++)
     {
-      StringBuilder nameBuffer = new StringBuilder();
-      ASN1Element valueElement = decodeNameValuePair(elements[i], nameBuffer);
-      String name = nameBuffer.toString();
+      final StringBuilder nameBuffer = new StringBuilder();
+      final ASN1Element valueElement =
+           decodeNameValuePair(elements[i], nameBuffer);
+      final String name = nameBuffer.toString();
 
       if (propertyMap.containsKey(name))
       {
         throw new SLAMDException("Multiple occurrences of property " + name +
-                                 "found in the provided set of name-value " +
-                                 "pairs.");
+             "found in the provided set of name-value pairs.");
       }
 
       propertyMap.put(name, valueElement);

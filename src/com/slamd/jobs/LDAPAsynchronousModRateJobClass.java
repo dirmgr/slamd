@@ -401,7 +401,7 @@ public final class LDAPAsynchronousModRateJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    final ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>(5);
+    final ArrayList<StatTracker> trackerList = new ArrayList<>(5);
 
     final int    collectionInterval = getCollectionInterval();
     final String clientID           = getClientID();

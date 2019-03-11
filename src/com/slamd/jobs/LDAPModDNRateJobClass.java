@@ -20,7 +20,6 @@ package com.slamd.jobs;
 
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -51,7 +50,7 @@ import com.unboundid.util.FixedRateBarrier;
  * This class provides a SLAMD job class that may be used to perform modify DN
  * operations against an LDAP directory server.
  */
-public class LDAPModDNRateJobClass
+public final class LDAPModDNRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -348,7 +347,7 @@ public class LDAPModDNRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 

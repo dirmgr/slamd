@@ -21,7 +21,6 @@ package com.slamd.jobs;
 
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -62,7 +61,7 @@ import com.unboundid.util.ValuePattern;
  * connections per client that is not dependent upon the number of active
  * threads.
  */
-public class LDAPMultiConnectionSearchRateJobClass
+public final class LDAPMultiConnectionSearchRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -150,7 +149,6 @@ public class LDAPMultiConnectionSearchRateJobClass
 
   // Variables used to hold the values of the parameters.
   private static int          coolDownTime;
-  private static int          connectionsPerClient;
   private static int          filter1Percentage;
   private static int          responseTimeThreshold;
   private static int          sizeLimit;
@@ -159,8 +157,6 @@ public class LDAPMultiConnectionSearchRateJobClass
   private static long         timeBetweenRequests;
   private static SearchScope  scope;
   private static String       baseDN;
-  private static String       filter1;
-  private static String       filter2;
   private static String[]     attributes;
 
   // Stat trackers used by this job.
@@ -467,7 +463,7 @@ public class LDAPMultiConnectionSearchRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -479,8 +475,8 @@ public class LDAPMultiConnectionSearchRateJobClass
       try
       {
         String base = baseDNParam.getStringValue();
-        outputMessages.add("Ensuring that base entry '" + base +
-                           "' exists....");
+        outputMessages.add(
+             "Ensuring that base entry '" + base + "' exists....");
         SearchResultEntry e = connection.getEntry(base);
         if (e == null)
         {
@@ -495,8 +491,8 @@ public class LDAPMultiConnectionSearchRateJobClass
       catch (Exception e)
       {
         successful = false;
-        outputMessages.add("Unable to perform the search:  " +
-                           stackTraceToString(e));
+        outputMessages.add(
+             "Unable to perform the search:  " + stackTraceToString(e));
       }
 
       outputMessages.add("");
@@ -520,7 +516,8 @@ public class LDAPMultiConnectionSearchRateJobClass
 
     connectionsPerClientParameter = parameters.getIntegerParameter(
          connectionsPerClientParameter.getName());
-    connectionsPerClient = connectionsPerClientParameter.getIntValue();
+    final int connectionsPerClient =
+         connectionsPerClientParameter.getIntValue();
 
 
     baseDN = "";
@@ -567,12 +564,12 @@ public class LDAPMultiConnectionSearchRateJobClass
 
     filter1Parameter =
          parameters.getStringParameter(filter1Parameter.getName());
-    filter1 = filter1Parameter.getStringValue();
+    final String filter1 = filter1Parameter.getStringValue();
 
 
     filter2Parameter =
          parameters.getStringParameter(filter2Parameter.getName());
-    filter2 = filter2Parameter.getStringValue();
+    final String filter2 = filter2Parameter.getStringValue();
 
 
     filter1Percentage = 50;
@@ -682,7 +679,7 @@ public class LDAPMultiConnectionSearchRateJobClass
     catch (Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 1:  " +
-                                     stackTraceToString(e), e);
+           stackTraceToString(e), e);
     }
 
     try
@@ -692,7 +689,7 @@ public class LDAPMultiConnectionSearchRateJobClass
     catch (Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 2:  " +
-                                     stackTraceToString(e), e);
+           stackTraceToString(e), e);
     }
   }
 

@@ -54,7 +54,7 @@ import com.unboundid.util.FixedRateBarrier;
  * modifications against an LDAP directory server with the DNs of the entries to
  * modify read from a file.
  */
-public class LDAPFileBasedModRateJobClass
+public final class LDAPFileBasedModRateJobClass
        extends LDAPJobClass
 {
   /**

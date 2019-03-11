@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Enumerated;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class JobControlResponse
+public final class JobControlResponse
        extends SLAMDMessage
 {
   // The result code for the job control request.
@@ -80,9 +80,10 @@ public class JobControlResponse
    * @param  resultCode       The result code for the job control request.
    * @param  errorMessage     The error message for the job control request.
    */
-  public JobControlResponse(int messageID,
-                            HashMap<String,String> extraProperties,
-                            String jobID, int resultCode, String errorMessage)
+  public JobControlResponse(final int messageID,
+                            final Map<String,String> extraProperties,
+                            final String jobID, final int resultCode,
+                            final String errorMessage)
   {
     super(messageID, extraProperties);
 
@@ -110,7 +111,7 @@ public class JobControlResponse
    *
    * @param  jobID  The job ID from the job control request.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -134,7 +135,7 @@ public class JobControlResponse
    *
    * @param  resultCode  The result code for the job control request.
    */
-  public void setResultCode(int resultCode)
+  public void setResultCode(final int resultCode)
   {
     this.resultCode = resultCode;
   }
@@ -159,7 +160,7 @@ public class JobControlResponse
    *
    * @param  errorMessage  The error message for the job control request.
    */
-  public void setErrorMessage(String errorMessage)
+  public void setErrorMessage(final String errorMessage)
   {
     this.errorMessage = errorMessage;
   }
@@ -175,18 +176,18 @@ public class JobControlResponse
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_RESULT_CODE,
-                                        new ASN1Enumerated(resultCode)));
+         new ASN1Enumerated(resultCode)));
 
     if (errorMessage != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
-                           new ASN1OctetString(errorMessage)));
+           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
+           new ASN1OctetString(errorMessage)));
     }
 
     return new ASN1Sequence(elementList);
@@ -206,18 +207,18 @@ public class JobControlResponse
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job control response message does not " +
-                               "include a job ID.");
+      throw new SLAMDException(
+           "Job control response message does not include a job ID.");
     }
     else
     {
@@ -225,7 +226,7 @@ public class JobControlResponse
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -234,8 +235,8 @@ public class JobControlResponse
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_RESULT_CODE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job control response message does not " +
-                               "include a result code.");
+      throw new SLAMDException(
+           "Job control response message does not include a result code.");
     }
     else
     {
@@ -243,7 +244,7 @@ public class JobControlResponse
       {
         resultCode = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the result code:  " + e, e);
       }
@@ -257,10 +258,10 @@ public class JobControlResponse
       {
         errorMessage = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the error message:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the error message:  " + e, e);
       }
     }
   }
@@ -277,9 +278,9 @@ public class JobControlResponse
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

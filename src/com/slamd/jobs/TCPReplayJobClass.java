@@ -47,14 +47,14 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class TCPReplayJobClass
+public final class TCPReplayJobClass
        extends JobClass
 {
   /**
    * The display name of the stat tracker used to track the number of times that
    * the replay process caught a disconnect from the remote server.
    */
-  public static final String STAT_TRACKER_DISCONNECTS_CAUGHT =
+  private static final String STAT_TRACKER_DISCONNECTS_CAUGHT =
        "Disconnects Caught";
 
 
@@ -63,7 +63,7 @@ public class TCPReplayJobClass
    * The display name of the stat tracker used to track the number of times that
    * the entire data set has been replayed.
    */
-  public static final String STAT_TRACKER_ITERATIONS_COMPLETED =
+  private static final String STAT_TRACKER_ITERATIONS_COMPLETED =
        "Iterations Completed";
 
 
@@ -72,7 +72,7 @@ public class TCPReplayJobClass
    * The display name of the stat tracker used to track the number of request
    * packets that the client replayed to the server.
    */
-  public static final String STAT_TRACKER_PACKETS_REPLAYED =
+  private static final String STAT_TRACKER_PACKETS_REPLAYED =
        "Request Packets Replayed";
 
 
@@ -237,7 +237,7 @@ public class TCPReplayJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] params = new Parameter[]
+    final Parameter[] params = new Parameter[]
     {
       placeholder,
       hostParameter,
@@ -261,19 +261,18 @@ public class TCPReplayJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_PACKETS_REPLAYED,
-                             collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_ITERATIONS_COMPLETED,
-                             collectionInterval),
+           STAT_TRACKER_ITERATIONS_COMPLETED, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_DISCONNECTS_CAUGHT,
-                             collectionInterval)
+           STAT_TRACKER_DISCONNECTS_CAUGHT, collectionInterval)
     };
   }
 
@@ -299,7 +298,8 @@ public class TCPReplayJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Get the values of the "simple" parameters.
@@ -353,8 +353,8 @@ public class TCPReplayJobClass
 
     // Now process the capture file contents.  This logic is hard coded, so if
     // the capture format changes, then this will need to be re-written.
-    ArrayList<byte[]> captureList = new ArrayList<byte[]>();
-    ArrayList<Long>   timeList    = new ArrayList<Long>();
+    final ArrayList<byte[]> captureList = new ArrayList<>();
+    final ArrayList<Long>   timeList    = new ArrayList<>();
     try
     {
       captureFileURLParameter =
@@ -368,7 +368,7 @@ outerLoop:
         int captureVersion = 0;
         for (int i=0; i < 4; i++)
         {
-          int byteRead = inputStream.read();
+          final int byteRead = inputStream.read();
           if (byteRead < 0)
           {
             break outerLoop;
@@ -380,9 +380,8 @@ outerLoop:
         if (captureVersion != 1)
         {
           throw new UnableToRunException("Unable to parse the capture file:  " +
-                                         "The capture version must be 1, but " +
-                                         "a value of " + captureVersion +
-                                         " was read.");
+               "The capture version must be 1, but a value of " +
+               captureVersion + " was read.");
         }
 
 
@@ -404,25 +403,23 @@ outerLoop:
         if ((captureLength < 0) || (captureLength > (1024*1024)))
         {
           throw new UnableToRunException("Unable to parse the capture file:  " +
-                                         "The capture length must not be " +
-                                         "greater than one megabyte (decoded " +
-                                         "a length of " + captureLength + ").");
+               "The capture length must not be greater than one megabyte " +
+               "(decoded a length of " + captureLength + ").");
         }
 
 
         // Read the specified number of bytes.
-        byte[] data = new byte[captureLength];
+        final byte[] data = new byte[captureLength];
         int totalBytesRead = 0;
         while (totalBytesRead < captureLength)
         {
           int bytesRead = inputStream.read(data, totalBytesRead,
-                                           (captureLength - totalBytesRead));
+               (captureLength - totalBytesRead));
           if (bytesRead < 0)
           {
             throw new UnableToRunException("Unable to parse the capture " +
-                                           "file:  The input stream was " +
-                                           "unexpectedly closed before all " +
-                                           "data could be read.");
+                 "file:  The input stream was unexpectedly closed before all " +
+                 "data could be read.");
           }
 
           totalBytesRead += bytesRead;
@@ -446,7 +443,7 @@ outerLoop:
         }
         else if (preserveTiming)
         {
-          long captureTime = timeList.get(i);
+          final long captureTime = timeList.get(i);
           sleepTimes[i] = (int) ((captureTime - lastTime) * timingMultiplier);
           lastTime = captureTime;
         }
@@ -456,14 +453,14 @@ outerLoop:
         }
       }
     }
-    catch (UnableToRunException utre)
+    catch (final UnableToRunException utre)
     {
       throw utre;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new UnableToRunException("Unable to parse the capture file:  " +
-                                     stackTraceToString(e));
+      throw new UnableToRunException(
+           "Unable to parse the capture file:  " + stackTraceToString(e));
     }
 
 
@@ -471,10 +468,10 @@ outerLoop:
     {
       readThread = new TCPReplayReadThread(this);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new UnableToRunException("Could not create the read thread:  " +
-                                     stackTraceToString(e));
+      throw new UnableToRunException(
+           "Could not create the read thread:  " + stackTraceToString(e));
     }
   }
 
@@ -484,20 +481,17 @@ outerLoop:
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     packetsReplayed = new IncrementalTracker(clientID, threadID,
-                                             STAT_TRACKER_PACKETS_REPLAYED,
-                                             collectionInterval);
-    iterationsCompleted =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_ITERATIONS_COMPLETED,
-                                collectionInterval);
+         STAT_TRACKER_PACKETS_REPLAYED, collectionInterval);
+    iterationsCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_ITERATIONS_COMPLETED, collectionInterval);
     disconnectsCaught = new IncrementalTracker(clientID, threadID,
-                                               STAT_TRACKER_DISCONNECTS_CAUGHT,
-                                               collectionInterval);
+         STAT_TRACKER_DISCONNECTS_CAUGHT, collectionInterval);
 
     socketChannel = null;
     readThread.registerJobThread();
@@ -517,10 +511,10 @@ outerLoop:
       iterationsCompleted.startTracker();
       disconnectsCaught.startTracker();
 
-      boolean           connected     = false;
-      boolean           infinite      = (maxIterations <= 0);
-      InetSocketAddress socketAddress = new InetSocketAddress(targetHost,
-                                                              targetPort);
+      boolean connected = false;
+      final boolean infinite = (maxIterations <= 0);
+      final InetSocketAddress socketAddress =
+           new InetSocketAddress(targetHost, targetPort);
 
 outerLoop:
       for (int i=0; (infinite || (i < maxIterations)); i++)
@@ -547,10 +541,10 @@ outerLoop:
               readThread.registerSocketChannel(socketChannel);
               connected = true;
             }
-            catch (IOException ioe)
+            catch (final IOException ioe)
             {
               logMessage("ERROR:  Unable to connect to " + socketAddress +
-                         " -- " + stackTraceToString(ioe));
+                   " -- " + stackTraceToString(ioe));
               break outerLoop;
             }
           }
@@ -562,7 +556,7 @@ outerLoop:
 
           try
           {
-            ByteBuffer buffer = ByteBuffer.wrap(captureData[j]);
+            final ByteBuffer buffer = ByteBuffer.wrap(captureData[j]);
             int bytesWritten = socketChannel.write(buffer);
             while (bytesWritten < captureData[j].length)
             {
@@ -571,12 +565,12 @@ outerLoop:
 
             packetsReplayed.increment();
           }
-          catch (IOException ioe)
+          catch (final IOException ioe)
           {
             try
             {
               socketChannel.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             connected = false;
             disconnectsCaught.increment();
@@ -589,10 +583,10 @@ outerLoop:
         }
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       logMessage("ERROR:  Uncaught exception during processing -- " +
-                 stackTraceToString(e));
+           stackTraceToString(e));
     }
     finally
     {
@@ -616,7 +610,7 @@ outerLoop:
     try
     {
       socketChannel.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
   }
 }
 

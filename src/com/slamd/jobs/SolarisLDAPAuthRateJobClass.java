@@ -18,8 +18,8 @@ package com.slamd.jobs;
 
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -752,7 +752,7 @@ public class SolarisLDAPAuthRateJobClass
    */
   @Override()
   public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+                                   List<String> outputMessages)
   {
     // Get the parameters that should be tested.
     boolean bind      = false;

@@ -24,8 +24,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -64,14 +64,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class IMAPCheckRateJobClass
+public final class IMAPCheckRateJobClass
        extends JobClass
 {
   /**
    * The prefix that will be placed before the incrementing message ID for each
    * request.
    */
-  public static final String REQUEST_ID_PREFIX = "imaprate";
+  private static final String REQUEST_ID_PREFIX = "imaprate";
 
 
 
@@ -79,7 +79,7 @@ public class IMAPCheckRateJobClass
    * The display name of the stat tracker used to count the number of IMAP
    * sessions established.
    */
-  public static final String STAT_TRACKER_IMAP_SESSIONS = "IMAP Sessions";
+  private static final String STAT_TRACKER_IMAP_SESSIONS = "IMAP Sessions";
 
 
 
@@ -87,7 +87,7 @@ public class IMAPCheckRateJobClass
    * The display name of the stat tracker used to count the number of failed
    * IMAP logins.
    */
-  public static final String STAT_TRACKER_FAILURE_COUNT = "Failed Logins";
+  private static final String STAT_TRACKER_FAILURE_COUNT = "Failed Logins";
 
 
 
@@ -95,7 +95,7 @@ public class IMAPCheckRateJobClass
    * The display name of the stat tracker used to keep track of the number of
    * messages contained in the inbox for each IMAP session.
    */
-  public static final String STAT_TRACKER_MESSAGE_COUNT = "Message Count";
+  private static final String STAT_TRACKER_MESSAGE_COUNT = "Message Count";
 
 
 
@@ -103,7 +103,7 @@ public class IMAPCheckRateJobClass
    * The display name of the stat tracker used to time the process of
    * authenticating and retrieving the list of messages.
    */
-  public static final String STAT_TRACKER_SESSION_DURATION =
+  private static final String STAT_TRACKER_SESSION_DURATION =
        "Session Duration (ms)";
 
 
@@ -112,23 +112,22 @@ public class IMAPCheckRateJobClass
    * The display name of the stat tracker used to count the number of successful
    * IMAP logins.
    */
-  public static final String STAT_TRACKER_SUCCESS_COUNT = "Successful Logins";
+  private static final String STAT_TRACKER_SUCCESS_COUNT = "Successful Logins";
 
 
 
   // The port number of the IMAP server.
-  private IntegerParameter portParameter =
-       new IntegerParameter("imap_port", "IMAP Server Port",
-                            "The port number on which the IMAP server is " +
-                            "listening for requests.", true, 143, true, 1, true,
-                            65535);
+  private IntegerParameter portParameter = new IntegerParameter("imap_port",
+       "IMAP Server Port",
+       "The port number on which the IMAP server is listening for requests.",
+       true, 143, true, 1, true, 65535);
 
   // The length of time between initial requests.
-  private IntegerParameter delayParameter =
-       new IntegerParameter("delay", "Time Between IMAP Sessions (ms)",
-                            "The length of time in milliseconds between " +
-                            "attempts to access the IMAP server.",
-                            true, 0, true, 0, false, 0);
+  private IntegerParameter delayParameter = new IntegerParameter("delay",
+       "Time Between IMAP Sessions (ms)",
+       "The length of time in milliseconds between attempts to access the " +
+            "IMAP server.",
+       true, 0, true, 0, false, 0);
 
   // The parameter that specifies the maximum request rate.
   private IntegerParameter maxRateParameter = new IntegerParameter("maxRate",
@@ -154,32 +153,30 @@ public class IMAPCheckRateJobClass
        true, 0, true,0, false, 0);
 
   // The password to use when authenticating.
-  private PasswordParameter passwordParameter =
-       new PasswordParameter("user_pw", "User Password",
-                             "The password that will be used to authenticate " +
-                             "to the IMAP server.", true, "");
+  private PasswordParameter passwordParameter = new PasswordParameter("user_pw",
+       "User Password",
+       "The password that will be used to authenticate to the IMAP server.",
+       true, "");
 
   // A placeholder parameter that is only used for formatting.
   private PlaceholderParameter placeholder = new PlaceholderParameter();
 
   // The address of the IMAP server.
-  private StringParameter hostParameter =
-       new StringParameter("imap_host", "IMAP Server Address",
-                           "The fully-qualified domain name or IP address of " +
-                           "the system running the IMAP server.", true, "");
+  private StringParameter hostParameter = new StringParameter("imap_host",
+       "IMAP Server Address",
+       "The fully-qualified domain name or IP address of the system running " +
+            "the IMAP server.", true, "");
 
   // The user ID to use when authenticating.
-  private StringParameter userIDParameter =
-       new StringParameter("user_id", "User ID",
-                           "The user ID that will be used to authenticate to " +
-                           "the IMAP server.  It may include a range of " +
-                           "numeric values chosen randomly by including " +
-                           "that range in brackets with the values separated " +
-                           "by a dash (i.e., \"user.[1-1000]\"), or a range " +
-                           "of sequentially-incrementing numeric values by " +
-                           "including that range in brackets with the values " +
-                           "separated by a colon (i.e., \"user.[1:1000]\").",
-                           true, "");
+  private StringParameter userIDParameter = new StringParameter("user_id",
+       "User ID",
+       "The user ID that will be used to authenticate to the IMAP server.  " +
+            "It may include a range of numeric values chosen randomly by " +
+            "including that range in brackets with the values separated by " +
+            "dash (i.e., \"user.[1-1000]\"), or a range of sequentially " +
+            "incrementing numeric values by including that range in brackets " +
+            "with the values separated by a colon (i.e., \"user.[1:1000]\").",
+       true, "");
 
 
 
@@ -193,7 +190,6 @@ public class IMAPCheckRateJobClass
 
   // The random number generator for the job.
   private static Random parentRandom;
-  private Random random;
 
 
   // The rate limiter for this job.
@@ -214,8 +210,7 @@ public class IMAPCheckRateJobClass
   /**
    * The default constructor used to create a new instance of the job class.
    * The only thing it should do is to invoke the superclass constructor.  All
-   * other initialization should be performed in the <CODE>initialize</CODE>
-   * method.
+   * other initialization should be performed in the {@code initialize} method.
    */
   public IMAPCheckRateJobClass()
   {
@@ -278,7 +273,7 @@ public class IMAPCheckRateJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameters =
+    final Parameter[] parameters =
     {
       placeholder,
       hostParameter,
@@ -299,21 +294,22 @@ public class IMAPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_IMAP_SESSIONS,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_SESSION_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_TRACKER_MESSAGE_COUNT,
-                              collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_SUCCESS_COUNT,
-                             collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_FAILURE_COUNT,
-                             collectionInterval)
+           collectionInterval)
     };
   }
 
@@ -341,14 +337,15 @@ public class IMAPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The user ID parameter must be parseable as a value pattern.
-    StringParameter p =
+    final StringParameter p =
          parameters.getStringParameter(userIDParameter.getName());
     if ((p != null) && p.hasValue())
     {
@@ -356,11 +353,13 @@ public class IMAPCheckRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
-        throw new InvalidValueException("The value provided for the '" +
-             p.getDisplayName() + "' parameter is not a valid value " +
-             "pattern:  " + pe.getMessage(), pe);
+        throw new InvalidValueException(
+             "The value provided for the '" + p.getDisplayName() +
+                  "' parameter is not a valid value pattern:  " +
+                  pe.getMessage(),
+             pe);
       }
     }
   }
@@ -382,58 +381,58 @@ public class IMAPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get the parameters necessary to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No IMAP server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! portParam.hasValue()))
     {
       outputMessages.add("ERROR:  No IMAP server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
-    StringParameter userIDParam =
+    final StringParameter userIDParam =
          parameters.getStringParameter(userIDParameter.getName());
     if ((userIDParam == null) || (! userIDParam.hasValue()))
     {
       outputMessages.add("ERROR:  No user ID was provided.");
       return false;
     }
-    String userID = userIDParam.getStringValue();
+    final String userID = userIDParam.getStringValue();
 
 
-    PasswordParameter pwParam =
+    final PasswordParameter pwParam =
          parameters.getPasswordParameter(passwordParameter.getName());
     if ((pwParam == null) || (! pwParam.hasValue()))
     {
       outputMessages.add("ERROR:  No user password was provided.");
       return false;
     }
-    String userPW = pwParam.getStringValue();
+    final String userPW = pwParam.getStringValue();
 
 
     // Try to establish a connection to the IMAP server.
-    Socket         socket;
-    BufferedReader reader;
-    BufferedWriter writer;
+    final Socket socket;
+    final BufferedReader reader;
+    final BufferedWriter writer;
     try
     {
       outputMessages.add("Trying to establish a connection to IMAP server " +
-                         host + ':' + port + "....");
+           host + ':' + port + "....");
 
       socket = new Socket(host, port);
       reader = new BufferedReader(new InputStreamReader(
@@ -444,10 +443,10 @@ public class IMAPCheckRateJobClass
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to connect:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to connect:  " + stackTraceToString(e));
       return false;
     }
 
@@ -462,25 +461,25 @@ public class IMAPCheckRateJobClass
       outputMessages.add("Hello string was '" + line + "'.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to read the hello string:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
 
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -498,25 +497,25 @@ public class IMAPCheckRateJobClass
       outputMessages.add("Successfully sent the LOGIN request.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to send the LOGIN request:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
 
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -526,8 +525,8 @@ public class IMAPCheckRateJobClass
     boolean loginSuccessful = false;
     try
     {
-      outputMessages.add("Trying to read the LOGIN response from the " +
-                         "server....");
+      outputMessages.add(
+           "Trying to read the LOGIN response from the server....");
 
       String line = reader.readLine();
       if (line.toLowerCase().startsWith("10 ok"))
@@ -538,25 +537,25 @@ public class IMAPCheckRateJobClass
       outputMessages.add("Read a LOGIN response of '" + line + "'.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to read the LOGIN response:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
 
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -572,22 +571,22 @@ public class IMAPCheckRateJobClass
       writer.write("20 LOGOUT");
       writer.newLine();
       writer.flush();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       reader.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       writer.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       socket.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
 
     outputMessages.add("All tests completed.");
@@ -629,7 +628,7 @@ public class IMAPCheckRateJobClass
       {
         userIDPattern = new ValuePattern(userIDParameter.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to parse user ID pattern:  " +
                                        stackTraceToString(e), e);
@@ -687,30 +686,26 @@ public class IMAPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Create the stat trackers for this thread.
     sessionCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_IMAP_SESSIONS,
-                                            collectionInterval);
+         STAT_TRACKER_IMAP_SESSIONS, collectionInterval);
     sessionTimer = new TimeTracker(clientID, threadID,
-                                   STAT_TRACKER_SESSION_DURATION,
-                                   collectionInterval);
+         STAT_TRACKER_SESSION_DURATION, collectionInterval);
     messageCountTracker = new IntegerValueTracker(clientID, threadID,
-                                                  STAT_TRACKER_MESSAGE_COUNT,
-                                                  collectionInterval);
+         STAT_TRACKER_MESSAGE_COUNT, collectionInterval);
     successCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SUCCESS_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_SUCCESS_COUNT, collectionInterval);
     failureCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_FAILURE_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_FAILURE_COUNT, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -723,7 +718,7 @@ public class IMAPCheckRateJobClass
 
 
     // Seed the random number generator for this thread.
-    random = new Random(parentRandom.nextLong());
+    final Random random = new Random(parentRandom.nextLong());
   }
 
 
@@ -771,14 +766,14 @@ mainLoop:
       // If we need to sleep, then do so.
       if (delay > 0)
       {
-        long now          = System.currentTimeMillis();
-        long prevTestTime = now - lastStartTime;
+        final long now = System.currentTimeMillis();
+        final long prevTestTime = now - lastStartTime;
         if (prevTestTime < delay)
         {
           try
           {
             Thread.sleep(delay - prevTestTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
 
@@ -790,7 +785,7 @@ mainLoop:
 
 
       // Get the user ID to use in the next request.
-      userID    = userIDPattern.nextValue();
+      userID = userIDPattern.nextValue();
       idCounter = 1;
 
 
@@ -799,11 +794,11 @@ mainLoop:
       {
         socket = new Socket(imapAddress, imapPort);
         reader = new BufferedReader(new InputStreamReader(
-                                             socket.getInputStream()));
+             socket.getInputStream()));
         writer = new BufferedWriter(new OutputStreamWriter(
-                                             socket.getOutputStream()));
+             socket.getOutputStream()));
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -816,7 +811,7 @@ mainLoop:
       {
         line = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -826,7 +821,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -834,14 +829,14 @@ mainLoop:
 
       // Send the LOGIN request.
       request = REQUEST_ID_PREFIX + idCounter + " LOGIN " + userID + ' ' +
-                password;
+           password;
       try
       {
         writer.write(request);
         writer.newLine();
         writer.flush();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -851,7 +846,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -878,7 +873,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             continue mainLoop;
           }
@@ -896,13 +891,13 @@ mainLoop:
                 reader.close();
                 writer.close();
                 socket.close();
-              } catch (Exception e) {}
+              } catch (final Exception e) {}
 
               continue mainLoop;
             }
           }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
           sessionTimer.stopTimer();
           failureCounter.increment();
@@ -912,7 +907,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue mainLoop;
         }
@@ -928,7 +923,7 @@ mainLoop:
         writer.newLine();
         writer.flush();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -938,7 +933,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -967,7 +962,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             continue mainLoop;
           }
@@ -987,7 +982,7 @@ mainLoop:
                 reader.close();
                 writer.close();
                 socket.close();
-              } catch (Exception e) {}
+              } catch (final Exception e) {}
 
               continue mainLoop;
             }
@@ -995,7 +990,7 @@ mainLoop:
           else if (lowerLine.startsWith("*") &&
                    (lowerLine.indexOf("exists") > 0))
           {
-            StringTokenizer tokenizer = new StringTokenizer(line, " ");
+            final StringTokenizer tokenizer = new StringTokenizer(line, " ");
             try
             {
               // The first will be the asterisk.  The second should be the
@@ -1003,7 +998,7 @@ mainLoop:
               tokenizer.nextToken();
               highestUID = Integer.parseInt(tokenizer.nextToken());
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
               sessionTimer.stopTimer();
               failureCounter.increment();
@@ -1013,13 +1008,13 @@ mainLoop:
                 reader.close();
                 writer.close();
                 socket.close();
-              } catch (Exception e2) {}
+              } catch (final Exception e2) {}
 
               continue mainLoop;
             }
           }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
           sessionTimer.stopTimer();
           failureCounter.increment();
@@ -1029,7 +1024,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue mainLoop;
         }
@@ -1048,7 +1043,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -1067,14 +1062,14 @@ mainLoop:
         // inbox.
         idCounter++;
         request = REQUEST_ID_PREFIX + idCounter + " FETCH 1:" + highestUID +
-                  " (FLAGS)";
+             " (FLAGS)";
         try
         {
           writer.write(request);
           writer.newLine();
           writer.flush();
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
           sessionTimer.stopTimer();
           failureCounter.increment();
@@ -1084,7 +1079,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue;
         }
@@ -1110,7 +1105,7 @@ mainLoop:
                 reader.close();
                 writer.close();
                 socket.close();
-              } catch (Exception e) {}
+              } catch (final Exception e) {}
 
               continue mainLoop;
             }
@@ -1128,13 +1123,13 @@ mainLoop:
                   reader.close();
                   writer.close();
                   socket.close();
-                } catch (Exception e) {}
+                } catch (final Exception e) {}
 
                 continue mainLoop;
               }
             }
           }
-          catch (IOException ioe)
+          catch (final IOException ioe)
           {
             sessionTimer.stopTimer();
             failureCounter.increment();
@@ -1144,7 +1139,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             continue mainLoop;
           }
@@ -1168,7 +1163,7 @@ mainLoop:
         sessionTimer.stopTimer();
         successCounter.increment();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1178,7 +1173,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }

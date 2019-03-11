@@ -34,14 +34,13 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class NullJobClass
+public final class NullJobClass
        extends JobClass
 {
   /**
    * The default constructor used to create a new instance of the job class.
    * The only thing it should do is to invoke the superclass constructor.  All
-   * other initialization should be performed in the <CODE>initialize</CODE>
-   * method.
+   * other initialization should be performed in the {@code initialize} method.
    */
   public NullJobClass()
   {
@@ -113,8 +112,9 @@ public class NullJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[0];
   }
@@ -136,10 +136,12 @@ public class NullJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients,
+                              final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // Either a duration or a stop time must have been specified.
@@ -156,8 +158,9 @@ public class NullJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // No implementation necessary

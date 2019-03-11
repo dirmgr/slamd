@@ -32,14 +32,9 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class BurnCPUJobClass
+public final class BurnCPUJobClass
        extends JobClass
 {
-  // The value updated in the runJob method.
-  private Double d;
-
-
-
   /**
    * The default constructor used to create a new instance of the job class.
    * The only thing it should do is to invoke the superclass constructor.  All
@@ -159,7 +154,7 @@ public class BurnCPUJobClass
   {
     while (! shouldStop())
     {
-      d = 12345.0D;
+      double  d = 12345.0d;
       for (int i=0; i < 100000; i++)
       {
         d *= i;

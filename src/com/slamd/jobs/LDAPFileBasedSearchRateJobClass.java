@@ -61,7 +61,7 @@ import com.unboundid.util.FixedRateBarrier;
  * against an LDAP directory server.  The filters to use for the search requests
  * will be read from a file.
  */
-public class LDAPFileBasedSearchRateJobClass
+public final class LDAPFileBasedSearchRateJobClass
        extends LDAPJobClass
        implements SearchResultListener
 {
@@ -403,7 +403,7 @@ public class LDAPFileBasedSearchRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -510,7 +510,7 @@ public class LDAPFileBasedSearchRateJobClass
            filterFileParameter.getFileURL() + ":  " + stackTraceToString(e), e);
     }
 
-    ArrayList<Filter> filterList = new ArrayList<Filter>(filterLines.length);
+    ArrayList<Filter> filterList = new ArrayList<>(filterLines.length);
     for (String s : filterLines)
     {
       try

@@ -21,7 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClassData
+public final class ClassData
 {
   // The bytes that comprise the class file.
   private byte[] classBytes;
@@ -54,7 +54,7 @@ public class ClassData
    * @param  className   The fully-qualified name of the class.
    * @param  classBytes  The bytes that comprise the class file.
    */
-  public ClassData(String className, byte[] classBytes)
+  public ClassData(final String className, final byte[] classBytes)
   {
     this.className  = className;
     this.classBytes = classBytes;
@@ -79,7 +79,7 @@ public class ClassData
    *
    * @param  className  The fully-qualified name of the class.
    */
-  public void setClassName(String className)
+  public void setClassName(final String className)
   {
     this.className = className;
   }
@@ -103,7 +103,7 @@ public class ClassData
    *
    * @param  classBytes  The bytes that comprise the class file.
    */
-  public void setClassBytes(byte[] classBytes)
+  public void setClassBytes(final byte[] classBytes)
   {
     this.classBytes = classBytes;
   }
@@ -123,13 +123,13 @@ public class ClassData
    * @throws  SecurityException  If the security manager will not allow the file
    *                             to be written.
    */
-  public void writeClassFile(String directory)
+  public void writeClassFile(final String directory)
          throws IOException, SecurityException
   {
-    String fileName = directory + File.separatorChar +
-                      className.replace('.', File.separatorChar) + ".class";
+    final String fileName = directory + File.separatorChar +
+         className.replace('.', File.separatorChar) + ".class";
 
-    FileOutputStream outputStream = new FileOutputStream(fileName);
+    final FileOutputStream outputStream = new FileOutputStream(fileName);
     outputStream.write(classBytes);
     outputStream.flush();
     outputStream.close();
@@ -144,14 +144,14 @@ public class ClassData
    */
   public ASN1Element encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(SLAMDMessage.encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_CLASS_NAME,
-                         new ASN1OctetString(className)));
+         ProtocolConstants.PROPERTY_CLASS_NAME,
+         new ASN1OctetString(className)));
     elementList.add(SLAMDMessage.encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_CLASS_BYTES,
-                         new ASN1OctetString(classBytes)));
+         ProtocolConstants.PROPERTY_CLASS_BYTES,
+         new ASN1OctetString(classBytes)));
 
     return new ASN1Sequence(elementList);
   }
@@ -168,19 +168,19 @@ public class ClassData
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          provided element.
    */
-  public static ClassData decode(ASN1Element encodedData)
+  public static ClassData decode(final ASN1Element encodedData)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          SLAMDMessage.decodeNameValuePairSequence(encodedData);
 
-    String className;
+    final String className;
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_CLASS_NAME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Class data sequence does not include the " +
-                               "class name element.");
+      throw new SLAMDException(
+           "Class data sequence does not include the class name element.");
     }
     else
     {
@@ -188,20 +188,20 @@ public class ClassData
       {
         className = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the class name property:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the class name property:  " + e, e);
       }
     }
 
 
-    byte[] classBytes;
+    final byte[] classBytes;
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLASS_BYTES);
     if (valueElement == null)
     {
-      throw new SLAMDException("Class data sequence does not include the " +
-                               "class bytes.");
+      throw new SLAMDException(
+           "Class data sequence does not include the class bytes.");
     }
     else
     {
@@ -209,10 +209,10 @@ public class ClassData
       {
         classBytes = valueElement.decodeAsOctetString().getValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the class bytes " +
-                                 "property:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the class bytes property:  " + e, e);
       }
     }
 

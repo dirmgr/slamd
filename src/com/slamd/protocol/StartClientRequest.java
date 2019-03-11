@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Integer;
@@ -36,7 +36,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class StartClientRequest
+public final class StartClientRequest
        extends SLAMDMessage
 {
   // The number of new client instances that should be created.
@@ -69,9 +69,9 @@ public class StartClientRequest
    * @param  numClients       The number of new client instances that should be
    *                          created.
    */
-  public StartClientRequest(int messageID,
-                            HashMap<String,String> extraProperties,
-                            int numClients)
+  public StartClientRequest(final int messageID,
+                            final Map<String,String> extraProperties,
+                            final int numClients)
   {
     super(messageID, extraProperties);
 
@@ -97,7 +97,7 @@ public class StartClientRequest
    *
    * @param  numClients  The number of client instances that should be created.
    */
-  public void setNumClients(int numClients)
+  public void setNumClients(final int numClients)
   {
     this.numClients = numClients;
   }
@@ -113,10 +113,10 @@ public class StartClientRequest
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_NUM_CLIENTS,
-                                        new ASN1Integer(numClients)));
+         new ASN1Integer(numClients)));
 
     return new ASN1Sequence(elementList);
   }
@@ -135,18 +135,18 @@ public class StartClientRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
-    ASN1Element valueElement =
+    final ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_NUM_CLIENTS);
     if (valueElement == null)
     {
       throw new SLAMDException("Start client request message does not " +
-                               "include the number of clients to create.");
+           "include the number of clients to create.");
     }
     else
     {
@@ -154,10 +154,10 @@ public class StartClientRequest
       {
         numClients = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the number of clients to " +
-                                 "create:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the number of clients to create:  " + e, e);
       }
     }
   }
@@ -174,9 +174,9 @@ public class StartClientRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

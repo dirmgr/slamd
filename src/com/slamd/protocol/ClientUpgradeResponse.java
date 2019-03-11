@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Enumerated;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClientUpgradeResponse
+public final class ClientUpgradeResponse
        extends SLAMDMessage
 {
   // The data for the requested upgrade file.
@@ -81,10 +81,10 @@ public class ClientUpgradeResponse
    *                          operation.
    * @param  upgradeFileData  The data for the requested upgrade file.
    */
-  public ClientUpgradeResponse(int messageID,
-                               HashMap<String,String> extraProperties,
-                               int resultCode, String errorMessage,
-                               byte[] upgradeFileData)
+  public ClientUpgradeResponse(final int messageID,
+                               final Map<String,String> extraProperties,
+                               final int resultCode, final String errorMessage,
+                               final byte[] upgradeFileData)
   {
     super(messageID, extraProperties);
 
@@ -112,7 +112,7 @@ public class ClientUpgradeResponse
    *
    * @param  resultCode  The result code for the client upgrade operation.
    */
-  public void setResultCode(int resultCode)
+  public void setResultCode(final int resultCode)
   {
     this.resultCode = resultCode;
   }
@@ -137,7 +137,7 @@ public class ClientUpgradeResponse
    *
    * @param  errorMessage  The error message for the client upgrade operation.
    */
-  public void setErrorMessage(String errorMessage)
+  public void setErrorMessage(final String errorMessage)
   {
     this.errorMessage = errorMessage;
   }
@@ -162,7 +162,7 @@ public class ClientUpgradeResponse
    *
    * @param  upgradeFileData  The data for the requested upgrade file.
    */
-  public void setUpgradeFileData(byte[] upgradeFileData)
+  public void setUpgradeFileData(final byte[] upgradeFileData)
   {
     this.upgradeFileData = upgradeFileData;
   }
@@ -178,23 +178,23 @@ public class ClientUpgradeResponse
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_RESULT_CODE,
-                                        new ASN1Enumerated(resultCode)));
+         new ASN1Enumerated(resultCode)));
 
     if (errorMessage != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
-                           new ASN1OctetString(errorMessage)));
+           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
+           new ASN1OctetString(errorMessage)));
     }
 
     if (upgradeFileData != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_UPGRADE_FILE_DATA,
-                           new ASN1OctetString(upgradeFileData)));
+           ProtocolConstants.PROPERTY_UPGRADE_FILE_DATA,
+           new ASN1OctetString(upgradeFileData)));
     }
 
     return new ASN1Sequence(elementList);
@@ -214,18 +214,18 @@ public class ClientUpgradeResponse
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_RESULT_CODE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Class transfer response message does not " +
-                               "include a result code.");
+      throw new SLAMDException(
+           "Class transfer response message does not include a result code.");
     }
     else
     {
@@ -233,7 +233,7 @@ public class ClientUpgradeResponse
       {
         resultCode = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the result code:  " + e, e);
       }
@@ -247,10 +247,10 @@ public class ClientUpgradeResponse
       {
         errorMessage = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the error message:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the error message:  " + e, e);
       }
     }
 
@@ -262,10 +262,10 @@ public class ClientUpgradeResponse
       {
         upgradeFileData = valueElement.decodeAsOctetString().getValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the upgrade file data:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the upgrade file data:  " + e, e);
       }
     }
   }
@@ -282,9 +282,9 @@ public class ClientUpgradeResponse
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

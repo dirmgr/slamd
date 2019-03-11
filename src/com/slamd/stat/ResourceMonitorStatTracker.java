@@ -17,8 +17,8 @@ package com.slamd.stat;
 
 
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -145,7 +145,7 @@ public class ResourceMonitorStatTracker
   public static ResourceMonitorStatTracker decode(ASN1Element element)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          SLAMDMessage.decodeNameValuePairSequence(element);
 
     ResourceMonitor resourceMonitor;

@@ -20,6 +20,7 @@ package com.slamd.jobs;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -89,14 +90,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class SiteMinderJobClass
+public final class SiteMinderJobClass
        extends JobClass
 {
   /**
    * The set of characters that will be used to generate random values for the
    * modifications.
    */
-  public static final char[] ALPHABET =
+  private static final char[] ALPHABET =
        "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 
@@ -105,7 +106,7 @@ public class SiteMinderJobClass
    * The default value for the first attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR1 = "givenName";
+  private static final String DEFAULT_ATTR1 = "givenName";
 
 
 
@@ -113,7 +114,7 @@ public class SiteMinderJobClass
    * The default value for the second attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR2 = "sn";
+  private static final String DEFAULT_ATTR2 = "sn";
 
 
 
@@ -121,14 +122,14 @@ public class SiteMinderJobClass
    * The default value for the third attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR3= "cn";
+  private static final String DEFAULT_ATTR3= "cn";
 
 
 
   /**
    * The default attribute used as the login ID.
    */
-  public static final String DEFAULT_LOG_ID_ATTR = "uid";
+  private static final String DEFAULT_LOG_ID_ATTR = "uid";
 
 
 
@@ -136,7 +137,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * authentication attempts.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_ATTEMPTS =
+  private static final String STAT_TRACKER_AUTHENTICATION_ATTEMPTS =
        "Authentication Attempts";
 
 
@@ -146,7 +147,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform each authentication.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_TIME =
+  private static final String STAT_TRACKER_AUTHENTICATION_TIME =
        "Authentication Time (ms)";
 
 
@@ -155,7 +156,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform each bind.
    */
-  public static final String STAT_TRACKER_BIND_TIME = "Bind Time (ms)";
+  private static final String STAT_TRACKER_BIND_TIME = "Bind Time (ms)";
 
 
 
@@ -164,7 +165,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * failed authentications.
    */
-  public static final String STAT_TRACKER_FAILED_AUTHENTICATIONS =
+  private static final String STAT_TRACKER_FAILED_AUTHENTICATIONS =
        "Failed Authentications";
 
 
@@ -173,7 +174,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to categorize the reasons
    * for the failed auths.
    */
-  public static final String STAT_TRACKER_FAIL_REASON = "Failure Reason";
+  private static final String STAT_TRACKER_FAIL_REASON = "Failure Reason";
 
 
 
@@ -181,7 +182,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform the initial search (to find the user's entry).
    */
-  public static final String STAT_TRACKER_INITIAL_SEARCH_TIME =
+  private static final String STAT_TRACKER_INITIAL_SEARCH_TIME =
        "Initial Search Time (ms)";
 
 
@@ -190,7 +191,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform each modification.
    */
-  public static final String STAT_TRACKER_MOD_TIME = "Modify Time (ms)";
+  private static final String STAT_TRACKER_MOD_TIME = "Modify Time (ms)";
 
 
 
@@ -198,7 +199,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the number
    * of bind operations performed.
    */
-  public static final String STAT_TRACKER_NUM_BINDS =
+  private static final String STAT_TRACKER_NUM_BINDS =
        "Bind Operations Performed";
 
 
@@ -207,7 +208,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the number
    * of modify operations performed.
    */
-  public static final String STAT_TRACKER_NUM_MODS =
+  private static final String STAT_TRACKER_NUM_MODS =
        "Modify Operations Performed";
 
 
@@ -216,7 +217,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the number
    * of search operations performed.
    */
-  public static final String STAT_TRACKER_NUM_SEARCH =
+  private static final String STAT_TRACKER_NUM_SEARCH =
        "Search Operations Performed";
 
 
@@ -226,7 +227,7 @@ public class SiteMinderJobClass
    * required to perform subsequent searches (to retrieve specific attributes
    * from the user's entry).
    */
-  public static final String STAT_TRACKER_SUBSEQUENT_SEARCH_TIME =
+  private static final String STAT_TRACKER_SUBSEQUENT_SEARCH_TIME =
        "Subsequent Search Time (ms)";
 
 
@@ -235,7 +236,7 @@ public class SiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * successful authentications.
    */
-  public static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS =
+  private static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS =
        "Successful Authentications";
 
 
@@ -243,7 +244,7 @@ public class SiteMinderJobClass
   /**
    * The default set of attributes to include in the modification.
    */
-  public static final String[] DEFAULT_ATTRS_TO_MODIFY = new String[]
+  private static final String[] DEFAULT_ATTRS_TO_MODIFY = new String[]
   {
     "description"
   };
@@ -322,15 +323,6 @@ public class SiteMinderJobClass
 
   // The password to use when authenticating.
   private static String loginPassword;
-
-  // The name of the first attribute to retrieve.
-  private static String searchAttr1;
-
-  // The name of the second attribute to retrieve.
-  private static String searchAttr2;
-
-  // The name of the third attribute to retrieve.
-  private static String searchAttr3;
 
   // The DN to use as the search base when trying to find user entries in the
   // directory.
@@ -687,7 +679,7 @@ public class SiteMinderJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameterArray = new Parameter[]
+    final Parameter[] parameterArray = new Parameter[]
     {
       placeholder,
       hostParameter,
@@ -734,8 +726,9 @@ public class SiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
@@ -800,14 +793,15 @@ public class SiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The login ID parameter must be parseable as a value pattern.
-    StringParameter p =
+    final StringParameter p =
          parameters.getStringParameter(loginIDValueParameter.getName());
     if ((p != null) && p.hasValue())
     {
@@ -815,7 +809,7 @@ public class SiteMinderJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -824,14 +818,14 @@ public class SiteMinderJobClass
     }
 
 
-    FileURLParameter loginDataURLParameter =
+    final FileURLParameter loginDataURLParameter =
          parameters.getFileURLParameter(loginDataFileParameter.getName());
     if ((loginDataURLParameter == null) ||
         (! loginDataURLParameter.hasValue()))
     {
-      StringParameter loginValueParameter =
+      final StringParameter loginValueParameter =
            parameters.getStringParameter(loginIDValueParameter.getName());
-      PasswordParameter loginPWParameter =
+      final PasswordParameter loginPWParameter =
            parameters.getPasswordParameter(loginPasswordParameter.getName());
 
       if ((loginValueParameter == null) ||
@@ -840,8 +834,7 @@ public class SiteMinderJobClass
           (! loginPWParameter.hasValue()))
       {
         throw new InvalidValueException("You must specify either a login " +
-                                        "data file URL or a login ID value " +
-                                        "and password");
+             "data file URL or a login ID value and password");
       }
     }
   }
@@ -863,32 +856,32 @@ public class SiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get all the parameters that we might need to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
     boolean useSSL = false;
-    BooleanParameter useSSLParam =
+    final BooleanParameter useSSLParam =
          parameters.getBooleanParameter(useSSLParameter.getName());
     if (useSSLParam != null)
     {
@@ -897,7 +890,7 @@ public class SiteMinderJobClass
 
 
     String bindDN = "";
-    StringParameter bindDNParam =
+    final StringParameter bindDNParam =
          parameters.getStringParameter(bindDNParameter.getName());
     if ((bindDNParam != null) && bindDNParam.hasValue())
     {
@@ -906,7 +899,7 @@ public class SiteMinderJobClass
 
 
     String bindPassword = "";
-    PasswordParameter bindPWParam =
+    final PasswordParameter bindPWParam =
          parameters.getPasswordParameter(bindPWParameter.getName());
     if ((bindPWParam != null) && bindPWParam.hasValue())
     {
@@ -914,19 +907,19 @@ public class SiteMinderJobClass
     }
 
 
-    StringParameter baseDNParam =
+    final StringParameter baseDNParam =
          parameters.getStringParameter(searchBaseParameter.getName());
     if ((baseDNParam == null) || (! baseDNParam.hasValue()))
     {
       outputMessages.add("ERROR:  No base DN was provided.");
       return false;
     }
-    String baseDN = baseDNParam.getStringValue();
+    final String baseDN = baseDNParam.getStringValue();
 
 
     // Create the LDAPConnection object that we will use to communicate with the
     // directory server.
-    LDAPConnection conn;
+    final LDAPConnection conn;
     if (useSSL)
     {
       try
@@ -934,7 +927,7 @@ public class SiteMinderJobClass
         SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to instantiate the blind trust " +
              "socket factory for use in creating the SSL " +
@@ -965,10 +958,10 @@ public class SiteMinderJobClass
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to connect to the directory " +
-                         "server:  " + stackTraceToString(e));
+           "server:  " + stackTraceToString(e));
       return false;
     }
 
@@ -977,18 +970,14 @@ public class SiteMinderJobClass
     try
     {
       outputMessages.add("Attempting to perform an LDAPv3 bind to the " +
-                         "directory server with a DN of '" + bindDN + "'....");
+           "directory server with a DN of '" + bindDN + "'....");
       conn.bind(bindDN, bindPassword);
       outputMessages.add("Bound successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to bind to the directory server:  " +
                          stackTraceToString(e));
       return false;
@@ -1003,11 +992,7 @@ public class SiteMinderJobClass
       Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
       if (baseDNEntry == null)
       {
-        try
-        {
-          conn.close();
-        } catch (Exception e2) {}
-
+        conn.close();
         outputMessages.add("ERROR:  Unable to retrieve the base DN entry.");
         return false;
       }
@@ -1017,13 +1002,9 @@ public class SiteMinderJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to retrieve the base DN entry:   " +
                          stackTraceToString(e));
       return false;
@@ -1032,11 +1013,7 @@ public class SiteMinderJobClass
 
     // At this point, all tests have passed.  Close the connection and return
     // true.
-    try
-    {
-      conn.close();
-    } catch (Exception e) {}
-
+    conn.close();
     outputMessages.add("All tests completed successfully.");
     return true;
   }
@@ -1047,7 +1024,8 @@ public class SiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the parent random number generator.
@@ -1111,30 +1089,31 @@ public class SiteMinderJobClass
          parameters.getFileURLParameter(loginDataFileParameter.getName());
     if ((loginDataFileParameter != null) && (loginDataFileParameter.hasValue()))
     {
-      String[] fileLines;
+      final String[] fileLines;
       try
       {
         fileLines = loginDataFileParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to retrieve the login data " +
                                        "from the file:  " + e, e);
       }
 
       // Break the login data up into ID and passwords
-      ArrayList<String> loginIDList  = new ArrayList<String>(fileLines.length);
-      ArrayList<String> passwordList = new ArrayList<String>(fileLines.length);
+      final ArrayList<String> loginIDList  = new ArrayList<>(fileLines.length);
+      final ArrayList<String> passwordList = new ArrayList<>(fileLines.length);
       for (int i=0; i < fileLines.length; i++)
       {
         try
         {
-          StringTokenizer tokenizer = new StringTokenizer(fileLines[i], "\t");
-          String loginID = tokenizer.nextToken();
-          String password = tokenizer.nextToken();
+          final StringTokenizer tokenizer =
+               new StringTokenizer(fileLines[i], "\t");
+          final String loginID = tokenizer.nextToken();
+          final String password = tokenizer.nextToken();
           loginIDList.add(loginID);
           passwordList.add(password);
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
       }
 
       // Convert the lists into arrays and make sure that at least one login
@@ -1145,8 +1124,8 @@ public class SiteMinderJobClass
       passwordList.toArray(loginPasswords);
       if (loginIDs.length == 0)
       {
-        throw new UnableToRunException("No login IDs/passwords extracted " +
-                                       "from the login data file.");
+        throw new UnableToRunException(
+             "No login IDs/passwords extracted from the login data file.");
       }
 
       useDataFile = true;
@@ -1168,7 +1147,7 @@ public class SiteMinderJobClass
         loginIDPattern =
              new ValuePattern(loginIDValueParameter.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException(
              "Unable to parse the login ID pattern:  " + stackTraceToString(e),
@@ -1190,7 +1169,7 @@ public class SiteMinderJobClass
     attr1Parameter = parameters.getStringParameter(attr1Parameter.getName());
     if (attr1Parameter != null)
     {
-      searchAttr1  = attr1Parameter.getStringValue();
+      final String searchAttr1  = attr1Parameter.getStringValue();
       filter1      = Filter.createPresenceFilter(searchAttr1);
       returnAttrs1 = new String[] { searchAttr1 };
     }
@@ -1198,7 +1177,7 @@ public class SiteMinderJobClass
     attr2Parameter = parameters.getStringParameter(attr2Parameter.getName());
     if (attr2Parameter != null)
     {
-      searchAttr2  = attr2Parameter.getStringValue();
+      final String searchAttr2  = attr2Parameter.getStringValue();
       filter2      = Filter.createPresenceFilter(searchAttr2);
       returnAttrs2 = new String[] { searchAttr2 };
     }
@@ -1206,7 +1185,7 @@ public class SiteMinderJobClass
     attr3Parameter = parameters.getStringParameter(attr3Parameter.getName());
     if (attr3Parameter != null)
     {
-      searchAttr3  = attr3Parameter.getStringValue();
+      final String searchAttr3  = attr3Parameter.getStringValue();
       filter3      = Filter.createPresenceFilter(searchAttr3);
       returnAttrs3 = new String[] { searchAttr3 };
     }
@@ -1327,13 +1306,13 @@ public class SiteMinderJobClass
       {
         try
         {
-          SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+          final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
           sharedAuthConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
           sharedBindConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           throw new UnableToRunException(String.valueOf(e), e);
         }
@@ -1351,14 +1330,15 @@ public class SiteMinderJobClass
 
         sharedBindConnection.connect(directoryHost, directoryPort, 10000);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Could not establish shared " +
-                                       "connections to the directory:  " + e,
-                                       e);
+        throw new UnableToRunException(
+             "Could not establish shared connections to the directory:  " + e,
+             e);
       }
 
-      LDAPConnectionOptions opts = sharedAuthConnection.getConnectionOptions();
+      final LDAPConnectionOptions opts =
+           sharedAuthConnection.getConnectionOptions();
       opts.setResponseTimeoutMillis(1000L * timeLimit);
       sharedAuthConnection.setConnectionOptions(opts);
       sharedBindConnection.setConnectionOptions(opts);
@@ -1371,8 +1351,9 @@ public class SiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the random number generator for this thread.
@@ -1392,14 +1373,14 @@ public class SiteMinderJobClass
       {
         try
         {
-          SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+          final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
 
           authConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
           bindConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           throw new UnableToRunException(String.valueOf(e), e);
         }
@@ -1417,13 +1398,13 @@ public class SiteMinderJobClass
 
         bindConnection.connect(directoryHost, directoryPort, 10000);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to establish the connections " +
                                        "to the directory server:  " + e, e);
       }
 
-      LDAPConnectionOptions opts = authConnection.getConnectionOptions();
+      final LDAPConnectionOptions opts = authConnection.getConnectionOptions();
       opts.setResponseTimeoutMillis(1000L * timeLimit);
       authConnection.setConnectionOptions(opts);
       bindConnection.setConnectionOptions(opts);
@@ -1431,47 +1412,34 @@ public class SiteMinderJobClass
 
 
     // Create the stat trackers.
-    attemptCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_AUTHENTICATION_ATTEMPTS,
-                                collectionInterval);
-    successCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS,
-                                collectionInterval);
-    failureCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_FAILED_AUTHENTICATIONS,
-                                collectionInterval);
+    attemptCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_AUTHENTICATION_ATTEMPTS, collectionInterval);
+    successCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS, collectionInterval);
+    failureCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_FAILED_AUTHENTICATIONS, collectionInterval);
     bindCounter = new IncrementalTracker(clientID, threadID,
-                                         STAT_TRACKER_NUM_BINDS,
-                                         collectionInterval);
+         STAT_TRACKER_NUM_BINDS, collectionInterval);
     modCounter = new IncrementalTracker(clientID, threadID,
-                                        STAT_TRACKER_NUM_MODS,
-                                        collectionInterval);
+         STAT_TRACKER_NUM_MODS, collectionInterval);
     searchCounter = new IncrementalTracker(clientID, threadID,
-                                           STAT_TRACKER_NUM_SEARCH,
-                                           collectionInterval);
+         STAT_TRACKER_NUM_SEARCH, collectionInterval);
     authTimer = new TimeTracker(clientID, threadID,
-                                STAT_TRACKER_AUTHENTICATION_TIME,
-                                collectionInterval);
+         STAT_TRACKER_AUTHENTICATION_TIME, collectionInterval);
     bindTimer = new TimeTracker(clientID, threadID, STAT_TRACKER_BIND_TIME,
-                                collectionInterval);
+         collectionInterval);
     modTimer = new TimeTracker(clientID, threadID, STAT_TRACKER_MOD_TIME,
-                               collectionInterval);
+         collectionInterval);
     initialSearchTimer = new TimeTracker(clientID, threadID,
-                                         STAT_TRACKER_INITIAL_SEARCH_TIME,
-                                         collectionInterval);
+         STAT_TRACKER_INITIAL_SEARCH_TIME, collectionInterval);
     subsequentSearchTimer = new TimeTracker(clientID, threadID,
-                                            STAT_TRACKER_SUBSEQUENT_SEARCH_TIME,
-                                            collectionInterval);
+         STAT_TRACKER_SUBSEQUENT_SEARCH_TIME, collectionInterval);
     failureReasonTracker = new CategoricalTracker(clientID, threadID,
-                                                  STAT_TRACKER_FAIL_REASON,
-                                                  collectionInterval);
+         STAT_TRACKER_FAIL_REASON, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -1500,7 +1468,7 @@ public class SiteMinderJobClass
     // Determine the range of time for which we should collect statistics.
     long currentTime = System.currentTimeMillis();
     boolean collectingStats = false;
-    long startCollectingTime = currentTime + (1000 * warmUpTime);
+    final long startCollectingTime = currentTime + (1000 * warmUpTime);
     long stopCollectingTime  = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0))
     {
@@ -1562,14 +1530,14 @@ public class SiteMinderJobClass
       // See if we need to sleep before the next attempt
       if ((delay > 0) && (authStartTime > 0))
       {
-        long now = System.currentTimeMillis();
-        long sleepTime = delay - (now - authStartTime);
+        final long now = System.currentTimeMillis();
+        final long sleepTime = delay - (now - authStartTime);
         if (sleepTime > 0)
         {
           try
           {
             Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {}
+          } catch (final InterruptedException ie) {}
 
           if (shouldStop())
           {
@@ -1579,9 +1547,9 @@ public class SiteMinderJobClass
       }
 
       // Get a random user number and translate that to a login ID and password.
-      String[] loginInfo = getLoginInfo();
-      String loginID  = loginInfo[0];
-      String password = loginInfo[1];
+      final String[] loginInfo = getLoginInfo();
+      final String loginID = loginInfo[0];
+      final String password = loginInfo[1];
 
 
       // Start the auth attempt timer now.
@@ -1612,7 +1580,7 @@ public class SiteMinderJobClass
           initialSearchTimer.startTimer();
         }
 
-        SearchResult searchResult = authConnection.search(searchBase,
+        final SearchResult searchResult = authConnection.search(searchBase,
              SearchScope.SUB, filter, returnAttrsOC);
         if (collectingStats)
         {
@@ -1665,7 +1633,7 @@ public class SiteMinderJobClass
               bindTimer.stopTimer();
             }
           }
-          catch (LDAPException le)
+          catch (final LDAPException le)
           {
             if (collectingStats)
             {
@@ -1798,7 +1766,7 @@ public class SiteMinderJobClass
           subsequentSearchTimer.stopTimer();
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
 
         if (collectingStats)
@@ -1842,15 +1810,8 @@ public class SiteMinderJobClass
     // Close the connections to the directory server if appropriate.
     if (! useSharedConnections)
     {
-      try
-      {
-        authConnection.close();
-      } catch (Exception e) {}
-
-      try
-      {
-        bindConnection.close();
-      } catch (Exception e) {}
+      authConnection.close();
+      bindConnection.close();
     }
   }
 
@@ -1864,21 +1825,13 @@ public class SiteMinderJobClass
   {
     if (authConnection != null)
     {
-      try
-      {
-        authConnection.close();
-      } catch (Exception e) {}
-
+      authConnection.close();
       authConnection = null;
     }
 
     if (bindConnection != null)
     {
-      try
-      {
-        bindConnection.close();
-      } catch (Exception e) {}
-
+      bindConnection.close();
       bindConnection = null;
     }
   }
@@ -1894,15 +1847,8 @@ public class SiteMinderJobClass
     // Make sure that the shared connections get closed properly.
     if (useSharedConnections)
     {
-      try
-      {
-        sharedAuthConnection.close();
-      } catch (Exception e) {}
-
-      try
-      {
-        sharedBindConnection.close();
-      } catch (Exception e) {}
+      sharedAuthConnection.close();
+      sharedBindConnection.close();
     }
   }
 
@@ -1916,7 +1862,7 @@ public class SiteMinderJobClass
    */
   private String[] getLoginInfo()
   {
-    String[] loginInfo = new String[2];
+    final String[] loginInfo = new String[2];
 
     if (useDataFile)
     {
@@ -1944,7 +1890,7 @@ public class SiteMinderJobClass
    */
   private String getRandomString(int length)
   {
-    char[] returnArray = new char[length];
+    final char[] returnArray = new char[length];
 
     for (int i=0; i < returnArray.length; i++)
     {

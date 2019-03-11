@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Boolean;
 import com.unboundid.asn1.ASN1Element;
@@ -42,7 +42,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ServerDisconnect
+public final class ServerDisconnect
        extends SLAMDMessage
 {
   // Indicates whether the actual closure should be initiated by the client, so
@@ -92,9 +92,11 @@ public class ServerDisconnect
    *                            allow it time to send any results that it may
    *                            have to the server.
    */
-  public ServerDisconnect(int messageID, HashMap<String,String> extraProperties,
-                          String disconnectReason, boolean isTransient,
-                          boolean clientShouldClose)
+  public ServerDisconnect(final int messageID,
+                          final Map<String,String> extraProperties,
+                          final String disconnectReason,
+                          final boolean isTransient,
+                          final boolean clientShouldClose)
   {
     super(messageID, extraProperties);
 
@@ -124,7 +126,7 @@ public class ServerDisconnect
    * @param  disconnectReason  The reason that the server has initiated the
    *                           disconnect process.
    */
-  public void setDisconnectReason(String disconnectReason)
+  public void setDisconnectReason(final String disconnectReason)
   {
     this.disconnectReason = disconnectReason;
   }
@@ -152,7 +154,7 @@ public class ServerDisconnect
    *
    * @param  isTransient  Specifies whether the disconnect is transient.
    */
-  public void setTransient(boolean isTransient)
+  public void setTransient(final boolean isTransient)
   {
     this.isTransient = isTransient;
   }
@@ -184,7 +186,7 @@ public class ServerDisconnect
    * @param  clientShouldClose  Specifies whether the actual disconnect should
    *                            be initiated by the client.
    */
-  public void setClientShouldClose(boolean clientShouldClose)
+  public void setClientShouldClose(final boolean clientShouldClose)
   {
     this.clientShouldClose = clientShouldClose;
   }
@@ -200,21 +202,21 @@ public class ServerDisconnect
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     if (disconnectReason != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_DISCONNECT_REASON,
-                           new ASN1OctetString(disconnectReason)));
+           ProtocolConstants.PROPERTY_DISCONNECT_REASON,
+           new ASN1OctetString(disconnectReason)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_DISCONNECT_IS_TRANSIENT,
-                         new ASN1Boolean(isTransient)));
+         ProtocolConstants.PROPERTY_DISCONNECT_IS_TRANSIENT,
+         new ASN1Boolean(isTransient)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_CLIENT_SHOULD_CLOSE,
-                         new ASN1Boolean(clientShouldClose)));
+         ProtocolConstants.PROPERTY_CLIENT_SHOULD_CLOSE,
+         new ASN1Boolean(clientShouldClose)));
 
     return new ASN1Sequence(elementList);
   }
@@ -233,10 +235,10 @@ public class ServerDisconnect
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
@@ -247,10 +249,10 @@ public class ServerDisconnect
       {
         disconnectReason = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the disconnect reason:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the disconnect reason:  " + e, e);
       }
     }
 
@@ -263,10 +265,10 @@ public class ServerDisconnect
       {
         isTransient = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the isTransient flag:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the isTransient flag:  " + e, e);
       }
     }
 
@@ -279,10 +281,10 @@ public class ServerDisconnect
       {
         clientShouldClose = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the clientShouldClose " +
-                                 "flag:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the clientShouldClose flag:  " + e, e);
       }
     }
   }
@@ -299,9 +301,9 @@ public class ServerDisconnect
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class FileData
+public final class FileData
 {
   // The actual data for the file.
   private byte[] fileData;
@@ -62,8 +62,8 @@ public class FileData
    * @param  fileType         The MIME type for the file.
    * @param  fileDescription  A description for the file.
    */
-  public FileData(String fileName, byte[] fileData, String fileType,
-                  String fileDescription)
+  public FileData(final String fileName, final byte[] fileData,
+                  final String fileType, final String fileDescription)
   {
     this.fileName        = fileName;
     this.fileData        = fileData;
@@ -90,7 +90,7 @@ public class FileData
    *
    * @param  fileName  The name of the file without any path information.
    */
-  public void setFileName(String fileName)
+  public void setFileName(final String fileName)
   {
     this.fileName = fileName;
   }
@@ -114,7 +114,7 @@ public class FileData
    *
    * @param  fileData  The actual data for the file.
    */
-  public void setFileData(byte[] fileData)
+  public void setFileData(final byte[] fileData)
   {
     this.fileData = fileData;
   }
@@ -138,7 +138,7 @@ public class FileData
    *
    * @param  fileType  The MIME type for the file.
    */
-  public void setFileType(String fileType)
+  public void setFileType(final String fileType)
   {
     this.fileType = fileType;
   }
@@ -163,7 +163,7 @@ public class FileData
    *
    * @param  fileDescription  The description for the file.
    */
-  public void setFileDescription(String fileDescription)
+  public void setFileDescription(final String fileDescription)
   {
     this.fileDescription = fileDescription;
   }
@@ -177,23 +177,23 @@ public class FileData
    */
   public ASN1Element encode()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(SLAMDMessage.encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_FILE_NAME,
-                         new ASN1OctetString(fileName)));
+         ProtocolConstants.PROPERTY_FILE_NAME,
+         new ASN1OctetString(fileName)));
     elementList.add(SLAMDMessage.encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_FILE_DATA,
-                         new ASN1OctetString(fileData)));
+         ProtocolConstants.PROPERTY_FILE_DATA,
+         new ASN1OctetString(fileData)));
     elementList.add(SLAMDMessage.encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_FILE_TYPE,
-                         new ASN1OctetString(fileType)));
+         ProtocolConstants.PROPERTY_FILE_TYPE,
+         new ASN1OctetString(fileType)));
 
     if (fileDescription != null)
     {
       elementList.add(SLAMDMessage.encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_FILE_DESCRIPTION,
-                           new ASN1OctetString(fileDescription)));
+           ProtocolConstants.PROPERTY_FILE_DESCRIPTION,
+           new ASN1OctetString(fileDescription)));
     }
 
     return new ASN1Sequence(elementList);
@@ -211,19 +211,19 @@ public class FileData
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          provided element.
    */
-  public static FileData decode(ASN1Element encodedData)
+  public static FileData decode(final ASN1Element encodedData)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          SLAMDMessage.decodeNameValuePairSequence(encodedData);
 
-    String fileName;
+    final String fileName;
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_FILE_NAME);
     if (valueElement == null)
     {
-      throw new SLAMDException("File data sequence does not include the " +
-                               "file name element.");
+      throw new SLAMDException(
+           "File data sequence does not include the file name element.");
     }
     else
     {
@@ -231,20 +231,20 @@ public class FileData
       {
         fileName = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the file name property:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the file name property:  " + e, e);
       }
     }
 
 
-    byte[] fileData;
+    final byte[] fileData;
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_FILE_DATA);
     if (valueElement == null)
     {
-      throw new SLAMDException("File data sequence does not include the " +
-                               "file data.");
+      throw new SLAMDException(
+           "File data sequence does not include the file data.");
     }
     else
     {
@@ -252,20 +252,20 @@ public class FileData
       {
         fileData = valueElement.decodeAsOctetString().getValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the file data property:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the file data property:  " + e, e);
       }
     }
 
 
-    String fileType;
+    final String fileType;
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_FILE_TYPE);
     if (valueElement == null)
     {
-      throw new SLAMDException("File data sequence does not include the " +
-                               "file type.");
+      throw new SLAMDException(
+           "File data sequence does not include the file type.");
     }
     else
     {
@@ -273,10 +273,10 @@ public class FileData
       {
         fileType = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the file type property:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the file type property:  " + e, e);
       }
     }
 
@@ -289,10 +289,10 @@ public class FileData
       {
         fileDescription = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the file description " +
-                                 "property:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the file description property:  " + e, e);
       }
     }
 
@@ -309,7 +309,7 @@ public class FileData
    *
    * @return  The ASN.1 element containing the encoded file data information.
    */
-  public static ASN1Element encodeArray(FileData[] fileData)
+  public static ASN1Element encodeArray(final FileData[] fileData)
   {
     ASN1Element[] elements = new ASN1Element[fileData.length];
 
@@ -334,21 +334,22 @@ public class FileData
    * @throws  SLAMDException  If a problem occurs while attempting to decode the
    *                          provided element.
    */
-  public static FileData[] decodeArray(ASN1Element encodedData)
+  public static FileData[] decodeArray(final ASN1Element encodedData)
          throws SLAMDException
   {
-    ASN1Element[] elements;
+    final ASN1Element[] elements;
     try
     {
       elements = encodedData.decodeAsSequence().elements();
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new SLAMDException("Unable to decode the provided ASN.1 element " +
-                               "as a sequence:  " + e, e);
+      throw new SLAMDException(
+           "Unable to decode the provided ASN.1 element as a sequence:  " + e,
+           e);
     }
 
-    FileData[] fileData = new FileData[elements.length];
+    final FileData[] fileData = new FileData[elements.length];
     for (int i=0; i < fileData.length; i++)
     {
       fileData[i] = decode(elements[i]);
@@ -367,7 +368,7 @@ public class FileData
   @Override()
   public String toString()
   {
-    StringBuilder buffer = new StringBuilder();
+    final StringBuilder buffer = new StringBuilder();
     toString(buffer, 0);
     return buffer.toString();
   }
@@ -382,9 +383,9 @@ public class FileData
    *                 appended.
    * @param  indent  The number of spaces to indent the output.
    */
-  public void toString(StringBuilder buffer, int indent)
+  public void toString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

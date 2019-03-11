@@ -166,7 +166,7 @@ public abstract class LDAPJobClass
   @Override()
   public final ParameterList getParameterStubs()
   {
-    ArrayList<Parameter> params = new ArrayList<Parameter>();
+    ArrayList<Parameter> params = new ArrayList<>();
 
     params.add(new PlaceholderParameter());
     params.add(addressesParameter);
@@ -205,17 +205,18 @@ public abstract class LDAPJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
-    String[] addrs;
-    MultiLineTextParameter addressesParam =
+    final String[] addrs;
+    final MultiLineTextParameter addressesParam =
          parameters.getMultiLineTextParameter(addressesParameter.getName());
     if ((addressesParam == null) || (! addressesParam.hasValue()) ||
-        ((addrs = addressesParam.getNonBlankLines()).length == 0))
+        (((addrs = addressesParam.getNonBlankLines()).length) == 0))
     {
       throw new InvalidValueException("No addresses were provided.");
     }
@@ -329,13 +330,13 @@ public abstract class LDAPJobClass
    */
   @Override()
   public final boolean testJobParameters(final ParameterList parameters,
-                                         final ArrayList<String> outputMessages)
+                                         final List<String> outputMessages)
   {
     MultiLineTextParameter addressesParam =
          parameters.getMultiLineTextParameter(addressesParameter.getName());
 
-    ArrayList<String>  addrList = new ArrayList<String>();
-    ArrayList<Integer> portList = new ArrayList<Integer>();
+    ArrayList<String>  addrList = new ArrayList<>();
+    ArrayList<Integer> portList = new ArrayList<>();
     for (String a : addressesParam.getNonBlankLines())
     {
       int colonPos = a.indexOf(':');
@@ -538,7 +539,7 @@ public abstract class LDAPJobClass
    *          not.
    */
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     // No implementation is required by default.
     return true;
@@ -560,7 +561,7 @@ public abstract class LDAPJobClass
    */
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     // No implementation is required by default.
     return true;
@@ -576,14 +577,14 @@ public abstract class LDAPJobClass
                                      final ParameterList parameters)
          throws UnableToRunException
   {
-    ArrayList<String>  addrList = new ArrayList<String>();
-    ArrayList<Integer> portList = new ArrayList<Integer>();
+    ArrayList<String>  addrList = new ArrayList<>();
+    ArrayList<Integer> portList = new ArrayList<>();
     addressesParameter =
          parameters.getMultiLineTextParameter(addressesParameter.getName());
 
     // We want to alter the order of the address:port values between clients so
     // that the load is better distributed across multiple clients.
-    ArrayList<String> addrValues = new ArrayList<String>(
+    ArrayList<String> addrValues = new ArrayList<>(
          Arrays.asList(addressesParameter.getNonBlankLines()));
     int offset = (getClientNumber() % addrValues.size());
     for (int i=0; i < offset; i++)
@@ -630,8 +631,8 @@ public abstract class LDAPJobClass
       }
       catch (Exception e)
       {
-        throw new UnableToRunException("Cannot create SSL socket factory:  " +
-                                       String.valueOf(e), e);
+        throw new UnableToRunException(
+             "Cannot create SSL socket factory:  " + e, e);
       }
     }
     else if (securityMethodParameter.getValueString().equals(
@@ -646,8 +647,8 @@ public abstract class LDAPJobClass
       }
       catch (Exception e)
       {
-        throw new UnableToRunException("Cannot create SSL context for " +
-             "StartTLS negotiation:  " + String.valueOf(e), e);
+        throw new UnableToRunException(
+             "Cannot create SSL context for StartTLS negotiation:  " + e, e);
       }
 
       socketFactory = SocketFactory.getDefault();

@@ -21,7 +21,6 @@ package com.slamd.jobs;
 
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -66,7 +65,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform repeated
  * searches to find a user entry followed by an attempt to bind as that user.
  */
-public class LDAPAuthRateJobClass
+public final class LDAPAuthRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -161,8 +160,6 @@ public class LDAPAuthRateJobClass
   private static int      warmUpTime;
   private static long     timeBetweenAuths;
   private static String   baseDN;
-  private static String   filter1;
-  private static String   filter2;
   private static String   userPassword;
   private static String[] attributes;
 
@@ -453,7 +450,7 @@ public class LDAPAuthRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -514,12 +511,12 @@ public class LDAPAuthRateJobClass
 
     filter1Parameter =
          parameters.getStringParameter(filter1Parameter.getName());
-    filter1 = filter1Parameter.getStringValue();
+    final String filter1 = filter1Parameter.getStringValue();
 
 
     filter2Parameter =
          parameters.getStringParameter(filter2Parameter.getName());
-    filter2 = filter2Parameter.getStringValue();
+    final String filter2 = filter2Parameter.getStringValue();
 
 
     filter1Percentage = 50;

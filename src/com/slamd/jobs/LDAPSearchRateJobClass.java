@@ -21,7 +21,6 @@ package com.slamd.jobs;
 
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -61,7 +60,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform searches
  * against an LDAP directory server.
  */
-public class LDAPSearchRateJobClass
+public final class LDAPSearchRateJobClass
        extends LDAPJobClass
        implements SearchResultListener
 {
@@ -165,8 +164,6 @@ public class LDAPSearchRateJobClass
   private static long         timeBetweenRequests;
   private static SearchScope  scope;
   private static String       baseDN;
-  private static String       filter1;
-  private static String       filter2;
   private static String[]     attributes;
 
   // Stat trackers used by this job.
@@ -430,7 +427,7 @@ public class LDAPSearchRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -445,7 +442,7 @@ public class LDAPSearchRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -462,7 +459,7 @@ public class LDAPSearchRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -487,7 +484,7 @@ public class LDAPSearchRateJobClass
           outputMessages.add("The base entry exists.");
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         successful = false;
         outputMessages.add("Unable to perform the search:  " +
@@ -557,12 +554,12 @@ public class LDAPSearchRateJobClass
 
     filter1Parameter =
          parameters.getStringParameter(filter1Parameter.getName());
-    filter1 = filter1Parameter.getStringValue();
+    final String filter1 = filter1Parameter.getStringValue();
 
 
     filter2Parameter =
          parameters.getStringParameter(filter2Parameter.getName());
-    filter2 = filter2Parameter.getStringValue();
+    final String filter2 = filter2Parameter.getStringValue();
 
 
     filter1Percentage = 50;
@@ -659,7 +656,7 @@ public class LDAPSearchRateJobClass
     {
       filter1Pattern = new ValuePattern(filter1);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 1:  " +
                                      stackTraceToString(e), e);
@@ -669,7 +666,7 @@ public class LDAPSearchRateJobClass
     {
       filter2Pattern = new ValuePattern(filter2);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 2:  " +
                                      stackTraceToString(e), e);
@@ -723,7 +720,7 @@ public class LDAPSearchRateJobClass
     {
       conn = createConnection();
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Unable to establish a connection to " +
            "the target server:  " + stackTraceToString(e), e);
@@ -815,7 +812,7 @@ public class LDAPSearchRateJobClass
           searchRequest.setFilter(filter2Pattern.nextValue());
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         logMessage("ERROR -- Generated an invalid search filter:  " +
                    stackTraceToString(e));
@@ -839,7 +836,7 @@ public class LDAPSearchRateJobClass
           resultCodes.increment(searchResult.getResultCode().toString());
         }
       }
-      catch (LDAPException le)
+      catch (final LDAPException le)
       {
         if (collectingStats)
         {
@@ -872,7 +869,7 @@ public class LDAPSearchRateJobClass
           try
           {
             Thread.sleep(sleepTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
     }

@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Enumerated;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClassTransferResponse
+public final class ClassTransferResponse
        extends SLAMDMessage
 {
   // The class data structures for the requested classes.
@@ -82,10 +82,10 @@ public class ClassTransferResponse
    * @param  classData        The class data structures for the requested
    *                          classes.
    */
-  public ClassTransferResponse(int messageID,
-                               HashMap<String,String> extraProperties,
-                               int resultCode, String errorMessage,
-                               ClassData[] classData)
+  public ClassTransferResponse(final int messageID,
+                               final Map<String,String> extraProperties,
+                               final int resultCode, final String errorMessage,
+                               final ClassData[] classData)
   {
     super(messageID, extraProperties);
 
@@ -113,7 +113,7 @@ public class ClassTransferResponse
    *
    * @param  resultCode  The result code for the class transfer operation.
    */
-  public void setResultCode(int resultCode)
+  public void setResultCode(final int resultCode)
   {
     this.resultCode = resultCode;
   }
@@ -138,7 +138,7 @@ public class ClassTransferResponse
    *
    * @param  errorMessage  The error message for the class transfer operation.
    */
-  public void setErrorMessage(String errorMessage)
+  public void setErrorMessage(final String errorMessage)
   {
     this.errorMessage = errorMessage;
   }
@@ -163,7 +163,7 @@ public class ClassTransferResponse
    *
    * @param  classData  The class data structures for the requested classes.
    */
-  public void setClassData(ClassData[] classData)
+  public void setClassData(final ClassData[] classData)
   {
     this.classData = classData;
   }
@@ -179,28 +179,28 @@ public class ClassTransferResponse
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_RESULT_CODE,
-                                        new ASN1Enumerated(resultCode)));
+         new ASN1Enumerated(resultCode)));
 
     if (errorMessage != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
-                           new ASN1OctetString(errorMessage)));
+           ProtocolConstants.PROPERTY_RESULT_MESSAGE,
+           new ASN1OctetString(errorMessage)));
     }
 
     if (classData != null)
     {
-      ASN1Element[] dataElements = new ASN1Element[classData.length];
+      final ASN1Element[] dataElements = new ASN1Element[classData.length];
       for (int i=0; i < classData.length; i++)
       {
         dataElements[i] = classData[i].encode();
       }
 
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLASS_DATA,
-                                          new ASN1Sequence(dataElements)));
+           new ASN1Sequence(dataElements)));
     }
 
     return new ASN1Sequence(elementList);
@@ -220,18 +220,18 @@ public class ClassTransferResponse
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_RESULT_CODE);
     if (valueElement == null)
     {
-      throw new SLAMDException("Class transfer response message does not " +
-                               "include a result code.");
+      throw new SLAMDException(
+           "Class transfer response message does not include a result code.");
     }
     else
     {
@@ -239,7 +239,7 @@ public class ClassTransferResponse
       {
         resultCode = valueElement.decodeAsEnumerated().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the result code:  " + e, e);
       }
@@ -253,10 +253,10 @@ public class ClassTransferResponse
       {
         errorMessage = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the error message:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the error message:  " + e, e);
       }
     }
 
@@ -265,17 +265,18 @@ public class ClassTransferResponse
     {
       try
       {
-        ASN1Element[] elements = valueElement.decodeAsSequence().elements();
+        final ASN1Element[] elements =
+             valueElement.decodeAsSequence().elements();
         classData = new ClassData[elements.length];
         for (int i=0; i < elements.length; i++)
         {
           classData[i] = ClassData.decode(elements[i]);
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the class data " +
-                                 "structures:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the class data structures:  " + e, e);
       }
     }
   }
@@ -292,9 +293,9 @@ public class ClassTransferResponse
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');
@@ -321,12 +322,12 @@ public class ClassTransferResponse
       buffer.append(indentBuf);
       buffer.append("classData =");
 
-      for (int i=0; i < classData.length; i++)
+      for (final ClassData classDataItem : classData)
       {
         buffer.append(Constants.EOL);
         buffer.append(indentBuf);
         buffer.append("     ");
-        buffer.append(classData[i].toString());
+        buffer.append(classDataItem.toString());
       }
     }
   }

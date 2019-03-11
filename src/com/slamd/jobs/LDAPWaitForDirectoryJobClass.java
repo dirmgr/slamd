@@ -20,7 +20,6 @@ package com.slamd.jobs;
 
 
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -177,21 +176,21 @@ public class LDAPWaitForDirectoryJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
     // Ensure that the target entry DN exists.
-    StringParameter entryDNParam =
+    final StringParameter entryDNParam =
          parameters.getStringParameter(entryDNParameter.getName());
     if ((entryDNParam != null) && entryDNParam.hasValue())
     {
       try
       {
-        String dn = entryDNParam.getStringValue();
+        final String dn = entryDNParam.getStringValue();
         outputMessages.add("Ensuring that entry '" + dn +
                            "' exists....");
-        SearchResultEntry e = connection.getEntry(dn);
+        final SearchResultEntry e = connection.getEntry(dn);
         if (e == null)
         {
           outputMessages.add("ERROR:  The base entry does not exist.");
@@ -202,7 +201,7 @@ public class LDAPWaitForDirectoryJobClass
           outputMessages.add("The base entry exists.");
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         successful = false;
         outputMessages.add("Unable to perform the search:  " +
@@ -254,29 +253,28 @@ public class LDAPWaitForDirectoryJobClass
   @Override()
   public void runJob()
   {
-    SearchRequest searchRequest =
-         new SearchRequest(entryDN, SearchScope.BASE,
-                           Filter.createPresenceFilter("objectClass"), "1.1");
+    final SearchRequest searchRequest = new SearchRequest(entryDN,
+         SearchScope.BASE, Filter.createPresenceFilter("objectClass"), "1.1");
     searchRequest.setTimeLimitSeconds(5);
     searchRequest.setResponseTimeoutMillis(5000L);
 
 
-    RoundRobinServerSet serverSet = getServerSet();
-    String[] addresses = serverSet.getAddresses();
-    int[]    ports     = serverSet.getPorts();
+    final RoundRobinServerSet serverSet = getServerSet();
+    final String[] addresses = serverSet.getAddresses();
+    final int[]    ports     = serverSet.getPorts();
 
     while (! shouldStop())
     {
       boolean failed = false;
       for (int i=0; i < addresses.length; i++)
       {
-        LDAPConnection c;
+        final LDAPConnection c;
 
         try
         {
           c = createConnection(addresses[i], ports[i]);
         }
-        catch (LDAPException le)
+        catch (final LDAPException le)
         {
           failed = true;
           break;
@@ -284,7 +282,7 @@ public class LDAPWaitForDirectoryJobClass
 
         try
         {
-          SearchResult searchResult = c.search(searchRequest);
+          final SearchResult searchResult = c.search(searchRequest);
           if ((! searchResult.getResultCode().equals(ResultCode.SUCCESS)) ||
               (searchResult.getEntryCount() == 0))
           {
@@ -292,7 +290,7 @@ public class LDAPWaitForDirectoryJobClass
             break;
           }
         }
-        catch (LDAPException le)
+        catch (final LDAPException le)
         {
           failed = true;
           break;

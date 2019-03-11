@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Boolean;
 import com.unboundid.asn1.ASN1Element;
@@ -40,7 +40,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class MonitorClientHello
+public final class MonitorClientHello
        extends SLAMDMessage
 {
   // Indicates whether this monitor client requires the server to authenticate
@@ -121,11 +121,12 @@ public class MonitorClientHello
    * @param  monitorClasses  The set of resource monitor classes that will be
    *                         used by the monitor client.
    */
-  public MonitorClientHello(int messageID,
-                            HashMap<String,String> extraProperties,
-                            String clientIP, int clientPort, String clientID,
-                            int majorVersion, int minorVersion,
-                            int pointVersion, String[] monitorClasses)
+  public MonitorClientHello(final int messageID,
+                            final Map<String,String> extraProperties,
+                            final String clientIP, final int clientPort,
+                            final String clientID, final int majorVersion,
+                            final int minorVersion, final int pointVersion,
+                            final String[] monitorClasses)
   {
     super(messageID, extraProperties);
 
@@ -172,13 +173,15 @@ public class MonitorClientHello
    * @param  requireServerAuth  Indicates whether this client requires the
    *                            server to provide its own authentication info.
    */
-  public MonitorClientHello(int messageID,
-                            HashMap<String,String> extraProperties,
-                            String clientIP, int clientPort, String clientID,
-                            int majorVersion, int minorVersion,
-                            int pointVersion, String[] monitorClasses,
-                            String authMethod, String authID,
-                            byte[] authCredentials, boolean requireServerAuth)
+  public MonitorClientHello(final int messageID,
+                            final Map<String,String> extraProperties,
+                            final String clientIP, final int clientPort,
+                            final String clientID, final int majorVersion,
+                            final int minorVersion, final int pointVersion,
+                            final String[] monitorClasses,
+                            final String authMethod, final String authID,
+                            final byte[] authCredentials,
+                            final boolean requireServerAuth)
   {
     super(messageID, extraProperties);
 
@@ -214,7 +217,7 @@ public class MonitorClientHello
    *
    * @param  clientIP  The client IP address for this monitor client connection.
    */
-  public void setClientIP(String clientIP)
+  public void setClientIP(final String clientIP)
   {
     this.clientIP = clientIP;
   }
@@ -239,7 +242,7 @@ public class MonitorClientHello
    * @param  clientPort  The client port number for this monitor client
    *                     connection.
    */
-  public void setClientPort(int clientPort)
+  public void setClientPort(final int clientPort)
   {
     this.clientPort = clientPort;
   }
@@ -263,7 +266,7 @@ public class MonitorClientHello
    *
    * @param  clientID  The client ID for this monitor client connection.
    */
-  public void setClientID(String clientID)
+  public void setClientID(final String clientID)
   {
     this.clientID = clientID;
   }
@@ -288,7 +291,7 @@ public class MonitorClientHello
    * @param  majorVersion  The major version number for the monitor client
    *                       software.
    */
-  public void setMajorVersion(int majorVersion)
+  public void setMajorVersion(final int majorVersion)
   {
     this.majorVersion = majorVersion;
   }
@@ -313,7 +316,7 @@ public class MonitorClientHello
    * @param  minorVersion  The minor version number for the monitor client
    *                       software.
    */
-  public void setMinorVersion(int minorVersion)
+  public void setMinorVersion(final int minorVersion)
   {
     this.minorVersion = minorVersion;
   }
@@ -338,7 +341,7 @@ public class MonitorClientHello
    * @param  pointVersion  The point version number for the monitor client
    *                       software.
    */
-  public void setPointVersion(int pointVersion)
+  public void setPointVersion(final int pointVersion)
   {
     this.pointVersion = pointVersion;
   }
@@ -366,7 +369,7 @@ public class MonitorClientHello
    * @param  monitorClasses  The set of resource monitor classes that will be
    *                         used by this monitor client.
    */
-  public void setMonitorClasses(String[] monitorClasses)
+  public void setMonitorClasses(final String[] monitorClasses)
   {
     this.monitorClasses = monitorClasses;
   }
@@ -395,7 +398,7 @@ public class MonitorClientHello
    * @param  authMethod  The name of the method that the client wishes to use to
    *                     authenticate to the server.
    */
-  public void setAuthMethod(String authMethod)
+  public void setAuthMethod(final String authMethod)
   {
     this.authMethod = authMethod;
   }
@@ -425,7 +428,7 @@ public class MonitorClientHello
    * @param  authID  The authentication ID that the client wishes to use to
    *                 authenticate to the server.
    */
-  public void setAuthID(String authID)
+  public void setAuthID(final String authID)
   {
     this.authID = authID;
   }
@@ -455,7 +458,7 @@ public class MonitorClientHello
    * @param  authCredentials  The credentials that the client wishes to use to
    *                          authenticate to the server.
    */
-  public void setAuthCredentials(byte[] authCredentials)
+  public void setAuthCredentials(final byte[] authCredentials)
   {
     this.authCredentials = authCredentials;
   }
@@ -483,7 +486,7 @@ public class MonitorClientHello
    * @param  requireServerAuth  Specifies whether the client requires the server
    *                            to authenticate itself to the client.
    */
-  public void setRequireServerAuth(boolean requireServerAuth)
+  public void setRequireServerAuth(final boolean requireServerAuth)
   {
     this.requireServerAuth = requireServerAuth;
   }
@@ -499,56 +502,57 @@ public class MonitorClientHello
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_IP,
-                                        new ASN1OctetString(clientIP)));
+         new ASN1OctetString(clientIP)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_PORT,
-                                        new ASN1Integer(clientPort)));
+         new ASN1Integer(clientPort)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_ID,
-                                        new ASN1OctetString(clientID)));
+         new ASN1OctetString(clientID)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_MAJOR_VERSION,
-                         new ASN1Integer(majorVersion)));
+         ProtocolConstants.PROPERTY_MAJOR_VERSION,
+         new ASN1Integer(majorVersion)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_MINOR_VERSION,
-                         new ASN1Integer(minorVersion)));
+         ProtocolConstants.PROPERTY_MINOR_VERSION,
+         new ASN1Integer(minorVersion)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_POINT_VERSION,
-                         new ASN1Integer(pointVersion)));
+         ProtocolConstants.PROPERTY_POINT_VERSION,
+         new ASN1Integer(pointVersion)));
 
-    ASN1Element[] monitorClassElements = new ASN1Element[monitorClasses.length];
+    final ASN1Element[] monitorClassElements =
+         new ASN1Element[monitorClasses.length];
     for (int i=0; i < monitorClasses.length; i++)
     {
       monitorClassElements[i] = new ASN1OctetString(monitorClasses[i]);
     }
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_MONITOR_CLASSES,
-                         new ASN1Sequence(monitorClassElements)));
+         ProtocolConstants.PROPERTY_MONITOR_CLASSES,
+         new ASN1Sequence(monitorClassElements)));
 
     if (authMethod != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_AUTH_METHOD,
-                           new ASN1OctetString(authMethod)));
+           ProtocolConstants.PROPERTY_AUTH_METHOD,
+           new ASN1OctetString(authMethod)));
     }
 
     if (authID != null)
     {
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_AUTH_ID,
-                                          new ASN1OctetString(authID)));
+           new ASN1OctetString(authID)));
     }
 
     if (authCredentials != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_AUTH_CREDENTIALS,
-                           new ASN1OctetString(authCredentials)));
+           ProtocolConstants.PROPERTY_AUTH_CREDENTIALS,
+           new ASN1OctetString(authCredentials)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_REQUIRE_SERVER_AUTH,
-                         new ASN1Boolean(requireServerAuth)));
+         ProtocolConstants.PROPERTY_REQUIRE_SERVER_AUTH,
+         new ASN1Boolean(requireServerAuth)));
 
 
     return new ASN1Sequence(elementList);
@@ -568,18 +572,18 @@ public class MonitorClientHello
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_IP);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "client IP address.");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the client IP address.");
     }
     else
     {
@@ -587,10 +591,10 @@ public class MonitorClientHello
       {
         clientIP = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client IP address:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the client IP address:  " + e, e);
       }
     }
 
@@ -598,8 +602,8 @@ public class MonitorClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_PORT);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "client port number.");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the client port number.");
     }
     else
     {
@@ -607,10 +611,10 @@ public class MonitorClientHello
       {
         clientPort = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client port number:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the client port number:  " + e, e);
       }
     }
 
@@ -618,8 +622,8 @@ public class MonitorClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "client ID");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the client ID");
     }
     else
     {
@@ -627,7 +631,7 @@ public class MonitorClientHello
       {
         clientID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the client ID:  " + e, e);
       }
@@ -637,8 +641,8 @@ public class MonitorClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_MAJOR_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "major version number.");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the major version number.");
     }
     else
     {
@@ -646,10 +650,10 @@ public class MonitorClientHello
       {
         majorVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the major version " +
-                                 "number:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the major version number:  " + e, e);
       }
     }
 
@@ -657,8 +661,8 @@ public class MonitorClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_MINOR_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "minor version number.");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the minor version number.");
     }
     else
     {
@@ -666,10 +670,10 @@ public class MonitorClientHello
       {
         minorVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the minor version " +
-                                 "number:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the minor version number:  " + e, e);
       }
     }
 
@@ -677,8 +681,8 @@ public class MonitorClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_POINT_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Monitor client hello message is missing the " +
-                               "point version number.");
+      throw new SLAMDException(
+           "Monitor client hello message is missing the point version number.");
     }
     else
     {
@@ -686,10 +690,10 @@ public class MonitorClientHello
       {
         pointVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the point version " +
-                                 "number:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the point version number:  " + e, e);
       }
     }
 
@@ -698,7 +702,7 @@ public class MonitorClientHello
     if (valueElement == null)
     {
       throw new SLAMDException("Monitor client hello message is missing the " +
-                               "set of monitor classes.");
+           "set of monitor classes.");
     }
     else
     {
@@ -713,10 +717,10 @@ public class MonitorClientHello
                classElements[i].decodeAsOctetString().stringValue();
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the set of monitor " +
-                                 "classes:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the set of monitor classes:  " + e, e);
       }
     }
 
@@ -728,7 +732,7 @@ public class MonitorClientHello
       {
         authMethod = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the auth method:  " + e, e);
       }
@@ -742,7 +746,7 @@ public class MonitorClientHello
       {
         authID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the auth ID:  " + e, e);
       }
@@ -757,10 +761,10 @@ public class MonitorClientHello
       {
         authCredentials = valueElement.decodeAsOctetString().getValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the auth credentials:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the auth credentials:  " + e, e);
       }
     }
 
@@ -773,10 +777,10 @@ public class MonitorClientHello
       {
         requireServerAuth = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the requireServerAuth " +
-                                 "flag:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the requireServerAuth flag:  " + e, e);
       }
     }
   }
@@ -793,9 +797,9 @@ public class MonitorClientHello
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');
@@ -834,11 +838,11 @@ public class MonitorClientHello
     buffer.append(indentBuf);
     buffer.append("monitorClasses = ");
     buffer.append(Constants.EOL);
-    for (int i=0; i < monitorClasses.length; i++)
+    for (final String monitorClass : monitorClasses)
     {
       buffer.append(indentBuf);
       buffer.append("     ");
-      buffer.append(monitorClasses[i]);
+      buffer.append(monitorClass);
       buffer.append(Constants.EOL);
     }
 

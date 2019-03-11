@@ -17,8 +17,8 @@ package com.slamd.dslogplay;
 
 
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import com.unboundid.ldap.sdk.LDAPConnection;
@@ -774,7 +774,7 @@ public class LogPlaybackJobClass
    */
   @Override()
   public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+                                   List<String> outputMessages)
   {
     // Get the necessary parameter values to connect to the server.
     boolean useSSL  = false;

@@ -19,8 +19,8 @@ package com.slamd.jobs;
 
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import com.slamd.http.HTTPClient;
@@ -53,7 +53,7 @@ import com.unboundid.util.FixedRateBarrier;
  *
  * @author   Neil A. Wilson
  */
-public class HTTPGetRateJobClass
+public final class HTTPGetRateJobClass
        extends JobClass
 {
   /**
@@ -288,10 +288,6 @@ public class HTTPGetRateJobClass
   private static String        proxyHost;
   private static String        proxyUserID;
   private static String        proxyUserPW;
-  private static String        sslKeyStore;
-  private static String        sslKeyStorePassword;
-  private static String        sslTrustStore;
-  private static String        sslTrustStorePassword;
   private static String[]      clientAddresses;
 
 
@@ -417,19 +413,17 @@ public class HTTPGetRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
-    StatTracker[] clientStubs =
-         new HTTPClient().getStatTrackerStubs(clientID, threadID,
-                                         collectionInterval);
+    final StatTracker[] clientStubs = new HTTPClient().getStatTrackerStubs(
+         clientID, threadID, collectionInterval);
 
-    StatTracker[] stubs = new StatTracker[clientStubs.length+1];
+    final StatTracker[] stubs = new StatTracker[clientStubs.length+1];
     System.arraycopy(clientStubs, 0, stubs, 0, clientStubs.length);
-    stubs[clientStubs.length] =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                                collectionInterval);
+    stubs[clientStubs.length] = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_EXCEPTIONS_CAUGHT, collectionInterval);
 
     return stubs;
   }
@@ -442,9 +436,9 @@ public class HTTPGetRateJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    StatTracker[] clientStats = httpClient.getStatTrackers();
+    final StatTracker[] clientStats = httpClient.getStatTrackers();
 
-    StatTracker[] stats = new StatTracker[clientStats.length+1];
+    final StatTracker[] stats = new StatTracker[clientStats.length+1];
     System.arraycopy(clientStats, 0, stats, 0, clientStats.length);
     stats[clientStats.length] = exceptionsCaught;
 
@@ -457,27 +451,26 @@ public class HTTPGetRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // See if the user has provided either a single URL or a file with a list of
     // URLs.
-    StringParameter urlParam =
+    final StringParameter urlParam =
          parameters.getStringParameter(urlParameter.getName());
-    FileURLParameter urlFileParam =
+    final FileURLParameter urlFileParam =
          parameters.getFileURLParameter(urlFileParameter.getName());
 
     if (((urlParam == null) || (! urlParam.hasValue())) &&
         ((urlFileParam == null) || (! urlFileParam.hasValue())))
     {
       throw new InvalidValueException("A value must be provided for either " +
-                                      "the \"" + urlParameter.getDisplayName() +
-                                      "\" parameter or the \"" +
-                                      urlFileParameter.getDisplayName() +
-                                      "\" parameter.");
+           "the \"" + urlParameter.getDisplayName() + "\" parameter or the \"" +
+           urlFileParameter.getDisplayName() + "\" parameter.");
     }
 
 
@@ -485,10 +478,9 @@ public class HTTPGetRateJobClass
         (urlFileParam != null) && urlFileParam.hasValue())
     {
       throw new InvalidValueException("You may not provide a value for both " +
-                                      "the \"" + urlParameter.getDisplayName() +
-                                      "\" parameter and the \"" +
-                                      urlFileParameter.getDisplayName() +
-                                      "\" parameter.");
+           "the \"" + urlParameter.getDisplayName() +
+           "\" parameter and the \"" + urlFileParameter.getDisplayName() +
+           "\" parameter.");
     }
 
 
@@ -496,27 +488,27 @@ public class HTTPGetRateJobClass
     {
       try
       {
-        URL url = new URL(urlParam.getStringValue());
+        final URL url = new URL(urlParam.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new InvalidValueException("Unable to parse the provided URL \"" +
-                                        urlParam.getStringValue() + "\":  " +
-                                        e, e);
+        throw new InvalidValueException(
+             "Unable to parse the provided URL \"" + urlParam.getStringValue() +
+                  "\":  " + e,
+             e);
       }
     }
 
 
     if (numClients > 1)
     {
-      MultiLineTextParameter clientAddrsParam =
+      final MultiLineTextParameter clientAddrsParam =
            parameters.getMultiLineTextParameter(
                 clientAddressesParameter.getName());
       if ((clientAddrsParam != null) && clientAddrsParam.hasValue())
       {
         throw new InvalidValueException("The set of client addresses may " +
-                                        "only be specified if a single client" +
-                                        "is to be used.");
+             "only be specified if a single client is to be used.");
       }
     }
   }
@@ -538,12 +530,12 @@ public class HTTPGetRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get the necessary parameter values.
     URL urlToRetrieve = null;
-    StringParameter urlParam =
+    final StringParameter urlParam =
          parameters.getStringParameter(urlParameter.getName());
     if ((urlParam != null) && urlParam.hasValue())
     {
@@ -551,35 +543,33 @@ public class HTTPGetRateJobClass
       {
         urlToRetrieve = new URL(urlParam.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to parse URL to retrieve '" +
-                           urlParam.getStringValue() + "':  " +
-                           stackTraceToString(e));
+             urlParam.getStringValue() + "':  " + stackTraceToString(e));
         return false;
       }
     }
     else
     {
-      FileURLParameter urlFileParam =
+      final FileURLParameter urlFileParam =
            parameters.getFileURLParameter(urlFileParameter.getName());
       if ((urlFileParam == null) || (! urlFileParam.hasValue()))
       {
         outputMessages.add("ERROR:  Either a URL to retrieve or a URL file " +
-                           "must be provided.");
+             "must be provided.");
         return false;
       }
       else
       {
         try
         {
-          String[] urls = urlFileParam.getNonBlankFileLines();
+          final String[] urls = urlFileParam.getNonBlankFileLines();
           if ((urls == null) || (urls.length == 0))
           {
             outputMessages.add("ERROR:  The file containing the URLs to " +
-                               "retrieve, '" +
-                               urlFileParam.getFileURL().toExternalForm() +
-                               "', appears to be empty.");
+                 "retrieve, '" + urlFileParam.getFileURL().toExternalForm() +
+                 "', appears to be empty.");
             return false;
           }
           else
@@ -588,26 +578,26 @@ public class HTTPGetRateJobClass
             {
               urlToRetrieve = new URL(urls[0]);
             }
-            catch (Exception e)
+            catch (final Exception e)
             {
               outputMessages.add("ERROR:  Unable to parse URL to retrieve '" +
-                                 urls[0] + "':  " + stackTraceToString(e));
+                   urls[0] + "':  " + stackTraceToString(e));
               return false;
             }
           }
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           outputMessages.add("ERROR:  Unable to retrieve the URL file '" +
-                             urlFileParam.getFileURL().toExternalForm() +
-                             "':  " + stackTraceToString(e));
+               urlFileParam.getFileURL().toExternalForm() + "':  " +
+               stackTraceToString(e));
         }
       }
     }
 
 
     String proxyHost = null;
-    StringParameter proxyHostParam =
+    final StringParameter proxyHostParam =
          parameters.getStringParameter(proxyHostParameter.getName());
     if ((proxyHostParam != null) && proxyHostParam.hasValue())
     {
@@ -616,7 +606,7 @@ public class HTTPGetRateJobClass
 
 
     int proxyPort = -1;
-    IntegerParameter proxyPortParam =
+    final IntegerParameter proxyPortParam =
          parameters.getIntegerParameter(proxyPortParameter.getName());
     if ((proxyPortParam != null) && proxyPortParam.hasValue())
     {
@@ -625,7 +615,7 @@ public class HTTPGetRateJobClass
 
 
     String proxyUserID = null;
-    StringParameter proxyUserIDParam =
+    final StringParameter proxyUserIDParam =
          parameters.getStringParameter(proxyUserIDParameter.getName());
     if ((proxyUserIDParam != null) && proxyUserIDParam.hasValue())
     {
@@ -634,7 +624,7 @@ public class HTTPGetRateJobClass
 
 
     String proxyUserPW = null;
-    PasswordParameter proxyUserPWParam =
+    final PasswordParameter proxyUserPWParam =
          parameters.getPasswordParameter(proxyUserPWParameter.getName());
     if ((proxyUserPWParam != null) && proxyUserPWParam.hasValue())
     {
@@ -643,7 +633,7 @@ public class HTTPGetRateJobClass
 
 
     boolean followRedirects = false;
-    BooleanParameter redirectsParam =
+    final BooleanParameter redirectsParam =
          parameters.getBooleanParameter(followRedirectsParameter.getName());
     if (redirectsParam != null)
     {
@@ -652,7 +642,7 @@ public class HTTPGetRateJobClass
 
 
     boolean blindTrust = true;
-    BooleanParameter blindTrustParam =
+    final BooleanParameter blindTrustParam =
          parameters.getBooleanParameter(blindTrustParameter.getName());
     if (blindTrustParam != null)
     {
@@ -661,18 +651,17 @@ public class HTTPGetRateJobClass
 
 
     String keyStore = null;
-    StringParameter keyStoreParam =
+    final StringParameter keyStoreParam =
          parameters.getStringParameter(keyStoreParameter.getName());
     if ((keyStoreParam != null) && keyStoreParam.hasValue())
     {
       keyStore = keyStoreParam.getStringValue();
-      File keyStoreFile = new File(keyStore);
+      final File keyStoreFile = new File(keyStore);
       if ((! blindTrust) && (! keyStoreFile.exists()))
       {
         outputMessages.add("WARNING:  Key store file \"" + keyStore +
-                           "\" not found on SLAMD server system.  This test " +
-                           "will blindly trust any SSL certificate " +
-                           "presented by the directory server.");
+             "\" not found on SLAMD server system.  This test will blindly " +
+             "trust any SSL certificate presented by the directory server.");
         outputMessages.add("");
         blindTrust = true;
       }
@@ -684,7 +673,7 @@ public class HTTPGetRateJobClass
 
 
     String keyStorePassword = "";
-    StringParameter keyPassParam =
+    final StringParameter keyPassParam =
          parameters.getStringParameter(keyPWParameter.getName());
     if ((keyPassParam != null) && keyPassParam.hasValue())
     {
@@ -694,18 +683,17 @@ public class HTTPGetRateJobClass
 
 
     String trustStore = null;
-    StringParameter trustStoreParam =
+    final StringParameter trustStoreParam =
          parameters.getStringParameter(trustStoreParameter.getName());
     if ((trustStoreParam != null) && trustStoreParam.hasValue())
     {
       trustStore = trustStoreParam.getStringValue();
-      File trustStoreFile = new File(trustStore);
+      final File trustStoreFile = new File(trustStore);
       if ((! blindTrust) && (! trustStoreFile.exists()))
       {
         outputMessages.add("WARNING:  trust store file \"" + trustStore +
-                           "\" not found on SLAMD server system.  This test " +
-                           "will blindly trust any SSL certificate " +
-                           "presented by the directory server.");
+             "\" not found on SLAMD server system.  This test will blindly " +
+             "trust any SSL certificate presented by the directory server.");
         outputMessages.add("");
         blindTrust = true;
       }
@@ -717,7 +705,7 @@ public class HTTPGetRateJobClass
 
 
     String trustStorePassword = "";
-    StringParameter trustPassParam =
+    final StringParameter trustPassParam =
          parameters.getStringParameter(trustPWParameter.getName());
     if ((trustPassParam != null) && trustPassParam.hasValue())
     {
@@ -727,7 +715,7 @@ public class HTTPGetRateJobClass
 
 
     // Create an HTTPClient to use to retrieve the URL.
-    HTTPClient client = new HTTPClient();
+    final HTTPClient client = new HTTPClient();
     client.setFollowRedirects(followRedirects);
 
     if ((proxyHost != null) && (proxyPort > 0))
@@ -741,10 +729,10 @@ public class HTTPGetRateJobClass
       {
         client.setSSLSocketFactory(new JSSEBlindTrustSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to instantiate blind trust socket " +
-                           "factory:  " + stackTraceToString(e));
+             "factory:  " + stackTraceToString(e));
         return false;
       }
     }
@@ -754,19 +742,19 @@ public class HTTPGetRateJobClass
     try
     {
       outputMessages.add("Attempting to retrieve URL '" +
-                         urlToRetrieve.toExternalForm() + "'....");
+           urlToRetrieve.toExternalForm() + "'....");
 
-      HTTPRequest request = new HTTPRequest(true, urlToRetrieve);
-      HTTPResponse response = client.sendRequest(request);
+      final HTTPRequest request = new HTTPRequest(true, urlToRetrieve);
+      final HTTPResponse response = client.sendRequest(request);
 
-      int    statusCode      = response.getStatusCode();
-      String responseMessage = response.getResponseMessage();
+      final int statusCode = response.getStatusCode();
+      final String responseMessage = response.getResponseMessage();
 
       outputMessages.add("HTTP response status code was " + statusCode + '.');
       if ((responseMessage != null) && (responseMessage.length() > 0))
       {
-        outputMessages.add("HTTP response message was " + responseMessage +
-                           '.');
+        outputMessages.add(
+             "HTTP response message was " + responseMessage + '.');
       }
 
       outputMessages.add("");
@@ -774,10 +762,10 @@ public class HTTPGetRateJobClass
       client.closeAll();
       return true;
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to perform the GET:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to perform the GET:  " + stackTraceToString(e));
       client.closeAll();
       return false;
     }
@@ -789,7 +777,8 @@ public class HTTPGetRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     urlParameter = parameters.getStringParameter(urlParameter.getName());
@@ -797,16 +786,16 @@ public class HTTPGetRateJobClass
     {
       try
       {
-        HTTPRequest request =
+        final HTTPRequest request =
              new HTTPRequest(true, new URL(urlParameter.getStringValue()));
         requests = new HTTPRequest[] { request };
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to create HTTP request based " +
-                                       "on provided URL \"" +
-                                       urlParameter.getStringValue() + "\":  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to create HTTP request based on provided URL \"" +
+                  urlParameter.getStringValue() + "\":  " + e,
+             e);
       }
     }
 
@@ -816,17 +805,17 @@ public class HTTPGetRateJobClass
     {
       try
       {
-        String[] urls = urlFileParameter.getFileLines();
+        final String[] urls = urlFileParameter.getFileLines();
         requests = new HTTPRequest[urls.length];
         for (int i=0; i < requests.length; i++)
         {
           requests[i] = new HTTPRequest(true, new URL(urls[i]));
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to obtain or parse the set of " +
-                                       "URLs to retrieve:  " + e, e);
+        throw new UnableToRunException(
+             "Unable to obtain or parse the set of URLs to retrieve:  " + e, e);
       }
     }
 
@@ -990,7 +979,7 @@ public class HTTPGetRateJobClass
       blindTrust = blindTrustParameter.getBooleanValue();
     }
 
-    sslKeyStore = null;
+    String sslKeyStore = null;
     keyStoreParameter =
          parameters.getStringParameter(keyStoreParameter.getName());
     if ((keyStoreParameter != null) && keyStoreParameter.hasValue())
@@ -999,7 +988,7 @@ public class HTTPGetRateJobClass
       System.setProperty(SSL_KEY_STORE_PROPERTY, sslKeyStore);
     }
 
-    sslKeyStorePassword = null;
+    String sslKeyStorePassword = null;
     keyPWParameter =
          parameters.getPasswordParameter(keyPWParameter.getName());
     if ((keyPWParameter != null) && keyPWParameter.hasValue())
@@ -1008,7 +997,7 @@ public class HTTPGetRateJobClass
       System.setProperty(SSL_KEY_PASSWORD_PROPERTY, sslKeyStorePassword);
     }
 
-    sslTrustStore = null;
+    String sslTrustStore = null;
     trustStoreParameter =
          parameters.getStringParameter(trustStoreParameter.getName());
     if ((trustStoreParameter != null) && trustStoreParameter.hasValue())
@@ -1017,7 +1006,7 @@ public class HTTPGetRateJobClass
       System.setProperty(SSL_TRUST_STORE_PROPERTY, sslTrustStore);
     }
 
-    sslTrustStorePassword = null;
+    String sslTrustStorePassword = null;
     trustPWParameter =
          parameters.getPasswordParameter(trustPWParameter.getName());
     if ((trustPWParameter != null) && trustPWParameter.hasValue())
@@ -1034,8 +1023,9 @@ public class HTTPGetRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Initialize the random number generator for this client.
@@ -1044,8 +1034,7 @@ public class HTTPGetRateJobClass
 
     // Initialize the exceptionsCaught tracker.
     exceptionsCaught = new IncrementalTracker(clientID, threadID,
-                                              STAT_TRACKER_EXCEPTIONS_CAUGHT,
-                                              collectionInterval);
+         STAT_TRACKER_EXCEPTIONS_CAUGHT, collectionInterval);
 
 
     // Create and initialize the HTTP client that we will use for handling the
@@ -1057,17 +1046,18 @@ public class HTTPGetRateJobClass
 
     if ((clientAddresses != null) && (clientAddresses.length > 0))
     {
-      int slot = getThreadNumber() % clientAddresses.length;
+      final int slot = getThreadNumber() % clientAddresses.length;
 
       try
       {
         httpClient.setClientAddress(clientAddresses[slot]);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to set the client address for " +
-                                       "thread " + threadID + " to " +
-                                       clientAddresses[slot] + ":  " + e, e);
+        throw new UnableToRunException(
+             "Unable to set the client address for thread " + threadID +
+                  " to " + clientAddresses[slot] + ":  " + e,
+             e);
       }
     }
 
@@ -1082,10 +1072,10 @@ public class HTTPGetRateJobClass
       {
         httpClient.setSSLSocketFactory(new JSSEBlindTrustSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to use blind trust socket " +
-                                       "factory:  " + e);
+        throw new UnableToRunException(
+             "Unable to use blind trust socket factory:  " + e);
       }
     }
   }
@@ -1101,7 +1091,7 @@ public class HTTPGetRateJobClass
     // Determine the range of time for which we should collect statistics.
     long currentTime = System.currentTimeMillis();
     boolean collectingStats = false;
-    long startCollectingTime = currentTime + (1000 * warmUpTime);
+    final long startCollectingTime = currentTime + (1000 * warmUpTime);
     long stopCollectingTime  = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0))
     {
@@ -1110,14 +1100,15 @@ public class HTTPGetRateJobClass
 
     // First, see if this should operate "infinitely" (i.e., not a fixed number
     // of iterations
-    boolean infinite = (numIterations <= 0);
+    final boolean infinite = (numIterations <= 0);
 
     // Create a variable that will be used to handle the delay between requests.
     long requestStartTime = 0;
 
 
     // Create a loop that will run until it needs to stop
-    for (int i=0; ((! shouldStop()) && ((infinite || (i < numIterations))));
+    for (int i=0;
+         ((! shouldStop()) && ((infinite || (i < numIterations))));
          i++)
     {
       if (rateLimiter != null)
@@ -1134,8 +1125,7 @@ public class HTTPGetRateJobClass
       {
         // Tell the stat trackers that they should start tracking now
         httpClient.enableStatisticsCollection(getClientID(), getThreadID(),
-                                              getCollectionInterval(),
-                                              getJobID(), getStatReporter());
+             getCollectionInterval(), getJobID(), getStatReporter());
         exceptionsCaught.startTracker();
         collectingStats = true;
       }
@@ -1153,9 +1143,10 @@ public class HTTPGetRateJobClass
 
       try
       {
-        HTTPResponse response = httpClient.sendRequest(getRandomRequest());
+        final HTTPResponse response =
+             httpClient.sendRequest(getRandomRequest());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         if (collectingStats)
         {
@@ -1165,15 +1156,15 @@ public class HTTPGetRateJobClass
 
       if (timeBetweenRequests > 0)
       {
-        long requestStopTime = System.currentTimeMillis();
-        long eTime           = requestStopTime - requestStartTime;
-        long sleepTime       = timeBetweenRequests - eTime;
+        final long requestStopTime = System.currentTimeMillis();
+        final long eTime = requestStopTime - requestStartTime;
+        final long sleepTime = timeBetweenRequests - eTime;
         if (sleepTime > 0)
         {
           try
           {
             Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {}
+          } catch (final InterruptedException ie) {}
         }
       }
     }
@@ -1217,7 +1208,7 @@ public class HTTPGetRateJobClass
     }
     else
     {
-      int position = (random.nextInt() & 0x7FFFFFFF) % requests.length;
+      final int position = (random.nextInt() & 0x7FFFFFFF) % requests.length;
       return requests[position];
     }
   }

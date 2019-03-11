@@ -24,8 +24,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
@@ -63,14 +63,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class POPCheckRateJobClass
+public final class POPCheckRateJobClass
        extends JobClass
 {
   /**
    * The display name of the stat tracker used to count the number of POP
    * sessions established.
    */
-  public static final String STAT_TRACKER_POP_SESSIONS = "POP Sessions";
+  private static final String STAT_TRACKER_POP_SESSIONS = "POP Sessions";
 
 
 
@@ -78,7 +78,7 @@ public class POPCheckRateJobClass
    * The display name of the stat tracker used to count the number of failed
    * POP logins.
    */
-  public static final String STAT_TRACKER_FAILURE_COUNT = "Failed Logins";
+  private static final String STAT_TRACKER_FAILURE_COUNT = "Failed Logins";
 
 
 
@@ -86,7 +86,7 @@ public class POPCheckRateJobClass
    * The display name of the stat tracker used to keep track of the number of
    * messages contained in the inbox for each POP session.
    */
-  public static final String STAT_TRACKER_MESSAGE_COUNT = "Message Count";
+  private static final String STAT_TRACKER_MESSAGE_COUNT = "Message Count";
 
 
 
@@ -94,7 +94,7 @@ public class POPCheckRateJobClass
    * The display name of the stat tracker used to time the process of
    * authenticating and retrieving the list of messages.
    */
-  public static final String STAT_TRACKER_SESSION_DURATION =
+  private static final String STAT_TRACKER_SESSION_DURATION =
        "Session Duration (ms)";
 
 
@@ -103,7 +103,7 @@ public class POPCheckRateJobClass
    * The display name of the stat tracker used to count the number of successful
    * POP logins.
    */
-  public static final String STAT_TRACKER_SUCCESS_COUNT = "Successful Logins";
+  private static final String STAT_TRACKER_SUCCESS_COUNT = "Successful Logins";
 
 
 
@@ -184,7 +184,6 @@ public class POPCheckRateJobClass
 
   // The random number generator for the job.
   private static Random parentRandom;
-  private Random random;
 
 
   // The rate limiter for this job.
@@ -269,7 +268,7 @@ public class POPCheckRateJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameters =
+    final Parameter[] parameters =
     {
       placeholder,
       hostParameter,
@@ -290,21 +289,22 @@ public class POPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_POP_SESSIONS,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_SESSION_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_TRACKER_MESSAGE_COUNT,
-                              collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_SUCCESS_COUNT,
-                             collectionInterval),
+           collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_FAILURE_COUNT,
-                             collectionInterval)
+           collectionInterval)
     };
   }
 
@@ -332,14 +332,15 @@ public class POPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The user ID parameter must be parseable as a value pattern.
-    StringParameter p =
+    final StringParameter p =
          parameters.getStringParameter(userIDParameter.getName());
     if ((p != null) && p.hasValue())
     {
@@ -347,7 +348,7 @@ public class POPCheckRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -373,72 +374,72 @@ public class POPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get the parameters necessary to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No POP server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! portParam.hasValue()))
     {
       outputMessages.add("ERROR:  No POP server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
-    StringParameter userIDParam =
+    final StringParameter userIDParam =
          parameters.getStringParameter(userIDParameter.getName());
     if ((userIDParam == null) || (! userIDParam.hasValue()))
     {
       outputMessages.add("ERROR:  No user ID was provided.");
       return false;
     }
-    String userID = userIDParam.getStringValue();
+    final String userID = userIDParam.getStringValue();
 
 
-    PasswordParameter pwParam =
+    final PasswordParameter pwParam =
          parameters.getPasswordParameter(passwordParameter.getName());
     if ((pwParam == null) || (! pwParam.hasValue()))
     {
       outputMessages.add("ERROR:  No user password was provided.");
       return false;
     }
-    String userPW = pwParam.getStringValue();
+    final String userPW = pwParam.getStringValue();
 
 
     // Try to establish a connection to the POP server.
-    Socket         socket;
-    BufferedReader reader;
-    BufferedWriter writer;
+    final Socket socket;
+    final BufferedReader reader;
+    final BufferedWriter writer;
     try
     {
       outputMessages.add("Trying to establish a connection to POP server " +
-                         host + ':' + port + "....");
+           host + ':' + port + "....");
 
       socket = new Socket(host, port);
       reader = new BufferedReader(new InputStreamReader(
-                                           socket.getInputStream()));
+           socket.getInputStream()));
       writer = new BufferedWriter(new OutputStreamWriter(
-                                           socket.getOutputStream()));
+           socket.getOutputStream()));
 
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to connect:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to connect:  " + stackTraceToString(e));
       return false;
     }
 
@@ -448,12 +449,12 @@ public class POPCheckRateJobClass
     {
       outputMessages.add("Trying to read the hello string from the server....");
 
-      String line = reader.readLine();
+      final String line = reader.readLine();
 
       outputMessages.add("Hello string was '" + line + "'.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to read the hello string:  " +
                          stackTraceToString(e));
@@ -461,17 +462,17 @@ public class POPCheckRateJobClass
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -489,7 +490,7 @@ public class POPCheckRateJobClass
       outputMessages.add("Successfully sent the USER request.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to send the USER request:  " +
                          stackTraceToString(e));
@@ -497,17 +498,17 @@ public class POPCheckRateJobClass
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -529,7 +530,7 @@ public class POPCheckRateJobClass
       outputMessages.add("Read a USER response of '" + line + "'.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to read the USER response:  " +
                          stackTraceToString(e));
@@ -537,17 +538,17 @@ public class POPCheckRateJobClass
       try
       {
         reader.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         writer.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       try
       {
         socket.close();
-      } catch (Exception e2) {}
+      } catch (final Exception e2) {}
 
       return false;
     }
@@ -567,7 +568,7 @@ public class POPCheckRateJobClass
         outputMessages.add("Successfully sent the PASS request.");
         outputMessages.add("");
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to send the PASS request:  " +
                            stackTraceToString(e));
@@ -575,17 +576,17 @@ public class POPCheckRateJobClass
         try
         {
           reader.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         try
         {
           writer.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         try
         {
           socket.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         return false;
       }
@@ -598,7 +599,7 @@ public class POPCheckRateJobClass
         outputMessages.add("Trying to read the PASS response from the " +
                            "server....");
 
-        String line = reader.readLine();
+        final String line = reader.readLine();
         if (line.startsWith("+"))
         {
           loginSuccessful = true;
@@ -607,7 +608,7 @@ public class POPCheckRateJobClass
         outputMessages.add("Read a PASS response of '" + line + "'.");
         outputMessages.add("");
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to read the PASS response:  " +
                            stackTraceToString(e));
@@ -615,17 +616,17 @@ public class POPCheckRateJobClass
         try
         {
           reader.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         try
         {
           writer.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         try
         {
           socket.close();
-        } catch (Exception e2) {}
+        } catch (final Exception e2) {}
 
         return false;
       }
@@ -642,22 +643,22 @@ public class POPCheckRateJobClass
       writer.write("QUIT");
       writer.newLine();
       writer.flush();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       reader.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       writer.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
     try
     {
       socket.close();
-    } catch (Exception e) {}
+    } catch (final Exception e) {}
 
 
     outputMessages.add("All tests completed.");
@@ -670,7 +671,8 @@ public class POPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the parent random number generator.
@@ -699,10 +701,10 @@ public class POPCheckRateJobClass
       {
         userIDPattern = new ValuePattern(userIDParameter.getStringValue());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to parse user ID pattern:  " +
-                                       stackTraceToString(e), e);
+             stackTraceToString(e), e);
       }
     }
 
@@ -758,30 +760,26 @@ public class POPCheckRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Create the stat trackers for this thread.
     sessionCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_POP_SESSIONS,
-                                            collectionInterval);
+         STAT_TRACKER_POP_SESSIONS, collectionInterval);
     sessionTimer = new TimeTracker(clientID, threadID,
-                                   STAT_TRACKER_SESSION_DURATION,
-                                   collectionInterval);
+         STAT_TRACKER_SESSION_DURATION, collectionInterval);
     messageCountTracker = new IntegerValueTracker(clientID, threadID,
-                                                  STAT_TRACKER_MESSAGE_COUNT,
-                                                  collectionInterval);
+         STAT_TRACKER_MESSAGE_COUNT, collectionInterval);
     successCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SUCCESS_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_SUCCESS_COUNT, collectionInterval);
     failureCounter = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_FAILURE_COUNT,
-                                            collectionInterval);
+         STAT_TRACKER_FAILURE_COUNT, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -794,7 +792,7 @@ public class POPCheckRateJobClass
 
 
     // Seed the random number generator for this thread.
-    random = new Random(parentRandom.nextLong());
+    final Random random = new Random(parentRandom.nextLong());
   }
 
 
@@ -841,14 +839,14 @@ mainLoop:
       // If we need to sleep, then do so.
       if (delay > 0)
       {
-        long now          = System.currentTimeMillis();
-        long prevTestTime = now - lastStartTime;
+        final long now = System.currentTimeMillis();
+        final long prevTestTime = now - lastStartTime;
         if (prevTestTime < delay)
         {
           try
           {
             Thread.sleep(delay - prevTestTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
 
@@ -868,11 +866,11 @@ mainLoop:
       {
         socket = new Socket(popAddress, popPort);
         reader = new BufferedReader(new InputStreamReader(
-                                             socket.getInputStream()));
+             socket.getInputStream()));
         writer = new BufferedWriter(new OutputStreamWriter(
-                                             socket.getOutputStream()));
+             socket.getOutputStream()));
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -885,7 +883,7 @@ mainLoop:
       {
         line = reader.readLine();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -895,7 +893,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -908,7 +906,7 @@ mainLoop:
         writer.newLine();
         writer.flush();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -918,7 +916,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -939,7 +937,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue mainLoop;
         }
@@ -953,12 +951,12 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue;
         }
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -968,7 +966,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -982,7 +980,7 @@ mainLoop:
         writer.newLine();
         writer.flush();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -992,7 +990,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -1013,7 +1011,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue mainLoop;
         }
@@ -1027,12 +1025,12 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue;
         }
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1042,7 +1040,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -1056,7 +1054,7 @@ mainLoop:
         writer.newLine();
         writer.flush();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1066,7 +1064,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }
@@ -1095,7 +1093,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             continue mainLoop;
           }
@@ -1109,7 +1107,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e) {}
+            } catch (final Exception e) {}
 
             continue mainLoop;
           }
@@ -1122,7 +1120,7 @@ mainLoop:
             lastLine = line;
           }
         }
-        catch (IOException ioe)
+        catch (final IOException ioe)
         {
           sessionTimer.stopTimer();
           failureCounter.increment();
@@ -1132,7 +1130,7 @@ mainLoop:
             reader.close();
             writer.close();
             socket.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           continue;
         }
@@ -1152,11 +1150,12 @@ mainLoop:
         {
           try
           {
-            StringTokenizer tokenizer = new StringTokenizer(lastLine, " ");
+            final StringTokenizer tokenizer =
+                 new StringTokenizer(lastLine, " ");
             highestUID = Integer.parseInt(tokenizer.nextToken());
             messageCountTracker.addValue(highestUID);
           }
-          catch (Exception e)
+          catch (final Exception e)
           {
             sessionTimer.stopTimer();
             failureCounter.increment();
@@ -1166,7 +1165,7 @@ mainLoop:
               reader.close();
               writer.close();
               socket.close();
-            } catch (Exception e2) {}
+            } catch (final Exception e2) {}
 
             continue;
           }
@@ -1189,7 +1188,7 @@ mainLoop:
         sessionTimer.stopTimer();
         successCounter.increment();
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         sessionTimer.stopTimer();
         failureCounter.increment();
@@ -1199,7 +1198,7 @@ mainLoop:
           reader.close();
           writer.close();
           socket.close();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
 
         continue;
       }

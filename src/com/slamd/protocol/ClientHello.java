@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Boolean;
 import com.unboundid.asn1.ASN1Element;
@@ -39,7 +39,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClientHello
+public final class ClientHello
        extends SLAMDMessage
 {
   // Indicates whether this client requires the server to authenticate itself.
@@ -123,10 +123,12 @@ public class ClientHello
    * @param  restrictedMode   Indicates whether this client is operating in
    *                          restricted mode.
    */
-  public ClientHello(int messageID, HashMap<String,String> extraProperties,
-                     String clientIP, int clientPort, String clientID,
-                     String clientManagerID, int majorVersion, int minorVersion,
-                     int pointVersion, boolean restrictedMode)
+  public ClientHello(final int messageID,
+                     final Map<String,String> extraProperties,
+                     final String clientIP, final int clientPort,
+                     final String clientID, final String clientManagerID,
+                     final int majorVersion, final int minorVersion,
+                     final int pointVersion, final boolean restrictedMode)
   {
     super(messageID, extraProperties);
 
@@ -170,12 +172,15 @@ public class ClientHello
    * @param  requireServerAuth  Indicates whether this client requires the
    *                            server to provide its own authentication info.
    */
-  public ClientHello(int messageID, HashMap<String,String> extraProperties,
-                     String clientIP, int clientPort, String clientID,
-                     String clientManagerID, int majorVersion, int minorVersion,
-                     int pointVersion, boolean restrictedMode,
-                     String authMethod, String authID, byte[] authCredentials,
-                     boolean requireServerAuth)
+  public ClientHello(final int messageID,
+                     final Map<String,String> extraProperties,
+                     final String clientIP, final int clientPort,
+                     final String clientID, final String clientManagerID,
+                     final int majorVersion, final int minorVersion,
+                     final int pointVersion, final boolean restrictedMode,
+                     final String authMethod, final String authID,
+                     final byte[] authCredentials,
+                     final boolean requireServerAuth)
   {
     super(messageID, extraProperties);
 
@@ -212,7 +217,7 @@ public class ClientHello
    *
    * @param  clientIP  The client IP address for this client connection.
    */
-  public void setClientIP(String clientIP)
+  public void setClientIP(final String clientIP)
   {
     this.clientIP = clientIP;
   }
@@ -236,7 +241,7 @@ public class ClientHello
    *
    * @param  clientPort  The client port number for this client connection.
    */
-  public void setClientPort(int clientPort)
+  public void setClientPort(final int clientPort)
   {
     this.clientPort = clientPort;
   }
@@ -260,7 +265,7 @@ public class ClientHello
    *
    * @param  clientID  The client ID for this client connection.
    */
-  public void setClientID(String clientID)
+  public void setClientID(final String clientID)
   {
     this.clientID = clientID;
   }
@@ -289,7 +294,7 @@ public class ClientHello
    * @param  clientManagerID  The client manager ID for the client manager with
    *                          which this client connection is associated.
    */
-  public void setClientManagerID(String clientManagerID)
+  public void setClientManagerID(final String clientManagerID)
   {
     this.clientManagerID = clientManagerID;
   }
@@ -313,7 +318,7 @@ public class ClientHello
    *
    * @param  majorVersion  The major version number for the client software.
    */
-  public void setMajorVersion(int majorVersion)
+  public void setMajorVersion(final int majorVersion)
   {
     this.majorVersion = majorVersion;
   }
@@ -337,7 +342,7 @@ public class ClientHello
    *
    * @param  minorVersion  The minor version number for the client software.
    */
-  public void setMinorVersion(int minorVersion)
+  public void setMinorVersion(final int minorVersion)
   {
     this.minorVersion = minorVersion;
   }
@@ -361,7 +366,7 @@ public class ClientHello
    *
    * @param  pointVersion  The point version number for the client software.
    */
-  public void setPointVersion(int pointVersion)
+  public void setPointVersion(final int pointVersion)
   {
     this.pointVersion = pointVersion;
   }
@@ -389,7 +394,7 @@ public class ClientHello
    * @param  restrictedMode  Specifies whether the client is running in
    *                         restricted mode.
    */
-  public void setRestrictedMode(boolean restrictedMode)
+  public void setRestrictedMode(final boolean restrictedMode)
   {
     this.restrictedMode = restrictedMode;
   }
@@ -418,7 +423,7 @@ public class ClientHello
    * @param  authMethod  The name of the method that the client wishes to use to
    *                     authenticate to the server.
    */
-  public void setAuthMethod(String authMethod)
+  public void setAuthMethod(final String authMethod)
   {
     this.authMethod = authMethod;
   }
@@ -448,7 +453,7 @@ public class ClientHello
    * @param  authID  The authentication ID that the client wishes to use to
    *                 authenticate to the server.
    */
-  public void setAuthID(String authID)
+  public void setAuthID(final String authID)
   {
     this.authID = authID;
   }
@@ -478,7 +483,7 @@ public class ClientHello
    * @param  authCredentials  The credentials that the client wishes to use to
    *                          authenticate to the server.
    */
-  public void setAuthCredentials(byte[] authCredentials)
+  public void setAuthCredentials(final byte[] authCredentials)
   {
     this.authCredentials = authCredentials;
   }
@@ -506,7 +511,7 @@ public class ClientHello
    * @param  requireServerAuth  Specifies whether the client requires the server
    *                            to authenticate itself to the client.
    */
-  public void setRequireServerAuth(boolean requireServerAuth)
+  public void setRequireServerAuth(final boolean requireServerAuth)
   {
     this.requireServerAuth = requireServerAuth;
   }
@@ -522,58 +527,58 @@ public class ClientHello
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_IP,
-                                        new ASN1OctetString(clientIP)));
+         new ASN1OctetString(clientIP)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_PORT,
-                                        new ASN1Integer(clientPort)));
+         new ASN1Integer(clientPort)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_CLIENT_ID,
-                                        new ASN1OctetString(clientID)));
+         new ASN1OctetString(clientID)));
 
     if (clientManagerID != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_CLIENT_MANAGER_ID,
-                           new ASN1OctetString(clientManagerID)));
+           ProtocolConstants.PROPERTY_CLIENT_MANAGER_ID,
+           new ASN1OctetString(clientManagerID)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_MAJOR_VERSION,
-                         new ASN1Integer(majorVersion)));
+         ProtocolConstants.PROPERTY_MAJOR_VERSION,
+         new ASN1Integer(majorVersion)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_MINOR_VERSION,
-                         new ASN1Integer(minorVersion)));
+         ProtocolConstants.PROPERTY_MINOR_VERSION,
+         new ASN1Integer(minorVersion)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_POINT_VERSION,
-                         new ASN1Integer(pointVersion)));
+         ProtocolConstants.PROPERTY_POINT_VERSION,
+         new ASN1Integer(pointVersion)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_RESTRICTED_MODE,
-                         new ASN1Boolean(restrictedMode)));
+         ProtocolConstants.PROPERTY_RESTRICTED_MODE,
+         new ASN1Boolean(restrictedMode)));
 
     if (authMethod != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_AUTH_METHOD,
-                           new ASN1OctetString(authMethod)));
+           ProtocolConstants.PROPERTY_AUTH_METHOD,
+           new ASN1OctetString(authMethod)));
     }
 
     if (authID != null)
     {
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_AUTH_ID,
-                                          new ASN1OctetString(authID)));
+           new ASN1OctetString(authID)));
     }
 
     if (authCredentials != null)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_AUTH_CREDENTIALS,
-                           new ASN1OctetString(authCredentials)));
+           ProtocolConstants.PROPERTY_AUTH_CREDENTIALS,
+           new ASN1OctetString(authCredentials)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_REQUIRE_SERVER_AUTH,
-                         new ASN1Boolean(requireServerAuth)));
+         ProtocolConstants.PROPERTY_REQUIRE_SERVER_AUTH,
+         new ASN1Boolean(requireServerAuth)));
 
 
     return new ASN1Sequence(elementList);
@@ -593,18 +598,18 @@ public class ClientHello
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_IP);
     if (valueElement == null)
     {
-      throw new SLAMDException("Client hello message is missing the client " +
-                               "IP address.");
+      throw new SLAMDException(
+           "Client hello message is missing the client IP address.");
     }
     else
     {
@@ -612,10 +617,10 @@ public class ClientHello
       {
         clientIP = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client IP address:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the client IP address:  " + e, e);
       }
     }
 
@@ -623,8 +628,8 @@ public class ClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_PORT);
     if (valueElement == null)
     {
-      throw new SLAMDException("Client hello message is missing the client " +
-                               "port number.");
+      throw new SLAMDException(
+           "Client hello message is missing the client port number.");
     }
     else
     {
@@ -632,10 +637,10 @@ public class ClientHello
       {
         clientPort = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client port number:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the client port number:  " + e, e);
       }
     }
 
@@ -651,7 +656,7 @@ public class ClientHello
       {
         clientID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the client ID:  " + e, e);
       }
@@ -666,7 +671,7 @@ public class ClientHello
       {
         clientManagerID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the client manager ID:  " +
                                  e, e);
@@ -677,8 +682,8 @@ public class ClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_MAJOR_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Client hello message is missing the major " +
-                               "version number.");
+      throw new SLAMDException(
+           "Client hello message is missing the major version number.");
     }
     else
     {
@@ -686,10 +691,10 @@ public class ClientHello
       {
         majorVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the major version " +
-                                 "number:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the major version number:  " + e, e);
       }
     }
 
@@ -697,8 +702,8 @@ public class ClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_MINOR_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Client hello message is missing the minor " +
-                               "version number.");
+      throw new SLAMDException(
+           "Client hello message is missing the minor version number.");
     }
     else
     {
@@ -706,7 +711,7 @@ public class ClientHello
       {
         minorVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the minor version " +
                                  "number:  " + e, e);
@@ -717,8 +722,8 @@ public class ClientHello
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_POINT_VERSION);
     if (valueElement == null)
     {
-      throw new SLAMDException("Client hello message is missing the point " +
-                               "version number.");
+      throw new SLAMDException(
+           "Client hello message is missing the point version number.");
     }
     else
     {
@@ -726,10 +731,10 @@ public class ClientHello
       {
         pointVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the point version " +
-                                 "number:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the point version number:  " + e, e);
       }
     }
 
@@ -741,10 +746,10 @@ public class ClientHello
       {
         restrictedMode = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the restrictedMode flag:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the restrictedMode flag:  " + e, e);
       }
     }
 
@@ -756,7 +761,7 @@ public class ClientHello
       {
         authMethod = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the auth method:  " + e, e);
       }
@@ -770,7 +775,7 @@ public class ClientHello
       {
         authID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the auth ID:  " + e, e);
       }
@@ -785,10 +790,10 @@ public class ClientHello
       {
         authCredentials = valueElement.decodeAsOctetString().getValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the auth credentials:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the auth credentials:  " + e, e);
       }
     }
 
@@ -801,10 +806,10 @@ public class ClientHello
       {
         requireServerAuth = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the requireServerAuth " +
-                                 "flag:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the requireServerAuth flag:  " + e, e);
       }
     }
   }
@@ -821,9 +826,9 @@ public class ClientHello
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

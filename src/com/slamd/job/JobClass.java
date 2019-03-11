@@ -17,8 +17,8 @@ package com.slamd.job;
 
 
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.slamd.client.ClientSideJob;
 import com.slamd.common.Constants;
@@ -408,7 +408,7 @@ public abstract class JobClass
    *          clients).
    */
   public boolean testJobParameters(final ParameterList parameters,
-                                   final ArrayList<String> outputMessages)
+                                   final List<String> outputMessages)
   {
     outputMessages.add("No parameter tests have been defined for " +
          getJobName() + " jobs.");

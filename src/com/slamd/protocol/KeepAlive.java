@@ -17,7 +17,7 @@ package com.slamd.protocol;
 
 
 
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Null;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class KeepAlive
+public final class KeepAlive
        extends SLAMDMessage
 {
   /**
@@ -49,7 +49,8 @@ public class KeepAlive
    *                          Both the names and values for the properties must
    *                          be strings.
    */
-  public KeepAlive(int messageID, HashMap<String,String> extraProperties)
+  public KeepAlive(final int messageID,
+                   final Map<String,String> extraProperties)
   {
     super(messageID, extraProperties);
   }
@@ -84,7 +85,7 @@ public class KeepAlive
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
     // No action is required, since there should not be any real payload.
@@ -102,7 +103,7 @@ public class KeepAlive
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
     // No action is required, since there is no payload.
   }

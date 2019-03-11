@@ -52,7 +52,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform compare
  * operations against an LDAP directory server.
  */
-public class LDAPCompareRateJobClass
+public final class LDAPCompareRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -94,8 +94,6 @@ public class LDAPCompareRateJobClass
   private static long   timeBetweenRequests;
   private static String attributeName;
   private static String assertionValue;
-  private static String entryDN1;
-  private static String entryDN2;
 
   // Stat trackers used by this job.
   private CategoricalTracker resultCodes;
@@ -368,11 +366,11 @@ public class LDAPCompareRateJobClass
     parentRandom = new Random();
 
     dn1Parameter = parameters.getStringParameter(dn1Parameter.getName());
-    entryDN1 = dn1Parameter.getStringValue();
+    final String entryDN1 = dn1Parameter.getStringValue();
 
 
     dn2Parameter = parameters.getStringParameter(dn2Parameter.getName());
-    entryDN2 = dn2Parameter.getStringValue();
+    final String entryDN2 = dn2Parameter.getStringValue();
 
 
     dn1Percentage = 50;

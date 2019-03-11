@@ -18,6 +18,7 @@ package com.slamd.resourcemonitor;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import com.slamd.job.JobClass;
@@ -94,7 +95,7 @@ public abstract class ResourceMonitor
 
 
   // The list of log messages associated with this monitor thread.
-  private ArrayList<String> logMessages;
+  private List<String> logMessages;
 
   // Indicates whether this resource monitor has stopped collecting statistics.
   private boolean hasStopped;

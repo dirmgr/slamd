@@ -28,11 +28,11 @@ package com.slamd.jobs;
  *
  * @author   Neil A. Wilson
  */
-public class RateLimiter
+public final class RateLimiter
 {
   // The length of time in milliseconds that this timer should be active.
-  private int duration;
 
+  private int duration;
   // The time that this timer should stop sleeping.
   private long stopSleepTime;
 
@@ -45,7 +45,7 @@ public class RateLimiter
    *                   elapse between the start of the timer and the limiter
    *                   should stop sleeping.
    */
-  public RateLimiter(int duration)
+  public RateLimiter(final int duration)
   {
     this.duration = duration;
 

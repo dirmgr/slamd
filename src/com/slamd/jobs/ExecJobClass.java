@@ -44,42 +44,40 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class ExecJobClass
+public final class ExecJobClass
        extends JobClass
 {
   /**
    * The size to use for the read buffer.
    */
-  public static final int READ_BUFFER_SIZE = 4096;
+  private static final int READ_BUFFER_SIZE = 4096;
 
 
 
   // The parameter that indicates whether to log command output.
   private BooleanParameter logOutputParameter =
        new BooleanParameter("log_output", "Log Command Output",
-                            "Indicates whether the output of the command " +
-                            "should be logged.", false);
+            "Indicates whether the output of the command should be logged.",
+            false);
 
   // Specifies the list of environment variables to define for the job
   // execution.
   private MultiLineTextParameter environmentParameter =
        new MultiLineTextParameter("env_variables", "Environment Variables",
-                                  "A set of environment variables that " +
-                                  "should be defined when the job is " +
-                                  "executed.  The environment variables " +
-                                  "should be specified one per line, using " +
-                                  "the format name=value", null, false);
+            "A set of environment variables that should be defined when the " +
+                 "job is executed.  The environment variables should be " +
+                 "specified one per line, using the format name=value",
+            null, false);
 
   // The parameter that specifies the command to execute.
-  private StringParameter commandParameter =
-      new StringParameter("command", "Command to Execute",
-                          "Specifies the command to execute.", true, "");
+  private StringParameter commandParameter = new StringParameter("command",
+       "Command to Execute", "Specifies the command to execute.", true, "");
 
   // THe parameter that specifies the working directory.
-  private StringParameter workingDirParameter =
-       new StringParameter("working_dir", "Working Directory",
-                           "The path to the working directory to use when " +
-                           "executing the command.", false, "");
+  private StringParameter workingDirParameter = new StringParameter(
+       "working_dir", "Working Directory",
+       "The path to the working directory to use when executing the command.",
+       false, "");
 
   // Indicates whether the output of the command should be captured and logged.
   private static boolean logOutput;
@@ -187,8 +185,9 @@ public class ExecJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[0];
   }
@@ -210,10 +209,11 @@ public class ExecJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // See if the environment variables were specified.  If so, make sure they
@@ -241,7 +241,8 @@ public class ExecJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     command = null;
@@ -265,26 +266,24 @@ public class ExecJobClass
       {
         if (! workingDir.exists())
         {
-          throw new UnableToRunException("Working directory \"" +
-                                         workingDirStr + "\" does not exist.");
+          throw new UnableToRunException(
+               "Working directory \"" + workingDirStr + "\" does not exist.");
         }
 
         if (! workingDir.isDirectory())
         {
           throw new UnableToRunException("Working directory \"" +
-                                         workingDirStr +
-                                         "\" is not a directory.");
+               workingDirStr + "\" is not a directory.");
         }
       }
-      catch (UnableToRunException utre)
+      catch (final UnableToRunException utre)
       {
         throw utre;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to verify existence of " +
-                                       "working directory \"" + workingDirStr +
-                                       "\":  " + e, e);
+             "working directory \"" + workingDirStr + "\":  " + e, e);
       }
     }
 
@@ -313,9 +312,9 @@ public class ExecJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
-         throws UnableToRunException
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
   {
     // Initialize the read buffer.
     readBuffer = new byte[READ_BUFFER_SIZE];
@@ -329,14 +328,14 @@ public class ExecJobClass
   @Override()
   public void runJob()
   {
-    Runtime runtime = Runtime.getRuntime();
+    final Runtime runtime = Runtime.getRuntime();
     Process process = null;
 
     try
     {
       process = runtime.exec(command, environmentVariables, workingDir);
     }
-    catch (IOException ioe)
+    catch (final IOException ioe)
     {
       logMessage("Unable to execute command \"" + command + "\":  " + ioe);
       indicateStoppedDueToError();
@@ -362,9 +361,9 @@ public class ExecJobClass
             {
               int bytesRead = stdOutStream.read(readBuffer);
               String[] outputStrs = byteArrayToStrings(readBuffer, bytesRead);
-              for (int i=0; i < outputStrs.length; i++)
+              for (final String outputStr : outputStrs)
               {
-                logMessage("STDOUT:  " + outputStrs[i]);
+                logMessage("STDOUT:  " + outputStr);
               }
             }
           }
@@ -375,9 +374,9 @@ public class ExecJobClass
             {
               int bytesRead = stdErrStream.read(readBuffer);
               String[] errorStrs = byteArrayToStrings(readBuffer, bytesRead);
-              for (int i=0; i < errorStrs.length; i++)
+              for (final String errorStr : errorStrs)
               {
-                logMessage("STDERR:  " + errorStrs[i]);
+                logMessage("STDERR:  " + errorStr);
               }
             }
           }
@@ -389,11 +388,11 @@ public class ExecJobClass
           {
             stdOutStream.close();
             stdErrStream.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           process.destroy();
           logMessage("Terminated process because the client determined it " +
-                     "should stop running.");
+               "should stop running.");
           return;
         }
 
@@ -406,8 +405,8 @@ public class ExecJobClass
           }
           else
           {
-            logMessage("Command completed abnormally (exit code " +
-                       returnCode + ')');
+            logMessage(
+                 "Command completed abnormally (exit code " + returnCode + ')');
             indicateCompletedWithErrors();
           }
 
@@ -415,17 +414,17 @@ public class ExecJobClass
           {
             stdOutStream.close();
             stdErrStream.close();
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
 
           return;
-        } catch (IllegalThreadStateException itse) {}
+        } catch (final IllegalThreadStateException itse) {}
 
         try
         {
           Thread.sleep(100);
-        } catch (InterruptedException ie) {}
+        } catch (final InterruptedException ie) {}
       }
-      catch (IOException ioe)
+      catch (final IOException ioe)
       {
         // This could mean that the command is done or that some other error
         // occurred.  Try to get the return code to see if it completed.
@@ -440,12 +439,12 @@ public class ExecJobClass
           }
           else
           {
-            logMessage("Command completed abnormally (exit code " + returnCode +
-                       ')');
+            logMessage(
+                 "Command completed abnormally (exit code " + returnCode + ')');
             indicateCompletedWithErrors();
           }
         }
-        catch (IllegalThreadStateException itse)
+        catch (final IllegalThreadStateException itse)
         {
           logMessage("Attempt to read process output failed:  " + ioe);
           indicateCompletedWithErrors();
@@ -469,18 +468,19 @@ public class ExecJobClass
    * @return  The array of strings containing the data from the provided byte
    *          array.
    */
-  private static String[] byteArrayToStrings(byte[] byteArray, int length)
+  private static String[] byteArrayToStrings(final byte[] byteArray,
+                                             final int length)
   {
-    ArrayList<String> stringList = new ArrayList<String>();
+    final ArrayList<String> stringList = new ArrayList<>();
 
-    String byteStr = new String(byteArray, 0, length);
-    StringTokenizer tokenizer = new StringTokenizer(byteStr, "\r\n");
+    final String byteStr = new String(byteArray, 0, length);
+    final StringTokenizer tokenizer = new StringTokenizer(byteStr, "\r\n");
     while (tokenizer.hasMoreTokens())
     {
       stringList.add(tokenizer.nextToken());
     }
 
-    String[] returnStrings = new String[stringList.size()];
+    final String[] returnStrings = new String[stringList.size()];
     stringList.toArray(returnStrings);
     return returnStrings;
   }

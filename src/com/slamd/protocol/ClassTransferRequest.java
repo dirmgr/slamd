@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Boolean;
 import com.unboundid.asn1.ASN1Element;
@@ -38,7 +38,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClassTransferRequest
+public final class ClassTransferRequest
        extends SLAMDMessage
 {
   // Indicates whether the server should also include any dependencies
@@ -79,9 +79,10 @@ public class ClassTransferRequest
    *                              include any dependencies associated with the
    *                              requested classes.
    */
-  public ClassTransferRequest(int messageID,
-                              HashMap<String,String> extraProperties,
-                              String[] classNames, boolean includeDependencies)
+  public ClassTransferRequest(final int messageID,
+                              final Map<String,String> extraProperties,
+                              final String[] classNames,
+                              final boolean includeDependencies)
   {
     super(messageID, extraProperties);
 
@@ -109,7 +110,7 @@ public class ClassTransferRequest
    * @param  classNames  The names of the classes that have been requested by
    *                     the client.
    */
-  public void setClassNames(String[] classNames)
+  public void setClassNames(final String[] classNames)
   {
     this.classNames = classNames;
   }
@@ -138,7 +139,7 @@ public class ClassTransferRequest
    * @param  includeDependencies  Specifies whether the server should include
    *                              any dependencies with the requested classes.
    */
-  public void setIncludeDependencies(boolean includeDependencies)
+  public void setIncludeDependencies(final boolean includeDependencies)
   {
     this.includeDependencies = includeDependencies;
   }
@@ -154,9 +155,9 @@ public class ClassTransferRequest
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
-    ASN1Element[] classNameElements = new ASN1Element[classNames.length];
+    final ASN1Element[] classNameElements = new ASN1Element[classNames.length];
     for (int i=0; i < classNames.length; i++)
     {
       classNameElements[i] = new ASN1OctetString(classNames[i]);
@@ -186,10 +187,10 @@ public class ClassTransferRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
@@ -197,13 +198,13 @@ public class ClassTransferRequest
     if (valueElement == null)
     {
       throw new SLAMDException("Class transfer request message does not " +
-                               "include any class names.");
+           "include any class names.");
     }
     else
     {
       try
       {
-        ASN1Element[] classNameElements =
+        final ASN1Element[] classNameElements =
              valueElement.decodeAsSequence().elements();
         classNames = new String[classNameElements.length];
         for (int i=0; i < classNameElements.length; i++)
@@ -212,10 +213,10 @@ public class ClassTransferRequest
                classNameElements[i].decodeAsOctetString().stringValue();
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the requested class " +
-                                 "names:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the requested class names:  " + e, e);
       }
     }
 
@@ -228,10 +229,10 @@ public class ClassTransferRequest
       {
         includeDependencies = valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the includeDependencies " +
-                                 "flag:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the includeDependencies flag:  " + e, e);
       }
     }
   }
@@ -248,9 +249,9 @@ public class ClassTransferRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');
@@ -259,11 +260,11 @@ public class ClassTransferRequest
     buffer.append(indentBuf);
     buffer.append("classNames =");
     buffer.append(Constants.EOL);
-    for (int i=0; i < classNames.length; i++)
+    for (final String className : classNames)
     {
       buffer.append(indentBuf);
       buffer.append("     ");
-      buffer.append(classNames[i]);
+      buffer.append(className);
       buffer.append(Constants.EOL);
     }
 

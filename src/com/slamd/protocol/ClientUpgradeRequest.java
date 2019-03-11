@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ClientUpgradeRequest
+public final class ClientUpgradeRequest
        extends SLAMDMessage
 {
   // The filename (without any path information) for the upgrade JAR file.
@@ -70,9 +70,9 @@ public class ClientUpgradeRequest
    * @param  upgradeFile      The filename (without any path information) for
    *                          the upgrade JAR file being requested.
    */
-  public ClientUpgradeRequest(int messageID,
-                              HashMap<String,String> extraProperties,
-                              String upgradeFile)
+  public ClientUpgradeRequest(final int messageID,
+                              final Map<String,String> extraProperties,
+                              final String upgradeFile)
   {
     super(messageID, extraProperties);
 
@@ -100,7 +100,7 @@ public class ClientUpgradeRequest
    *
    * @param  upgradeFile  The filename for the upgrade JAR file being requested.
    */
-  public void setUpgradeFile(String upgradeFile)
+  public void setUpgradeFile(final String upgradeFile)
   {
     this.upgradeFile = upgradeFile;
   }
@@ -116,11 +116,11 @@ public class ClientUpgradeRequest
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_UPGRADE_FILE_NAME,
-                         new ASN1OctetString(upgradeFile)));
+         ProtocolConstants.PROPERTY_UPGRADE_FILE_NAME,
+         new ASN1OctetString(upgradeFile)));
 
     return new ASN1Sequence(elementList);
   }
@@ -139,18 +139,18 @@ public class ClientUpgradeRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
-    ASN1Element valueElement =
+    final ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_UPGRADE_FILE_NAME);
     if (valueElement == null)
     {
       throw new SLAMDException("Client upgrade request does not include the " +
-                               "filename for the upgrade file.");
+           "filename for the upgrade file.");
     }
     else
     {
@@ -158,10 +158,10 @@ public class ClientUpgradeRequest
       {
         upgradeFile = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the requested upgrade " +
-                                 "file:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the requested upgrade file:  " + e, e);
       }
     }
   }
@@ -178,9 +178,9 @@ public class ClientUpgradeRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

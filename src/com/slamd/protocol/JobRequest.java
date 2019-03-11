@@ -19,7 +19,7 @@ package com.slamd.protocol;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Boolean;
 import com.unboundid.asn1.ASN1Element;
@@ -41,7 +41,7 @@ import com.slamd.parameter.ParameterList;
  *
  * @author   Neil A. Wilson
  */
-public class JobRequest
+public final class JobRequest
        extends SLAMDMessage
 {
   // Indicates whether the client should report in-progress statistics for the
@@ -152,12 +152,16 @@ public class JobRequest
    * @param  inProgressReportInterval  The interval to use when reporting
    *                                   in-progress statistics to the server.
    */
-  public JobRequest(int messageID, HashMap<String,String> extraProperties,
-                    String jobID, String jobClassName, int jobClassVersion,
-                    int numClients, int threadsPerClient, Date startTime,
-                    Date stopTime, int duration, int collectionInterval,
-                    int threadStartupDelay, ParameterList parameterList,
-                    boolean reportInProgressStats, int inProgressReportInterval)
+  public JobRequest(final int messageID,
+                    final Map<String,String> extraProperties,
+                    final String jobID, final String jobClassName,
+                    final int jobClassVersion, final int numClients,
+                    final int threadsPerClient, final Date startTime,
+                    final Date stopTime, final int duration,
+                    final int collectionInterval, final int threadStartupDelay,
+                    final ParameterList parameterList,
+                    final boolean reportInProgressStats,
+                    final int inProgressReportInterval)
   {
     super(messageID, extraProperties);
 
@@ -197,7 +201,7 @@ public class JobRequest
    *
    * @param  jobID  The job ID for the job to process.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -222,7 +226,7 @@ public class JobRequest
    * @param  jobClassName  The fully-qualified name of the job class for the job
    *                       to process.
    */
-  public void setJobClassName(String jobClassName)
+  public void setJobClassName(final String jobClassName)
   {
     this.jobClassName = jobClassName;
   }
@@ -247,7 +251,7 @@ public class JobRequest
    *
    * @param  jobClassVersion  The job class version for the job to process.
    */
-  public void setJobClassVersion(int jobClassVersion)
+  public void setJobClassVersion(final int jobClassVersion)
   {
     this.jobClassVersion = jobClassVersion;
   }
@@ -272,7 +276,7 @@ public class JobRequest
    * @param  numClients  The number of clients that should be used to process
    *                     the job.
    */
-  public void setNumClients(int numClients)
+  public void setNumClients(final int numClients)
   {
     this.numClients = numClients;
   }
@@ -300,7 +304,7 @@ public class JobRequest
    * @param  threadsPerClient  The number of threads per client that should be
    *                           used to process the job.
    */
-  public void setThreadsPerClient(int threadsPerClient)
+  public void setThreadsPerClient(final int threadsPerClient)
   {
     this.threadsPerClient = threadsPerClient;
   }
@@ -324,7 +328,7 @@ public class JobRequest
    *
    * @param  startTime  The time at which processing should start for the job.
    */
-  public void setStartTime(Date startTime)
+  public void setStartTime(final Date startTime)
   {
     this.startTime = startTime;
   }
@@ -349,7 +353,7 @@ public class JobRequest
    *
    * @param  stopTime  The time at which processing should stop for the job.
    */
-  public void setStopTime(Date stopTime)
+  public void setStopTime(final Date stopTime)
   {
     this.stopTime = stopTime;
   }
@@ -375,7 +379,7 @@ public class JobRequest
    * @param  duration  The maximum length of time in seconds that the job should
    *                   run.
    */
-  public void setDuration(int duration)
+  public void setDuration(final int duration)
   {
     this.duration = duration;
   }
@@ -399,7 +403,7 @@ public class JobRequest
    *
    * @param  collectionInterval  The statistics collection interval for the job.
    */
-  public void setCollectionInterval(int collectionInterval)
+  public void setCollectionInterval(final int collectionInterval)
   {
     this.collectionInterval = collectionInterval;
   }
@@ -429,7 +433,7 @@ public class JobRequest
    *                             when starting the individual threads for the
    *                             job.
    */
-  public void setThreadStartupDelay(int threadStartupDelay)
+  public void setThreadStartupDelay(final int threadStartupDelay)
   {
     this.threadStartupDelay = threadStartupDelay;
   }
@@ -454,7 +458,7 @@ public class JobRequest
    * @param  parameterList  The set of parameters that should be used to process
    *                        the job.
    */
-  public void setParameterList(ParameterList parameterList)
+  public void setParameterList(final ParameterList parameterList)
   {
     this.parameterList = parameterList;
   }
@@ -483,7 +487,7 @@ public class JobRequest
    *                                periodically report the collected results to
    *                                the server.
    */
-  public void setReportInProgressStats(boolean reportInProgressStats)
+  public void setReportInProgressStats(final boolean reportInProgressStats)
   {
     this.reportInProgressStats = reportInProgressStats;
   }
@@ -513,7 +517,7 @@ public class JobRequest
    *                                   to report the in-progress results to the
    *                                   server.
    */
-  public void setInProgressReportInterval(int inProgressReportInterval)
+  public void setInProgressReportInterval(final int inProgressReportInterval)
   {
     this.inProgressReportInterval = inProgressReportInterval;
   }
@@ -546,7 +550,7 @@ public class JobRequest
    * @param  clientNumber  The client number for the client to which this
    *                       request is being sent.
    */
-  public void setClientNumber(int clientNumber)
+  public void setClientNumber(final int clientNumber)
   {
     this.clientNumber = clientNumber;
   }
@@ -562,27 +566,27 @@ public class JobRequest
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_JOB_CLASS_NAME,
-                         new ASN1OctetString(jobClassName)));
+         ProtocolConstants.PROPERTY_JOB_CLASS_NAME,
+         new ASN1OctetString(jobClassName)));
 
     if (jobClassVersion > 0)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_JOB_CLASS_VERSION,
-                           new ASN1Integer(jobClassVersion)));
+           ProtocolConstants.PROPERTY_JOB_CLASS_VERSION,
+           new ASN1Integer(jobClassVersion)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_NUM_CLIENTS,
-                         new ASN1Integer(numClients)));
+         ProtocolConstants.PROPERTY_NUM_CLIENTS,
+         new ASN1Integer(numClients)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_THREADS_PER_CLIENT,
-                         new ASN1Integer(threadsPerClient)));
+         ProtocolConstants.PROPERTY_THREADS_PER_CLIENT,
+         new ASN1Integer(threadsPerClient)));
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_START_TIME,
          new ASN1OctetString(String.valueOf(startTime.getTime()))));
 
@@ -595,26 +599,26 @@ public class JobRequest
     if (duration > 0)
     {
       elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_DURATION,
-                                          new ASN1Integer(duration)));
+           new ASN1Integer(duration)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_COLLECTION_INTERVAL,
-                         new ASN1Integer(collectionInterval)));
+         ProtocolConstants.PROPERTY_COLLECTION_INTERVAL,
+         new ASN1Integer(collectionInterval)));
 
     if (threadStartupDelay > 0)
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_THREAD_STARTUP_DELAY,
-                           new ASN1Integer(threadStartupDelay)));
+           ProtocolConstants.PROPERTY_THREAD_STARTUP_DELAY,
+           new ASN1Integer(threadStartupDelay)));
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_PARAMETER_LIST,
-                         parameterList.encode()));
+         ProtocolConstants.PROPERTY_PARAMETER_LIST,
+         parameterList.encode()));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_REPORT_IN_PROGRESS_STATS,
-                         new ASN1Boolean(reportInProgressStats)));
+         ProtocolConstants.PROPERTY_REPORT_IN_PROGRESS_STATS,
+         new ASN1Boolean(reportInProgressStats)));
 
     if (reportInProgressStats)
     {
@@ -624,8 +628,8 @@ public class JobRequest
     }
 
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_CLIENT_NUMBER,
-                         new ASN1Integer(clientNumber)));
+         ProtocolConstants.PROPERTY_CLIENT_NUMBER,
+         new ASN1Integer(clientNumber)));
 
     return new ASN1Sequence(elementList);
   }
@@ -644,10 +648,10 @@ public class JobRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
 
@@ -655,8 +659,8 @@ public class JobRequest
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the job " +
-                               "ID.");
+      throw new SLAMDException(
+           "Job request message does not include the job ID.");
     }
     else
     {
@@ -664,7 +668,7 @@ public class JobRequest
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -673,8 +677,8 @@ public class JobRequest
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_JOB_CLASS_NAME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the job " +
-                               "class name.");
+      throw new SLAMDException(
+           "Job request message does not include the job class name.");
     }
     else
     {
@@ -682,10 +686,10 @@ public class JobRequest
       {
         jobClassName = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the job class name:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the job class name:  " + e, e);
       }
     }
 
@@ -697,18 +701,18 @@ public class JobRequest
       {
         jobClassVersion = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the job class version:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the job class version:  " + e, e);
       }
     }
 
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_NUM_CLIENTS);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the " +
-                               "number of clients.");
+      throw new SLAMDException(
+           "Job request message does not include the number of clients.");
     }
     else
     {
@@ -716,10 +720,10 @@ public class JobRequest
       {
         numClients = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the number of clients:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the number of clients:  " + e, e);
       }
     }
 
@@ -728,7 +732,7 @@ public class JobRequest
     if (valueElement == null)
     {
       throw new SLAMDException("Job request message does not include the " +
-                               "number of threads per client.");
+           "number of threads per client.");
     }
     else
     {
@@ -736,18 +740,18 @@ public class JobRequest
       {
         numClients = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the number of threads per " +
-                                 "client:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the number of threads per client:  " + e, e);
       }
     }
 
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_START_TIME);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the " +
-                               "start time.");
+      throw new SLAMDException(
+           "Job request message does not include the start time.");
     }
     else
     {
@@ -757,7 +761,7 @@ public class JobRequest
              valueElement.decodeAsOctetString().stringValue();
         startTime = new Date(Long.parseLong(startTimeStr));
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the start time:  " + e, e);
       }
@@ -772,7 +776,7 @@ public class JobRequest
              valueElement.decodeAsOctetString().stringValue();
         stopTime = new Date(Long.parseLong(stopTimeStr));
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the stop time:  " + e, e);
       }
@@ -785,7 +789,7 @@ public class JobRequest
       {
         duration = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the duration:  " + e, e);
       }
@@ -796,7 +800,7 @@ public class JobRequest
     if (valueElement == null)
     {
       throw new SLAMDException("Job request message does not include the " +
-                               "statistics collection interval.");
+           "statistics collection interval.");
     }
     else
     {
@@ -804,10 +808,11 @@ public class JobRequest
       {
         collectionInterval = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the statistics collection " +
-                                 "interval:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the statistics collection " + "interval:  " + e,
+             e);
       }
     }
 
@@ -819,18 +824,18 @@ public class JobRequest
       {
         threadStartupDelay = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the thread startup " +
-                                 "delay:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the thread startup delay:  " + e, e);
       }
     }
 
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_PARAMETER_LIST);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the " +
-                               "job parameter list.");
+      throw new SLAMDException(
+           "Job request message does not include the job parameter list.");
     }
     else
     {
@@ -838,10 +843,10 @@ public class JobRequest
       {
         parameterList = ParameterList.decode(valueElement);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the job parameter list:  " +
-                                 e, e);
+        throw new SLAMDException(
+             "Unable to decode the job parameter list:  " + e, e);
       }
     }
 
@@ -854,10 +859,10 @@ public class JobRequest
         reportInProgressStats =
              valueElement.decodeAsBoolean().booleanValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the reportInProgressStats " +
-                                 "flag:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the reportInProgressStats flag:  " + e, e);
       }
     }
 
@@ -869,18 +874,18 @@ public class JobRequest
       {
         inProgressReportInterval = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the in progress report " +
-                                 "interval:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the in progress report interval:  " + e, e);
       }
     }
 
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_CLIENT_NUMBER);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job request message does not include the " +
-                               "client number.");
+      throw new SLAMDException(
+           "Job request message does not include the client number.");
     }
     else
     {
@@ -888,10 +893,10 @@ public class JobRequest
       {
         clientNumber = valueElement.decodeAsInteger().intValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the client number:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the client number:  " + e, e);
       }
     }
   }
@@ -908,9 +913,9 @@ public class JobRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');
@@ -978,14 +983,14 @@ public class JobRequest
     buffer.append(indentBuf);
     buffer.append("parameterList =");
     buffer.append(Constants.EOL);
-    Parameter[] params = parameterList.getParameters();
-    for (int i=0; i < params.length; i++)
+   Parameter[] params = parameterList.getParameters();
+    for (final Parameter param : params)
     {
       buffer.append(indentBuf);
       buffer.append("     ");
-      buffer.append(params[i].getDisplayName());
+      buffer.append(param.getDisplayName());
       buffer.append(" = ");
-      buffer.append(params[i].getDisplayValue());
+      buffer.append(param.getDisplayValue());
       buffer.append(Constants.EOL);
     }
 

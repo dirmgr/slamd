@@ -64,7 +64,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform search and
  * modify operations against an LDAP directory server.
  */
-public class LDAPSearchAndModRateJobClass
+public final class LDAPSearchAndModRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -171,13 +171,6 @@ public class LDAPSearchAndModRateJobClass
 
 
   /**
-   * The serial version UID for this serializable class.
-   */
-  private static final long serialVersionUID = 4870520300740292912L;
-
-
-
-  /**
    * The set of defined search scopes.
    */
   private static final String[] SCOPES =
@@ -211,8 +204,6 @@ public class LDAPSearchAndModRateJobClass
   private static long         timeBetweenRequests;
   private static SearchScope  scope;
   private static String       baseDN;
-  private static String       filter1;
-  private static String       filter2;
   private static String[]     modAttributes;
   private static String[]     searchAttributes;
 
@@ -468,7 +459,7 @@ public class LDAPSearchAndModRateJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>(9);
+    ArrayList<StatTracker> trackerList = new ArrayList<>(9);
     trackerList.add(searchesCompleted);
     trackerList.add(modsCompleted);
     trackerList.add(searchTimer);
@@ -548,7 +539,7 @@ public class LDAPSearchAndModRateJobClass
   @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
-                         final ArrayList<String> outputMessages)
+                         final List<String> outputMessages)
   {
     boolean successful = true;
 
@@ -644,12 +635,12 @@ public class LDAPSearchAndModRateJobClass
 
     filter1Parameter =
          parameters.getStringParameter(filter1Parameter.getName());
-    filter1 = filter1Parameter.getStringValue();
+    final String filter1 = filter1Parameter.getStringValue();
 
 
     filter2Parameter =
          parameters.getStringParameter(filter2Parameter.getName());
-    filter2 = filter2Parameter.getStringValue();
+    final String filter2 = filter2Parameter.getStringValue();
 
 
     filter1Percentage = 50;
@@ -1066,7 +1057,7 @@ public class LDAPSearchAndModRateJobClass
           try
           {
             Thread.sleep(sleepTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
     }

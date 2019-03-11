@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class JobControlRequest
+public final class JobControlRequest
        extends SLAMDMessage
 {
   // The control type for this job control request.
@@ -74,9 +74,9 @@ public class JobControlRequest
    * @param  jobID                The job ID for this job control request.
    * @param  jobControlOperation  The operation for this job control request.
    */
-  public JobControlRequest(int messageID,
-                           HashMap<String,String> extraProperties, String jobID,
-                           String jobControlOperation)
+  public JobControlRequest(final int messageID,
+                           final Map<String,String> extraProperties,
+                           final String jobID, final String jobControlOperation)
   {
     super(messageID, extraProperties);
 
@@ -103,7 +103,7 @@ public class JobControlRequest
    *
    * @param  jobID  The job ID from the job control request.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -127,7 +127,7 @@ public class JobControlRequest
    *
    * @param  jobControlOperation  The operation for this job control request.
    */
-  public void setJobControlOperation(String jobControlOperation)
+  public void setJobControlOperation(final String jobControlOperation)
   {
     this.jobControlOperation = jobControlOperation;
   }
@@ -143,13 +143,13 @@ public class JobControlRequest
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
     elementList.add(encodeNameValuePair(
-                         ProtocolConstants.PROPERTY_JOB_CONTROL_OPERATION,
-                         new ASN1OctetString(jobControlOperation)));
+         ProtocolConstants.PROPERTY_JOB_CONTROL_OPERATION,
+         new ASN1OctetString(jobControlOperation)));
 
     return new ASN1Sequence(elementList);
   }
@@ -168,18 +168,18 @@ public class JobControlRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Job control request message does not include " +
-                               "a job ID.");
+      throw new SLAMDException(
+           "Job control request message does not include a job ID.");
     }
     else
     {
@@ -187,7 +187,7 @@ public class JobControlRequest
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -198,7 +198,7 @@ public class JobControlRequest
     if (valueElement == null)
     {
       throw new SLAMDException("Job control request message does not " +
-                               "include a job control operation.");
+           "include a job control operation.");
     }
     else
     {
@@ -207,10 +207,10 @@ public class JobControlRequest
         jobControlOperation =
              valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the job control " +
-                                 "operation:  " + e, e);
+        throw new SLAMDException(
+             "Unable to decode the job control operation:  " + e, e);
       }
     }
   }
@@ -227,9 +227,9 @@ public class JobControlRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

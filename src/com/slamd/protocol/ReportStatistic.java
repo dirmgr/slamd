@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1OctetString;
@@ -37,7 +37,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class ReportStatistic
+public final class ReportStatistic
        extends SLAMDMessage
 {
   // A set of ASN.1 sequences that contain in-progress information for the job.
@@ -72,7 +72,7 @@ public class ReportStatistic
    * @param  dataSequences  A set of ASN.1 sequences that contain in-progress
    *                        information for the job.
    */
-  public ReportStatistic(String jobID, ASN1Sequence[] dataSequences)
+  public ReportStatistic(final String jobID, final ASN1Sequence[] dataSequences)
   {
     this.jobID = jobID;
 
@@ -105,7 +105,7 @@ public class ReportStatistic
    *
    * @param  jobID  The job ID of the job with which the data is associated.
    */
-  public void setJobID(String jobID)
+  public void setJobID(final String jobID)
   {
     this.jobID = jobID;
   }
@@ -133,7 +133,7 @@ public class ReportStatistic
    * @param  dataSequences  A set of ASN.1 sequences that contain in-progress
    *                        information for the job.
    */
-  public void setDataSequences(ASN1Sequence[] dataSequences)
+  public void setDataSequences(final ASN1Sequence[] dataSequences)
   {
     if (dataSequences == null)
     {
@@ -156,16 +156,16 @@ public class ReportStatistic
   @Override()
   public ASN1Element encodeMessagePayload()
   {
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
 
     elementList.add(encodeNameValuePair(ProtocolConstants.PROPERTY_JOB_ID,
-                                        new ASN1OctetString(jobID)));
+         new ASN1OctetString(jobID)));
 
     if ((dataSequences != null) && (dataSequences.length > 0))
     {
       elementList.add(encodeNameValuePair(
-                           ProtocolConstants.PROPERTY_IN_PROGRESS_DATA,
-                           new ASN1Sequence(dataSequences)));
+           ProtocolConstants.PROPERTY_IN_PROGRESS_DATA,
+           new ASN1Sequence(dataSequences)));
     }
 
     return new ASN1Sequence(elementList);
@@ -185,18 +185,18 @@ public class ReportStatistic
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
-    HashMap<String,ASN1Element> propertyMap =
+    final Map<String,ASN1Element> propertyMap =
          decodeNameValuePairSequence(payloadElement);
 
     ASN1Element valueElement =
          propertyMap.get(ProtocolConstants.PROPERTY_JOB_ID);
     if (valueElement == null)
     {
-      throw new SLAMDException("Report statistic message does not include " +
-                               "a job ID.");
+      throw new SLAMDException(
+           "Report statistic message does not include a job ID.");
     }
     else
     {
@@ -204,7 +204,7 @@ public class ReportStatistic
       {
         jobID = valueElement.decodeAsOctetString().stringValue();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new SLAMDException("Unable to decode the job ID:  " + e, e);
       }
@@ -214,8 +214,8 @@ public class ReportStatistic
     valueElement = propertyMap.get(ProtocolConstants.PROPERTY_IN_PROGRESS_DATA);
     if (valueElement == null)
     {
-      throw new SLAMDException("Report statistic message does not include " +
-                               "any in-progress data.");
+      throw new SLAMDException(
+           "Report statistic message does not include any in-progress data.");
     }
     else
     {
@@ -229,10 +229,10 @@ public class ReportStatistic
           dataSequences[i] = dataElements[i].decodeAsSequence();
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new SLAMDException("Unable to decode the in-progress data:  " + e,
-                                 e);
+        throw new SLAMDException(
+             "Unable to decode the in-progress data:  " + e, e);
       }
     }
   }
@@ -249,9 +249,9 @@ public class ReportStatistic
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
-    StringBuilder indentBuf = new StringBuilder(indent);
+    final StringBuilder indentBuf = new StringBuilder(indent);
     for (int i=0; i < indent; i++)
     {
       indentBuf.append(' ');

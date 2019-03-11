@@ -18,7 +18,7 @@ package com.slamd.protocol;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Sequence;
@@ -34,7 +34,7 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class StatusRequest
+public final class StatusRequest
        extends SLAMDMessage
 {
   /**
@@ -58,7 +58,8 @@ public class StatusRequest
    *                          Both the names and values for the properties must
    *                          be strings.
    */
-  public StatusRequest(int messageID, HashMap<String,String> extraProperties)
+  public StatusRequest(final int messageID,
+                       final Map<String,String> extraProperties)
   {
     super(messageID, extraProperties);
   }
@@ -77,7 +78,7 @@ public class StatusRequest
     // There are currently no elements that need to be included in the body of
     // the status request.
 
-    ArrayList<ASN1Element> elementList = new ArrayList<ASN1Element>();
+    final ArrayList<ASN1Element> elementList = new ArrayList<>();
     return new ASN1Sequence(elementList);
   }
 
@@ -95,7 +96,7 @@ public class StatusRequest
    *                          SLAMD message.
    */
   @Override()
-  public void decodeMessagePayload(ASN1Element payloadElement)
+  public void decodeMessagePayload(final ASN1Element payloadElement)
          throws SLAMDException
   {
     // There is currently nothing that needs to be decoded for this message.
@@ -113,7 +114,7 @@ public class StatusRequest
    * @param  indent  The number of spaces to indent the payload content.
    */
   @Override()
-  public void payloadToString(StringBuilder buffer, int indent)
+  public void payloadToString(final StringBuilder buffer, final int indent)
   {
     // There are no properties to include in the string representation.
   }

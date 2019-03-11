@@ -21,6 +21,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import com.unboundid.ldap.sdk.Attribute;
@@ -68,13 +69,13 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public class MultiSearchLDAPLoadJobClass
+public final class MultiSearchLDAPLoadJobClass
        extends JobClass
 {
   /**
    * The set of characters that will make up randomly-generated strings.
    */
-  public static final char[] ALPHABET =
+  private static final char[] ALPHABET =
        "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 
@@ -82,56 +83,57 @@ public class MultiSearchLDAPLoadJobClass
   /**
    * The name of the stat tracker that counts the number of attempted adds.
    */
-  public static final String STAT_TRACKER_ADD_ATTEMPTS = "Add Attempts";
+  private static final String STAT_TRACKER_ADD_ATTEMPTS = "Add Attempts";
 
 
 
   /**
    * The name of the stat tracker that times add operations.
    */
-  public static final String STAT_TRACKER_ADD_TIME = "Add Time (ms)";
+  private static final String STAT_TRACKER_ADD_TIME = "Add Time (ms)";
 
 
 
   /**
    * The name of the stat tracker that counts the number of attempted compares.
    */
-  public static final String STAT_TRACKER_COMPARE_ATTEMPTS = "Compare Attempts";
+  private static final String STAT_TRACKER_COMPARE_ATTEMPTS =
+       "Compare Attempts";
 
 
 
   /**
    * The name of the stat tracker that times compare operations.
    */
-  public static final String STAT_TRACKER_COMPARE_TIME = "Compare Time (ms)";
+  private static final String STAT_TRACKER_COMPARE_TIME = "Compare Time (ms)";
 
 
 
   /**
    * The name of the stat tracker that counts the number of attempted deletes.
    */
-  public static final String STAT_TRACKER_DELETE_ATTEMPTS = "Delete Attempts";
+  private static final String STAT_TRACKER_DELETE_ATTEMPTS = "Delete Attempts";
 
 
 
   /**
    * The name of the stat tracker that times delete operations.
    */
-  public static final String STAT_TRACKER_DELETE_TIME = "Delete Time (ms)";
+  private static final String STAT_TRACKER_DELETE_TIME = "Delete Time (ms)";
 
 
 
   /**
    * The name of the stat tracker that counts the number of attempted modifies.
    */
-  public static final String STAT_TRACKER_MODIFY_ATTEMPTS = "Modify Attempts";
+  private static final String STAT_TRACKER_MODIFY_ATTEMPTS = "Modify Attempts";
 
 
 
   /**
    * The name of the stat tracker that times modify operations.
    */
-  public static final String STAT_TRACKER_MODIFY_TIME = "Modify Time (ms)";
+  private static final String STAT_TRACKER_MODIFY_TIME = "Modify Time (ms)";
 
 
 
@@ -139,7 +141,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted modify RDN
    * operations.
    */
-  public static final String STAT_TRACKER_MODIFY_RDN_ATTEMPTS =
+  private static final String STAT_TRACKER_MODIFY_RDN_ATTEMPTS =
        "Modify RDN Attempts";
 
 
@@ -147,7 +149,7 @@ public class MultiSearchLDAPLoadJobClass
   /**
    * The name of the stat tracker that times modify RDN operations.
    */
-  public static final String STAT_TRACKER_MODIFY_RDN_TIME =
+  private static final String STAT_TRACKER_MODIFY_RDN_TIME =
        "Modify RDN Time (ms)";
 
 
@@ -156,7 +158,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted
    * operations.
    */
-  public static final String STAT_TRACKER_OPERATION_ATTEMPTS =
+  private static final String STAT_TRACKER_OPERATION_ATTEMPTS =
        "Overall Operations Attempted";
 
 
@@ -164,7 +166,7 @@ public class MultiSearchLDAPLoadJobClass
   /**
    * The name of the stat tracker that categorizes the attempted operations.
    */
-  public static final String STAT_TRACKER_OPERATION_ATTEMPTS_BY_CATEGORY =
+  private static final String STAT_TRACKER_OPERATION_ATTEMPTS_BY_CATEGORY =
        "Types of Operations Attempted";
 
 
@@ -172,7 +174,7 @@ public class MultiSearchLDAPLoadJobClass
   /**
    * The name of the stat tracker that times attempted operations.
    */
-  public static final String STAT_TRACKER_OPERATION_TIME =
+  private static final String STAT_TRACKER_OPERATION_TIME =
        "Overall Operation Time";
 
 
@@ -181,7 +183,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that categorizes the result codes received
    * from the operations.
    */
-  public static final String STAT_TRACKER_RESULT_CODES = "Result Codes";
+  private static final String STAT_TRACKER_RESULT_CODES = "Result Codes";
 
 
 
@@ -189,7 +191,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_1 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_1 =
        "Search Attempts 1";
 
 
@@ -198,7 +200,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_1 = "Search Time 1 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_1 = "Search Time 1 (ms)";
 
 
 
@@ -206,7 +208,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_2 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_2 =
        "Search Attempts 2";
 
 
@@ -215,7 +217,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_2 = "Search Time 2 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_2 = "Search Time 2 (ms)";
 
 
 
@@ -223,7 +225,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_3 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_3 =
        "Search Attempts 3";
 
 
@@ -232,7 +234,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_3 = "Search Time 3 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_3 = "Search Time 3 (ms)";
 
 
 
@@ -240,7 +242,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_4 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_4 =
        "Search Attempts 4";
 
 
@@ -249,7 +251,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_4 = "Search Time 4 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_4 = "Search Time 4 (ms)";
 
 
 
@@ -257,7 +259,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_5 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_5 =
        "Search Attempts 5";
 
 
@@ -266,7 +268,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_5 = "Search Time 5 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_5 = "Search Time 5 (ms)";
 
 
 
@@ -274,7 +276,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that counts the number of attempted searches
    * from the first filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_ATTEMPTS_6 =
+  private static final String STAT_TRACKER_SEARCH_ATTEMPTS_6 =
        "Search Attempts 6";
 
 
@@ -283,7 +285,7 @@ public class MultiSearchLDAPLoadJobClass
    * The name of the stat tracker that times search operations from the first
    * filter file.
    */
-  public static final String STAT_TRACKER_SEARCH_TIME_6 = "Search Time 6 (ms)";
+  private static final String STAT_TRACKER_SEARCH_TIME_6 = "Search Time 6 (ms)";
 
 
 
@@ -607,21 +609,10 @@ public class MultiSearchLDAPLoadJobClass
   private static boolean      cleanUp;
   private static boolean      followReferrals;
   private static boolean      useSSL;
-  private static int          addFrequency;
-  private static int          compareFrequency;
   private static int          coolDownTime;
-  private static int          deleteFrequency;
   private static int          ldapPort;
-  private static int          modifyFrequency;
-  private static int          modifyRDNFrequency;
   private static int          operationDelay;
   private static int          opsBetweenBinds;
-  private static int          searchFrequency1;
-  private static int          searchFrequency2;
-  private static int          searchFrequency3;
-  private static int          searchFrequency4;
-  private static int          searchFrequency5;
-  private static int          searchFrequency6;
   private static int          sizeLimit;
   private static int          timeLimit;
   private static int          totalFrequency;
@@ -643,7 +634,7 @@ public class MultiSearchLDAPLoadJobClass
   // Static variables used to keep track of the DNs of all entries added to the
   // directory.  This list will be used for the entries to delete and to rename.
   private static int                dnsToDelete  = 0;
-  private static LinkedList<String> addedDNs     = new LinkedList<String>();
+  private static LinkedList<String> addedDNs     = new LinkedList<>();
   private static final Object       addedDNMutex = new Object();
 
   // The rate limiter for this job.
@@ -886,7 +877,7 @@ public class MultiSearchLDAPLoadJobClass
   @Override()
   public StatTracker[] getStatTrackers()
   {
-    ArrayList<StatTracker> trackerList = new ArrayList<StatTracker>();
+    ArrayList<StatTracker> trackerList = new ArrayList<>();
 
     if (addCount.getTotalCount() > 0)
     {
@@ -971,14 +962,15 @@ public class MultiSearchLDAPLoadJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The bind DN pattern must be a valid value pattern.
-    StringParameter p =
+    final StringParameter p =
          parameters.getStringParameter(bindDNParameter.getName());
     if ((p != null) && p.hasValue())
     {
@@ -986,7 +978,7 @@ public class MultiSearchLDAPLoadJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -997,35 +989,35 @@ public class MultiSearchLDAPLoadJobClass
 
     // Make sure that at least one of the frequency parameters was given a
     // positive value.
-    IntegerParameter addFreqParam =
+    final IntegerParameter addFreqParam =
          parameters.getIntegerParameter(addFrequencyParameter.getName());
     if ((addFreqParam != null) && (addFreqParam.getIntValue() > 0))
     {
       return;
     }
 
-    IntegerParameter compareFreqParam =
+    final IntegerParameter compareFreqParam =
          parameters.getIntegerParameter(compareFrequencyParameter.getName());
     if ((compareFreqParam != null) && (compareFreqParam.getIntValue() > 0))
     {
       return;
     }
 
-    IntegerParameter deleteFreqParam =
+    final IntegerParameter deleteFreqParam =
          parameters.getIntegerParameter(deleteFrequencyParameter.getName());
     if ((deleteFreqParam != null) && (deleteFreqParam.getIntValue() > 0))
     {
       return;
     }
 
-    IntegerParameter modifyFreqParam =
+    final IntegerParameter modifyFreqParam =
          parameters.getIntegerParameter(modifyFrequencyParameter.getName());
     if ((modifyFreqParam != null) && (modifyFreqParam.getIntValue() > 0))
     {
       return;
     }
 
-    IntegerParameter modifyRDNFreqParam =
+    final IntegerParameter modifyRDNFreqParam =
          parameters.getIntegerParameter(modifyRDNFrequencyParameter.getName());
     if ((modifyRDNFreqParam != null) && (modifyRDNFreqParam.getIntValue() > 0))
     {
@@ -1074,8 +1066,8 @@ public class MultiSearchLDAPLoadJobClass
       return;
     }
 
-    throw new InvalidValueException("At least one operation type must have " +
-                                    "a nonzero frequency.");
+    throw new InvalidValueException(
+         "At least one operation type must have a nonzero frequency.");
   }
 
 
@@ -1095,32 +1087,32 @@ public class MultiSearchLDAPLoadJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get all the parameters that we might need to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(addressParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
     boolean useSSL = false;
-    BooleanParameter useSSLParam =
+    final BooleanParameter useSSLParam =
          parameters.getBooleanParameter(useSSLParameter.getName());
     if (useSSLParam != null)
     {
@@ -1129,7 +1121,7 @@ public class MultiSearchLDAPLoadJobClass
 
 
     String bindDN = "";
-    StringParameter bindDNParam =
+    final StringParameter bindDNParam =
          parameters.getStringParameter(bindDNParameter.getName());
     if ((bindDNParam != null) && bindDNParam.hasValue())
     {
@@ -1138,7 +1130,7 @@ public class MultiSearchLDAPLoadJobClass
 
 
     String bindPassword = "";
-    PasswordParameter bindPWParam =
+    final PasswordParameter bindPWParam =
          parameters.getPasswordParameter(bindPasswordParameter.getName());
     if ((bindPWParam != null) && bindPWParam.hasValue())
     {
@@ -1146,24 +1138,24 @@ public class MultiSearchLDAPLoadJobClass
     }
 
 
-    StringParameter baseDNParam =
+    final StringParameter baseDNParam =
          parameters.getStringParameter(baseDNParameter.getName());
     if ((baseDNParam == null) || (! baseDNParam.hasValue()))
     {
       outputMessages.add("ERROR:  No base DN was provided.");
       return false;
     }
-    String baseDN = baseDNParam.getStringValue();
+    final String baseDN = baseDNParam.getStringValue();
 
 
     // Create the LDAPConnection object that we will use to communicate with the
     // directory server.
-    LDAPConnection conn;
+    final LDAPConnection conn;
     if (useSSL)
     {
       try
       {
-        SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
       }
       catch (Exception e)
@@ -1186,12 +1178,12 @@ public class MultiSearchLDAPLoadJobClass
       if (useSSL)
       {
         outputMessages.add("Attempting to establish an SSL-based connection " +
-                           "to " + host + ':' + port + "....");
+             "to " + host + ':' + port + "....");
       }
       else
       {
         outputMessages.add("Attempting to establish a connection to " + host +
-                           ':' + port + "....");
+             ':' + port + "....");
       }
       conn.connect(host, port, 10000);
       outputMessages.add("Connected successfully.");
@@ -1200,7 +1192,7 @@ public class MultiSearchLDAPLoadJobClass
     catch (Exception e)
     {
       outputMessages.add("ERROR:  Unable to connect to the directory " +
-                         "server:  " + stackTraceToString(e));
+           "server:  " + stackTraceToString(e));
       return false;
     }
 
@@ -1218,13 +1210,9 @@ public class MultiSearchLDAPLoadJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to bind to the directory server:  " +
                          stackTraceToString(e));
       return false;
@@ -1235,15 +1223,11 @@ public class MultiSearchLDAPLoadJobClass
     try
     {
       outputMessages.add("Checking to make sure that the base DN entry '" +
-                         baseDN + "' exists in the directory....");
-      Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
+           baseDN + "' exists in the directory....");
+      final Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
       if (baseDNEntry == null)
       {
-        try
-        {
-          conn.close();
-        } catch (Exception e2) {}
-
+        conn.close();
         outputMessages.add("ERROR:  Unable to retrieve the base DN entry.");
         return false;
       }
@@ -1253,13 +1237,9 @@ public class MultiSearchLDAPLoadJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to retrieve the base DN entry:   " +
                          stackTraceToString(e));
       return false;
@@ -1268,11 +1248,7 @@ public class MultiSearchLDAPLoadJobClass
 
     // At this point, all tests have passed.  Close the connection and return
     // true.
-    try
-    {
-      conn.close();
-    } catch (Exception e) {}
-
+    conn.close();
     outputMessages.add("All tests completed successfully.");
     return true;
   }
@@ -1283,7 +1259,8 @@ public class MultiSearchLDAPLoadJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Initialize the parent random number generator.
@@ -1327,10 +1304,10 @@ public class MultiSearchLDAPLoadJobClass
         bindDNPattern = new ValuePattern(bindDNParameter.getStringValue());
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      throw new UnableToRunException("Could not parse bind DN pattern:  " +
-                                     stackTraceToString(e), e);
+      throw new UnableToRunException(
+           "Could not parse bind DN pattern:  " + stackTraceToString(e), e);
     }
 
     // Get the bind password.
@@ -1343,7 +1320,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the add frequency.
-    addFrequency = 0;
+    int addFrequency = 0;
     addFrequencyParameter =
          parameters.getIntegerParameter(addFrequencyParameter.getName());
     if ((addFrequencyParameter != null) && addFrequencyParameter.hasValue())
@@ -1352,7 +1329,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the compare frequency.
-    compareFrequency = 0;
+    int compareFrequency = 0;
     compareFrequencyParameter =
          parameters.getIntegerParameter(compareFrequencyParameter.getName());
     if ((compareFrequencyParameter != null) &&
@@ -1362,7 +1339,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the delete frequency.
-    deleteFrequency = 0;
+    int deleteFrequency = 0;
     deleteFrequencyParameter =
          parameters.getIntegerParameter(deleteFrequencyParameter.getName());
     if ((deleteFrequencyParameter != null) &&
@@ -1372,7 +1349,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the modify frequency.
-    modifyFrequency = 0;
+    int modifyFrequency = 0;
     modifyFrequencyParameter =
          parameters.getIntegerParameter(modifyFrequencyParameter.getName());
     if ((modifyFrequencyParameter != null) &&
@@ -1382,7 +1359,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the modify RDN frequency.
-    modifyRDNFrequency = 0;
+    int modifyRDNFrequency = 0;
     modifyRDNFrequencyParameter =
          parameters.getIntegerParameter(modifyRDNFrequencyParameter.getName());
     if ((modifyRDNFrequencyParameter != null) &&
@@ -1392,7 +1369,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency1 = 0;
+    int searchFrequency1 = 0;
     searchFrequency1Parameter =
          parameters.getIntegerParameter(searchFrequency1Parameter.getName());
     if ((searchFrequency1Parameter != null) &&
@@ -1402,7 +1379,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency2 = 0;
+    int searchFrequency2 = 0;
     searchFrequency2Parameter =
          parameters.getIntegerParameter(searchFrequency2Parameter.getName());
     if ((searchFrequency2Parameter != null) &&
@@ -1412,7 +1389,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency3 = 0;
+    int searchFrequency3 = 0;
     searchFrequency3Parameter =
          parameters.getIntegerParameter(searchFrequency3Parameter.getName());
     if ((searchFrequency3Parameter != null) &&
@@ -1422,7 +1399,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency4 = 0;
+    int searchFrequency4 = 0;
     searchFrequency4Parameter =
          parameters.getIntegerParameter(searchFrequency4Parameter.getName());
     if ((searchFrequency4Parameter != null) &&
@@ -1432,7 +1409,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency5 = 0;
+    int searchFrequency5 = 0;
     searchFrequency5Parameter =
          parameters.getIntegerParameter(searchFrequency5Parameter.getName());
     if ((searchFrequency5Parameter != null) &&
@@ -1442,7 +1419,7 @@ public class MultiSearchLDAPLoadJobClass
     }
 
     // Get the search frequency.
-    searchFrequency6 = 0;
+    int searchFrequency6 = 0;
     searchFrequency6Parameter =
          parameters.getIntegerParameter(searchFrequency6Parameter.getName());
     if ((searchFrequency6Parameter != null) &&
@@ -1453,9 +1430,9 @@ public class MultiSearchLDAPLoadJobClass
 
     // Calculate the total of all the frequencies and create the frequency array
     totalFrequency = addFrequency + compareFrequency + deleteFrequency +
-                     modifyFrequency + modifyRDNFrequency + searchFrequency1 +
-                     searchFrequency2 + searchFrequency3 + searchFrequency4 +
-                     searchFrequency5 + searchFrequency6;
+         modifyFrequency + modifyRDNFrequency + searchFrequency1 +
+         searchFrequency2 + searchFrequency3 + searchFrequency4 +
+         searchFrequency5 + searchFrequency6;
     opWeights = new int[11];
     opWeights[0]  = addFrequency;
     opWeights[1]  = opWeights[0] + compareFrequency;
@@ -1480,10 +1457,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters1 = filterFile1URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 1:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 1:  " + e, e);
       }
     }
 
@@ -1498,10 +1475,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters2 = filterFile2URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 2:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 2:  " + e, e);
       }
     }
 
@@ -1516,10 +1493,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters3 = filterFile3URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 3:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 3:  " + e, e);
       }
     }
 
@@ -1534,10 +1511,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters4 = filterFile4URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 4:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 4:  " + e, e);
       }
     }
 
@@ -1552,10 +1529,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters5 = filterFile5URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 5:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 5:  " + e, e);
       }
     }
 
@@ -1570,10 +1547,10 @@ public class MultiSearchLDAPLoadJobClass
       {
         searchFilters6 = filterFile6URLParameter.getNonBlankFileLines();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to retrieve filter list 6:  " +
-                                       e, e);
+        throw new UnableToRunException(
+             "Unable to retrieve filter list 6:  " + e, e);
       }
     }
 
@@ -1714,93 +1691,68 @@ public class MultiSearchLDAPLoadJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Create all the stat trackers.
-    addCount       = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_ADD_ATTEMPTS,
-                                            collectionInterval);
-    compareCount   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_COMPARE_ATTEMPTS,
-                                            collectionInterval);
-    deleteCount    = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_DELETE_ATTEMPTS,
-                                            collectionInterval);
-    modifyCount    = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_MODIFY_ATTEMPTS,
-                                            collectionInterval);
+    addCount = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_ADD_ATTEMPTS, collectionInterval);
+    compareCount = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_COMPARE_ATTEMPTS, collectionInterval);
+    deleteCount = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_DELETE_ATTEMPTS, collectionInterval);
+    modifyCount = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_MODIFY_ATTEMPTS, collectionInterval);
     modifyRDNCount = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_MODIFY_RDN_ATTEMPTS,
-                                            collectionInterval);
-    searchCount1   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_1,
-                                            collectionInterval);
-    searchCount2   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_2,
-                                            collectionInterval);
-    searchCount3   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_3,
-                                            collectionInterval);
-    searchCount4   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_4,
-                                            collectionInterval);
-    searchCount5   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_5,
-                                            collectionInterval);
-    searchCount6   = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_SEARCH_ATTEMPTS_6,
-                                            collectionInterval);
+         STAT_TRACKER_MODIFY_RDN_ATTEMPTS, collectionInterval);
+    searchCount1 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_1, collectionInterval);
+    searchCount2 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_2, collectionInterval);
+    searchCount3 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_3, collectionInterval);
+    searchCount4 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_4, collectionInterval);
+    searchCount5 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_5, collectionInterval);
+    searchCount6 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_ATTEMPTS_6, collectionInterval);
     operationCount = new IncrementalTracker(clientID, threadID,
-                                            STAT_TRACKER_OPERATION_ATTEMPTS,
-                                            collectionInterval);
-    addTimer       = new TimeTracker(clientID, threadID, STAT_TRACKER_ADD_TIME,
-                                     collectionInterval);
-    compareTimer   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_COMPARE_TIME,
-                                     collectionInterval);
-    deleteTimer    = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_DELETE_TIME,
-                                     collectionInterval);
-    modifyTimer    = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_MODIFY_TIME,
-                                     collectionInterval);
+         STAT_TRACKER_OPERATION_ATTEMPTS, collectionInterval);
+    addTimer = new TimeTracker(clientID, threadID, STAT_TRACKER_ADD_TIME,
+         collectionInterval);
+    compareTimer = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_COMPARE_TIME, collectionInterval);
+    deleteTimer = new TimeTracker(clientID, threadID, STAT_TRACKER_DELETE_TIME,
+         collectionInterval);
+    modifyTimer = new TimeTracker(clientID, threadID, STAT_TRACKER_MODIFY_TIME,
+         collectionInterval);
     modifyRDNTimer = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_MODIFY_RDN_TIME,
-                                     collectionInterval);
-    searchTimer1   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_1,
-                                     collectionInterval);
-    searchTimer2   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_2,
-                                     collectionInterval);
-    searchTimer3   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_3,
-                                     collectionInterval);
-    searchTimer4   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_4,
-                                     collectionInterval);
-    searchTimer5   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_5,
-                                     collectionInterval);
-    searchTimer6   = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_SEARCH_TIME_6,
-                                     collectionInterval);
+         STAT_TRACKER_MODIFY_RDN_TIME, collectionInterval);
+    searchTimer1 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_1, collectionInterval);
+    searchTimer2 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_2, collectionInterval);
+    searchTimer3 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_3, collectionInterval);
+    searchTimer4 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_4, collectionInterval);
+    searchTimer5 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_5, collectionInterval);
+    searchTimer6 = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_SEARCH_TIME_6, collectionInterval);
     operationTimer = new TimeTracker(clientID, threadID,
-                                     STAT_TRACKER_OPERATION_TIME,
-                                     collectionInterval);
-    resultCodes    = new CategoricalTracker(clientID, threadID,
-                                            STAT_TRACKER_RESULT_CODES,
-                                            collectionInterval);
-    operationTypes =
-         new CategoricalTracker(clientID, threadID,
-                                STAT_TRACKER_OPERATION_ATTEMPTS_BY_CATEGORY,
-                                collectionInterval);
+         STAT_TRACKER_OPERATION_TIME, collectionInterval);
+    resultCodes = new CategoricalTracker(clientID, threadID,
+         STAT_TRACKER_RESULT_CODES, collectionInterval);
+    operationTypes = new CategoricalTracker(clientID, threadID,
+         STAT_TRACKER_OPERATION_ATTEMPTS_BY_CATEGORY, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -1843,15 +1795,15 @@ public class MultiSearchLDAPLoadJobClass
     {
       try
       {
-        SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
         conn.connect(ldapHost, ldapPort, 10000);
         conn.close();
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         throw new UnableToRunException("Unable to establish an SSL-based " +
-                                       "connection to the directory:  " + e, e);
+             "connection to the directory:  " + e, e);
       }
     }
     else
@@ -1869,9 +1821,9 @@ public class MultiSearchLDAPLoadJobClass
   public void runJob()
   {
     // Determine the range of time for which we should collect statistics.
-    long currentTime = System.currentTimeMillis();
+    final long currentTime = System.currentTimeMillis();
     collectingStats = false;
-    long startCollectingTime = currentTime + (1000 * warmUpTime);
+    final long startCollectingTime = currentTime + (1000 * warmUpTime);
     long stopCollectingTime  = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0))
     {
@@ -1898,7 +1850,7 @@ public class MultiSearchLDAPLoadJobClass
         }
       }
 
-      long opStartTime = System.currentTimeMillis();
+      final long opStartTime = System.currentTimeMillis();
       if ((! collectingStats) && (opStartTime >= startCollectingTime) &&
           (opStartTime < stopCollectingTime))
       {
@@ -1980,20 +1932,20 @@ public class MultiSearchLDAPLoadJobClass
           bound     = true;
           connected = true;
 
-          LDAPConnectionOptions opts = conn.getConnectionOptions();
+          final LDAPConnectionOptions opts = conn.getConnectionOptions();
           opts.setFollowReferrals(followReferrals);
           opts.setResponseTimeoutMillis(1000L * timeLimit);
           conn.setConnectionOptions(opts);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           logMessage("ERROR -- Could not connect to " + ldapHost + ':' +
-                     ldapPort + " (" + e + ") -- aborting thread");
+               ldapPort + " (" + e + ") -- aborting thread");
           if (collectingStats)
           {
             if (e instanceof LDAPException)
             {
-              LDAPException le = (LDAPException) e;
+              final LDAPException le = (LDAPException) e;
               resultCodes.increment(String.valueOf(le.getResultCode()));
             }
             else
@@ -2018,13 +1970,13 @@ public class MultiSearchLDAPLoadJobClass
           bound     = true;
           connected = true;
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           if (collectingStats)
           {
             if (e instanceof LDAPException)
             {
-              LDAPException le = (LDAPException) e;
+              final LDAPException le = (LDAPException) e;
               resultCodes.increment(String.valueOf(le.getResultCode()));
             }
             else
@@ -2037,8 +1989,8 @@ public class MultiSearchLDAPLoadJobClass
 
 
       // Pick the type of operation to perform and then do it.
-      ResultCode resultCode;
-      int opType = (random.nextInt() & 0x7FFFFFFF) % totalFrequency;
+      final ResultCode resultCode;
+      final int opType = (random.nextInt() & 0x7FFFFFFF) % totalFrequency;
 
       if (collectingStats)
       {
@@ -2149,10 +2101,7 @@ public class MultiSearchLDAPLoadJobClass
       {
         if (alwaysDisconnect)
         {
-          try
-          {
-            conn.close();
-          } catch (Exception e) {}
+          conn.close();
           bound     = false;
           connected = false;
         }
@@ -2168,7 +2117,7 @@ public class MultiSearchLDAPLoadJobClass
       // See if we need to sleep until the next operation.
       if (operationDelay > 0)
       {
-        long opTime = System.currentTimeMillis() - opStartTime;
+        final long opTime = System.currentTimeMillis() - opStartTime;
         if ((opTime < operationDelay) && (! shouldStop()))
         {
           try
@@ -2213,10 +2162,7 @@ public class MultiSearchLDAPLoadJobClass
 
 
     // If we are still connected to the directory, then disconnect.
-    try
-    {
-      conn.close();
-    } catch (Exception e) {}
+    conn.close();
   }
 
 
@@ -2236,10 +2182,10 @@ public class MultiSearchLDAPLoadJobClass
           SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
           conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           logMessage("Unable to establish an SSL-based connection to the " +
-                     "directory to perform cleanup:  " + e);
+               "directory to perform cleanup:  " + e);
           return;
         }
       }
@@ -2259,10 +2205,10 @@ public class MultiSearchLDAPLoadJobClass
           conn.bind(bindDN, bindPW);
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         logMessage("Unable to establish a connection to the directory to " +
-                   "perform cleanup:  " + e);
+             "perform cleanup:  " + e);
         return;
       }
 
@@ -2275,22 +2221,16 @@ public class MultiSearchLDAPLoadJobClass
         {
           conn.delete(dnToDelete);
         }
-        catch (LDAPException le)
+        catch (final LDAPException le)
         {
           logMessage("Unable to perform cleanup -- exception thrown while " +
-                     "trying to delete entry \"" + dnToDelete + "\":  " + le);
-          try
-          {
-            conn.close();
-          } catch (Exception e) {}
+               "trying to delete entry \"" + dnToDelete + "\":  " + le);
+          conn.close();
           return;
         }
       }
 
-      try
-      {
-        conn.close();
-      } catch (Exception e) {}
+      conn.close();
     }
   }
 
@@ -2304,11 +2244,7 @@ public class MultiSearchLDAPLoadJobClass
   {
     if (conn != null)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e) {}
-
+      conn.close();
       conn = null;
     }
   }
@@ -2323,8 +2259,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doAdd()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    Entry      entry      = getEntry();
-    String     entryDN    = entry.getDN();
+    final Entry entry = getEntry();
+    final String entryDN = entry.getDN();
 
     if (collectingStats)
     {
@@ -2337,7 +2273,7 @@ public class MultiSearchLDAPLoadJobClass
       conn.add(entry);
       addDNToDelete(entryDN);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2368,11 +2304,11 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      LDAPResult result =
+      final LDAPResult result =
            conn.compare(currentBindDN, modAttr, getRandomString(80));
       resultCode = result.getResultCode();
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2395,7 +2331,7 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doDelete()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     dn         = getDNToDelete();
+    final String  dn = getDNToDelete();
 
     if (dn == null)
     {
@@ -2412,7 +2348,7 @@ public class MultiSearchLDAPLoadJobClass
     {
       conn.delete(dn);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2435,8 +2371,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doModify()
   {
     ResultCode   resultCode = ResultCode.SUCCESS;
-    String       dn         = currentBindDN;
-    Modification mod        = new Modification(ModificationType.REPLACE,
+    final String dn = currentBindDN;
+    final Modification mod = new Modification(ModificationType.REPLACE,
          modAttr, getRandomString(80));
 
     if (collectingStats)
@@ -2449,7 +2385,7 @@ public class MultiSearchLDAPLoadJobClass
     {
       conn.modify(dn, mod);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2492,7 +2428,7 @@ public class MultiSearchLDAPLoadJobClass
       conn.modifyDN(dn, "uid=" + newRDNValue, true);
       addDNToDelete("uid=" + newRDNValue + ',' + baseDN);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2515,8 +2451,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch1()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters1[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters1.length];
+    final String  filter  = searchFilters1[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters1.length];
 
     if (collectingStats)
     {
@@ -2526,14 +2462,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2556,8 +2492,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch2()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters2[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters2.length];
+    final String filter = searchFilters2[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters2.length];
 
     if (collectingStats)
     {
@@ -2567,14 +2503,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2597,8 +2533,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch3()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters3[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters3.length];
+    final String filter = searchFilters3[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters3.length];
 
     if (collectingStats)
     {
@@ -2608,14 +2544,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2638,8 +2574,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch4()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters4[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters4.length];
+    final String filter = searchFilters4[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters4.length];
 
     if (collectingStats)
     {
@@ -2649,14 +2585,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2679,8 +2615,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch5()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters5[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters5.length];
+    final String filter = searchFilters5[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters5.length];
 
     if (collectingStats)
     {
@@ -2690,14 +2626,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2720,8 +2656,8 @@ public class MultiSearchLDAPLoadJobClass
   private ResultCode doSearch6()
   {
     ResultCode resultCode = ResultCode.SUCCESS;
-    String     filter     = searchFilters6[(random.nextInt() & 0x7FFFFFFF) %
-                                           searchFilters6.length];
+    final String filter = searchFilters6[(random.nextInt() & 0x7FFFFFFF) %
+         searchFilters6.length];
 
     if (collectingStats)
     {
@@ -2731,14 +2667,14 @@ public class MultiSearchLDAPLoadJobClass
 
     try
     {
-      SearchRequest searchRequest = new SearchRequest(baseDN, SearchScope.SUB,
-           filter);
+      final SearchRequest searchRequest =
+           new SearchRequest(baseDN, SearchScope.SUB, filter);
       searchRequest.setSizeLimit(sizeLimit);
       searchRequest.setTimeLimitSeconds(timeLimit);
 
       conn.search(searchRequest);
     }
-    catch (LDAPException le)
+    catch (final LDAPException le)
     {
       resultCode = le.getResultCode();
     }
@@ -2760,7 +2696,7 @@ public class MultiSearchLDAPLoadJobClass
    */
   private Entry getEntry()
   {
-    String randomString = getRandomString(80);
+    final String randomString = getRandomString(80);
     return new Entry("uid=" + randomString + ',' + baseDN,
          new Attribute("objectClass", "top", "person", "organizationalPerson",
               "inetOrgPerson"),
@@ -2781,9 +2717,9 @@ public class MultiSearchLDAPLoadJobClass
    *
    * @return  The randomly-generated string.
    */
-  private String getRandomString(int length)
+  private String getRandomString(final int length)
   {
-    char[] returnChars = new char[length];
+    final char[] returnChars = new char[length];
 
     for (int i=0; i < returnChars.length; i++)
     {

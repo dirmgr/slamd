@@ -18,8 +18,8 @@ package com.slamd.jobs;
 
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import com.unboundid.ldap.sdk.Entry;
@@ -87,14 +87,14 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class WeightedSiteMinderJobClass
+public final class WeightedSiteMinderJobClass
        extends JobClass
 {
   /**
    * The set of characters that will be used to generate random values for the
    * modifications.
    */
-  public static final char[] ALPHABET =
+  private static final char[] ALPHABET =
        "abcdefghijklmnopqrstuvwxyz".toCharArray();
 
 
@@ -103,7 +103,7 @@ public class WeightedSiteMinderJobClass
    * The default value for the first attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR1 = "givenName";
+  private static final String DEFAULT_ATTR1 = "givenName";
 
 
 
@@ -111,7 +111,7 @@ public class WeightedSiteMinderJobClass
    * The default value for the second attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR2 = "sn";
+  private static final String DEFAULT_ATTR2 = "sn";
 
 
 
@@ -119,14 +119,14 @@ public class WeightedSiteMinderJobClass
    * The default value for the third attribute to retrieve during the
    * authentication process.
    */
-  public static final String DEFAULT_ATTR3= "cn";
+  private static final String DEFAULT_ATTR3= "cn";
 
 
 
   /**
    * The default attribute used as the login ID.
    */
-  public static final String DEFAULT_LOG_ID_ATTR = "uid";
+  private static final String DEFAULT_LOG_ID_ATTR = "uid";
 
 
 
@@ -134,7 +134,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * overall authentication attempts.
    */
-  public static final String STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS =
+  private static final String STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS =
        "Overall Authentication Attempts";
 
 
@@ -143,7 +143,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * authentication attempts based on the first user criteria.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS =
+  private static final String STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS =
        "Authentication 1 Attempts";
 
 
@@ -152,7 +152,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * authentication attempts based on the second user criteria.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS =
+  private static final String STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS =
        "Authentication 2 Attempts";
 
 
@@ -161,7 +161,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the overall
    * time required to perform each authentication.
    */
-  public static final String STAT_TRACKER_OVERALL_AUTHENTICATION_TIME =
+  private static final String STAT_TRACKER_OVERALL_AUTHENTICATION_TIME =
        "Overall Authentication Time (ms)";
 
 
@@ -170,7 +170,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform each authentication based on the first user criteria.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_1_TIME =
+  private static final String STAT_TRACKER_AUTHENTICATION_1_TIME =
        "Authentication 1 Time (ms)";
 
 
@@ -179,7 +179,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to keep track of the time
    * required to perform each authentication based on the second user criteria.
    */
-  public static final String STAT_TRACKER_AUTHENTICATION_2_TIME =
+  private static final String STAT_TRACKER_AUTHENTICATION_2_TIME =
        "Authentication 2 Time (ms)";
 
 
@@ -188,7 +188,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * overall failed authentications.
    */
-  public static final String STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS =
+  private static final String STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS =
        "Overall Failed Authentications";
 
 
@@ -197,7 +197,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * failed authentications based on the first user criteria.
    */
-  public static final String STAT_TRACKER_FAILED_AUTHENTICATIONS_1 =
+  private static final String STAT_TRACKER_FAILED_AUTHENTICATIONS_1 =
        "Failed Authentications 1";
 
 
@@ -206,7 +206,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * failed authentications based on the second user criteria.
    */
-  public static final String STAT_TRACKER_FAILED_AUTHENTICATIONS_2 =
+  private static final String STAT_TRACKER_FAILED_AUTHENTICATIONS_2 =
        "Failed Authentications 2";
 
 
@@ -215,7 +215,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to categorize the reasons
    * for the failed auths.
    */
-  public static final String STAT_TRACKER_FAIL_REASON = "Failure Reason";
+  private static final String STAT_TRACKER_FAIL_REASON = "Failure Reason";
 
 
 
@@ -223,7 +223,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the overall number
    * of successful authentications.
    */
-  public static final String STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS =
+  private static final String STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS =
        "Overall Successful Authentications";
 
 
@@ -232,7 +232,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * successful authentications based on the first user criteria.
    */
-  public static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1 =
+  private static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1 =
        "Successful Authentications 1";
 
 
@@ -241,7 +241,7 @@ public class WeightedSiteMinderJobClass
    * The name of the stat tracker that will be used to count the number of
    * successful authentications based on the second user criteria.
    */
-  public static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2 =
+  private static final String STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2 =
        "Successful Authentications 2";
 
 
@@ -249,7 +249,7 @@ public class WeightedSiteMinderJobClass
   /**
    * The default set of attributes to include in the modification.
    */
-  public static final String[] DEFAULT_ATTRS_TO_MODIFY = new String[]
+  private static final String[] DEFAULT_ATTRS_TO_MODIFY = new String[]
   {
     "description"
   };
@@ -327,15 +327,6 @@ public class WeightedSiteMinderJobClass
 
   // The password to use when authenticating.
   private static String loginPassword;
-
-  // The name of the first attribute to retrieve.
-  private static String searchAttr1;
-
-  // The name of the second attribute to retrieve.
-  private static String searchAttr2;
-
-  // The name of the third attribute to retrieve.
-  private static String searchAttr3;
 
   // The DN to use as the search base when trying to find user entries in the
   // directory.
@@ -687,7 +678,7 @@ public class WeightedSiteMinderJobClass
   @Override()
   public ParameterList getParameterStubs()
   {
-    Parameter[] parameterArray = new Parameter[]
+    final Parameter[] parameterArray = new Parameter[]
     {
       placeholder,
       hostParameter,
@@ -735,47 +726,38 @@ public class WeightedSiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public StatTracker[] getStatTrackerStubs(String clientID, String threadID,
-                                           int collectionInterval)
+  public StatTracker[] getStatTrackerStubs(final String clientID,
+                                           final String threadID,
+                                           final int collectionInterval)
   {
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS,
-                             collectionInterval),
+           STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS,
-                             collectionInterval),
+           STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS,
-                             collectionInterval),
+           STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS,
-                             collectionInterval),
+           STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1,
-                             collectionInterval),
+           STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2,
-                             collectionInterval),
+           STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS,
-                             collectionInterval),
+           STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_FAILED_AUTHENTICATIONS_1,
-                             collectionInterval),
+           STAT_TRACKER_FAILED_AUTHENTICATIONS_1, collectionInterval),
       new IncrementalTracker(clientID, threadID,
-                             STAT_TRACKER_FAILED_AUTHENTICATIONS_2,
-                             collectionInterval),
+           STAT_TRACKER_FAILED_AUTHENTICATIONS_2, collectionInterval),
       new TimeTracker(clientID, threadID,
-                      STAT_TRACKER_OVERALL_AUTHENTICATION_TIME,
-                      collectionInterval),
+           STAT_TRACKER_OVERALL_AUTHENTICATION_TIME, collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_AUTHENTICATION_1_TIME,
-                      collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_TRACKER_AUTHENTICATION_2_TIME,
-                      collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_TRACKER_FAIL_REASON,
-                             collectionInterval)
+           collectionInterval)
     };
   }
 
@@ -811,10 +793,11 @@ public class WeightedSiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void validateJobInfo(int numClients, int threadsPerClient,
-                              int threadStartupDelay, Date startTime,
-                              Date stopTime, int duration,
-                              int collectionInterval, ParameterList parameters)
+  public void validateJobInfo(final int numClients, final int threadsPerClient,
+                              final int threadStartupDelay,
+                              final Date startTime, final Date stopTime,
+                              final int duration, final int collectionInterval,
+                              final ParameterList parameters)
          throws InvalidValueException
   {
     // The login ID value parameters must be parseable as value patterns.
@@ -826,7 +809,7 @@ public class WeightedSiteMinderJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -841,7 +824,7 @@ public class WeightedSiteMinderJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -867,32 +850,32 @@ public class WeightedSiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public boolean testJobParameters(ParameterList parameters,
-                                   ArrayList<String> outputMessages)
+  public boolean testJobParameters(final ParameterList parameters,
+                                   final List<String> outputMessages)
   {
     // Get all the parameters that we might need to perform the test.
-    StringParameter hostParam =
+    final StringParameter hostParam =
          parameters.getStringParameter(hostParameter.getName());
     if ((hostParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server address was provided.");
       return false;
     }
-    String host = hostParam.getStringValue();
+    final String host = hostParam.getStringValue();
 
 
-    IntegerParameter portParam =
+    final IntegerParameter portParam =
          parameters.getIntegerParameter(portParameter.getName());
     if ((portParam == null) || (! hostParam.hasValue()))
     {
       outputMessages.add("ERROR:  No directory server port was provided.");
       return false;
     }
-    int port = portParam.getIntValue();
+    final int port = portParam.getIntValue();
 
 
     boolean useSSL = false;
-    BooleanParameter useSSLParam =
+    final BooleanParameter useSSLParam =
          parameters.getBooleanParameter(useSSLParameter.getName());
     if (useSSLParam != null)
     {
@@ -901,7 +884,7 @@ public class WeightedSiteMinderJobClass
 
 
     String bindDN = "";
-    StringParameter bindDNParam =
+    final StringParameter bindDNParam =
          parameters.getStringParameter(bindDNParameter.getName());
     if ((bindDNParam != null) && bindDNParam.hasValue())
     {
@@ -910,7 +893,7 @@ public class WeightedSiteMinderJobClass
 
 
     String bindPassword = "";
-    PasswordParameter bindPWParam =
+    final PasswordParameter bindPWParam =
          parameters.getPasswordParameter(bindPWParameter.getName());
     if ((bindPWParam != null) && bindPWParam.hasValue())
     {
@@ -918,19 +901,19 @@ public class WeightedSiteMinderJobClass
     }
 
 
-    StringParameter baseDNParam =
+    final StringParameter baseDNParam =
          parameters.getStringParameter(searchBaseParameter.getName());
     if ((baseDNParam == null) || (! baseDNParam.hasValue()))
     {
       outputMessages.add("ERROR:  No base DN was provided.");
       return false;
     }
-    String baseDN = baseDNParam.getStringValue();
+    final String baseDN = baseDNParam.getStringValue();
 
 
     // Create the LDAPConnection object that we will use to communicate with the
     // directory server.
-    LDAPConnection conn;
+    final LDAPConnection conn;
     if (useSSL)
     {
       try
@@ -938,7 +921,7 @@ public class WeightedSiteMinderJobClass
         SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
         conn = new LDAPConnection(sslUtil.createSSLSocketFactory());
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         outputMessages.add("ERROR:  Unable to instantiate the blind trust " +
              "socket factory for use in creating the SSL " +
@@ -958,21 +941,21 @@ public class WeightedSiteMinderJobClass
       if (useSSL)
       {
         outputMessages.add("Attempting to establish an SSL-based connection " +
-                           "to " + host + ':' + port + "....");
+             "to " + host + ':' + port + "....");
       }
       else
       {
         outputMessages.add("Attempting to establish a connection to " + host +
-                           ':' + port + "....");
+             ':' + port + "....");
       }
       conn.connect(host, port, 10000);
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       outputMessages.add("ERROR:  Unable to connect to the directory " +
-                         "server:  " + stackTraceToString(e));
+           "server:  " + stackTraceToString(e));
       return false;
     }
 
@@ -981,20 +964,16 @@ public class WeightedSiteMinderJobClass
     try
     {
       outputMessages.add("Attempting to perform an LDAPv3 bind to the " +
-                         "directory server with a DN of '" + bindDN + "'....");
+           "directory server with a DN of '" + bindDN + "'....");
       conn.bind(bindDN, bindPassword);
       outputMessages.add("Bound successfully.");
       outputMessages.add("");
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to bind to the directory server:  " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
       return false;
     }
 
@@ -1003,15 +982,11 @@ public class WeightedSiteMinderJobClass
     try
     {
       outputMessages.add("Checking to make sure that the base DN entry '" +
-                         baseDN + "' exists in the directory....");
+           baseDN + "' exists in the directory....");
       Entry baseDNEntry = conn.getEntry(baseDN, "1.1");
       if (baseDNEntry == null)
       {
-        try
-        {
-          conn.close();
-        } catch (Exception e2) {}
-
+        conn.close();
         outputMessages.add("ERROR:  Unable to retrieve the base DN entry.");
         return false;
       }
@@ -1021,26 +996,18 @@ public class WeightedSiteMinderJobClass
         outputMessages.add("");
       }
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
-      try
-      {
-        conn.close();
-      } catch (Exception e2) {}
-
+      conn.close();
       outputMessages.add("ERROR:  Unable to retrieve the base DN entry:   " +
-                         stackTraceToString(e));
+           stackTraceToString(e));
       return false;
     }
 
 
     // At this point, all tests have passed.  Close the connection and return
     // true.
-    try
-    {
-      conn.close();
-    } catch (Exception e) {}
-
+    conn.close();
     outputMessages.add("All tests completed successfully.");
     return true;
   }
@@ -1051,7 +1018,8 @@ public class WeightedSiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeClient(String clientID, ParameterList parameters)
+  public void initializeClient(final String clientID,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the parent random number generator.
@@ -1127,10 +1095,10 @@ public class WeightedSiteMinderJobClass
       loginIDPattern1 =
            new ValuePattern(loginIDValue1Parameter.getStringValue());
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Cannot parse login ID pattern 1:  " +
-                                     stackTraceToString(e), e);
+           stackTraceToString(e), e);
     }
 
 
@@ -1142,10 +1110,10 @@ public class WeightedSiteMinderJobClass
       loginIDPattern2 =
            new ValuePattern(loginIDValue2Parameter.getStringValue());
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Cannot parse login ID pattern 2:  " +
-                                     stackTraceToString(e), e);
+           stackTraceToString(e), e);
     }
 
 
@@ -1170,7 +1138,7 @@ public class WeightedSiteMinderJobClass
     attr1Parameter = parameters.getStringParameter(attr1Parameter.getName());
     if (attr1Parameter != null)
     {
-      searchAttr1  = attr1Parameter.getStringValue();
+      final String searchAttr1  = attr1Parameter.getStringValue();
       filter1      = Filter.createPresenceFilter(searchAttr1);
       returnAttrs1 = new String[] { searchAttr1 };
     }
@@ -1178,7 +1146,7 @@ public class WeightedSiteMinderJobClass
     attr2Parameter = parameters.getStringParameter(attr2Parameter.getName());
     if (attr2Parameter != null)
     {
-      searchAttr2  = attr2Parameter.getStringValue();
+      final String searchAttr2  = attr2Parameter.getStringValue();
       filter2      = Filter.createPresenceFilter(searchAttr2);
       returnAttrs2 = new String[] { searchAttr2 };
     }
@@ -1186,7 +1154,7 @@ public class WeightedSiteMinderJobClass
     attr3Parameter = parameters.getStringParameter(attr3Parameter.getName());
     if (attr3Parameter != null)
     {
-      searchAttr3  = attr3Parameter.getStringValue();
+      final String searchAttr3  = attr3Parameter.getStringValue();
       filter3      = Filter.createPresenceFilter(searchAttr3);
       returnAttrs3 = new String[] { searchAttr3 };
     }
@@ -1243,7 +1211,7 @@ public class WeightedSiteMinderJobClass
          parameters.getIntegerParameter(maxRateParameter.getName());
     if ((maxRateParameter != null) && maxRateParameter.hasValue())
     {
-      int maxRate = maxRateParameter.getIntValue();
+      final int maxRate = maxRateParameter.getIntValue();
       if (maxRate > 0)
       {
         int rateIntervalSeconds = 0;
@@ -1307,13 +1275,13 @@ public class WeightedSiteMinderJobClass
       {
         try
         {
-          SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+          final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
           sharedAuthConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
           sharedBindConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           throw new UnableToRunException(String.valueOf(e), e);
         }
@@ -1331,14 +1299,15 @@ public class WeightedSiteMinderJobClass
 
         sharedBindConnection.connect(directoryHost, directoryPort, 10000);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Could not establish shared " +
-                                       "connections to the directory:  " + e,
-                                       e);
+        throw new UnableToRunException(
+             "Could not establish shared connections to the directory:  " + e,
+             e);
       }
 
-      LDAPConnectionOptions opts = sharedAuthConnection.getConnectionOptions();
+      final LDAPConnectionOptions opts =
+           sharedAuthConnection.getConnectionOptions();
       opts.setResponseTimeoutMillis(1000L * timeLimit);
       sharedAuthConnection.setConnectionOptions(opts);
       sharedBindConnection.setConnectionOptions(opts);
@@ -1351,8 +1320,9 @@ public class WeightedSiteMinderJobClass
    * {@inheritDoc}
    */
   @Override()
-  public void initializeThread(String clientID, String threadID,
-                               int collectionInterval, ParameterList parameters)
+  public void initializeThread(final String clientID, final String threadID,
+                               final int collectionInterval,
+                               final ParameterList parameters)
          throws UnableToRunException
   {
     // Seed the random number generator for this thread.
@@ -1372,14 +1342,14 @@ public class WeightedSiteMinderJobClass
       {
         try
         {
-          SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+          final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
 
           authConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
           bindConnection =
                new LDAPConnection(sslUtil.createSSLSocketFactory());
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
           throw new UnableToRunException(String.valueOf(e), e);
         }
@@ -1397,13 +1367,15 @@ public class WeightedSiteMinderJobClass
 
         bindConnection.connect(directoryHost, directoryPort, 10000);
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
-        throw new UnableToRunException("Unable to establish the connections " +
-                                       "to the directory server:  " + e, e);
+        throw new UnableToRunException(
+             "Unable to establish the connections to the directory server:  " +
+                  e,
+             e);
       }
 
-      LDAPConnectionOptions opts = authConnection.getConnectionOptions();
+      final LDAPConnectionOptions opts = authConnection.getConnectionOptions();
       opts.setResponseTimeoutMillis(1000L * timeLimit);
       authConnection.setConnectionOptions(opts);
       bindConnection.setConnectionOptions(opts);
@@ -1411,58 +1383,36 @@ public class WeightedSiteMinderJobClass
 
 
     // Create the stat trackers.
-    overallAttemptCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS,
-                                collectionInterval);
-    attemptCounter1 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS,
-                                collectionInterval);
-    attemptCounter2 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS,
-                                collectionInterval);
-    overallSuccessCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS,
-                                collectionInterval);
-    successCounter1 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1,
-                                collectionInterval);
-    successCounter2 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2,
-                                collectionInterval);
-    overallFailureCounter =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS,
-                                collectionInterval);
-    failureCounter1 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_FAILED_AUTHENTICATIONS_1,
-                                collectionInterval);
-    failureCounter2 =
-         new IncrementalTracker(clientID, threadID,
-                                STAT_TRACKER_FAILED_AUTHENTICATIONS_2,
-                                collectionInterval);
+    overallAttemptCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_OVERALL_AUTHENTICATION_ATTEMPTS, collectionInterval);
+    attemptCounter1 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_AUTHENTICATION_1_ATTEMPTS, collectionInterval);
+    attemptCounter2 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_AUTHENTICATION_2_ATTEMPTS, collectionInterval);
+    overallSuccessCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_OVERALL_SUCCESSFUL_AUTHENTICATIONS, collectionInterval);
+    successCounter1 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_1, collectionInterval);
+    successCounter2 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_SUCCESSFUL_AUTHENTICATIONS_2, collectionInterval);
+    overallFailureCounter = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_OVERALL_FAILED_AUTHENTICATIONS, collectionInterval);
+    failureCounter1 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_FAILED_AUTHENTICATIONS_1, collectionInterval);
+    failureCounter2 = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_FAILED_AUTHENTICATIONS_2, collectionInterval);
     overallAuthTimer = new TimeTracker(clientID, threadID,
-                                       STAT_TRACKER_OVERALL_AUTHENTICATION_TIME,
-                                       collectionInterval);
+         STAT_TRACKER_OVERALL_AUTHENTICATION_TIME, collectionInterval);
     authTimer1 = new TimeTracker(clientID, threadID,
-                                 STAT_TRACKER_AUTHENTICATION_1_TIME,
-                                 collectionInterval);
+         STAT_TRACKER_AUTHENTICATION_1_TIME, collectionInterval);
     authTimer2 = new TimeTracker(clientID, threadID,
-                                 STAT_TRACKER_AUTHENTICATION_2_TIME,
-                                 collectionInterval);
+         STAT_TRACKER_AUTHENTICATION_2_TIME, collectionInterval);
     failureReasonTracker = new CategoricalTracker(clientID, threadID,
-                                                  STAT_TRACKER_FAIL_REASON,
-                                                  collectionInterval);
+         STAT_TRACKER_FAIL_REASON, collectionInterval);
 
 
     // Enable real-time reporting of the data for these stat trackers.
-    RealTimeStatReporter statReporter = getStatReporter();
+    final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
@@ -1492,7 +1442,7 @@ public class WeightedSiteMinderJobClass
     // Determine the range of time for which we should collect statistics.
     long currentTime = System.currentTimeMillis();
     boolean collectingStats = false;
-    long startCollectingTime = currentTime + (1000 * warmUpTime);
+    final long startCollectingTime = currentTime + (1000 * warmUpTime);
     long stopCollectingTime  = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0))
     {
@@ -1556,14 +1506,14 @@ public class WeightedSiteMinderJobClass
       // See if we need to sleep before the next attempt
       if ((delay > 0) && (authStartTime > 0))
       {
-        long now = System.currentTimeMillis();
-        long sleepTime = delay - (now - authStartTime);
+        final long now = System.currentTimeMillis();
+        final long sleepTime = delay - (now - authStartTime);
         if (sleepTime > 0)
         {
           try
           {
             Thread.sleep(sleepTime);
-          } catch (InterruptedException ie) {}
+          } catch (final InterruptedException ie) {}
 
           if (shouldStop())
           {
@@ -1575,14 +1525,14 @@ public class WeightedSiteMinderJobClass
 
       // Get a random number between 1 and 100 to use to determine which user
       // criteria to use to attempt the authentication.
-      int weight = ((random.nextInt() & 0x7FFFFFFF) % 100);
+      final int weight = ((random.nextInt() & 0x7FFFFFFF) % 100);
       if (weight < loginID1Percent)
       {
         // Get a random user number from the first range and translate that to a
         // login ID and password.
-        String[] loginInfo = getLoginInfo1();
-        String   loginID   = loginInfo[0];
-        String   password  = loginInfo[1];
+        final String[] loginInfo = getLoginInfo1();
+        final String   loginID   = loginInfo[0];
+        final String   password  = loginInfo[1];
 
 
         // Start the auth attempt timer now.
@@ -1608,7 +1558,7 @@ public class WeightedSiteMinderJobClass
           // First, issue a search to try to find the user's entry.
           String userDN = null;
           Filter filter = Filter.createEqualityFilter(loginIDAttr, loginID);
-          SearchResult searchResult = authConnection.search(searchBase,
+          final SearchResult searchResult = authConnection.search(searchBase,
                SearchScope.SUB, filter, returnAttrsOC);
           userDN = searchResult.getSearchEntries().get(0).getDN();
 
@@ -1643,7 +1593,7 @@ public class WeightedSiteMinderJobClass
             {
               bindConnection.bind(userDN, password);
             }
-            catch (LDAPException le)
+            catch (final LDAPException le)
             {
               if (le.getResultCode() == ResultCode.INVALID_CREDENTIALS)
               {
@@ -1718,7 +1668,7 @@ public class WeightedSiteMinderJobClass
           authConnection.search(userDN, SearchScope.BASE, filter3,
                returnAttrs3);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
           if (collectingStats)
@@ -1746,9 +1696,9 @@ public class WeightedSiteMinderJobClass
       {
         // Get a random user number from the second range and translate that to
         // a login ID and password.
-        String[] loginInfo = getLoginInfo2();
-        String loginID  = loginInfo[0];
-        String password = loginInfo[1];
+        final String[] loginInfo = getLoginInfo2();
+        final String loginID  = loginInfo[0];
+        final String password = loginInfo[1];
 
 
         // Start the auth attempt timer now.
@@ -1774,7 +1724,7 @@ public class WeightedSiteMinderJobClass
           // First, issue a search to try to find the user's entry.
           String userDN = null;
           Filter filter = Filter.createEqualityFilter(loginIDAttr, loginID);
-          SearchResult searchResult = authConnection.search(searchBase,
+          final SearchResult searchResult = authConnection.search(searchBase,
                SearchScope.SUB, filter, returnAttrsOC);
           userDN = searchResult.getSearchEntries().get(0).getDN();
 
@@ -1809,7 +1759,7 @@ public class WeightedSiteMinderJobClass
             {
               bindConnection.bind(userDN, password);
             }
-            catch (LDAPException le)
+            catch (final LDAPException le)
             {
               if (le.getResultCode() == ResultCode.INVALID_CREDENTIALS)
               {
@@ -1884,7 +1834,7 @@ public class WeightedSiteMinderJobClass
           authConnection.search(userDN, SearchScope.BASE, filter3,
                returnAttrs3);
         }
-        catch (Exception e)
+        catch (final Exception e)
         {
 
           if (collectingStats)
@@ -1933,15 +1883,8 @@ public class WeightedSiteMinderJobClass
     // Close the connections to the directory server if appropriate.
     if (! useSharedConnections)
     {
-      try
-      {
-        authConnection.close();
-      } catch (Exception e) {}
-
-      try
-      {
-        bindConnection.close();
-      } catch (Exception e) {}
+      authConnection.close();
+      bindConnection.close();
     }
   }
 
@@ -1955,21 +1898,13 @@ public class WeightedSiteMinderJobClass
   {
     if (authConnection != null)
     {
-      try
-      {
-        authConnection.close();
-      } catch (Exception e) {}
-
+      authConnection.close();
       authConnection = null;
     }
 
     if (bindConnection != null)
     {
-      try
-      {
-        bindConnection.close();
-      } catch (Exception e) {}
-
+      bindConnection.close();
       bindConnection = null;
     }
   }
@@ -1985,15 +1920,8 @@ public class WeightedSiteMinderJobClass
     // Make sure that the shared connections get closed properly.
     if (useSharedConnections)
     {
-      try
-      {
-        sharedAuthConnection.close();
-      } catch (Exception e) {}
-
-      try
-      {
-        sharedBindConnection.close();
-      } catch (Exception e) {}
+      sharedAuthConnection.close();
+      sharedBindConnection.close();
     }
   }
 
@@ -2042,9 +1970,9 @@ public class WeightedSiteMinderJobClass
    *
    * @return  The generated string of random characters.
    */
-  private String getRandomString(int length)
+  private String getRandomString(final int length)
   {
-    char[] returnArray = new char[length];
+    final char[] returnArray = new char[length];
 
     for (int i=0; i < returnArray.length; i++)
     {

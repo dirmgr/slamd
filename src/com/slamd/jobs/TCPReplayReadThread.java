@@ -38,7 +38,7 @@ import com.slamd.job.JobClass;
  *
  * @author   Neil A. Wilson
  */
-public class TCPReplayReadThread
+public final class TCPReplayReadThread
        extends Thread
 {
   // The list of pending connections that need to be registered with the
@@ -77,7 +77,7 @@ public class TCPReplayReadThread
    * @throws  IOException  If a problem occurs while creating the associated
    *                       selector.
    */
-  public TCPReplayReadThread(TCPReplayJobClass tcpReplayJob)
+  public TCPReplayReadThread(final TCPReplayJobClass tcpReplayJob)
          throws IOException
   {
     this.tcpReplayJob = tcpReplayJob;
@@ -86,7 +86,7 @@ public class TCPReplayReadThread
 
     selector = Selector.open();
 
-    pendingConnectionList = new ArrayList<SocketChannel>();
+    pendingConnectionList = new ArrayList<>();
     registeredThreads     = 0;
     threadStarted         = false;
     stopSelector          = false;
@@ -141,7 +141,7 @@ public class TCPReplayReadThread
    * @param  socketChannel  The socket channel to be registered.  It must
    *                        already be configured in non-blocking mode.
    */
-  public void registerSocketChannel(SocketChannel socketChannel)
+  public void registerSocketChannel(final SocketChannel socketChannel)
   {
     synchronized (threadMutex)
     {
@@ -161,7 +161,7 @@ public class TCPReplayReadThread
   public void run()
   {
     // Allocate the buffer that we will use to read data from clients.
-    ByteBuffer buffer = ByteBuffer.allocateDirect(4096);
+    final ByteBuffer buffer = ByteBuffer.allocateDirect(4096);
 
 
     // Loop, reading data from clients until we decide that we should stop for
@@ -175,14 +175,15 @@ public class TCPReplayReadThread
         int selectedKeys = selector.select(100);
         if (selectedKeys > 0)
         {
-          Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+          final Iterator<SelectionKey> iterator =
+               selector.selectedKeys().iterator();
           while (iterator.hasNext())
           {
             SelectionKey key = iterator.next();
 
             if (key.isReadable())
             {
-              SocketChannel channel = (SocketChannel) key.channel();
+              final SocketChannel channel = (SocketChannel) key.channel();
               if (channel.isConnected())
               {
                 int bytesRead = channel.read(buffer);
@@ -215,10 +216,11 @@ public class TCPReplayReadThread
         {
           if (! pendingConnectionList.isEmpty())
           {
-            Iterator<SocketChannel> iterator = pendingConnectionList.iterator();
+            final Iterator<SocketChannel> iterator =
+                 pendingConnectionList.iterator();
             while (iterator.hasNext())
             {
-              SocketChannel channel = iterator.next();
+              final SocketChannel channel = iterator.next();
               channel.register(selector, SelectionKey.OP_READ);
             }
 
@@ -228,21 +230,19 @@ public class TCPReplayReadThread
 
         consecutiveFailures = false;
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         if (consecutiveFailures)
         {
           tcpReplayJob.logMessage("Exception caught while trying to read " +
-                                  "data from a client:  " +
-                                  JobClass.stackTraceToString(e));
+               "data from a client:  " + JobClass.stackTraceToString(e));
           stopSelector = true;
         }
         else
         {
           consecutiveFailures = true;
           tcpReplayJob.writeVerbose("Exception caught while trying to read " +
-                                    "data from a client:  " +
-                                    JobClass.stackTraceToString(e));
+               "data from a client:  " + JobClass.stackTraceToString(e));
         }
       }
     }
@@ -262,15 +262,15 @@ public class TCPReplayReadThread
 
     synchronized (threadMutex)
     {
-      Iterator<SelectionKey> iterator = selector.keys().iterator();
+      final Iterator<SelectionKey> iterator = selector.keys().iterator();
       while (iterator.hasNext())
       {
         try
         {
-          SelectionKey key = iterator.next();
+          final SelectionKey key = iterator.next();
           key.channel().close();
           key.cancel();
-        } catch (Exception e) {}
+        } catch (final Exception e) {}
       }
     }
   }

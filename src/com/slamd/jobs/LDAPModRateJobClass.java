@@ -54,7 +54,7 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform
  * modifications against an LDAP directory server.
  */
-public class LDAPModRateJobClass
+public final class LDAPModRateJobClass
        extends LDAPJobClass
 {
   /**
@@ -105,8 +105,6 @@ public class LDAPModRateJobClass
   private static int      warmUpTime;
   private static int      valueLength;
   private static long     timeBetweenRequests;
-  private static String   entryDN1;
-  private static String   entryDN2;
   private static String[] modAttributes;
 
   // Stat trackers used by this job.
@@ -391,11 +389,11 @@ public class LDAPModRateJobClass
 
 
     dn1Parameter = parameters.getStringParameter(dn1Parameter.getName());
-    entryDN1 = dn1Parameter.getStringValue();
+    final String entryDN1 = dn1Parameter.getStringValue();
 
 
     dn2Parameter = parameters.getStringParameter(dn2Parameter.getName());
-    entryDN2 = dn2Parameter.getStringValue();
+    final String entryDN2 = dn2Parameter.getStringValue();
 
 
     dn1Percentage = 50;

@@ -18,20 +18,17 @@ package com.slamd.jobs.legacy;
 
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.StringTokenizer;
 
 import com.slamd.job.JobClass;
 import com.slamd.job.UnableToRunException;
 import com.slamd.parameter.BooleanParameter;
-import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
-import com.slamd.parameter.PasswordParameter;
 import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.PeriodicEventTracker;
@@ -40,7 +37,7 @@ import com.slamd.stat.StatTracker;
 
 
 /**
- * This class defines a SLAMD job that has the ability to perform a "dscfg
+ * This class defines a SLAMD job that has the ability to perform a "dsadm
  * import" operation in the Sun Java System Directory Server 6 and extract
  * statistics from the progress of the import, including the total number of
  * entries processed, the average and recent import rates, and the hit ratio.
@@ -48,7 +45,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class DSCFGImportRateJobClass
+public class DSADMImportRateJob
        extends JobClass
 {
   /**
@@ -98,40 +95,19 @@ public class DSCFGImportRateJobClass
                             "Indicates whether the ldif2db output should be " +
                             "logged.", true);
 
-  // The parameter that specifies the port for the Directory Server instance
-  // into which the data is to be imported.
-  private IntegerParameter portParameter =
-       new IntegerParameter("port", "Directory Server Port",
-                            "The port for the Directory Server instance " +
-                            "into which the data should be imported", true, 389,
-                            true, 1, true, 65535);
-
-  // The parameter that specifies the password to use to bind to the Directory
-  // Server.
-  private PasswordParameter bindPWParameter =
-       new PasswordParameter("bindpw", "Bind Password",
-                             "The password to use to bind to the Directory " +
-                             "Server to invoke the import", true, "");
-
-  // The parameter that specifies the DN to use to bind to the Directory Server.
-  private StringParameter bindDNParameter =
-       new StringParameter("binddn", "Bind DN",
-                           "The DN to use to bind to the Directory Server to " +
-                           "invoke the import", true, "cn=Directory Manager");
-
-  // The parameter that specifies the path to the dscfg utility.
-  private StringParameter dscfgCommandParmeter =
-       new StringParameter("dscfg_command", "dscfg Command",
-                           "The path to the dscfg command to be executed.",
+  // The parameter that specifies the path to the dsadm utility.
+  private StringParameter dsadmCommandParmeter =
+       new StringParameter("dsadm_command", "dsadm Command",
+                           "The path to the dsadm command to be executed.",
                            true, "");
 
-  // The parameter that specifies the address of the Directory Server instance
-  // into which the data is to be imported.
-  private StringParameter hostParameter =
-       new StringParameter("host", "Directory Server Address",
-                           "The address of the Directory Server instance " +
-                           "into which the data should be imported.", true,
-                           "127.0.0.1");
+  // The parameter that specifies the path to the Directory Server instance into
+  // which the data is to be imported.
+  private StringParameter instancePathParameter =
+       new StringParameter("instance_path", "Directory Server Instance Path",
+                           "The path to the Directory Server instance root " +
+                           "the instance into which the data is to be " +
+                           "imported.", true, "");
 
   // The parameter that specifies the path to the LDIF file to import.
   private StringParameter ldifFileParameter =
@@ -149,26 +125,14 @@ public class DSCFGImportRateJobClass
   // Indicates whether the output of the command should be captured and logged.
   private static boolean logOutput;
 
-  // The port of the Directory Server instance.
-  private static int serverPort;
-
   // The placeholder parameter.
   private PlaceholderParameter placeholder = new PlaceholderParameter();
 
-  // The DN to use to bind to the Directory Server.
-  private static String bindDN;
+  // The path to the dsadm command to be executed.
+  private static String dsadmCommand;
 
-  // The password to use to bind to the Directory Server.
-  private static String bindPW;
-
-  // The path to the temporary password file that we have written.
-  private static String bindPWFile;
-
-  // The path to the dscfg command to be executed.
-  private static String dscfgCommand;
-
-  // The address of the Directory Server instance.
-  private static String serverHost;
+  // The Directory Server instance path.
+  private static String instancePath;
 
   // The LDIF file containing the data to import.
   private static String ldifFile;
@@ -187,9 +151,9 @@ public class DSCFGImportRateJobClass
   private PeriodicEventTracker hitRatio;
 
 
-  // The estimated timestamp counter that we should use for the log information,
-  // since dscfg doesn't give us actual timestamps that we can use.
-  private long timestampCounter;
+  // The date format object that will be used to parse the date as it is written
+  // to the log file.
+  private SimpleDateFormat dateFormat;
 
 
 
@@ -200,7 +164,7 @@ public class DSCFGImportRateJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public DSCFGImportRateJobClass()
+  public DSADMImportRateJob()
   {
     super();
   }
@@ -213,7 +177,7 @@ public class DSCFGImportRateJobClass
   @Override()
   public String getJobName()
   {
-    return "dscfg Import Rate";
+    return "dsadm Import Rate";
   }
 
 
@@ -224,7 +188,7 @@ public class DSCFGImportRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Import LDIF data into Sun DSEE 6.x with the dscfg utility";
+    return "Import LDIF data into Sun DSEE 6.x with the dsadm utility";
   }
 
 
@@ -238,7 +202,7 @@ public class DSCFGImportRateJobClass
     return new String[]
     {
       "This job can be used to import data from an LDIF file into a 6.x Sun " +
-      "Java System Directory Server instance using the dscfg utility."
+      "Java System Directory Server instance using the dsadm utility."
     };
   }
 
@@ -286,11 +250,8 @@ public class DSCFGImportRateJobClass
     Parameter[] parameters = new Parameter[]
     {
       placeholder,
-      dscfgCommandParmeter,
-      hostParameter,
-      portParameter,
-      bindDNParameter,
-      bindPWParameter,
+      dsadmCommandParmeter,
+      instancePathParameter,
       ldifFileParameter,
       suffixDNParameter,
       logOutputParameter
@@ -348,45 +309,21 @@ public class DSCFGImportRateJobClass
   public void initializeClient(String clientID, ParameterList parameters)
          throws UnableToRunException
   {
-    dscfgCommand = null;
-    dscfgCommandParmeter =
-         parameters.getStringParameter(dscfgCommandParmeter.getName());
-    if (dscfgCommandParmeter != null)
+    dsadmCommand = null;
+    dsadmCommandParmeter =
+         parameters.getStringParameter(dsadmCommandParmeter.getName());
+    if (dsadmCommandParmeter != null)
     {
-      dscfgCommand = dscfgCommandParmeter.getStringValue();
+      dsadmCommand = dsadmCommandParmeter.getStringValue();
     }
 
 
-    serverHost = "127.0.0.1";
-    hostParameter = parameters.getStringParameter(hostParameter.getName());
-    if ((hostParameter != null) && hostParameter.hasValue())
+    instancePath = null;
+    instancePathParameter =
+         parameters.getStringParameter(instancePathParameter.getName());
+    if (instancePathParameter != null)
     {
-      serverHost = hostParameter.getStringValue();
-    }
-
-
-    serverPort = 389;
-    portParameter = parameters.getIntegerParameter(portParameter.getName());
-    if ((portParameter != null) && portParameter.hasValue())
-    {
-      serverPort = portParameter.getIntValue();
-    }
-
-
-    bindDN = "";
-    bindDNParameter = parameters.getStringParameter(bindDNParameter.getName());
-    if ((bindDNParameter != null) && bindDNParameter.hasValue())
-    {
-      bindDN = bindDNParameter.getStringValue();
-    }
-
-
-    bindPW = "";
-    bindPWParameter =
-         parameters.getPasswordParameter(bindPWParameter.getName());
-    if ((bindPWParameter != null) && bindPWParameter.hasValue())
-    {
-      bindPW = bindPWParameter.getStringValue();
+      instancePath = instancePathParameter.getStringValue();
     }
 
 
@@ -414,31 +351,6 @@ public class DSCFGImportRateJobClass
     if (logOutputParameter != null)
     {
       logOutput = logOutputParameter.getBooleanValue();
-    }
-
-
-    // Since we can't specify the bind password directly on the command line,
-    // we'll have to write it to a file.  Create a temporary file and put the
-    // password in it.  We'll remove that file as soon as the import is done,
-    // but mark it "delete on exit" just in case.
-    try
-    {
-      File pwFile = File.createTempFile("dscfg-import-bind-pw-" + getJobID(),
-                                        null);
-      pwFile.deleteOnExit();
-
-      BufferedWriter writer = new BufferedWriter(new FileWriter(pwFile));
-      writer.write(bindPW);
-      writer.newLine();
-      writer.close();
-
-      bindPWFile = pwFile.getAbsolutePath();
-    }
-    catch (Exception e)
-    {
-      throw new UnableToRunException("An error occurred while attempting to " +
-                                     "write the bind password file:  " +
-                                     stackTraceToString(e), e);
     }
   }
 
@@ -474,6 +386,10 @@ public class DSCFGImportRateJobClass
 
     // Initialize the read buffer.
     readBuffer = new byte[READ_BUFFER_SIZE];
+
+
+    // Initialize the date format.
+    dateFormat = new SimpleDateFormat("[dd/MMM/yyyy:HH:mm:ss Z]");
   }
 
 
@@ -489,15 +405,15 @@ public class DSCFGImportRateJobClass
 
     try
     {
-      String[] commandArray = { dscfgCommand, "import", "-i", "-c", "-h",
-                                serverHost, "-p", String.valueOf(serverPort),
-                                "-u", bindDN, "-w", bindPWFile, ldifFile,
-                                suffixDN };
+      String[] commandArray = { dsadmCommand, "import", "-i", instancePath,
+                                ldifFile, suffixDN };
       process = runtime.exec(commandArray);
     }
     catch (IOException ioe)
     {
-      logMessage("Unable to execute dscfg command:  " + ioe);
+      logMessage("Unable to execute dsadm command \"" + dsadmCommand +
+                 " import -i " + instancePath + ' ' + ldifFile + ' ' +
+                 suffixDN + "\":  " + ioe);
       indicateStoppedDueToError();
       return;
     }
@@ -513,8 +429,6 @@ public class DSCFGImportRateJobClass
     entriesProcessed.startTracker();
     hitRatio.startTracker();
 
-
-    timestampCounter = System.currentTimeMillis();
 
     while (true)
     {
@@ -682,12 +596,13 @@ public class DSCFGImportRateJobClass
         return;
       }
 
-      // Since the dscfg command output doesn't contain timestamps, we'll have
-      // to guess.  There should be about 20 seconds between each status update
-      // line.
-      timestampCounter += 20000;
+      int    closeBracketPos = line.indexOf(']');
+      String dateStr         = line.substring(0, closeBracketPos+1);
+      Date   logDate         = dateFormat.parse(dateStr);
+      long   logTime         = logDate.getTime();
 
-      int entriesStartPos = line.indexOf(" Processed ") + 11;
+
+      int entriesStartPos = line.indexOf(": Processed ", closeBracketPos) + 12;
       int entriesEndPos   = line.indexOf(" entries", entriesStartPos);
       int numEntries      = Integer.parseInt(line.substring(entriesStartPos,
                                                             entriesEndPos));
@@ -709,37 +624,20 @@ public class DSCFGImportRateJobClass
                                                              hitEndPos));
 
       writeVerbose("Line is \"" + line + '"');
+      writeVerbose("Timestamp is " + logDate);
       writeVerbose("Average rate is " + avgRate);
       writeVerbose("Recent rate is " + rctRate);
       writeVerbose("Entries processed is " + numEntries);
       writeVerbose("Hit ratio is " + hitRate);
-      averageRate.update(timestampCounter, avgRate);
-      recentRate.update(timestampCounter, rctRate);
-      entriesProcessed.update(timestampCounter, numEntries);
-      hitRatio.update(timestampCounter, hitRate);
+      averageRate.update(logTime, avgRate);
+      recentRate.update(logTime, rctRate);
+      entriesProcessed.update(logTime, numEntries);
+      hitRatio.update(logTime, hitRate);
     }
     catch (Exception e)
     {
       writeVerbose("Unable to parse line \"" + line + "\" -- " +
                    stackTraceToString(e));
-    }
-  }
-
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override()
-  public void finalizeClient()
-  {
-    if (bindPWFile != null)
-    {
-      try
-      {
-        File pwFile = new File(bindPWFile);
-        pwFile.delete();
-      } catch (Exception e) {}
     }
   }
 }

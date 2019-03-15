@@ -63,7 +63,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public class SolarisLDAPAuthRateJobClass
+public class SolarisLDAPAuthRateJob
        extends JobClass
 {
   /**
@@ -454,7 +454,7 @@ public class SolarisLDAPAuthRateJobClass
    * Creates a new instance of this job thread.  This constructor does not need
    * to do anything other than invoke the constructor for the superclass.
    */
-  public SolarisLDAPAuthRateJobClass()
+  public SolarisLDAPAuthRateJob()
   {
     super();
   }
@@ -467,7 +467,7 @@ public class SolarisLDAPAuthRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Solaris Authentication Load Generator";
+    return "Solaris LDAP Authentication Load Generator";
   }
 
 

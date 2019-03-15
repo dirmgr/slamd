@@ -45,7 +45,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public class LDIF2DBImportRateJobClass
+public class LDIF2DBImportRateJob
        extends JobClass
 {
   /**
@@ -153,7 +153,7 @@ public class LDIF2DBImportRateJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public LDIF2DBImportRateJobClass()
+  public LDIF2DBImportRateJob()
   {
     super();
   }

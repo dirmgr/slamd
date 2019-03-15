@@ -2,7 +2,7 @@
  * Copyright 2009-2010 UnboundID Corp.
  * All Rights Reserved.
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -23,7 +23,7 @@ import com.slamd.stat.TimeTracker;
  * that may be used to perform all processing necessary for an asynchronous
  * modify operation.
  */
-final class LDAPAsynchronousModRateListener
+final class AsynchronousModifyRateListener
       implements AsyncResultListener
 {
   // The stat tracker that will be updated with information about the result
@@ -78,7 +78,7 @@ final class LDAPAsynchronousModRateListener
    *                                      each modify, or {@code null} if this
    *                                      should not be kept.
    */
-  LDAPAsynchronousModRateListener(final long responseTimeThresholdMillis,
+  AsynchronousModifyRateListener(final long responseTimeThresholdMillis,
        final Semaphore outstandingRequests,
        final CategoricalTracker resultCodes,
        final IncrementalTracker modsCompleted,

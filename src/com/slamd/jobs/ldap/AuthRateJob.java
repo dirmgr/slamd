@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -65,8 +65,8 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform repeated
  * searches to find a user entry followed by an attempt to bind as that user.
  */
-public final class LDAPAuthRateJobClass
-       extends LDAPJobClass
+public final class AuthRateJob
+       extends LDAPJob
 {
   /**
    * The display name for the stat tracker used to track authentication
@@ -269,7 +269,7 @@ public final class LDAPAuthRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPAuthRateJobClass()
+  public AuthRateJob()
   {
     super();
   }
@@ -282,7 +282,7 @@ public final class LDAPAuthRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Auth Rate";
+    return "Auth Rate";
   }
 
 

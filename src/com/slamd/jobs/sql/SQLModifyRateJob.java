@@ -50,7 +50,7 @@ import com.unboundid.util.FixedRateBarrier;
  *
  * @author   Neil A. Wilson
  */
-public final class SQLModRateJob
+public final class SQLModifyRateJob
        extends JobClass
 {
   /**
@@ -261,7 +261,7 @@ public final class SQLModRateJob
   /**
    * Creates a new instance of this SQL SearchRate job.
    */
-  public SQLModRateJob()
+  public SQLModifyRateJob()
   {
     super();
   }
@@ -274,7 +274,7 @@ public final class SQLModRateJob
   @Override()
   public String getJobName()
   {
-    return "SQL ModRate";
+    return "SQL Modify Rate";
   }
 
 

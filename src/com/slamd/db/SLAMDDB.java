@@ -65,29 +65,29 @@ import com.slamd.job.SingleStatisticWithCPUUtilizationOptimizationAlgorithm;
 import com.slamd.job.SingleStatisticWithConstraintOptimizationAlgorithm;
 import com.slamd.job.SingleStatisticWithReplicationLatencyOptimizationAlgorithm;
 import com.slamd.jobgroup.JobGroup;
-import com.slamd.jobs.LDAPAddAndDeleteRateJobClass;
-import com.slamd.jobs.LDAPAsynchronousModRateJobClass;
-import com.slamd.jobs.LDAPAsynchronousSearchRateJobClass;
-import com.slamd.jobs.LDAPAuthRateJobClass;
-import com.slamd.jobs.LDAPCompareRateJobClass;
-import com.slamd.jobs.LDAPFileBasedModRateJobClass;
-import com.slamd.jobs.LDAPFileBasedSearchRateJobClass;
-import com.slamd.jobs.LDAPMixedLoadJobClass;
-import com.slamd.jobs.LDAPModDNRateJobClass;
-import com.slamd.jobs.LDAPModRateJobClass;
-import com.slamd.jobs.LDAPMultiConnectionSearchRateJobClass;
-import com.slamd.jobs.LDAPPrimeJobClass;
-import com.slamd.jobs.LDAPSearchRateJobClass;
-import com.slamd.jobs.LDAPSearchAndModRateJobClass;
-import com.slamd.jobs.LDAPWaitForDirectoryJobClass;
-import com.slamd.jobs.MultiSearchLDAPLoadJobClass;
-import com.slamd.jobs.SiteMinderJobClass;
-import com.slamd.jobs.WeightedSiteMinderJobClass;
-import com.slamd.jobs.http.HTTPGetRateJob;
+import com.slamd.jobs.http.GetRateJob;
+import com.slamd.jobs.ldap.AddAndDeleteRateJob;
+import com.slamd.jobs.ldap.AsynchronousModifyRateJob;
+import com.slamd.jobs.ldap.AsynchronousSearchRateJob;
+import com.slamd.jobs.ldap.AuthRateJob;
+import com.slamd.jobs.ldap.CompareRateJob;
+import com.slamd.jobs.ldap.FileBasedModifyRateJob;
+import com.slamd.jobs.ldap.FileBasedSearchRateJob;
+import com.slamd.jobs.ldap.MixedLoadJob;
+import com.slamd.jobs.ldap.ModifyDNRateJob;
+import com.slamd.jobs.ldap.ModifyRateJob;
+import com.slamd.jobs.ldap.MultiConnectionSearchRateJob;
+import com.slamd.jobs.ldap.MultiSearchMixedLoadJob;
+import com.slamd.jobs.ldap.PrimeJob;
+import com.slamd.jobs.ldap.SearchRateJob;
+import com.slamd.jobs.ldap.SearchAndModifyRateJob;
+import com.slamd.jobs.ldap.SiteMinderJob;
+import com.slamd.jobs.ldap.WaitForDirectoryServerJob;
+import com.slamd.jobs.ldap.WeightedSiteMinderJob;
 import com.slamd.jobs.mail.IMAP4CheckRateJob;
 import com.slamd.jobs.mail.POP3CheckRateJob;
 import com.slamd.jobs.mail.SMTPSendRateJob;
-import com.slamd.jobs.sql.SQLModRateJob;
+import com.slamd.jobs.sql.SQLModifyRateJob;
 import com.slamd.jobs.sql.SQLSearchRateJob;
 import com.slamd.jobs.utility.BurnCPUJob;
 import com.slamd.jobs.utility.ExecJob;
@@ -514,35 +514,34 @@ public final class SLAMDDB
          dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG, dbConfig);
     final String[] jobClasses =
     {
-      LDAPAddAndDeleteRateJobClass.class.getName(),
-      LDAPAsynchronousModRateJobClass.class.getName(),
-      LDAPAsynchronousSearchRateJobClass.class.getName(),
-      LDAPAuthRateJobClass.class.getName(),
-      LDAPCompareRateJobClass.class.getName(),
-      LDAPFileBasedModRateJobClass.class.getName(),
-      LDAPFileBasedSearchRateJobClass.class.getName(),
-      LDAPMixedLoadJobClass.class.getName(),
-      LDAPModDNRateJobClass.class.getName(),
-      LDAPModRateJobClass.class.getName(),
-      LDAPMultiConnectionSearchRateJobClass.class.getName(),
-      LDAPPrimeJobClass.class.getName(),
-      LDAPSearchRateJobClass.class.getName(),
-      LDAPSearchAndModRateJobClass.class.getName(),
-      LDAPWaitForDirectoryJobClass.class.getName(),
-      MultiSearchLDAPLoadJobClass.class.getName(),
-      SiteMinderJobClass.class.getName(),
-      WeightedSiteMinderJobClass.class.getName(),
-      LoadVarianceTestJobClass.class.getName(),
-      BSFJobClass.class.getName(),
+      AddAndDeleteRateJob.class.getName(),
+      AsynchronousModifyRateJob.class.getName(),
+      AsynchronousSearchRateJob.class.getName(),
+      AuthRateJob.class.getName(),
+      CompareRateJob.class.getName(),
+      FileBasedModifyRateJob.class.getName(),
+      FileBasedSearchRateJob.class.getName(),
+      MixedLoadJob.class.getName(),
+      ModifyDNRateJob.class.getName(),
+      ModifyRateJob.class.getName(),
+      MultiConnectionSearchRateJob.class.getName(),
+      MultiSearchMixedLoadJob.class.getName(),
+      PrimeJob.class.getName(),
+      SearchRateJob.class.getName(),
+      SearchAndModifyRateJob.class.getName(),
+      SiteMinderJob.class.getName(),
+      WaitForDirectoryServerJob.class.getName(),
+      WeightedSiteMinderJob.class.getName(),
+
       ScriptedJobClass.class.getName(),
 
-      HTTPGetRateJob.class.getName(),
+      GetRateJob.class.getName(),
 
       IMAP4CheckRateJob.class.getName(),
       POP3CheckRateJob.class.getName(),
       SMTPSendRateJob.class.getName(),
 
-      SQLModRateJob.class.getName(),
+      SQLModifyRateJob.class.getName(),
       SQLSearchRateJob.class.getName(),
 
       BurnCPUJob.class.getName(),

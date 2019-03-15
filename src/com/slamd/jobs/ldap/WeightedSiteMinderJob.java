@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -87,7 +87,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public final class WeightedSiteMinderJobClass
+public final class WeightedSiteMinderJob
        extends JobClass
 {
   /**
@@ -616,7 +616,7 @@ public final class WeightedSiteMinderJobClass
    * Creates a new instance of this job thread.  This constructor does not need
    * to do anything other than invoke the constructor for the superclass.
    */
-  public WeightedSiteMinderJobClass()
+  public WeightedSiteMinderJob()
   {
     super();
   }
@@ -629,7 +629,7 @@ public final class WeightedSiteMinderJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Weighted SiteMinder Load Simulator";
+    return "Weighted SiteMinder Load Simulator";
   }
 
 

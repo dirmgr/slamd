@@ -2,7 +2,7 @@
  * Copyright 2009-2010 UnboundID Corp.
  * All Rights Reserved.
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -26,7 +26,7 @@ import com.slamd.stat.TimeTracker;
  * listener that may be used to perform all processing necessary for an
  * asynchronous search operation.
  */
-final class LDAPAsynchronousSearchRateListener
+final class AsynchronousSearchRateListener
       implements AsyncSearchResultListener
 {
   /**
@@ -95,7 +95,7 @@ final class LDAPAsynchronousSearchRateListener
    *                                      each search, or {@code null} if this
    *                                      should not be kept.
    */
-  LDAPAsynchronousSearchRateListener(final long responseTimeThresholdMillis,
+  AsynchronousSearchRateListener(final long responseTimeThresholdMillis,
        final Semaphore outstandingRequests,
        final CategoricalTracker resultCodes,
        final IncrementalTracker searchesCompleted,

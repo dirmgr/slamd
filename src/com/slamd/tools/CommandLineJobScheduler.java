@@ -37,7 +37,7 @@ import com.slamd.job.JobClass;
 import com.slamd.job.OptimizationAlgorithm;
 import com.slamd.job.SingleStatisticOptimizationAlgorithm;
 import com.slamd.common.Constants;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.parameter.BooleanParameter;
 import com.slamd.parameter.FloatParameter;
 import com.slamd.parameter.IntegerParameter;

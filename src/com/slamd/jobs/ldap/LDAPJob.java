@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -62,7 +62,7 @@ import com.unboundid.util.ssl.TrustAllTrustManager;
  * communication, and authentication, and it provides the ability to establish
  * connections using the specified properties.
  */
-public abstract class LDAPJobClass
+public abstract class LDAPJob
        extends JobClass
 {
   /**
@@ -142,7 +142,7 @@ public abstract class LDAPJobClass
   /**
    * Creates a new instance of this job class.
    */
-  protected LDAPJobClass()
+  protected LDAPJob()
   {
     super();
   }

@@ -29,7 +29,7 @@ import javax.net.ssl.SSLSocket;
 import com.unboundid.util.Base64;
 import com.unboundid.util.StaticUtils;
 
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.job.JobClass;
 import com.slamd.scripting.engine.Argument;
 import com.slamd.scripting.engine.Method;

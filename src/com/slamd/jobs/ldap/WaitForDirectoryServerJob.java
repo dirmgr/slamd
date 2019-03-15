@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -46,8 +46,8 @@ import com.unboundid.ldap.sdk.SearchScope;
  * one or more Directory Server instances are available and respond to LDAP
  * requests.
  */
-public class LDAPWaitForDirectoryJobClass
-       extends LDAPJobClass
+public class WaitForDirectoryServerJob
+       extends LDAPJob
 {
   // The DN of the entry to retrieve.
   private static String entryDN;
@@ -64,7 +64,7 @@ public class LDAPWaitForDirectoryJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPWaitForDirectoryJobClass()
+  public WaitForDirectoryServerJob()
   {
     super();
   }
@@ -77,7 +77,7 @@ public class LDAPWaitForDirectoryJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Wait for Directory";
+    return "Wait for Directory Server";
   }
 
 

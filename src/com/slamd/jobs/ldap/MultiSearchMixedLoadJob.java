@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -69,7 +69,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class MultiSearchLDAPLoadJobClass
+public final class MultiSearchMixedLoadJob
        extends JobClass
 {
   /**
@@ -682,7 +682,7 @@ public final class MultiSearchLDAPLoadJobClass
    * does not need to do anything other than invoke the constructor
    * for the superclass.
     relative*/
-  public MultiSearchLDAPLoadJobClass()
+  public MultiSearchMixedLoadJob()
   {
     super();
   }
@@ -695,7 +695,7 @@ public final class MultiSearchLDAPLoadJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Load Generator (with multiple searches)";
+    return "Multi-Search Mixed Load Job";
   }
 
 

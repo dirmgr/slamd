@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2010 UnboundID Corp.
+ * Copyright 2008-2010 UnboundID Corp.
  * All Rights Reserved.
  */
 /*
@@ -16,19 +16,19 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
+import java.text.ParseException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import com.slamd.job.UnableToRunException;
-import com.slamd.parameter.BooleanParameter;
-import com.slamd.parameter.FileURLParameter;
 import com.slamd.parameter.IntegerParameter;
+import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.MultiLineTextParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
@@ -46,16 +46,16 @@ import com.unboundid.ldap.sdk.Modification;
 import com.unboundid.ldap.sdk.ModificationType;
 import com.unboundid.ldap.sdk.ResultCode;
 import com.unboundid.util.FixedRateBarrier;
+import com.unboundid.util.ValuePattern;
 
 
 
 /**
  * This class provides a SLAMD job class that may be used to perform
- * modifications against an LDAP directory server with the DNs of the entries to
- * modify read from a file.
+ * modifications against an LDAP directory server.
  */
-public final class LDAPFileBasedModRateJobClass
-       extends LDAPJobClass
+public final class ModifyRateJob
+       extends LDAPJob
 {
   /**
    * The set of characters to include in the values to use for the target
@@ -98,16 +98,14 @@ public final class LDAPFileBasedModRateJobClass
 
 
   // Variables used to hold the values of the parameters.
-  private static AtomicInteger sequentialCounter;
-  private static boolean       sequential;
-  private static char[]        characterSet;
-  private static int           coolDownTime;
-  private static int           responseTimeThreshold;
-  private static int           warmUpTime;
-  private static int           valueLength;
-  private static long          timeBetweenRequests;
-  private static String[]      entryDNs;
-  private static String[]      modAttributes;
+  private static char[]   characterSet;
+  private static int      coolDownTime;
+  private static int      dn1Percentage;
+  private static int      responseTimeThreshold;
+  private static int      warmUpTime;
+  private static int      valueLength;
+  private static long     timeBetweenRequests;
+  private static String[] modAttributes;
 
   // Stat trackers used by this job.
   private CategoricalTracker resultCodes;
@@ -122,19 +120,14 @@ public final class LDAPFileBasedModRateJobClass
   // The rate limiter for this job.
   private static FixedRateBarrier rateLimiter;
 
+  // Value patterns used for the entry DNs.
+  private static ValuePattern dn1Pattern;
+  private static ValuePattern dn2Pattern;
+
   // The LDAP connection used by this thread.
   private LDAPConnection conn;
 
   // The parameters used by this job.
-  private BooleanParameter sequentialParameter = new BooleanParameter(
-       "sequential", "Use DNs in Sequential Order",
-       "Indicates whether to use the entry DNs in sequential order rather " +
-            "than at random.",
-       false);
-  private FileURLParameter dnFileParameter = new FileURLParameter(
-       "dnFile", "DN File URL",
-       "The URL to a file containing the DNs of the entries to modify.",
-       null, true);
   private IntegerParameter coolDownParameter = new IntegerParameter(
        "coolDownTime", "Cool Down Time",
        "The length of time in seconds to continue running after ending " +
@@ -152,6 +145,11 @@ public final class LDAPFileBasedModRateJobClass
             "less than or equal to zero indicates that the client should " +
             "attempt to perform modifications as quickly as possible.",
        true, -1);
+  private IntegerParameter percentageParameter = new IntegerParameter(
+       "percentage", "DN 1 Percentage",
+       "The percentage of the modifications which should use the first DN " +
+            "pattern.",
+       true, 50, true, 0, true, 100);
   private IntegerParameter rateLimitDurationParameter = new IntegerParameter(
        "maxRateDuration", "Max Rate Enforcement Interval (Seconds)",
        "Specifies the duration in seconds of the interval over which  to " +
@@ -192,13 +190,21 @@ public final class LDAPFileBasedModRateJobClass
                 "The set of characters to include in generated values used " +
                      "for the modifications.",
                 true, DEFAULT_CHARACTER_SET);
+  private StringParameter dn1Parameter = new StringParameter("dn1",
+       "Entry DN 1",
+       "The target DN for modifications that fall into the first category.",
+       true, null);
+  private StringParameter dn2Parameter = new StringParameter("dn2",
+       "Entry DN 2",
+       "The target DN for modifications that fall into the second category.",
+       true, null);
 
 
 
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPFileBasedModRateJobClass()
+  public ModifyRateJob()
   {
     super();
   }
@@ -211,7 +217,7 @@ public final class LDAPFileBasedModRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP File-Based ModRate";
+    return "Modify Rate";
   }
 
 
@@ -222,8 +228,7 @@ public final class LDAPFileBasedModRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP modify operations using entry DNs read " +
-           "from a file";
+    return "Perform repeated LDAP modify operations";
   }
 
 
@@ -237,10 +242,9 @@ public final class LDAPFileBasedModRateJobClass
     return new String[]
     {
       "This job can be used to perform repeated modifications against an " +
-      "LDAP directory server using entry DNs read from a file.  Each " +
-      "modification will replace the values for the specified attribute(s) " +
-      "with a random string of the specified number of ASCII alphabetic " +
-      "characters."
+      "LDAP directory server.  Each modification will replace the values for " +
+      "the specified attribute(s) with a random string of the specified " +
+      "number of ASCII alphabetic characters."
     };
   }
 
@@ -254,8 +258,9 @@ public final class LDAPFileBasedModRateJobClass
   {
     return Arrays.asList(
          new PlaceholderParameter(),
-         dnFileParameter,
-         sequentialParameter,
+         dn1Parameter,
+         dn2Parameter,
+         percentageParameter,
          new PlaceholderParameter(),
          attributesParameter,
          characterSetParameter,
@@ -327,6 +332,55 @@ public final class LDAPFileBasedModRateJobClass
    * {@inheritDoc}
    */
   @Override()
+  protected void validateNonLDAPJobInfo(final int numClients,
+                                        final int threadsPerClient,
+                                        final int threadStartupDelay,
+                                        final Date startTime,
+                                        final Date stopTime,
+                                        final int duration,
+                                        final int collectionInterval,
+                                        final ParameterList parameters)
+            throws InvalidValueException
+  {
+    // The DN parameters must be parseable as value patterns.
+    StringParameter p =
+         parameters.getStringParameter(dn1Parameter.getName());
+    if ((p != null) && p.hasValue())
+    {
+      try
+      {
+        new ValuePattern(p.getValue());
+      }
+      catch (ParseException pe)
+      {
+        throw new InvalidValueException("The value provided for the '" +
+             p.getDisplayName() + "' parameter is not a valid value " +
+             "pattern:  " + pe.getMessage(), pe);
+      }
+    }
+
+    p = parameters.getStringParameter(dn2Parameter.getName());
+    if ((p != null) && p.hasValue())
+    {
+      try
+      {
+        new ValuePattern(p.getValue());
+      }
+      catch (ParseException pe)
+      {
+        throw new InvalidValueException("The value provided for the '" +
+             p.getDisplayName() + "' parameter is not a valid value " +
+             "pattern:  " + pe.getMessage(), pe);
+      }
+    }
+  }
+
+
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override()
   protected void initializeClientNonLDAP(final String clientID,
                                          final ParameterList parameters)
             throws UnableToRunException
@@ -334,29 +388,21 @@ public final class LDAPFileBasedModRateJobClass
     parentRandom = new Random();
 
 
-    dnFileParameter =
-         parameters.getFileURLParameter(dnFileParameter.getName());
-    try
-    {
-      entryDNs = dnFileParameter.getNonBlankFileLines();
-    }
-    catch (Exception e)
-    {
-      throw new UnableToRunException("Unable to retrieve DN file " +
-           dnFileParameter.getFileURL() + ":  " + stackTraceToString(e), e);
-    }
-
-    if (entryDNs.length == 0)
-    {
-      throw new UnableToRunException("There are no entry DNs in file " +
-           dnFileParameter.getFileURL());
-    }
+    dn1Parameter = parameters.getStringParameter(dn1Parameter.getName());
+    final String entryDN1 = dn1Parameter.getStringValue();
 
 
-    sequentialParameter =
-         parameters.getBooleanParameter(sequentialParameter.getName());
-    sequential = sequentialParameter.getBooleanValue();
-    sequentialCounter = new AtomicInteger(0);
+    dn2Parameter = parameters.getStringParameter(dn2Parameter.getName());
+    final String entryDN2 = dn2Parameter.getStringValue();
+
+
+    dn1Percentage = 50;
+    percentageParameter =
+         parameters.getIntegerParameter(percentageParameter.getName());
+    if ((percentageParameter != null) && percentageParameter.hasValue())
+    {
+      dn1Percentage = percentageParameter.getIntValue();
+    }
 
 
     attributesParameter =
@@ -442,6 +488,26 @@ public final class LDAPFileBasedModRateJobClass
         rateLimiter = new FixedRateBarrier(rateIntervalSeconds * 1000L,
              maxRate * rateIntervalSeconds);
       }
+    }
+
+    try
+    {
+      dn1Pattern = new ValuePattern(entryDN1);
+    }
+    catch (Exception e)
+    {
+      throw new UnableToRunException("Unable to parse DN pattern 1:  " +
+                                     stackTraceToString(e), e);
+    }
+
+    try
+    {
+      dn2Pattern = new ValuePattern(entryDN2);
+    }
+    catch (Exception e)
+    {
+      throw new UnableToRunException("Unable to parse DN pattern 2:  " +
+                                     stackTraceToString(e), e);
     }
   }
 
@@ -564,22 +630,13 @@ public final class LDAPFileBasedModRateJobClass
 
       // Get the DN of the entry to modify.
       String dn;
-      if (sequential)
+      if (random.nextInt(100) < dn1Percentage)
       {
-        int pos = sequentialCounter.incrementAndGet();
-        if (pos >= entryDNs.length)
-        {
-          sequentialCounter.set(1);
-          dn = entryDNs[0];
-        }
-        else
-        {
-          dn = entryDNs[pos];
-        }
+        dn = dn1Pattern.nextValue();
       }
       else
       {
-        dn = entryDNs[random.nextInt(entryDNs.length)];
+        dn = dn2Pattern.nextValue();
       }
 
 

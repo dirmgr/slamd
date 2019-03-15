@@ -24,10 +24,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import com.slamd.common.Constants;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.http.HTTPClient;
 import com.slamd.http.HTTPRequest;
 import com.slamd.http.HTTPResponse;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 
 
 

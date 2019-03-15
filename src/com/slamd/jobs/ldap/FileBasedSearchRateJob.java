@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2010 UnboundID Corp.
+ * Copyright 2009-2010 UnboundID Corp.
  * All Rights Reserved.
  */
 /*
@@ -16,19 +16,20 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.slamd.job.UnableToRunException;
+import com.slamd.parameter.BooleanParameter;
+import com.slamd.parameter.FileURLParameter;
 import com.slamd.parameter.IntegerParameter;
-import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.MultiChoiceParameter;
 import com.slamd.parameter.MultiLineTextParameter;
 import com.slamd.parameter.Parameter;
@@ -52,16 +53,16 @@ import com.unboundid.ldap.sdk.SearchResultListener;
 import com.unboundid.ldap.sdk.SearchResultReference;
 import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.util.FixedRateBarrier;
-import com.unboundid.util.ValuePattern;
 
 
 
 /**
  * This class provides a SLAMD job class that may be used to perform searches
- * against an LDAP directory server.
+ * against an LDAP directory server.  The filters to use for the search requests
+ * will be read from a file.
  */
-public final class LDAPSearchRateJobClass
-       extends LDAPJobClass
+public final class FileBasedSearchRateJob
+       extends LDAPJob
        implements SearchResultListener
 {
   /**
@@ -155,16 +156,18 @@ public final class LDAPSearchRateJobClass
 
 
   // Variables used to hold the values of the parameters.
-  private static int          coolDownTime;
-  private static int          filter1Percentage;
-  private static int          responseTimeThreshold;
-  private static int          sizeLimit;
-  private static int          timeLimit;
-  private static int          warmUpTime;
-  private static long         timeBetweenRequests;
-  private static SearchScope  scope;
-  private static String       baseDN;
-  private static String[]     attributes;
+  private static AtomicInteger sequentialCounter;
+  private static boolean       sequential;
+  private static Filter[]      filters;
+  private static int           coolDownTime;
+  private static int           responseTimeThreshold;
+  private static int           sizeLimit;
+  private static int           timeLimit;
+  private static int           warmUpTime;
+  private static long          timeBetweenRequests;
+  private static SearchScope   scope;
+  private static String        baseDN;
+  private static String[]      attributes;
 
   // Stat trackers used by this job.
   private CategoricalTracker  resultCodes;
@@ -180,10 +183,6 @@ public final class LDAPSearchRateJobClass
   // The rate limiter for this job.
   private static FixedRateBarrier rateLimiter;
 
-  // Value patterns used for the filters.
-  private static ValuePattern filter1Pattern;
-  private static ValuePattern filter2Pattern;
-
   // The search request to use for this thread.
   private SearchRequest searchRequest;
 
@@ -191,6 +190,15 @@ public final class LDAPSearchRateJobClass
   private LDAPConnection conn;
 
   // The parameters used by this job.
+  private BooleanParameter sequentialParameter = new BooleanParameter(
+       "sequential", "Use Filters in Sequential Order",
+       "Indicates whether to use the filters in sequential order rather than " +
+            "at random.",
+       false);
+  private FileURLParameter filterFileParameter = new FileURLParameter(
+       "filterFile", "Filter File URL",
+       "The URL to a file containing the filters to use for search requests.",
+       null, true);
   private IntegerParameter coolDownParameter = new IntegerParameter(
        "coolDownTime", "Cool Down Time",
        "The length of time in seconds to continue running after ending " +
@@ -204,11 +212,6 @@ public final class LDAPSearchRateJobClass
             "less than or equal to zero indicates that the client should " +
             "attempt to perform searches as quickly as possible.",
        true, -1);
-  private IntegerParameter percentageParameter = new IntegerParameter(
-       "percentage", "Filter 1 Percentage",
-       "The percentage of the searches which should use the first filter " +
-            "pattern.",
-       true, 50, true, 0, true, 100);
   private IntegerParameter rateLimitDurationParameter = new IntegerParameter(
        "maxRateDuration", "Max Rate Enforcement Interval (Seconds)",
        "Specifies the duration in seconds of the interval over which  to " +
@@ -249,7 +252,7 @@ public final class LDAPSearchRateJobClass
   private MultiChoiceParameter scopeParameter = new MultiChoiceParameter(
        "scope", "Search Scope",
        "The scope of entries to target with the searches.", SCOPES,
-       SCOPE_STR_BASE);
+       SCOPE_STR_SUB);
   private MultiLineTextParameter attributesParameter =
        new MultiLineTextParameter( "attributes", "Attributes to Return",
             "The set of attributes to include in matching entries.  If no " +
@@ -259,23 +262,13 @@ public final class LDAPSearchRateJobClass
             null, false);
   private StringParameter baseDNParameter = new StringParameter("baseDN",
        "Search Base", "The base entry to use for the searches.", false, "");
-  private StringParameter filter1Parameter = new StringParameter("filter1",
-       "Search Filter 1",
-       "The search filter to use for searches that fall into the first " +
-            "category.",
-       true, null);
-  private StringParameter filter2Parameter = new StringParameter("filter2",
-       "Search Filter 2",
-       "The search filter to use for searches that fall into the second " +
-            "category.",
-       true, null);
 
 
 
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPSearchRateJobClass()
+  public FileBasedSearchRateJob()
   {
     super();
   }
@@ -288,7 +281,7 @@ public final class LDAPSearchRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP SearchRate";
+    return "File-Based Search Rate";
   }
 
 
@@ -299,7 +292,8 @@ public final class LDAPSearchRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP search operations";
+    return "Perform repeated LDAP search operations using filters read from " +
+           "a file";
   }
 
 
@@ -313,7 +307,7 @@ public final class LDAPSearchRateJobClass
     return new String[]
     {
       "This job can be used to perform repeated searches against an LDAP " +
-      "directory server."
+      "directory server using filters read from a file."
     };
   }
 
@@ -331,9 +325,8 @@ public final class LDAPSearchRateJobClass
          scopeParameter,
          attributesParameter,
          new PlaceholderParameter(),
-         filter1Parameter,
-         filter2Parameter,
-         percentageParameter,
+         filterFileParameter,
+         sequentialParameter,
          new PlaceholderParameter(),
          warmUpParameter,
          coolDownParameter,
@@ -408,55 +401,6 @@ public final class LDAPSearchRateJobClass
    * {@inheritDoc}
    */
   @Override()
-  protected void validateNonLDAPJobInfo(final int numClients,
-                                        final int threadsPerClient,
-                                        final int threadStartupDelay,
-                                        final Date startTime,
-                                        final Date stopTime,
-                                        final int duration,
-                                        final int collectionInterval,
-                                        final ParameterList parameters)
-            throws InvalidValueException
-  {
-    // The filter parameters must be parseable as value patterns.
-    StringParameter p =
-         parameters.getStringParameter(filter1Parameter.getName());
-    if ((p != null) && p.hasValue())
-    {
-      try
-      {
-        new ValuePattern(p.getValue());
-      }
-      catch (final ParseException pe)
-      {
-        throw new InvalidValueException("The value provided for the '" +
-             p.getDisplayName() + "' parameter is not a valid value " +
-             "pattern:  " + pe.getMessage(), pe);
-      }
-    }
-
-    p = parameters.getStringParameter(filter2Parameter.getName());
-    if ((p != null) && p.hasValue())
-    {
-      try
-      {
-        new ValuePattern(p.getValue());
-      }
-      catch (final ParseException pe)
-      {
-        throw new InvalidValueException("The value provided for the '" +
-             p.getDisplayName() + "' parameter is not a valid value " +
-             "pattern:  " + pe.getMessage(), pe);
-      }
-    }
-  }
-
-
-
-  /**
-   * {@inheritDoc}
-   */
-  @Override()
   protected boolean testNonLDAPJobParameters(final ParameterList parameters,
                          final LDAPConnection connection,
                          final List<String> outputMessages)
@@ -484,7 +428,7 @@ public final class LDAPSearchRateJobClass
           outputMessages.add("The base entry exists.");
         }
       }
-      catch (final Exception e)
+      catch (Exception e)
       {
         successful = false;
         outputMessages.add("Unable to perform the search:  " +
@@ -493,6 +437,7 @@ public final class LDAPSearchRateJobClass
 
       outputMessages.add("");
     }
+
 
     return successful;
   }
@@ -552,23 +497,47 @@ public final class LDAPSearchRateJobClass
     }
 
 
-    filter1Parameter =
-         parameters.getStringParameter(filter1Parameter.getName());
-    final String filter1 = filter1Parameter.getStringValue();
-
-
-    filter2Parameter =
-         parameters.getStringParameter(filter2Parameter.getName());
-    final String filter2 = filter2Parameter.getStringValue();
-
-
-    filter1Percentage = 50;
-    percentageParameter =
-         parameters.getIntegerParameter(percentageParameter.getName());
-    if ((percentageParameter != null) && percentageParameter.hasValue())
+    String[] filterLines;
+    filterFileParameter =
+         parameters.getFileURLParameter(filterFileParameter.getName());
+    try
     {
-      filter1Percentage = percentageParameter.getIntValue();
+      filterLines = filterFileParameter.getNonBlankFileLines();
     }
+    catch (Exception e)
+    {
+      throw new UnableToRunException("Unable to retrieve filter file " +
+           filterFileParameter.getFileURL() + ":  " + stackTraceToString(e), e);
+    }
+
+    ArrayList<Filter> filterList = new ArrayList<>(filterLines.length);
+    for (String s : filterLines)
+    {
+      try
+      {
+        filterList.add(Filter.create(s));
+      }
+      catch (LDAPException le)
+      {
+        writeVerbose("Unable to parse string '" + s +
+                     "' as a valid search filter:  " + le.getMessage());
+      }
+    }
+
+    if (filterList.isEmpty())
+    {
+      throw new UnableToRunException("There are no valid search filters in " +
+           "filter file " + filterFileParameter.getFileURL());
+    }
+
+    filters = new Filter[filterList.size()];
+    filterList.toArray(filters);
+
+
+    sequentialParameter =
+         parameters.getBooleanParameter(sequentialParameter.getName());
+    sequential = sequentialParameter.getBooleanValue();
+    sequentialCounter = new AtomicInteger(0);
 
 
     warmUpTime = 0;
@@ -651,26 +620,6 @@ public final class LDAPSearchRateJobClass
              maxRate * rateIntervalSeconds);
       }
     }
-
-    try
-    {
-      filter1Pattern = new ValuePattern(filter1);
-    }
-    catch (final Exception e)
-    {
-      throw new UnableToRunException("Unable to parse filter pattern 1:  " +
-                                     stackTraceToString(e), e);
-    }
-
-    try
-    {
-      filter2Pattern = new ValuePattern(filter2);
-    }
-    catch (final Exception e)
-    {
-      throw new UnableToRunException("Unable to parse filter pattern 2:  " +
-                                     stackTraceToString(e), e);
-    }
   }
 
 
@@ -720,7 +669,7 @@ public final class LDAPSearchRateJobClass
     {
       conn = createConnection();
     }
-    catch (final Exception e)
+    catch (Exception e)
     {
       throw new UnableToRunException("Unable to establish a connection to " +
            "the target server:  " + stackTraceToString(e), e);
@@ -801,23 +750,22 @@ public final class LDAPSearchRateJobClass
 
 
       // Update the search request with an appropriate filter.
-      try
+      if (sequential)
       {
-        if (random.nextInt(100) < filter1Percentage)
+        int pos = sequentialCounter.incrementAndGet();
+        if (pos >= filters.length)
         {
-          searchRequest.setFilter(filter1Pattern.nextValue());
+          sequentialCounter.set(1);
+          searchRequest.setFilter(filters[0]);
         }
         else
         {
-          searchRequest.setFilter(filter2Pattern.nextValue());
+          searchRequest.setFilter(filters[pos]);
         }
       }
-      catch (final Exception e)
+      else
       {
-        logMessage("ERROR -- Generated an invalid search filter:  " +
-                   stackTraceToString(e));
-        indicateStoppedDueToError();
-        break;
+        searchRequest.setFilter(filters[random.nextInt(filters.length)]);
       }
 
 
@@ -836,7 +784,7 @@ public final class LDAPSearchRateJobClass
           resultCodes.increment(searchResult.getResultCode().toString());
         }
       }
-      catch (final LDAPException le)
+      catch (LDAPException le)
       {
         if (collectingStats)
         {
@@ -869,7 +817,7 @@ public final class LDAPSearchRateJobClass
           try
           {
             Thread.sleep(sleepTime);
-          } catch (final Exception e) {}
+          } catch (Exception e) {}
         }
       }
     }

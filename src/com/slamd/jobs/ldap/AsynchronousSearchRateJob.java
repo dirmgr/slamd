@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -76,8 +76,8 @@ import com.slamd.stat.TimeTracker;
  *       earlier request.</LI>
  * </UL>
  */
-public final class LDAPAsynchronousSearchRateJobClass
-       extends LDAPJobClass
+public final class AsynchronousSearchRateJob
+       extends LDAPJob
 {
   /**
    * The display name for the stat tracker used to track entries returned.
@@ -334,7 +334,7 @@ public final class LDAPAsynchronousSearchRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPAsynchronousSearchRateJobClass()
+  public AsynchronousSearchRateJob()
   {
     super();
   }
@@ -347,7 +347,7 @@ public final class LDAPAsynchronousSearchRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Asynchronous SearchRate";
+    return "Asynchronous Search Rate";
   }
 
 
@@ -1027,17 +1027,17 @@ public final class LDAPAsynchronousSearchRateJobClass
         break;
       }
 
-      final LDAPAsynchronousSearchRateListener listener;
+      final AsynchronousSearchRateListener listener;
       if (collectingStats)
       {
-        listener = new LDAPAsynchronousSearchRateListener(responseTimeThreshold,
+        listener = new AsynchronousSearchRateListener(responseTimeThreshold,
              outstandingRequests, resultCodes[connSlot],
              searchesCompleted[connSlot], searchesExceedingThreshold[connSlot],
              entriesReturned[connSlot], searchTimers[connSlot]);
       }
       else
       {
-        listener = new LDAPAsynchronousSearchRateListener(responseTimeThreshold,
+        listener = new AsynchronousSearchRateListener(responseTimeThreshold,
              outstandingRequests, null, null, null, null, null);
       }
 

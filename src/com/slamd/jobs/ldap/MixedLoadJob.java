@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -69,8 +69,8 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform a mix of
  * operations against an LDAP directory server.
  */
-public final class LDAPMixedLoadJobClass
-       extends LDAPJobClass
+public final class MixedLoadJob
+       extends LDAPJob
 {
   /**
    * The set of characters to include in the values to use for the target
@@ -471,7 +471,7 @@ public final class LDAPMixedLoadJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPMixedLoadJobClass()
+  public MixedLoadJob()
   {
     super();
 
@@ -487,7 +487,7 @@ public final class LDAPMixedLoadJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Mixed Load";
+    return "Mixed Load";
   }
 
 

@@ -36,7 +36,7 @@ import org.apache.catalina.realm.RealmBase;
 
 import com.unboundid.util.StaticUtils;
 
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 
 
 

@@ -23,7 +23,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 import com.slamd.common.Constants;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.http.HTTPClient;
 import com.slamd.http.HTTPRequest;
 import com.slamd.http.HTTPResponse;

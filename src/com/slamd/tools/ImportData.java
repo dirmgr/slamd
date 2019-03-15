@@ -28,7 +28,7 @@ import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
 import com.slamd.common.Constants;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 
 import com.unboundid.util.Base64;
 

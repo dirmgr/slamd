@@ -27,8 +27,8 @@ import netscape.ldap.LDAPModification;
 import netscape.ldap.LDAPSearchConstraints;
 import netscape.ldap.LDAPSearchResults;
 
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
-import com.slamd.jobs.SLAMDLDAPSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
+import com.slamd.common.SLAMDLDAPSocketFactory;
 import com.slamd.job.JobClass;
 import com.slamd.stat.IncrementalTracker;
 import com.slamd.stat.RealTimeStatReporter;

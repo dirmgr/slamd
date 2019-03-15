@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -64,8 +64,8 @@ import com.unboundid.util.ValuePattern;
  * This class provides a SLAMD job class that may be used to perform search and
  * modify operations against an LDAP directory server.
  */
-public final class LDAPSearchAndModRateJobClass
-       extends LDAPJobClass
+public final class SearchAndModifyRateJob
+       extends LDAPJob
 {
   /**
    * The display name for the stat tracker used to track entries returned.
@@ -340,7 +340,7 @@ public final class LDAPSearchAndModRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPSearchAndModRateJobClass()
+  public SearchAndModifyRateJob()
   {
     super();
   }
@@ -353,7 +353,7 @@ public final class LDAPSearchAndModRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Search and Modify Rate";
+    return "Search and Modify Rate";
   }
 
 

@@ -6677,7 +6677,7 @@ public class AdminJob
             categoryName = "Unclassified";
           }
 
-          htmlBody.append("<B>" + categoryName + " Job Classes</B><BR>" + EOL);
+          htmlBody.append("<B>" + categoryName + " Jobs</B><BR>" + EOL);
           htmlBody.append("<UL>" + EOL);
 
           for (int j=0; j < categorizedClasses[i].length; j++)

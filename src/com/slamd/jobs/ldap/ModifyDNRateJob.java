@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -50,8 +50,8 @@ import com.unboundid.util.FixedRateBarrier;
  * This class provides a SLAMD job class that may be used to perform modify DN
  * operations against an LDAP directory server.
  */
-public final class LDAPModDNRateJobClass
-       extends LDAPJobClass
+public final class ModifyDNRateJob
+       extends LDAPJob
 {
   /**
    * The display name for the stat tracker used to track result codes.
@@ -171,7 +171,7 @@ public final class LDAPModDNRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPModDNRateJobClass()
+  public ModifyDNRateJob()
   {
     super();
   }
@@ -184,7 +184,7 @@ public final class LDAPModDNRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Modify DN Rate";
+    return "Modify DN Rate";
   }
 
 

@@ -21,7 +21,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.http.HTTPClient;
 import com.slamd.http.HTTPRequest;
 import com.slamd.http.HTTPResponse;

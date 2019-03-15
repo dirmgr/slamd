@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2010 UnboundID Corp.
+ * Copyright 2009-2010 UnboundID Corp.
  * All Rights Reserved.
  */
 /*
@@ -11,12 +11,12 @@
  *
  * The Original Code is the SLAMD Distributed Load Generation Engine.
  * The Initial Developer of the Original Code is Neil A. Wilson.
- * Portions created by Neil A. Wilson are Copyright (C) 2008-2019.
+ * Portions created by Neil A. Wilson are Copyright (C) 2009-2019.
  * All Rights Reserved.
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -29,7 +29,6 @@ import java.util.Random;
 import com.slamd.job.UnableToRunException;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
-import com.slamd.parameter.MultiLineTextParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
 import com.slamd.parameter.PlaceholderParameter;
@@ -40,32 +39,22 @@ import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
 
+import com.unboundid.ldap.sdk.CompareRequest;
+import com.unboundid.ldap.sdk.CompareResult;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPException;
-import com.unboundid.ldap.sdk.Modification;
-import com.unboundid.ldap.sdk.ModificationType;
-import com.unboundid.ldap.sdk.ResultCode;
 import com.unboundid.util.FixedRateBarrier;
 import com.unboundid.util.ValuePattern;
 
 
 
 /**
- * This class provides a SLAMD job class that may be used to perform
- * modifications against an LDAP directory server.
+ * This class provides a SLAMD job class that may be used to perform compare
+ * operations against an LDAP directory server.
  */
-public final class LDAPModRateJobClass
-       extends LDAPJobClass
+public final class CompareRateJob
+       extends LDAPJob
 {
-  /**
-   * The set of characters to include in the values to use for the target
-   * attributes.
-   */
-  private static final String DEFAULT_CHARACTER_SET =
-       "abcdefghijklmnopqrstuvwxyz";
-
-
-
   /**
    * The display name for the stat tracker used to track result codes.
    */
@@ -74,46 +63,45 @@ public final class LDAPModRateJobClass
 
 
   /**
-   * The display name for the stat tracker used to track modify durations.
+   * The display name for the stat tracker used to track compare durations.
    */
-  private static final String STAT_MOD_DURATION = "Modify Duration (ms)";
+  private static final String STAT_COMP_DURATION = "Compare Duration (ms)";
 
 
 
   /**
-   * The display name for the stat tracker used to track modifications
+   * The display name for the stat tracker used to track compare operations
    * completed.
    */
-  private static final String STAT_MODS_COMPLETED = "Modifications Completed";
+  private static final String STAT_COMPS_COMPLETED = "Compares Completed";
 
 
 
   /**
-   * The display name for the stat tracker used to track modifications exceeding
-   * the response time threshold.
+   * The display name for the stat tracker used to track compare operations
+   * exceeding the response time threshold.
    */
-  private static final String STAT_MODS_EXCEEDING_THRESHOLD =
-       "Modifications Exceeding Response Time Threshold";
+  private static final String STAT_COMPS_EXCEEDING_THRESHOLD =
+       "Compare Operations Exceeding Response Time Threshold";
 
 
 
   // Variables used to hold the values of the parameters.
-  private static char[]   characterSet;
-  private static int      coolDownTime;
-  private static int      dn1Percentage;
-  private static int      responseTimeThreshold;
-  private static int      warmUpTime;
-  private static int      valueLength;
-  private static long     timeBetweenRequests;
-  private static String[] modAttributes;
+  private static int    coolDownTime;
+  private static int    dn1Percentage;
+  private static int    responseTimeThreshold;
+  private static int    warmUpTime;
+  private static long   timeBetweenRequests;
+  private static String attributeName;
+  private static String assertionValue;
 
   // Stat trackers used by this job.
   private CategoricalTracker resultCodes;
-  private IncrementalTracker modsCompleted;
-  private IncrementalTracker modsExceedingThreshold;
-  private TimeTracker        modTimer;
+  private IncrementalTracker comparesCompleted;
+  private IncrementalTracker comparesExceedingThreshold;
+  private TimeTracker        compareTimer;
 
-  // Random number generators used by this job.
+  // The random number generators to use to select which pattern to use.
   private static Random parentRandom;
   private Random random;
 
@@ -133,22 +121,18 @@ public final class LDAPModRateJobClass
        "The length of time in seconds to continue running after ending " +
             "statistics collection.",
        true, 0, true, 0, false, 0);
-  private IntegerParameter lengthParameter = new IntegerParameter("length",
-       "Value Length",
-       "The number of characters to include in generated values.", true, 80,
-       true, 1, false, 0);
   private IntegerParameter maxRateParameter = new IntegerParameter("maxRate",
-       "Max Modification Rate (Mods/Second/Client)",
-       "Specifies the maximum modification rate (in mods per second per " +
-            "client) to attempt to maintain.  If multiple clients are used, " +
-            "then each client will attempt to maintain this rate.  A value " +
-            "less than or equal to zero indicates that the client should " +
-            "attempt to perform modifications as quickly as possible.",
+       "Max Compare Rate (Compares/Second/Client)",
+       "Specifies the maximum operation rate (in compares per " +
+            "second per client) to attempt to maintain.  If multiple clients " +
+            "are used, then each client will attempt to maintain this rate.  " +
+            "A value less than or equal to zero indicates that the client " +
+            "should attempt to perform compares as quickly as possible.",
        true, -1);
   private IntegerParameter percentageParameter = new IntegerParameter(
        "percentage", "DN 1 Percentage",
-       "The percentage of the modifications which should use the first DN " +
-            "pattern.",
+       "The percentage of the compare operations which should use the first " +
+            "DN pattern.",
        true, 50, true, 0, true, 100);
   private IntegerParameter rateLimitDurationParameter = new IntegerParameter(
        "maxRateDuration", "Max Rate Enforcement Interval (Seconds)",
@@ -177,26 +161,22 @@ public final class LDAPModRateJobClass
        "The length of time in seconds to run before beginning to collect " +
             "statistics.",
        true, 0, true, 0, false, 0);
-  private MultiLineTextParameter attributesParameter =
-       new MultiLineTextParameter( "modAttributes", "Attribute(s) to Modify",
-            "The set of attributes to modify in matching entries.  If " +
-                 "multiple attribute names are provided, then they must be " +
-                 "provided on separate lines and each of those attributes " +
-                 "will be replaced with the same value generated for that " +
-                 "entry.",
-            new String[] { "description" }, true);
-  private StringParameter characterSetParameter =
-       new StringParameter("characterSet", "Character Set",
-                "The set of characters to include in generated values used " +
-                     "for the modifications.",
-                true, DEFAULT_CHARACTER_SET);
+  private StringParameter attributeParameter = new StringParameter("attribute",
+       "Attribute to Compare",
+       "The name of the attribute to target with the compare operations.", true,
+       "description");
+  private StringParameter valueParameter = new StringParameter("value",
+       "Assertion Value",
+       "The assertion value to use for the compare operations.", true, "");
   private StringParameter dn1Parameter = new StringParameter("dn1",
        "Entry DN 1",
-       "The target DN for modifications that fall into the first category.",
+       "The target DN for compare operations that fall into the first " +
+            "category.",
        true, null);
   private StringParameter dn2Parameter = new StringParameter("dn2",
        "Entry DN 2",
-       "The target DN for modifications that fall into the second category.",
+       "The target DN for compare operations that fall into the second " +
+            "category.",
        true, null);
 
 
@@ -204,7 +184,7 @@ public final class LDAPModRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPModRateJobClass()
+  public CompareRateJob()
   {
     super();
   }
@@ -217,7 +197,7 @@ public final class LDAPModRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP ModRate";
+    return "Compare Rate";
   }
 
 
@@ -228,7 +208,7 @@ public final class LDAPModRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP modify operations";
+    return "Perform repeated LDAP compare operations";
   }
 
 
@@ -241,10 +221,9 @@ public final class LDAPModRateJobClass
   {
     return new String[]
     {
-      "This job can be used to perform repeated modifications against an " +
-      "LDAP directory server.  Each modification will replace the values for " +
-      "the specified attribute(s) with a random string of the specified " +
-      "number of ASCII alphabetic characters."
+      "This job can be used to perform repeated compare operations against " +
+      "an LDAP directory server.  Each compare operation will use the " +
+      "provided attribute name and assertion value."
     };
   }
 
@@ -262,9 +241,8 @@ public final class LDAPModRateJobClass
          dn2Parameter,
          percentageParameter,
          new PlaceholderParameter(),
-         attributesParameter,
-         characterSetParameter,
-         lengthParameter,
+         attributeParameter,
+         valueParameter,
          new PlaceholderParameter(),
          warmUpParameter,
          coolDownParameter,
@@ -286,13 +264,13 @@ public final class LDAPModRateJobClass
   {
     return new StatTracker[]
     {
-      new IncrementalTracker(clientID, threadID, STAT_MODS_COMPLETED,
+      new IncrementalTracker(clientID, threadID, STAT_COMPS_COMPLETED,
                              collectionInterval),
-      new TimeTracker(clientID, threadID, STAT_MOD_DURATION,
+      new TimeTracker(clientID, threadID, STAT_COMP_DURATION,
                       collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
                              collectionInterval),
-      new IncrementalTracker(clientID, threadID, STAT_MODS_EXCEEDING_THRESHOLD,
+      new IncrementalTracker(clientID, threadID, STAT_COMPS_EXCEEDING_THRESHOLD,
                              collectionInterval)
     };
   }
@@ -309,18 +287,18 @@ public final class LDAPModRateJobClass
     {
       return new StatTracker[]
       {
-        modsCompleted,
-        modTimer,
+        comparesCompleted,
+        compareTimer,
         resultCodes,
-        modsExceedingThreshold
+        comparesExceedingThreshold
       };
     }
     else
     {
       return new StatTracker[]
       {
-        modsCompleted,
-        modTimer,
+        comparesCompleted,
+        compareTimer,
         resultCodes
       };
     }
@@ -387,7 +365,6 @@ public final class LDAPModRateJobClass
   {
     parentRandom = new Random();
 
-
     dn1Parameter = parameters.getStringParameter(dn1Parameter.getName());
     final String entryDN1 = dn1Parameter.getStringValue();
 
@@ -405,26 +382,14 @@ public final class LDAPModRateJobClass
     }
 
 
-    attributesParameter =
-         parameters.getMultiLineTextParameter(attributesParameter.getName());
-    modAttributes = attributesParameter.getNonBlankLines();
+    attributeParameter =
+         parameters.getStringParameter(attributeParameter.getName());
+    attributeName = attributeParameter.getStringValue();
 
 
-    characterSet = DEFAULT_CHARACTER_SET.toCharArray();
-    characterSetParameter =
-         parameters.getStringParameter(characterSetParameter.getName());
-    if ((characterSetParameter != null) && characterSetParameter.hasValue())
-    {
-      characterSet = characterSetParameter.getStringValue().toCharArray();
-    }
-
-
-    valueLength = 80;
-    lengthParameter = parameters.getIntegerParameter(lengthParameter.getName());
-    if ((lengthParameter != null) && lengthParameter.hasValue())
-    {
-      valueLength = lengthParameter.getIntValue();
-    }
+    valueParameter =
+         parameters.getStringParameter(valueParameter.getName());
+    assertionValue = valueParameter.getStringValue();
 
 
     warmUpTime = 0;
@@ -522,25 +487,25 @@ public final class LDAPModRateJobClass
                                final ParameterList parameters)
          throws UnableToRunException
   {
-    modsCompleted = new IncrementalTracker(clientID, threadID,
-         STAT_MODS_COMPLETED, collectionInterval);
-    modTimer = new TimeTracker(clientID, threadID, STAT_MOD_DURATION,
+    random = new Random(parentRandom.nextLong());
+
+    comparesCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_COMPS_COMPLETED, collectionInterval);
+    compareTimer = new TimeTracker(clientID, threadID, STAT_COMP_DURATION,
          collectionInterval);
     resultCodes = new CategoricalTracker(clientID, threadID,
          STAT_RESULT_CODES, collectionInterval);
-    modsExceedingThreshold = new IncrementalTracker(clientID, threadID,
-         STAT_MODS_EXCEEDING_THRESHOLD, collectionInterval);
+    comparesExceedingThreshold = new IncrementalTracker(clientID, threadID,
+         STAT_COMPS_EXCEEDING_THRESHOLD, collectionInterval);
 
     RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
-      modsCompleted.enableRealTimeStats(statReporter, jobID);
-      modTimer.enableRealTimeStats(statReporter, jobID);
-      modsExceedingThreshold.enableRealTimeStats(statReporter, jobID);
+      comparesCompleted.enableRealTimeStats(statReporter, jobID);
+      compareTimer.enableRealTimeStats(statReporter, jobID);
+      comparesExceedingThreshold.enableRealTimeStats(statReporter, jobID);
     }
-
-    random = new Random(parentRandom.nextLong());
 
     try
     {
@@ -576,8 +541,6 @@ public final class LDAPModRateJobClass
   @Override()
   public void runJob()
   {
-    StringBuilder value = new StringBuilder(valueLength);
-
     // Figure out when to start and stop collecting statistics.
     long stopCollectingTime = Long.MAX_VALUE;
     if ((coolDownTime > 0) && (getShouldStopTime() > 0L))
@@ -599,7 +562,12 @@ public final class LDAPModRateJobClass
     }
 
 
-    // Perform the modifications until it's time to stop.
+    // Create the base compare request.
+    CompareRequest compareRequest =
+         new CompareRequest("", attributeName, assertionValue);
+
+
+    // Perform the compare operations until it's time to stop.
     boolean doneCollecting = false;
     while (! shouldStop())
     {
@@ -612,62 +580,45 @@ public final class LDAPModRateJobClass
       }
 
       // See if it's time to change the tracking state.
-      long modStartTime = System.currentTimeMillis();
+      long compareStartTime = System.currentTimeMillis();
       if (collectingStats && (coolDownTime > 0) &&
-          (modStartTime >= stopCollectingTime))
+          (compareStartTime >= stopCollectingTime))
       {
         stopTrackers();
         collectingStats = false;
         doneCollecting  = true;
       }
       else if ((! collectingStats) && (! doneCollecting) &&
-               (modStartTime >= startCollectingTime))
+               (compareStartTime >= startCollectingTime))
       {
         collectingStats = true;
         startTrackers();
       }
 
 
-      // Get the DN of the entry to modify.
-      String dn;
+      // Get the DN of the entry to target with the compare.
       if (random.nextInt(100) < dn1Percentage)
       {
-        dn = dn1Pattern.nextValue();
+        compareRequest.setDN(dn1Pattern.nextValue());
       }
       else
       {
-        dn = dn2Pattern.nextValue();
+        compareRequest.setDN(dn2Pattern.nextValue());
       }
 
 
-      // Create the modification.
-      value.setLength(0);
-      for (int i=0; i < valueLength; i++)
-      {
-        value.append(characterSet[random.nextInt(characterSet.length)]);
-      }
-      String valueStr = value.toString();
-
-      Modification[] mods = new Modification[modAttributes.length];
-      for (int i=0; i < modAttributes.length; i++)
-      {
-        mods[i] = new Modification(ModificationType.REPLACE, modAttributes[i],
-                                   valueStr);
-      }
-
-
-      // Process the modification.
+      // Process the compare operation.
       if (collectingStats)
       {
-        modTimer.startTimer();
+        compareTimer.startTimer();
       }
 
       try
       {
-        conn.modify(dn, mods);
+        CompareResult result = conn.compare(compareRequest);
         if (collectingStats)
         {
-          resultCodes.increment(ResultCode.SUCCESS.toString());
+          resultCodes.increment(result.getResultCode().toString());
         }
       }
       catch (LDAPException le)
@@ -681,13 +632,13 @@ public final class LDAPModRateJobClass
       {
         if (collectingStats)
         {
-          modTimer.stopTimer();
-          modsCompleted.increment();
+          compareTimer.stopTimer();
+          comparesCompleted.increment();
 
           if ((responseTimeThreshold > 0) &&
-              (modTimer.getLastOperationTime() > responseTimeThreshold))
+              (compareTimer.getLastOperationTime() > responseTimeThreshold))
           {
-            modsExceedingThreshold.increment();
+            comparesExceedingThreshold.increment();
           }
         }
       }
@@ -696,7 +647,7 @@ public final class LDAPModRateJobClass
       // Sleep if necessary before the next request.
       if (timeBetweenRequests > 0L)
       {
-        long elapsedTime = System.currentTimeMillis() - modStartTime;
+        long elapsedTime = System.currentTimeMillis() - compareStartTime;
         long sleepTime   = timeBetweenRequests - elapsedTime;
         if (sleepTime > 0)
         {
@@ -724,10 +675,10 @@ public final class LDAPModRateJobClass
    */
   private void startTrackers()
   {
-    modsCompleted.startTracker();
-    modTimer.startTracker();
+    comparesCompleted.startTracker();
+    compareTimer.startTracker();
     resultCodes.startTracker();
-    modsExceedingThreshold.startTracker();
+    comparesExceedingThreshold.startTracker();
   }
 
 
@@ -737,10 +688,10 @@ public final class LDAPModRateJobClass
    */
   private void stopTrackers()
   {
-    modsCompleted.stopTracker();
-    modTimer.stopTracker();
+    comparesCompleted.stopTracker();
+    compareTimer.stopTracker();
     resultCodes.stopTracker();
-    modsExceedingThreshold.stopTracker();
+    comparesExceedingThreshold.stopTracker();
   }
 
 

@@ -34,7 +34,7 @@ import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Sequence;
 
 import com.slamd.common.Constants;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.job.Job;
 import com.slamd.job.JobClass;
 import com.slamd.job.OptimizationAlgorithm;

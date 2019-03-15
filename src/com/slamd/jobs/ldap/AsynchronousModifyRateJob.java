@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -75,8 +75,8 @@ import com.slamd.stat.TimeTracker;
  *       earlier request.</LI>
  * </UL>
  */
-public final class LDAPAsynchronousModRateJobClass
-       extends LDAPJobClass
+public final class AsynchronousModifyRateJob
+       extends LDAPJob
 {
   /**
    * The set of characters to include in the values to use for the target
@@ -278,7 +278,7 @@ public final class LDAPAsynchronousModRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPAsynchronousModRateJobClass()
+  public AsynchronousModifyRateJob()
   {
     super();
   }
@@ -291,7 +291,7 @@ public final class LDAPAsynchronousModRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Asynchronous ModRate";
+    return "Asynchronous Modify Rate";
   }
 
 
@@ -863,17 +863,17 @@ public final class LDAPAsynchronousModRateJobClass
 
 
       // Generate and process the modify request.
-      final LDAPAsynchronousModRateListener listener;
+      final AsynchronousModifyRateListener listener;
       if (collectingStats)
       {
-        listener = new LDAPAsynchronousModRateListener(responseTimeThreshold,
+        listener = new AsynchronousModifyRateListener(responseTimeThreshold,
              outstandingRequests, resultCodes[connSlot],
              modsCompleted[connSlot], modsExceedingThreshold[connSlot],
              modTimers[connSlot]);
       }
       else
       {
-        listener = new LDAPAsynchronousModRateListener(responseTimeThreshold,
+        listener = new AsynchronousModifyRateListener(responseTimeThreshold,
              outstandingRequests, null, null, null, null);
       }
 

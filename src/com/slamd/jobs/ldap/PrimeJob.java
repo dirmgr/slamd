@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -66,7 +66,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class LDAPPrimeJobClass
+public final class PrimeJob
        extends JobClass
 {
   /**
@@ -302,7 +302,7 @@ public final class LDAPPrimeJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public LDAPPrimeJobClass()
+  public PrimeJob()
   {
     super();
   }
@@ -315,7 +315,7 @@ public final class LDAPPrimeJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Prime";
+    return "Prime";
   }
 
 

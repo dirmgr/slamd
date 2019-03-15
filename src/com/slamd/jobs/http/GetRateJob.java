@@ -23,12 +23,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.http.HTTPClient;
 import com.slamd.http.HTTPRequest;
 import com.slamd.http.HTTPResponse;
 import com.slamd.job.JobClass;
 import com.slamd.job.UnableToRunException;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 import com.slamd.parameter.BooleanParameter;
 import com.slamd.parameter.FileURLParameter;
 import com.slamd.parameter.IntegerParameter;
@@ -54,7 +54,7 @@ import com.unboundid.util.FixedRateBarrier;
  *
  * @author   Neil A. Wilson
  */
-public final class HTTPGetRateJob
+public final class GetRateJob
        extends JobClass
 {
   /**
@@ -315,7 +315,7 @@ public final class HTTPGetRateJob
   /**
    * Creates a new instance of this HTTP GetRate job class.
    */
-  public HTTPGetRateJob()
+  public GetRateJob()
   {
     super();
   }
@@ -328,7 +328,7 @@ public final class HTTPGetRateJob
   @Override()
   public String getJobName()
   {
-    return "HTTP GetRate";
+    return "Get Rate";
   }
 
 

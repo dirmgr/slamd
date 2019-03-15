@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.ldap;
 
 
 
@@ -44,11 +44,12 @@ import com.slamd.stat.TimeTracker;
 
 import com.unboundid.ldap.sdk.Filter;
 import com.unboundid.ldap.sdk.LDAPConnection;
-import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldap.sdk.LDAPException;
 import com.unboundid.ldap.sdk.SearchRequest;
 import com.unboundid.ldap.sdk.SearchResult;
 import com.unboundid.ldap.sdk.SearchResultEntry;
+import com.unboundid.ldap.sdk.SearchResultListener;
+import com.unboundid.ldap.sdk.SearchResultReference;
 import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.util.FixedRateBarrier;
 import com.unboundid.util.ValuePattern;
@@ -57,12 +58,11 @@ import com.unboundid.util.ValuePattern;
 
 /**
  * This class provides a SLAMD job class that may be used to perform searches
- * against an LDAP directory server with a pool containing a number of
- * connections per client that is not dependent upon the number of active
- * threads.
+ * against an LDAP directory server.
  */
-public final class LDAPMultiConnectionSearchRateJobClass
-       extends LDAPJobClass
+public final class SearchRateJob
+       extends LDAPJob
+       implements SearchResultListener
 {
   /**
    * The display name for the stat tracker used to track entries returned.
@@ -135,6 +135,13 @@ public final class LDAPMultiConnectionSearchRateJobClass
 
 
   /**
+   * The serial version UID for this serializable class.
+   */
+  private static final long serialVersionUID = 4870520300740292912L;
+
+
+
+  /**
    * The set of defined search scopes.
    */
   private static final String[] SCOPES =
@@ -180,8 +187,8 @@ public final class LDAPMultiConnectionSearchRateJobClass
   // The search request to use for this thread.
   private SearchRequest searchRequest;
 
-  // The LDAP connection pool shared by all client threads.
-  private static LDAPConnectionPool pool;
+  // The LDAP connection used by this thread.
+  private LDAPConnection conn;
 
   // The parameters used by this job.
   private IntegerParameter coolDownParameter = new IntegerParameter(
@@ -189,18 +196,13 @@ public final class LDAPMultiConnectionSearchRateJobClass
        "The length of time in seconds to continue running after ending " +
             "statistics collection.",
        true, 0, true, 0, false, 0);
-  private IntegerParameter connectionsPerClientParameter = new IntegerParameter(
-       "connectionsPerClient", "Connections per Client",
-       "The number of connections to establish to the Directory Server from " +
-            "each SLAMD client.",
-       true, 1, true, 1, false, 0);
   private IntegerParameter maxRateParameter = new IntegerParameter("maxRate",
        "Max Search Rate (Searches/Second/Client)",
        "Specifies the maximum search rate (in searches per second per " +
             "client) to attempt to maintain.  If multiple clients are used, " +
             "then each client will attempt to maintain this rate.  A value " +
             "less than or equal to zero indicates that the client should " +
-            "attempt to perform authentications as quickly as possible.",
+            "attempt to perform searches as quickly as possible.",
        true, -1);
   private IntegerParameter percentageParameter = new IntegerParameter(
        "percentage", "Filter 1 Percentage",
@@ -273,7 +275,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
   /**
    * Creates a new instance of this job class.
    */
-  public LDAPMultiConnectionSearchRateJobClass()
+  public SearchRateJob()
   {
     super();
   }
@@ -286,7 +288,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
   @Override()
   public String getJobName()
   {
-    return "LDAP Multi-Connection SearchRate";
+    return "Search Rate";
   }
 
 
@@ -297,8 +299,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP search operations using large numbers of " +
-           "connections";
+    return "Perform repeated LDAP search operations";
   }
 
 
@@ -312,10 +313,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
     return new String[]
     {
       "This job can be used to perform repeated searches against an LDAP " +
-      "directory server.  It can establish a large number of connections to " +
-      "the directory server(s), and requests will be evenly distributed " +
-      "across those connections.  This may be used to test performance with " +
-      "large numbers of connections established."
+      "directory server."
     };
   }
 
@@ -328,8 +326,6 @@ public final class LDAPMultiConnectionSearchRateJobClass
   protected List<Parameter> getNonLDAPParameterStubs()
   {
     return Arrays.asList(
-         new PlaceholderParameter(),
-         connectionsPerClientParameter,
          new PlaceholderParameter(),
          baseDNParameter,
          scopeParameter,
@@ -431,7 +427,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -446,7 +442,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
       {
         new ValuePattern(p.getValue());
       }
-      catch (ParseException pe)
+      catch (final ParseException pe)
       {
         throw new InvalidValueException("The value provided for the '" +
              p.getDisplayName() + "' parameter is not a valid value " +
@@ -475,8 +471,8 @@ public final class LDAPMultiConnectionSearchRateJobClass
       try
       {
         String base = baseDNParam.getStringValue();
-        outputMessages.add(
-             "Ensuring that base entry '" + base + "' exists....");
+        outputMessages.add("Ensuring that base entry '" + base +
+                           "' exists....");
         SearchResultEntry e = connection.getEntry(base);
         if (e == null)
         {
@@ -488,11 +484,11 @@ public final class LDAPMultiConnectionSearchRateJobClass
           outputMessages.add("The base entry exists.");
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         successful = false;
-        outputMessages.add(
-             "Unable to perform the search:  " + stackTraceToString(e));
+        outputMessages.add("Unable to perform the search:  " +
+                           stackTraceToString(e));
       }
 
       outputMessages.add("");
@@ -512,12 +508,6 @@ public final class LDAPMultiConnectionSearchRateJobClass
             throws UnableToRunException
   {
     parentRandom = new Random();
-
-
-    connectionsPerClientParameter = parameters.getIntegerParameter(
-         connectionsPerClientParameter.getName());
-    final int connectionsPerClient =
-         connectionsPerClientParameter.getIntValue();
 
 
     baseDN = "";
@@ -664,32 +654,22 @@ public final class LDAPMultiConnectionSearchRateJobClass
 
     try
     {
-      pool = createConnectionPool(connectionsPerClient,  connectionsPerClient);
-    }
-    catch (Exception e)
-    {
-      throw new UnableToRunException("Unable to create the connection pool:  " +
-           stackTraceToString(e), e);
-    }
-
-    try
-    {
       filter1Pattern = new ValuePattern(filter1);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 1:  " +
-           stackTraceToString(e), e);
+                                     stackTraceToString(e), e);
     }
 
     try
     {
       filter2Pattern = new ValuePattern(filter2);
     }
-    catch (Exception e)
+    catch (final Exception e)
     {
       throw new UnableToRunException("Unable to parse filter pattern 2:  " +
-           stackTraceToString(e), e);
+                                     stackTraceToString(e), e);
     }
   }
 
@@ -727,13 +707,23 @@ public final class LDAPMultiConnectionSearchRateJobClass
 
     random = new Random(parentRandom.nextLong());
 
-    searchRequest = new SearchRequest(baseDN, scope,
+    searchRequest = new SearchRequest(this, baseDN, scope,
          Filter.createPresenceFilter("objectClass"), attributes);
     searchRequest.setSizeLimit(sizeLimit);
     searchRequest.setTimeLimitSeconds(timeLimit);
     if (timeLimit > 0)
     {
       searchRequest.setResponseTimeoutMillis(1000L * timeLimit);
+    }
+
+    try
+    {
+      conn = createConnection();
+    }
+    catch (final Exception e)
+    {
+      throw new UnableToRunException("Unable to establish a connection to " +
+           "the target server:  " + stackTraceToString(e), e);
     }
   }
 
@@ -745,10 +735,10 @@ public final class LDAPMultiConnectionSearchRateJobClass
   @Override()
   public void finalizeThread()
   {
-    if (pool != null)
+    if (conn != null)
     {
-      pool.close();
-      pool = null;
+      conn.close();
+      conn = null;
     }
   }
 
@@ -822,7 +812,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
           searchRequest.setFilter(filter2Pattern.nextValue());
         }
       }
-      catch (Exception e)
+      catch (final Exception e)
       {
         logMessage("ERROR -- Generated an invalid search filter:  " +
                    stackTraceToString(e));
@@ -839,14 +829,14 @@ public final class LDAPMultiConnectionSearchRateJobClass
 
       try
       {
-        SearchResult searchResult = pool.search(searchRequest);
+        SearchResult searchResult = conn.search(searchRequest);
         if (collectingStats)
         {
           entriesReturned.addValue(searchResult.getEntryCount());
           resultCodes.increment(searchResult.getResultCode().toString());
         }
       }
-      catch (LDAPException le)
+      catch (final LDAPException le)
       {
         if (collectingStats)
         {
@@ -879,7 +869,7 @@ public final class LDAPMultiConnectionSearchRateJobClass
           try
           {
             Thread.sleep(sleepTime);
-          } catch (Exception e) {}
+          } catch (final Exception e) {}
         }
       }
     }
@@ -929,10 +919,34 @@ public final class LDAPMultiConnectionSearchRateJobClass
   @Override()
   public synchronized void destroyThread()
   {
-    if (pool != null)
+    if (conn != null)
     {
-      pool.close();
-      pool = null;
+      conn.close();
+      conn = null;
     }
+  }
+
+
+
+  /**
+   * Processes the provided search result entry returned from the search.
+   *
+   * @param  e  The search result entry to process.
+   */
+  public void searchEntryReturned(final SearchResultEntry e)
+  {
+    // No implementation required.
+  }
+
+
+
+  /**
+   * Processes the provided search result reference returned from the search.
+   *
+   * @param  r  The search result reference to process.
+   */
+  public void searchReferenceReturned(final SearchResultReference r)
+  {
+    // No implementation required.
   }
 }

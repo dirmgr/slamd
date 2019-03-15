@@ -35,8 +35,8 @@ import com.unboundid.asn1.ASN1Writer;
 
 import com.slamd.common.Constants;
 import com.slamd.common.DynamicConstants;
+import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.common.SLAMDException;
-import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 import com.slamd.job.JobClass;
 import com.slamd.message.ClassTransferResponseMessage;
 import com.slamd.message.ClientHelloMessage;

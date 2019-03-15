@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.utility;
 
 
 
@@ -32,7 +32,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class BurnCPUJobClass
+public final class BurnCPUJob
        extends JobClass
 {
   /**
@@ -41,7 +41,7 @@ public final class BurnCPUJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public BurnCPUJobClass()
+  public BurnCPUJob()
   {
     super();
   }

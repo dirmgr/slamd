@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.utility;
 
 
 
@@ -63,7 +63,7 @@ public final class TCPReplayReadThread
   private Selector selector;
 
   // The TCPReplay job instance with which this thread is associated.
-  private TCPReplayJobClass tcpReplayJob;
+  private TCPReplayJob tcpReplayJob;
 
 
 
@@ -77,7 +77,7 @@ public final class TCPReplayReadThread
    * @throws  IOException  If a problem occurs while creating the associated
    *                       selector.
    */
-  public TCPReplayReadThread(final TCPReplayJobClass tcpReplayJob)
+  public TCPReplayReadThread(final TCPReplayJob tcpReplayJob)
          throws IOException
   {
     this.tcpReplayJob = tcpReplayJob;

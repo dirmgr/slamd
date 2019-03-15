@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.utility;
 
 
 
@@ -44,7 +44,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class ExecJobClass
+public final class ExecJob
        extends JobClass
 {
   /**
@@ -105,7 +105,7 @@ public final class ExecJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public ExecJobClass()
+  public ExecJob()
   {
     super();
   }

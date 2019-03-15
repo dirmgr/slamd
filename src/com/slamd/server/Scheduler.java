@@ -37,7 +37,7 @@ import com.slamd.job.Job;
 import com.slamd.job.JobClass;
 import com.slamd.job.OptimizingJob;
 import com.slamd.job.UnableToRunException;
-import com.slamd.jobs.NullJobClass;
+import com.slamd.jobs.utility.NoOpJob;
 import com.slamd.common.Constants;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.Parameter;
@@ -160,7 +160,7 @@ public final class Scheduler
 
     try
     {
-      WAKEUP_JOB = new Job(slamdServer, NullJobClass.class.getName());
+      WAKEUP_JOB = new Job(slamdServer, NoOpJob.class.getName());
     }
     catch (final Exception e)
     {

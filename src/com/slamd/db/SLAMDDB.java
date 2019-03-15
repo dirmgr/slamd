@@ -57,8 +57,14 @@ import com.unboundid.util.StaticUtils;
 import com.slamd.admin.AdminServlet;
 import com.slamd.common.Constants;
 import com.slamd.common.JobClassLoader;
-import com.slamd.jobs.BurnCPUJobClass;
-import com.slamd.jobs.ExecJobClass;
+import com.slamd.job.Job;
+import com.slamd.job.JobClass;
+import com.slamd.job.OptimizingJob;
+import com.slamd.job.SingleStatisticOptimizationAlgorithm;
+import com.slamd.job.SingleStatisticWithCPUUtilizationOptimizationAlgorithm;
+import com.slamd.job.SingleStatisticWithConstraintOptimizationAlgorithm;
+import com.slamd.job.SingleStatisticWithReplicationLatencyOptimizationAlgorithm;
+import com.slamd.jobgroup.JobGroup;
 import com.slamd.jobs.HTTPGetRateJobClass;
 import com.slamd.jobs.IMAPCheckRateJobClass;
 import com.slamd.jobs.LDAPAddAndDeleteRateJobClass;
@@ -77,23 +83,17 @@ import com.slamd.jobs.LDAPSearchRateJobClass;
 import com.slamd.jobs.LDAPSearchAndModRateJobClass;
 import com.slamd.jobs.LDAPWaitForDirectoryJobClass;
 import com.slamd.jobs.MultiSearchLDAPLoadJobClass;
-import com.slamd.jobs.NullJobClass;
 import com.slamd.jobs.POPCheckRateJobClass;
 import com.slamd.jobs.SMTPSendRateJobClass;
 import com.slamd.jobs.SQLModRateJobClass;
 import com.slamd.jobs.SQLSearchRateJobClass;
 import com.slamd.jobs.SiteMinderJobClass;
-import com.slamd.jobs.TCPReplayJobClass;
-import com.slamd.jobs.ThroughputTestJobClass;
 import com.slamd.jobs.WeightedSiteMinderJobClass;
-import com.slamd.job.Job;
-import com.slamd.job.JobClass;
-import com.slamd.job.OptimizingJob;
-import com.slamd.job.SingleStatisticOptimizationAlgorithm;
-import com.slamd.job.SingleStatisticWithCPUUtilizationOptimizationAlgorithm;
-import com.slamd.job.SingleStatisticWithConstraintOptimizationAlgorithm;
-import com.slamd.job.SingleStatisticWithReplicationLatencyOptimizationAlgorithm;
-import com.slamd.jobgroup.JobGroup;
+import com.slamd.jobs.utility.BurnCPUJob;
+import com.slamd.jobs.utility.ExecJob;
+import com.slamd.jobs.utility.NoOpJob;
+import com.slamd.jobs.utility.TCPReplayJob;
+import com.slamd.jobs.utility.ThroughputTestJob;
 import com.slamd.loadvariance.LoadVarianceTestJobClass;
 import com.slamd.report.HTMLReportGenerator;
 import com.slamd.report.PDFReportGenerator;
@@ -514,8 +514,6 @@ public final class SLAMDDB
          dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG, dbConfig);
     final String[] jobClasses =
     {
-      BurnCPUJobClass.class.getName(),
-      ExecJobClass.class.getName(),
       HTTPGetRateJobClass.class.getName(),
       IMAPCheckRateJobClass.class.getName(),
       LDAPAddAndDeleteRateJobClass.class.getName(),
@@ -534,18 +532,21 @@ public final class SLAMDDB
       LDAPSearchAndModRateJobClass.class.getName(),
       LDAPWaitForDirectoryJobClass.class.getName(),
       MultiSearchLDAPLoadJobClass.class.getName(),
-      NullJobClass.class.getName(),
       POPCheckRateJobClass.class.getName(),
       SiteMinderJobClass.class.getName(),
       SMTPSendRateJobClass.class.getName(),
       SQLModRateJobClass.class.getName(),
       SQLSearchRateJobClass.class.getName(),
-      TCPReplayJobClass.class.getName(),
-      ThroughputTestJobClass.class.getName(),
       WeightedSiteMinderJobClass.class.getName(),
       LoadVarianceTestJobClass.class.getName(),
       BSFJobClass.class.getName(),
-      ScriptedJobClass.class.getName()
+      ScriptedJobClass.class.getName(),
+
+      BurnCPUJob.class.getName(),
+      ExecJob.class.getName(),
+      NoOpJob.class.getName(),
+      TCPReplayJob.class.getName(),
+      ThroughputTestJob.class.getName(),
     };
 
     final String[] optimizationAlgorithms =

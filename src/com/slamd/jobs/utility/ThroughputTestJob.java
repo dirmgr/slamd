@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.utility;
 
 
 
@@ -41,7 +41,7 @@ import com.slamd.stat.StatTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class ThroughputTestJobClass
+public final class ThroughputTestJob
        extends JobClass
 {
   /**
@@ -152,7 +152,7 @@ public final class ThroughputTestJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public ThroughputTestJobClass()
+  public ThroughputTestJob()
   {
     super();
   }

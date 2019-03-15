@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.legacy;
 
 
 
@@ -37,6 +37,8 @@ import com.unboundid.util.ValuePattern;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
 import com.slamd.job.UnableToRunException;
+import com.slamd.jobs.JSSEBlindTrustSocketFactory;
+import com.slamd.jobs.SLAMDLDAPSocketFactory;
 import com.slamd.parameter.BooleanParameter;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;

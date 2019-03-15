@@ -57,10 +57,7 @@ import com.unboundid.util.StaticUtils;
 import com.slamd.admin.AdminServlet;
 import com.slamd.common.Constants;
 import com.slamd.common.JobClassLoader;
-import com.slamd.dslogplay.LogPlaybackJobClass;
 import com.slamd.jobs.BurnCPUJobClass;
-import com.slamd.jobs.DSADMImportRateJobClass;
-import com.slamd.jobs.DSCFGImportRateJobClass;
 import com.slamd.jobs.ExecJobClass;
 import com.slamd.jobs.HTTPGetRateJobClass;
 import com.slamd.jobs.IMAPCheckRateJobClass;
@@ -79,7 +76,6 @@ import com.slamd.jobs.LDAPPrimeJobClass;
 import com.slamd.jobs.LDAPSearchRateJobClass;
 import com.slamd.jobs.LDAPSearchAndModRateJobClass;
 import com.slamd.jobs.LDAPWaitForDirectoryJobClass;
-import com.slamd.jobs.LDIF2DBImportRateJobClass;
 import com.slamd.jobs.MultiSearchLDAPLoadJobClass;
 import com.slamd.jobs.NullJobClass;
 import com.slamd.jobs.POPCheckRateJobClass;
@@ -87,7 +83,6 @@ import com.slamd.jobs.SMTPSendRateJobClass;
 import com.slamd.jobs.SQLModRateJobClass;
 import com.slamd.jobs.SQLSearchRateJobClass;
 import com.slamd.jobs.SiteMinderJobClass;
-import com.slamd.jobs.SolarisLDAPAuthRateJobClass;
 import com.slamd.jobs.TCPReplayJobClass;
 import com.slamd.jobs.ThroughputTestJobClass;
 import com.slamd.jobs.WeightedSiteMinderJobClass;
@@ -520,8 +515,6 @@ public final class SLAMDDB
     final String[] jobClasses =
     {
       BurnCPUJobClass.class.getName(),
-      DSADMImportRateJobClass.class.getName(),
-      DSCFGImportRateJobClass.class.getName(),
       ExecJobClass.class.getName(),
       HTTPGetRateJobClass.class.getName(),
       IMAPCheckRateJobClass.class.getName(),
@@ -540,13 +533,11 @@ public final class SLAMDDB
       LDAPSearchRateJobClass.class.getName(),
       LDAPSearchAndModRateJobClass.class.getName(),
       LDAPWaitForDirectoryJobClass.class.getName(),
-      LDIF2DBImportRateJobClass.class.getName(),
       MultiSearchLDAPLoadJobClass.class.getName(),
       NullJobClass.class.getName(),
       POPCheckRateJobClass.class.getName(),
       SiteMinderJobClass.class.getName(),
       SMTPSendRateJobClass.class.getName(),
-      SolarisLDAPAuthRateJobClass.class.getName(),
       SQLModRateJobClass.class.getName(),
       SQLSearchRateJobClass.class.getName(),
       TCPReplayJobClass.class.getName(),
@@ -554,8 +545,7 @@ public final class SLAMDDB
       WeightedSiteMinderJobClass.class.getName(),
       LoadVarianceTestJobClass.class.getName(),
       BSFJobClass.class.getName(),
-      ScriptedJobClass.class.getName(),
-      LogPlaybackJobClass.class.getName()
+      ScriptedJobClass.class.getName()
     };
 
     final String[] optimizationAlgorithms =

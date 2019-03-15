@@ -85,6 +85,7 @@ import static com.slamd.admin.AdminConfig.*;
 import static com.slamd.admin.AdminDebug.*;
 import static com.slamd.admin.AdminJob.*;
 import static com.slamd.admin.AdminJobGroup.*;
+import static com.slamd.admin.AdminOptimizingJob.*;
 import static com.slamd.admin.AdminUI.*;
 
 

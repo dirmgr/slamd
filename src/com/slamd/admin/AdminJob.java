@@ -6697,9 +6697,9 @@ public class AdminJob
                  Constants.SERVLET_SECTION_JOB_SCHEDULE, names, values,
                  categorizedClasses[i][j].getShortDescription(),
                  categorizedClasses[i][j].getJobName());
-            htmlBody.append("  <LI>" + link + " (" +
-                 categorizedClasses[i][j].getClass().getName() + ")</LI>" +
-                 EOL);
+            htmlBody.append("  <LI>" + link + " &mdash; " +
+                 categorizedClasses[i][j].getShortDescription() +
+                 "</LI>" + EOL);
           }
 
           htmlBody.append("</UL>" + EOL);

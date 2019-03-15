@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.mail;
 
 
 
@@ -57,7 +57,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public final class SMTPSendRateJobClass
+public final class SMTPSendRateJob
        extends JobClass
 {
   /**
@@ -272,7 +272,7 @@ public final class SMTPSendRateJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public SMTPSendRateJobClass()
+  public SMTPSendRateJob()
   {
     super();
   }

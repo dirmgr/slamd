@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.mail;
 
 
 
@@ -63,7 +63,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public final class POPCheckRateJobClass
+public final class POP3CheckRateJob
        extends JobClass
 {
   /**
@@ -207,7 +207,7 @@ public final class POPCheckRateJobClass
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public POPCheckRateJobClass()
+  public POP3CheckRateJob()
   {
     super();
   }
@@ -220,7 +220,7 @@ public final class POPCheckRateJobClass
   @Override()
   public String getJobName()
   {
-    return "POP CheckRate";
+    return "POP3 CheckRate";
   }
 
 

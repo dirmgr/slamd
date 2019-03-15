@@ -13,13 +13,14 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.sql;
 
 
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Random;
@@ -34,6 +35,7 @@ import com.slamd.parameter.PasswordParameter;
 import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.IncrementalTracker;
+import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
@@ -43,14 +45,14 @@ import com.unboundid.util.FixedRateBarrier;
 
 
 /**
- * This class implements a SLAMD job that can be used to measure the update
+ * This class implements a SLAMD job that can be used to measure the search
  * performance of an SQL database.  It should work with any database for which a
  * JDBC driver exists.
  *
  *
  * @author   Neil A. Wilson
  */
-public final class SQLModRateJobClass
+public final class SQLSearchRateJob
        extends JobClass
 {
   /**
@@ -63,28 +65,28 @@ public final class SQLModRateJobClass
 
 
   /**
-   * The display name of the stat tracker that tracks the rate at which updates
+   * The display name of the stat tracker that tracks the rate at which queries
    * are able to be processed.
    */
-  private static  final String STAT_TRACKER_UPDATES_COMPLETED =
-       "Updates Completed";
+  private static  final String STAT_TRACKER_QUERIES_COMPLETED =
+       "Queries Completed";
 
 
 
   /**
    * The display name of the stat tracker that tracks the average length of time
-   * required to process an update.
+   * required to process a query.
    */
-  private static final String STAT_TRACKER_UPDATE_DURATION =
-       "Update Duration (ms)";
+  private static final String STAT_TRACKER_QUERY_DURATION =
+       "Query Duration (ms)";
 
 
 
   /**
-   * The characters that are available for use in the randomly-generated values.
+   * The display name of the stat tracker that tracks the average number of
+   * rows returned from each query.
    */
-  private static final char[] ALPHABET =
-       "abcdefghijklmnopqrstuvwxyz".toCharArray();
+  private static final String STAT_TRACKER_ROWS_RETURNED = "Rows Returned";
 
 
 
@@ -92,7 +94,7 @@ public final class SQLModRateJobClass
   private BooleanParameter disconnectParameter =
        new BooleanParameter("disconnect", "Always Disconnect",
                             "Indicates whether the connection to the " +
-                            "database should be dropped after each update.",
+                            "database should be dropped after each query.",
                             false);
 
   // The parameter that specifies the cool down time.
@@ -105,7 +107,7 @@ public final class SQLModRateJobClass
   // The parameter that specifies the number of iterations to perform.
   private IntegerParameter iterationsParameter =
        new IntegerParameter("iterations", "Number of Iterations",
-                            "The number of updates to perform before ending " +
+                            "The number of queries to issue before ending " +
                             "the job.", false, -1, true, -1, false, 0);
 
   // The parameter that specifies the maximum request rate.
@@ -131,23 +133,16 @@ public final class SQLModRateJobClass
             "be less able to achieve the desired rate.",
        true, 0, true,0, false, 0);
 
-  // The parameter that specifies the time between updates.
-  private IntegerParameter timeBetweenUpdatesParameter =
-       new IntegerParameter("time_between_updates", "Time Between Updates (ms)",
+  // The parameter that specifies the time between queries.
+  private IntegerParameter timeBetweenQueriesParameter =
+       new IntegerParameter("time_between_queries", "Time Between Queries (ms)",
                             "Specifies the length of time in milliseconds " +
-                            "that should be allowed between updates.  Note " +
+                            "that should be allowed between queries.  Note " +
                             "that this time is measured between the " +
-                            "beginning of one update and the beginning of " +
-                            "the next rather than the end of one and the " +
+                            "beginning of one query and the beginning of the " +
+                            "next rather than the end of one and the " +
                             "beginning of the next.", true, 0, true, 0, false,
                             0);
-
-  // The parameter that specifies the length to use for the generated value.
-  private IntegerParameter valueLengthParameter =
-       new IntegerParameter("value_length", "Generated Value Length",
-                            "Specifies the number of characters to include " +
-                            "in the randomly-generated value to use in the " +
-                            "update.", true, 20, true, 1, false, 0);
 
   // The parameter that specifies the warm up time.
   private IntegerParameter warmUpParameter =
@@ -177,34 +172,14 @@ public final class SQLModRateJobClass
                            "The URL that specifies the information to use to " +
                            "connect to the SQL database.", true, "");
 
-  // The parameter that specifies the database column to match.
-  private StringParameter matchColumnParameter =
-       new StringParameter("match_column", "Column to Match",
-                           "The name of the database column to query in " +
-                           "order to find the records to update.", true, "");
-
-  // The parameter that specifies the text to use to perform the match.
-  private StringParameter matchValueParameter =
-       new StringParameter("match_value", "Match Value",
-                           "The value or value pattern to use to find the " +
-                           "records to update.  It may optionally include a " +
-                           "bracketed pair of integers separated by a dash " +
-                           "(for random access) or a colon (for sequential " +
-                           "access) to alter the query each time it is " +
-                           "issued.", true, "");
-
-  // The parameter that specifies the name of the table to use.
-  private StringParameter tableNameParameter =
-       new StringParameter("table_name", "Table Name",
-                           "The of the table in the database in which the " +
-                           "updates should be performed.", true, "");
-
-  // The parameter that specifies the database column to update.
-  private StringParameter updateColumnParameter =
-       new StringParameter("update_column", "Column to Update",
-                           "The name of the database column to replace with " +
-                           "a randomly generated string in matching records.",
-                           true, "");
+  // The parameter that specifies the SQL query to issue to the database.
+  private StringParameter sqlQueryParameter =
+       new StringParameter("sql_query", "SQL Query",
+                           "The SQL statement to use to query the database.  " +
+                           "It may optionally include a bracketed pair of " +
+                           "integers separated by a dash (for random access) " +
+                           "or a colon (for sequential access) to alter the " +
+                           "query each time it is issued.", true, "");
 
   // The parameter that specifies the username to use to connect to the DB.
   private StringParameter userNameParameter =
@@ -224,18 +199,15 @@ public final class SQLModRateJobClass
   private static int     rangeMax;
   private static int     rangeSpan;
   private static int     sequentialCounter;
-  private static int     timeBetweenUpdates;
-  private static int     valueLength;
+  private static int     timeBetweenQueries;
   private static int     warmUpTime;
   private static String  driverClass;
   private static String  jdbcURL;
-  private static String  matchColumn;
-  private static String  tableName;
-  private static String  updateColumn;
+  private static String  sqlQuery;
   private static String  userName;
   private static String  userPassword;
-  private static String  valueInitial;
-  private static String  valueFinal;
+  private static String  variableInitial;
+  private static String  variableFinal;
 
 
   // Variables used in generating random numbers.
@@ -253,15 +225,16 @@ public final class SQLModRateJobClass
 
   // Variables used for tracking statistics.
   private IncrementalTracker  exceptionsCaught;
-  private IncrementalTracker  updatesCompleted;
-  private TimeTracker         updateTimer;
+  private IncrementalTracker  queriesCompleted;
+  private IntegerValueTracker rowsReturned;
+  private TimeTracker         queryTimer;
 
 
 
   /**
    * Creates a new instance of this SQL SearchRate job.
    */
-  public SQLModRateJobClass()
+  public SQLSearchRateJob()
   {
     super();
   }
@@ -274,7 +247,7 @@ public final class SQLModRateJobClass
   @Override()
   public String getJobName()
   {
-    return "SQL ModRate";
+    return "SQL SearchRate";
   }
 
 
@@ -285,7 +258,7 @@ public final class SQLModRateJobClass
   @Override()
   public String getShortDescription()
   {
-    return "Repeatedly update information in an SQL database";
+    return "Repeatedly query an SQL database";
   }
 
 
@@ -298,8 +271,8 @@ public final class SQLModRateJobClass
   {
     return new String[]
     {
-      "This job can be used to repeatedly update information in an SQL " +
-      "database to generate load and measure performance."
+      "This job can be used to repeatedly query an SQL database to generate " +
+      "load and measure performance."
     };
   }
 
@@ -329,16 +302,11 @@ public final class SQLModRateJobClass
       jdbcURLParameter,
       userNameParameter,
       passwordParameter,
-      placeholder,
-      tableNameParameter,
-      updateColumnParameter,
-      valueLengthParameter,
-      matchColumnParameter,
-      matchValueParameter,
+      sqlQueryParameter,
       placeholder,
       warmUpParameter,
       coolDownParameter,
-      timeBetweenUpdatesParameter,
+      timeBetweenQueriesParameter,
       maxRateParameter,
       rateLimitDurationParameter,
       iterationsParameter,
@@ -360,9 +328,11 @@ public final class SQLModRateJobClass
   {
     return new StatTracker[]
     {
-      new IncrementalTracker(clientID, threadID, STAT_TRACKER_UPDATES_COMPLETED,
+      new IncrementalTracker(clientID, threadID, STAT_TRACKER_QUERIES_COMPLETED,
            collectionInterval),
-      new TimeTracker(clientID, threadID, STAT_TRACKER_UPDATE_DURATION,
+      new IntegerValueTracker(clientID, threadID, STAT_TRACKER_ROWS_RETURNED,
+           collectionInterval),
+      new TimeTracker(clientID, threadID, STAT_TRACKER_QUERY_DURATION,
            collectionInterval),
       new IncrementalTracker(clientID, threadID, STAT_TRACKER_EXCEPTIONS_CAUGHT,
            collectionInterval)
@@ -379,8 +349,9 @@ public final class SQLModRateJobClass
   {
     return new StatTracker[]
     {
-      updatesCompleted,
-      updateTimer,
+      queriesCompleted,
+      queryTimer,
+      rowsReturned,
       exceptionsCaught
     };
   }
@@ -455,8 +426,8 @@ public final class SQLModRateJobClass
     }
     catch (final Exception e)
     {
-      outputMessages.add("ERROR:  Unable to load driver class:  " +
-                         stackTraceToString(e));
+      outputMessages.add(
+           "ERROR:  Unable to load driver class:  " + stackTraceToString(e));
       return false;
     }
 
@@ -466,10 +437,10 @@ public final class SQLModRateJobClass
     try
     {
       outputMessages.add("Trying to connect to database using JDBC URL '" +
-                         jdbcURL + "' as user '" + userName + "'....");
+           jdbcURL + "' as user '" + userName + "'....");
 
-      final Connection connection = DriverManager.getConnection(jdbcURL,
-           userName, userPW);
+      final Connection connection =
+           DriverManager.getConnection(jdbcURL, userName, userPW);
 
       outputMessages.add("Connected successfully.");
       outputMessages.add("");
@@ -538,84 +509,97 @@ public final class SQLModRateJobClass
       userPassword = passwordParameter.getStringValue();
     }
 
-    // Get the name of the table in which to make the update.
-    tableName = null;
-    tableNameParameter =
-         parameters.getStringParameter(tableNameParameter.getName());
-    if (tableNameParameter != null)
+    // Get the SQL query to issue to the database.
+    sqlQueryParameter =
+         parameters.getStringParameter(sqlQueryParameter.getName());
+    if (sqlQueryParameter != null)
     {
-      tableName = tableNameParameter.getStringValue();
-    }
-
-    // Get the name of the column to update.
-    updateColumn = null;
-    updateColumnParameter =
-         parameters.getStringParameter(updateColumnParameter.getName());
-    if (updateColumnParameter != null)
-    {
-      updateColumn = updateColumnParameter.getStringValue();
-    }
-
-    // Get the length to use for the randomly-generated value.
-    valueLength = 20;
-    valueLengthParameter =
-         parameters.getIntegerParameter(valueLengthParameter.getName());
-    if (valueLengthParameter != null)
-    {
-      valueLength = valueLengthParameter.getIntValue();
-    }
-
-    // Get the name of the column to match.
-    matchColumn = null;
-    matchColumnParameter =
-         parameters.getStringParameter(matchColumnParameter.getName());
-    if (matchColumnParameter != null)
-    {
-      matchColumn = matchColumnParameter.getStringValue();
-    }
-
-    // Get the match value to use.
-    matchValueParameter =
-         parameters.getStringParameter(matchValueParameter.getName());
-    if (matchValueParameter != null)
-    {
-      String valueStr = matchValueParameter.getStringValue();
+      sqlQuery = sqlQueryParameter.getStringValue();
       useRange      = false;
       useSequential = false;
 
-      int openBracketPos = valueStr.indexOf('[');
-      int dashPos = valueStr.indexOf('-', openBracketPos);
+      final int openBracketPos = sqlQuery.indexOf('[');
+      int dashPos = sqlQuery.indexOf('-', openBracketPos);
       if (dashPos < 0)
       {
-        dashPos = valueStr.indexOf(':', openBracketPos);
+        dashPos = sqlQuery.indexOf(':', openBracketPos);
         useSequential = true;
       }
 
       final int closeBracketPos;
       if ((openBracketPos >= 0) && (dashPos > 0) &&
-          ((closeBracketPos = valueStr.indexOf(']', dashPos)) > 0))
+          ((closeBracketPos = sqlQuery.indexOf(']', dashPos)) > 0))
       {
         try
         {
-          rangeMin = Integer.parseInt(valueStr.substring(openBracketPos+1,
+          rangeMin = Integer.parseInt(sqlQuery.substring(openBracketPos+1,
                                                          dashPos));
-          rangeMax = Integer.parseInt(valueStr.substring(dashPos+1,
+          rangeMax = Integer.parseInt(sqlQuery.substring(dashPos+1,
                                                          closeBracketPos));
           rangeSpan = rangeMax - rangeMin + 1;
 
-          valueInitial = valueStr.substring(0, openBracketPos);
-          valueFinal   = valueStr.substring(closeBracketPos+1);
+          variableInitial = "";
+          int openSpacePos = sqlQuery.lastIndexOf(' ', openBracketPos);
+          if (openSpacePos > 0)
+          {
+            variableInitial = sqlQuery.substring(openSpacePos+1,
+                                                 openBracketPos);
+            if (variableInitial.startsWith("\"") ||
+                variableInitial.startsWith("'"))
+            {
+              variableInitial = variableInitial.substring(1);
+            }
+          }
+          else
+          {
+            openSpacePos = openBracketPos-1;
+          }
+
+          variableFinal = "";
+          int closeSpacePos = sqlQuery.indexOf(' ', closeBracketPos);
+          final int closeParenPos = sqlQuery.indexOf(')', closeBracketPos);
+          if ((closeSpacePos < 0) ||
+              ((closeParenPos > 0) && (closeParenPos < closeSpacePos)))
+          {
+            closeSpacePos = closeParenPos;
+          }
+          if (closeSpacePos > 0)
+          {
+            variableFinal = sqlQuery.substring(closeBracketPos+1,
+                                               closeSpacePos);
+          }
+          else
+          {
+            closeSpacePos = sqlQuery.indexOf(';', closeBracketPos);
+            if (closeSpacePos > 0)
+            {
+              variableFinal = sqlQuery.substring(closeBracketPos+1,
+                                                 closeSpacePos);
+            }
+            else
+            {
+              closeSpacePos = closeBracketPos + 1;
+            }
+          }
+          if (variableFinal.endsWith("\"") || variableFinal.endsWith("'"))
+          {
+            variableFinal = variableFinal.substring(0,
+                                                    variableFinal.length()-1);
+          }
+
+          sqlQuery  = sqlQuery.substring(0, openSpacePos+1) + '?' +
+                      sqlQuery.substring(closeSpacePos);
           useRange          = true;
           sequentialCounter = rangeMin;
         }
         catch (final Exception e)
         {
-          useRange = false;
+          useRange        = false;
         }
       }
       else
       {
-        useRange = false;
+        useRange        = false;
       }
     }
 
@@ -664,13 +648,13 @@ public final class SQLModRateJobClass
       }
     }
 
-    // Get the time between updates.
-    timeBetweenUpdates = 0;
-    timeBetweenUpdatesParameter =
-         parameters.getIntegerParameter(timeBetweenUpdatesParameter.getName());
-    if (timeBetweenUpdatesParameter != null)
+    // Get the time between queries.
+    timeBetweenQueries = 0;
+    timeBetweenQueriesParameter =
+         parameters.getIntegerParameter(timeBetweenQueriesParameter.getName());
+    if (timeBetweenQueriesParameter != null)
     {
-      timeBetweenUpdates = timeBetweenUpdatesParameter.getIntValue();
+      timeBetweenQueries = timeBetweenQueriesParameter.getIntValue();
     }
 
     // Get the number of iterations to perform.
@@ -707,10 +691,12 @@ public final class SQLModRateJobClass
                                final ParameterList parameters)
   {
     // Initialize the stat trackers.
-    updatesCompleted = new IncrementalTracker(clientID, threadID,
-         STAT_TRACKER_UPDATES_COMPLETED, collectionInterval);
-    updateTimer = new TimeTracker(clientID, threadID,
-         STAT_TRACKER_UPDATE_DURATION, collectionInterval);
+    queriesCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_TRACKER_QUERIES_COMPLETED, collectionInterval);
+    queryTimer = new TimeTracker(clientID, threadID,
+         STAT_TRACKER_QUERY_DURATION, collectionInterval);
+    rowsReturned = new IntegerValueTracker(clientID, threadID,
+         STAT_TRACKER_ROWS_RETURNED, collectionInterval);
     exceptionsCaught = new IncrementalTracker(clientID, threadID,
          STAT_TRACKER_EXCEPTIONS_CAUGHT, collectionInterval);
 
@@ -720,8 +706,9 @@ public final class SQLModRateJobClass
     if (statReporter != null)
     {
       String jobID = getJobID();
-      updatesCompleted.enableRealTimeStats(statReporter, jobID);
-      updateTimer.enableRealTimeStats(statReporter, jobID);
+      queriesCompleted.enableRealTimeStats(statReporter, jobID);
+      queryTimer.enableRealTimeStats(statReporter, jobID);
+      rowsReturned.enableRealTimeStats(statReporter, jobID);
       exceptionsCaught.enableRealTimeStats(statReporter, jobID);
     }
 
@@ -746,8 +733,8 @@ public final class SQLModRateJobClass
     }
     catch (final Exception e)
     {
-      logMessage("Unable to load the driver class \"" + driverClass + "\" -- " +
-                 e);
+      logMessage(
+           "Unable to load the driver class \"" + driverClass + "\" -- " + e);
       indicateStoppedDueToError();
       return;
     }
@@ -765,8 +752,8 @@ public final class SQLModRateJobClass
 
 
     // Set up variables that will be used throughout the job.
-    boolean connected  = false;
-    long updateStartTime = 0;
+    boolean connected = false;
+    long queryStartTime = 0;
     PreparedStatement statement = null;
     final boolean infinite = (iterations <= 0);
     connection = null;
@@ -788,16 +775,18 @@ public final class SQLModRateJobClass
           (currentTime < stopCollectingTime))
       {
         // Tell the stat trackers that they should start tracking now.
-        updatesCompleted.startTracker();
-        updateTimer.startTracker();
+        queriesCompleted.startTracker();
+        queryTimer.startTracker();
+        rowsReturned.startTracker();
         exceptionsCaught.startTracker();
         collectingStats = true;
       }
       else if (collectingStats && (currentTime >= stopCollectingTime))
       {
         // Tell the stat trackers that they should stop tracking now.
-        updatesCompleted.stopTracker();
-        updateTimer.stopTracker();
+        queriesCompleted.stopTracker();
+        queryTimer.stopTracker();
+        rowsReturned.stopTracker();
         exceptionsCaught.stopTracker();
         collectingStats = false;
       }
@@ -809,7 +798,7 @@ public final class SQLModRateJobClass
         try
         {
           connection = DriverManager.getConnection(jdbcURL, userName,
-               userPassword);
+                                                   userPassword);
           connected = true;
         }
         catch (final SQLException se)
@@ -819,42 +808,50 @@ public final class SQLModRateJobClass
           break;
         }
 
-        String sql = "UPDATE " + tableName + " SET " + updateColumn +
-             " = ? WHERE " + matchColumn + " = ?;";
         try
         {
-          statement = connection.prepareStatement(sql);
+          statement = connection.prepareStatement(sqlQuery);
         }
         catch (final SQLException se)
         {
-          logMessage("Unable to parse SQL statement \"" + sql + "\".");
+          logMessage("Unable to parse SQL query \"" + sqlQuery + "\".");
           indicateStoppedDueToError();
           break;
         }
       }
 
 
+      // Create a counter that will be used to count the number of matching
+      // rows.
+      int matchingRows = 0;
+
+
       // Execute the query and process through the results.
-      if (timeBetweenUpdates > 0)
+      if (timeBetweenQueries > 0)
       {
-        updateStartTime = System.currentTimeMillis();
+        queryStartTime = System.currentTimeMillis();
       }
       if (collectingStats)
       {
-        updateTimer.startTimer();
+        queryTimer.startTimer();
       }
       try
       {
         if (useRange)
         {
-          statement.setString(1, getRandomValue(valueLength));
-          statement.setString(2, getMatchValue());
+          statement.setString(1, getQueryVariableComponent());
         }
-        statement.execute();
+        ResultSet resultSet = statement.executeQuery();
+        while (resultSet.next())
+        {
+          matchingRows++;
+        }
+
         if (collectingStats)
         {
-          updateTimer.stopTimer();
-          updatesCompleted.increment();
+          queryTimer.stopTimer();
+          queriesCompleted.increment();
+          rowsReturned.addValue(matchingRows);
         }
       }
       catch (final SQLException se)
@@ -884,12 +881,12 @@ public final class SQLModRateJobClass
 
 
       // If we should sleep before the next query, then do so.
-      if (timeBetweenUpdates > 0)
+      if (timeBetweenQueries > 0)
       {
         if (! shouldStop())
         {
-          long now       = System.currentTimeMillis();
-          long sleepTime = timeBetweenUpdates - (now - updateStartTime);
+          final long now = System.currentTimeMillis();
+          final long sleepTime = timeBetweenQueries - (now - queryStartTime);
           if (sleepTime > 0)
           {
             try
@@ -918,8 +915,9 @@ public final class SQLModRateJobClass
 
     if (collectingStats)
     {
-      updatesCompleted.stopTracker();
-      updateTimer.stopTracker();
+      queriesCompleted.stopTracker();
+      queryTimer.stopTracker();
+      rowsReturned.stopTracker();
       exceptionsCaught.stopTracker();
     }
   }
@@ -946,56 +944,29 @@ public final class SQLModRateJobClass
 
 
   /**
-   * Generates a string of randomly chosen alphabetic characters.
+   * Retrieves the next value that should be used for the variable portion of
+   * the query.
    *
-   * @param  valueLength  The number of characters to include in the value.
-   *
-   * @return  The string of randomly chosen alphabetic characters.
+   * @return  The next value that should be used for the variable portion of the
+   *          query.
    */
-  private String getRandomValue(final int valueLength)
+  private String getQueryVariableComponent()
   {
-    final char[] returnChars = new char[valueLength];
-
-    for (int i=0; i < valueLength; i++)
+    final int value;
+    if (useSequential)
     {
-      returnChars[i] = ALPHABET[Math.abs((random.nextInt()) & 0x7FFFFFFF) %
-           ALPHABET.length];
-    }
-
-    return new String(returnChars);
-  }
-
-
-
-  /**
-   * Retrieves a value to use to match the row(s) to update.
-   *
-   * @return  A value to use to match the row(s) to update.
-   */
-  private String getMatchValue()
-  {
-    if (useRange)
-    {
-      final int value;
-      if (useSequential)
+      value = sequentialCounter++;
+      if (sequentialCounter > rangeMax)
       {
-        value = sequentialCounter++;
-        if (sequentialCounter > rangeMax)
-        {
-          sequentialCounter = rangeMin;
-        }
+        sequentialCounter = rangeMin;
       }
-      else
-      {
-        value = ((random.nextInt() & 0x7FFFFFFF) % rangeSpan) + rangeMin;
-      }
-
-      return valueInitial + value + valueFinal;
     }
     else
     {
-      return valueInitial;
+      value = ((random.nextInt() & 0x7FFFFFFF) % rangeSpan) + rangeMin;
     }
+
+    return variableInitial + value + variableFinal;
   }
 }
 

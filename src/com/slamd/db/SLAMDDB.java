@@ -65,8 +65,6 @@ import com.slamd.job.SingleStatisticWithCPUUtilizationOptimizationAlgorithm;
 import com.slamd.job.SingleStatisticWithConstraintOptimizationAlgorithm;
 import com.slamd.job.SingleStatisticWithReplicationLatencyOptimizationAlgorithm;
 import com.slamd.jobgroup.JobGroup;
-import com.slamd.jobs.HTTPGetRateJobClass;
-import com.slamd.jobs.IMAPCheckRateJobClass;
 import com.slamd.jobs.LDAPAddAndDeleteRateJobClass;
 import com.slamd.jobs.LDAPAsynchronousModRateJobClass;
 import com.slamd.jobs.LDAPAsynchronousSearchRateJobClass;
@@ -83,12 +81,14 @@ import com.slamd.jobs.LDAPSearchRateJobClass;
 import com.slamd.jobs.LDAPSearchAndModRateJobClass;
 import com.slamd.jobs.LDAPWaitForDirectoryJobClass;
 import com.slamd.jobs.MultiSearchLDAPLoadJobClass;
-import com.slamd.jobs.POPCheckRateJobClass;
-import com.slamd.jobs.SMTPSendRateJobClass;
-import com.slamd.jobs.SQLModRateJobClass;
-import com.slamd.jobs.SQLSearchRateJobClass;
 import com.slamd.jobs.SiteMinderJobClass;
 import com.slamd.jobs.WeightedSiteMinderJobClass;
+import com.slamd.jobs.http.HTTPGetRateJob;
+import com.slamd.jobs.mail.IMAP4CheckRateJob;
+import com.slamd.jobs.mail.POP3CheckRateJob;
+import com.slamd.jobs.mail.SMTPSendRateJob;
+import com.slamd.jobs.sql.SQLModRateJob;
+import com.slamd.jobs.sql.SQLSearchRateJob;
 import com.slamd.jobs.utility.BurnCPUJob;
 import com.slamd.jobs.utility.ExecJob;
 import com.slamd.jobs.utility.NoOpJob;
@@ -514,8 +514,6 @@ public final class SLAMDDB
          dbEnv.openDatabase(null, Constants.DB_NAME_CONFIG, dbConfig);
     final String[] jobClasses =
     {
-      HTTPGetRateJobClass.class.getName(),
-      IMAPCheckRateJobClass.class.getName(),
       LDAPAddAndDeleteRateJobClass.class.getName(),
       LDAPAsynchronousModRateJobClass.class.getName(),
       LDAPAsynchronousSearchRateJobClass.class.getName(),
@@ -532,15 +530,20 @@ public final class SLAMDDB
       LDAPSearchAndModRateJobClass.class.getName(),
       LDAPWaitForDirectoryJobClass.class.getName(),
       MultiSearchLDAPLoadJobClass.class.getName(),
-      POPCheckRateJobClass.class.getName(),
       SiteMinderJobClass.class.getName(),
-      SMTPSendRateJobClass.class.getName(),
-      SQLModRateJobClass.class.getName(),
-      SQLSearchRateJobClass.class.getName(),
       WeightedSiteMinderJobClass.class.getName(),
       LoadVarianceTestJobClass.class.getName(),
       BSFJobClass.class.getName(),
       ScriptedJobClass.class.getName(),
+
+      HTTPGetRateJob.class.getName(),
+
+      IMAP4CheckRateJob.class.getName(),
+      POP3CheckRateJob.class.getName(),
+      SMTPSendRateJob.class.getName(),
+
+      SQLModRateJob.class.getName(),
+      SQLSearchRateJob.class.getName(),
 
       BurnCPUJob.class.getName(),
       ExecJob.class.getName(),

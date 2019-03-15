@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.mail;
 
 
 
@@ -64,7 +64,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author  Neil A. Wilson
  */
-public final class IMAPCheckRateJobClass
+public final class IMAP4CheckRateJob
        extends JobClass
 {
   /**
@@ -212,7 +212,7 @@ public final class IMAPCheckRateJobClass
    * The only thing it should do is to invoke the superclass constructor.  All
    * other initialization should be performed in the {@code initialize} method.
    */
-  public IMAPCheckRateJobClass()
+  public IMAP4CheckRateJob()
   {
     super();
   }
@@ -225,7 +225,7 @@ public final class IMAPCheckRateJobClass
   @Override()
   public String getJobName()
   {
-    return "IMAP CheckRate";
+    return "IMAPv4 CheckRate";
   }
 
 

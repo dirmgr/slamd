@@ -13,7 +13,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs;
+package com.slamd.jobs.http;
 
 
 
@@ -28,6 +28,7 @@ import com.slamd.http.HTTPRequest;
 import com.slamd.http.HTTPResponse;
 import com.slamd.job.JobClass;
 import com.slamd.job.UnableToRunException;
+import com.slamd.jobs.JSSEBlindTrustSocketFactory;
 import com.slamd.parameter.BooleanParameter;
 import com.slamd.parameter.FileURLParameter;
 import com.slamd.parameter.IntegerParameter;
@@ -53,7 +54,7 @@ import com.unboundid.util.FixedRateBarrier;
  *
  * @author   Neil A. Wilson
  */
-public final class HTTPGetRateJobClass
+public final class HTTPGetRateJob
        extends JobClass
 {
   /**
@@ -314,7 +315,7 @@ public final class HTTPGetRateJobClass
   /**
    * Creates a new instance of this HTTP GetRate job class.
    */
-  public HTTPGetRateJobClass()
+  public HTTPGetRateJob()
   {
     super();
   }

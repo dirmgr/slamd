@@ -67,9 +67,11 @@ import com.slamd.job.SingleStatisticWithReplicationLatencyOptimizationAlgorithm;
 import com.slamd.jobgroup.JobGroup;
 import com.slamd.jobs.http.GetRateJob;
 import com.slamd.jobs.ldap.AddAndDeleteRateJob;
+import com.slamd.jobs.ldap.AdvancedSearchRateJob;
 import com.slamd.jobs.ldap.AsynchronousModifyRateJob;
 import com.slamd.jobs.ldap.AsynchronousSearchRateJob;
 import com.slamd.jobs.ldap.AuthRateJob;
+import com.slamd.jobs.ldap.BasicSearchRateJob;
 import com.slamd.jobs.ldap.CompareRateJob;
 import com.slamd.jobs.ldap.FileBasedModifyRateJob;
 import com.slamd.jobs.ldap.FileBasedSearchRateJob;
@@ -79,7 +81,6 @@ import com.slamd.jobs.ldap.ModifyRateJob;
 import com.slamd.jobs.ldap.MultiConnectionSearchRateJob;
 import com.slamd.jobs.ldap.MultiSearchMixedLoadJob;
 import com.slamd.jobs.ldap.PrimeJob;
-import com.slamd.jobs.ldap.BasicSearchRateJob;
 import com.slamd.jobs.ldap.SearchAndModifyRateJob;
 import com.slamd.jobs.ldap.SiteMinderJob;
 import com.slamd.jobs.ldap.WaitForDirectoryServerJob;
@@ -513,6 +514,7 @@ public final class SLAMDDB
     final String[] jobClasses =
     {
       AddAndDeleteRateJob.class.getName(),
+      AdvancedSearchRateJob.class.getName(),
       AsynchronousModifyRateJob.class.getName(),
       AsynchronousSearchRateJob.class.getName(),
       AuthRateJob.class.getName(),

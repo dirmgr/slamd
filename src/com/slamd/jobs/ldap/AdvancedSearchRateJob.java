@@ -17,9 +17,13 @@ package com.slamd.jobs.ldap;
 
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import javax.net.SocketFactory;
 
+import com.unboundid.ldap.sdk.DereferencePolicy;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.Filter;
@@ -27,17 +31,28 @@ import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.RoundRobinServerSet;
 import com.unboundid.ldap.sdk.SearchRequest;
 import com.unboundid.ldap.sdk.SearchResult;
 import com.unboundid.ldap.sdk.SearchResultEntry;
 import com.unboundid.ldap.sdk.SearchResultListener;
 import com.unboundid.ldap.sdk.SearchResultReference;
 import com.unboundid.ldap.sdk.SearchScope;
+import com.unboundid.ldap.sdk.ServerSet;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
 import com.unboundid.ldap.sdk.SingleServerSet;
 import com.unboundid.ldap.sdk.StartTLSPostConnectProcessor;
+import com.unboundid.ldap.sdk.controls.ManageDsaITRequestControl;
+import com.unboundid.ldap.sdk.controls.MatchedValuesFilter;
+import com.unboundid.ldap.sdk.controls.MatchedValuesRequestControl;
+import com.unboundid.ldap.sdk.controls.ProxiedAuthorizationV2RequestControl;
+import com.unboundid.ldap.sdk.controls.ServerSideSortRequestControl;
+import com.unboundid.ldap.sdk.controls.SortKey;
+import com.unboundid.ldap.sdk.controls.SubentriesRequestControl;
+import com.unboundid.ldap.sdk.persist.PersistUtils;
 import com.unboundid.ldap.sdk.extensions.StartTLSExtendedRequest;
 import com.unboundid.util.FixedRateBarrier;
+import com.unboundid.util.ObjectPair;
 import com.unboundid.util.StaticUtils;
 import com.unboundid.util.ValuePattern;
 import com.unboundid.util.ssl.SSLUtil;
@@ -69,9 +84,10 @@ import com.slamd.stat.TimeTracker;
 
 /**
  * This class provides a SLAMD job that can measure the performance of an LDAP
- * directory server with a streamlined set of options.
+ * directory server with a broader set of options than the
+ * {@link BasicSearchRateJob} job offers.
  */
-public final class BasicSearchRateJob
+public final class AdvancedSearchRateJob
        extends JobClass
        implements SearchResultListener
 {
@@ -350,17 +366,16 @@ public final class BasicSearchRateJob
        "Connection Parameters");
 
   // The parameter used to specify the directory server address.
-  private StringParameter serverAddressParameter = new StringParameter(
-       "address", "Directory Server Address",
-       "The address of the directory server to search.  It may be a " +
-            "resolvable name or an IP address.",
-       true, null);
-
-  // The parameter used to specify the directory server port.
-  private IntegerParameter serverPortParameter = new IntegerParameter(
-       "port", "Directory Serve Port",
-       "The port number of the directory server to search.", true, 389, true, 1,
-       true, 65535);
+  private MultiLineTextParameter addressesAndPortsParameter =
+       new MultiLineTextParameter("addresses_and_ports",
+            "Server Addresses and Ports",
+            "The addresses (resolvable names or IP addresses) and port " +
+                 "numbers of the directory servers to search (for example," +
+                 "'ldap.example.com:389').  If multiple servers are to be " +
+                 "targeted, then each address:port value should be listed on " +
+                 "a separate line, and the job will use a round-robin " +
+                 "algorithm when establishing connections to each server.",
+            new String[0], true);
 
   // The mechanism to use to secure communication with the directory server.
   private static final String SECURITY_METHOD_NONE = "None";
@@ -438,16 +453,81 @@ public final class BasicSearchRateJob
        },
        SCOPE_BASE_OBJECT);
 
-  // The parameter used to specify the search filter pattern.
-  private StringParameter filterPatternParameter = new StringParameter(
-       "filter_pattern", "Search Filter Pattern",
-       "A pattern to use to generate the filter to use for each search " +
-            "request.  This may be a fixed filter to use for all searches, " +
+  // The parameter used to specify the alias dereferencing policy.
+  private static final String DEREF_NEVER =
+       "Never Dereference Aliases";
+  private static final String DEREF_SEARCHING =
+       "Dereference Aliases Below the Search Base";
+  private static final String DEREF_FINDING_BASE =
+       "Dereference the Search Base Entry if It Is an Alias";
+  private static final String DEREF_ALWAYS =
+       "Dereference All Aliases";
+  private MultiChoiceParameter derefPolicyParameter = new MultiChoiceParameter(
+       "deref_policy", "Alias Dereferencing Policy",
+       "The dereferencing policy to use for any aliases encountered in " +
+            "search processing.",
+       new String[]
+       {
+         DEREF_NEVER,
+         DEREF_SEARCHING,
+         DEREF_FINDING_BASE,
+         DEREF_ALWAYS,
+       },
+       DEREF_NEVER);
+
+  // The parameter used to specify the search size limit.
+  private IntegerParameter sizeLimitParameter = new IntegerParameter(
+       "size_limit", "Search Size Limit",
+       "The maximum number of entries that the server should return for any " +
+            "individual search request.",
+       true, 0, true, 0, false, Integer.MAX_VALUE);
+
+  // The parameter used to specify the time limit.
+  private IntegerParameter timeLimitParameter = new IntegerParameter(
+       "time_limit_seconds", "Search Time Limit (Seconds)",
+       "The maximum length of time, in seconds, that the server should spend " +
+            "processing any individual search request.",
+       true, 0, true, 0, false, Integer.MAX_VALUE);
+
+  // The parameter used to specify the value of the typesOnly flag.
+  private BooleanParameter typesOnlyParameter = new BooleanParameter(
+       "types_only", "Return Attribute Types Without Values",
+       "Indicates whether search result entries should only include " +
+            "attribute names without values, rather than including both " +
+            "attribute names and values.",
+       false);
+
+  // The parameter used to specify the first search filter pattern.
+  private StringParameter filterPattern1Parameter = new StringParameter(
+       "filter_pattern_1", "Search Filter Pattern 1",
+       "A pattern to use to generate the first filter to use for search " +
+            "requests.  This may be a fixed filter to use for all searches, " +
             "or it may be a value pattern that can construct a different " +
             "filter for each request.  See https://docs.ldap.com/ldap-sdk/" +
             "docs/javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.",
+            "information about value patterns.  This parameter always " +
+            "requires a value.",
        true, null);
+
+  // The parameter used to specify the second search filter pattern.
+  private StringParameter filterPattern2Parameter = new StringParameter(
+       "filter_pattern_2", "Search Filter Pattern 2",
+       "A pattern to use to generate the first filter to use for search " +
+            "requests.  This may be a fixed filter to use for all searches, " +
+            "or it may be a value pattern that can construct a different " +
+            "filter for each request.  See https://docs.ldap.com/ldap-sdk/" +
+            "docs/javadoc/com/unboundid/util/ValuePattern.html for more " +
+            "information about value patterns.  This parameter requires a " +
+            "value if the Filter 1 Percentage value is less than 100.",
+       false, null);
+
+  // The parameter used to specify the percentage of searches that should use
+  // the first pattern.
+  private IntegerParameter filter1PercentageParameter = new IntegerParameter(
+       "filter_1_percent", "Filter 1 Percentage",
+       "The percentage of searches that should use a filter generated from " +
+            "the first pattern rather than the second pattern.",
+       true, 100, true, 0, true, 100);
 
   // The parameter used to specify the attributes to return.
   private MultiLineTextParameter attributesToReturnParameter =
@@ -464,6 +544,54 @@ public final class BasicSearchRateJob
                  "server may support.  If no values are provided, then the " +
                  "standard behavior is for the server to return all user " +
                  "attributes that the requester has permission to access.",
+            new String[0], false);
+
+  // The parameter used to provide a label for controls to include in the
+  // request.
+  private LabelParameter controlsLabelParameter = new LabelParameter(
+       "Search Request Control Parameters");
+
+  private BooleanParameter includeManageDSAITParameter = new BooleanParameter(
+       "include_manage_dsa_it_control", "Include Manage DSA IT Request Control",
+       "Indicates that search requests should include the manage DSA IT " +
+            "request control, which indicates that the server should return " +
+            "smart referral entries as regular entries rather than search " +
+            "result references.",
+       false);
+
+  private BooleanParameter includeSubentriesParameter = new BooleanParameter(
+       "include_subentries_control", "Include Subentries Request Control",
+       "Indicates that search requests should include the subentries request " +
+            "control, which indicates that LDAP subentries should be " +
+            "included in the set of search result entries.",
+       false);
+
+  private StringParameter matchedValuesFilterParameter = new StringParameter(
+       "matched_values_filter", "Matched Values Filter",
+       "Indicates that search requests should include a matched values " +
+            "request control with the specified filter, which indicates that " +
+            "search result entries should exclude attribute values that do " +
+            "not match the specified filter.  Note that this should be a " +
+            "static filter rather than a value pattern.",
+       false, null);
+
+  private StringParameter proxiedAuthzIDParameter = new StringParameter(
+       "proxied_auth_id", "Proxied Authorization ID",
+       "Indicates that search requests should include a proxied " +
+            "authorization request control with the specified authorization " +
+            "ID.  Note that this should be a static authorization ID string " +
+            "rather than a value pattern.",
+       false, null);
+
+  private MultiLineTextParameter sortOrderParameter =
+       new MultiLineTextParameter("sort_order", "Server-Side Sort Order",
+            "Indciates that search requests should include a server-side " +
+                 "sort request control to indicate that entries should be " +
+                 "sorted in the specified order.  Each value must be a " +
+                 "string that starts with either '+' (for ascending " +
+                 "order) or '-' (for descending order), followed by the name " +
+                 "of an attribute type, and optionally followed by a colon " +
+                 "and the name or OID of an ordering matching rule.",
             new String[0], false);
 
   // The parameter used to provide a label for the additional parameters.
@@ -516,16 +644,33 @@ public final class BasicSearchRateJob
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
+  private static boolean typesOnly = false;
+  private static DereferencePolicy dereferencePolicy = null;
   private static FixedRateBarrier rateLimiter = null;
+  private static int filter1Percentage = -1;
+  private static int sizeLimit = -1;
+  private static int timeLimitSeconds = -1;
   private static long coolDownDurationMillis = -1L;
   private static long warmUpDurationMillis = -1L;
+  private static ManageDsaITRequestControl manageDSAITControl = null;
+  private static MatchedValuesRequestControl matchedValuesControl = null;
+  private static ProxiedAuthorizationV2RequestControl proxiedAuthControl = null;
   private static SearchScope scope = null;
+  private static ServerSideSortRequestControl sortControl = null;
   private static SimpleBindRequest bindRequest = null;
-  private static SingleServerSet serverSet = null;
+  private static ServerSet serverSet = null;
   private static StartTLSPostConnectProcessor startTLSProcessor = null;
   private static String[] requestedAttributes = null;
+  private static SubentriesRequestControl subentriesControl = null;
   private static ValuePattern baseDNPattern = null;
-  private static ValuePattern filterPattern = null;
+  private static ValuePattern filterPattern1 = null;
+  private static ValuePattern filterPattern2 = null;
+
+
+  // Random number generators to use for selecting which filter to use.  There
+  // will be a parent random, which is shared by all threads, and a per-
+  private static Random parentRandom = null;
+  private Random random = null;
 
 
   // A connection pool that this thread may use to communicate with the
@@ -555,7 +700,7 @@ public final class BasicSearchRateJob
   /**
    * Creates a new instance of this job class.
    */
-  public BasicSearchRateJob()
+  public AdvancedSearchRateJob()
   {
     super();
 
@@ -577,7 +722,7 @@ public final class BasicSearchRateJob
   @Override()
   public String getJobName()
   {
-    return "Basic Search Rate";
+    return "Advanced Search Rate";
   }
 
 
@@ -602,7 +747,7 @@ public final class BasicSearchRateJob
     return new String[]
     {
       "This job can be used to perform repeated searches against an LDAP " +
-           "directory server with a streamlined set of options."
+           "directory server with an advanced set of options."
     };
   }
 
@@ -629,8 +774,7 @@ public final class BasicSearchRateJob
     {
       new PlaceholderParameter(),
       connectionLabelParameter,
-      serverAddressParameter,
-      serverPortParameter,
+      addressesAndPortsParameter,
       securityMethodParameter,
 
       new PlaceholderParameter(),
@@ -642,8 +786,22 @@ public final class BasicSearchRateJob
       searchRequestLabelParameter,
       baseDNPatternParameter,
       scopeParameter,
-      filterPatternParameter,
+      derefPolicyParameter,
+      sizeLimitParameter,
+      timeLimitParameter,
+      typesOnlyParameter,
+      filterPattern1Parameter,
+      filterPattern2Parameter,
+      filter1PercentageParameter,
       attributesToReturnParameter,
+
+      new PlaceholderParameter(),
+      controlsLabelParameter,
+      includeManageDSAITParameter,
+      includeSubentriesParameter,
+      matchedValuesFilterParameter,
+      proxiedAuthzIDParameter,
+      sortOrderParameter,
 
       new PlaceholderParameter(),
       additionalLabelParameter,
@@ -712,6 +870,10 @@ public final class BasicSearchRateJob
                               final ParameterList parameters)
          throws InvalidValueException
   {
+    // Make sure that we can validate the set of addresses and ports.
+    getAddressesAndPorts(parameters);
+
+
     // The bind DN and password must be both empty or both non-empty.
     // NOTE:  We won't try to verify that the bind DN is actually a valid LDAP
     // distinguished name because some protocol-violating directory servers
@@ -768,21 +930,23 @@ public final class BasicSearchRateJob
     }
 
 
-    // Make sure that we can validate the filter pattern as a vaild LDAP filter.
-    final StringParameter filterParam =
-         parameters.getStringParameter(filterPatternParameter.getName());
-    if ((filterParam != null) && (filterParam.hasValue()))
+    // Make sure that we can validate the first filter pattern as a vaild LDAP
+    // filter.
+    final StringParameter filter1Param =
+         parameters.getStringParameter(filterPattern1Parameter.getName());
+    if ((filter1Param != null) && (filter1Param.hasValue()))
     {
       final ValuePattern valuePattern;
       try
       {
-        valuePattern = new ValuePattern(filterParam.getValue());
+        valuePattern = new ValuePattern(filter1Param.getValue());
       }
       catch (final ParseException e)
       {
         throw new InvalidValueException(
-             "Unable to parse filter pattern value '" + filterParam.getValue() +
-                  "' as a valid value pattern:  " + e.getMessage(),
+             "Unable to parse filter pattern 1 value '" +
+                  filter1Param.getValue() + "' as a valid value pattern:  " +
+                  e.getMessage(),
              e);
       }
 
@@ -794,9 +958,89 @@ public final class BasicSearchRateJob
       catch (final LDAPException e)
       {
         throw new InvalidValueException(
-             "Unable to parse a constructed filter '" + filterString +
+             "Unable to parse a constructed filter 1 value '" + filterString +
                   "' as a valid LDAP filter:  " + e.getMatchedDN(),
              e);
+      }
+    }
+
+
+    // If a second filter pattern was provided, then make sure it is valid.
+    // If a second filter pattern was not provided,then make sure that's okay.
+    final StringParameter filter2Param =
+         parameters.getStringParameter(filterPattern1Parameter.getName());
+    if ((filter2Param != null) && (filter2Param.hasValue()))
+    {
+      final ValuePattern valuePattern;
+      try
+      {
+        valuePattern = new ValuePattern(filter2Param.getValue());
+      }
+      catch (final ParseException e)
+      {
+        throw new InvalidValueException(
+             "Unable to parse filter pattern 2 value '" +
+                  filter2Param.getValue() + "' as a valid value pattern:  " +
+                  e.getMessage(),
+             e);
+      }
+
+      final String filterString = valuePattern.nextValue();
+      try
+      {
+        Filter.create(filterString);
+      }
+      catch (final LDAPException e)
+      {
+        throw new InvalidValueException(
+             "Unable to parse a constructed filter 2 value '" + filterString +
+                  "' as a valid LDAP filter:  " + e.getMatchedDN(),
+             e);
+      }
+    }
+    else
+    {
+      final int filter1Percent = parameters.getIntegerParameter(
+           filter1PercentageParameter.getName()).getIntValue();
+      if (filter1Percent < 100)
+      {
+        throw new InvalidValueException("If the filter 1 percentage value " +
+             "is less than 100, then a second filter pattern must be " +
+             "provided.");
+      }
+    }
+
+
+    // If a matched values filter was provided, then validate it.
+    final StringParameter matchedValuesFilterParam =
+         parameters.getStringParameter(matchedValuesFilterParameter.getName());
+    if ((matchedValuesFilterParam != null) &&
+         matchedValuesFilterParam.hasValue())
+    {
+      final String filterStr = matchedValuesFilterParam.getStringValue();
+      try
+      {
+        final Filter filter = Filter.create(filterStr);
+        MatchedValuesFilter.create(filter);
+      }
+      catch (final LDAPException e)
+      {
+        throw new InvalidValueException(
+             "Matched values filter '" + filterStr + "' is not valid:  " +
+                  e.getMessage(),
+             e);
+      }
+    }
+
+
+    // If a sort order was provided, then validate it.
+    final MultiLineTextParameter sortOrderParam =
+         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
+    if ((sortOrderParam != null) && sortOrderParam.hasValue())
+    {
+      for (final String sortOrderLine : sortOrderParam.getNonBlankLines())
+      {
+        parseSortKey(sortOrderLine);
       }
     }
 
@@ -853,6 +1097,157 @@ public final class BasicSearchRateJob
 
 
   /**
+   * Retrieves and validates the set of server addresses and ports from the
+   * provided parameter list.
+   *
+   * @param  parameters  The parameter list containing the parameters to
+   *                     validate.
+   *
+   * @throws  InvalidValueException  If there is a problem with the configured
+   *                                 set of server addresses and ports.
+   */
+  private List<ObjectPair<String,Integer>> getAddressesAndPorts(
+                                                final ParameterList parameters)
+          throws InvalidValueException
+  {
+    final MultiLineTextParameter hostPortParam = parameters.
+         getMultiLineTextParameter(addressesAndPortsParameter.getName());
+    if ((hostPortParam != null) && (hostPortParam.hasValue()))
+    {
+      final String[] hostPorts = hostPortParam.getNonBlankLines();
+      if (hostPorts.length == 0)
+      {
+        throw new InvalidValueException(
+             "No server address:port values were configured.");
+      }
+
+      final List<ObjectPair<String,Integer>> addressesAndPorts =
+           new ArrayList<>(hostPorts.length);
+      for (final String hostPort : hostPorts)
+      {
+        final int lastColonPos = hostPort.lastIndexOf(':');
+        if (lastColonPos < 0)
+        {
+          throw new InvalidValueException("Server address:port value '" +
+               hostPort + "' is not valid because it does not contain a " +
+               "colon to separate the address from the port number.");
+        }
+        else if (lastColonPos == 0)
+        {
+          throw new InvalidValueException("Server address:port value '" +
+               hostPort + "' is not valid because it does not specify a " +
+               "server address before the port number.");
+        }
+        else if (lastColonPos == (hostPort.length() - 1))
+        {
+          throw new InvalidValueException("Server address:port value '" +
+               hostPort + "' is not valid because it does not specify a " +
+               "port number after the server address.");
+        }
+
+        final int portNumber;
+        try
+        {
+          portNumber = Integer.parseInt(hostPort.substring(lastColonPos+1));
+        }
+        catch (final Exception e)
+        {
+          throw new InvalidValueException(
+               "Server address:port value '" + hostPort + "' is not valid " +
+                    "because the port number cannot be parsed as an integer.",
+               e);
+        }
+
+        if ((portNumber < 1) || (portNumber > 65_535))
+        {
+          throw new InvalidValueException("Server address:port value '" +
+               hostPort + "' is not valid because the port number is not " +
+               "between 1 and 65535, inclusive.");
+        }
+
+        addressesAndPorts.add(new ObjectPair<>(
+             hostPort.substring(0, lastColonPos), portNumber));
+      }
+
+      return addressesAndPorts;
+    }
+    else
+    {
+      throw new InvalidValueException(
+           "No server address:port values were configured.");
+    }
+  }
+
+
+
+  /**
+   * Parses the provided string as a sort key.
+   *
+   * @param  keyString  The string to be parsed.  It must not be {@code null}.
+   *
+   * @return  The sort key that was parsed.
+   *
+   * @throws  InvalidValueException  If the provided string cannot be parsed as
+   *                                 a valid sort key.
+   */
+  private SortKey parseSortKey(final String keyString)
+          throws InvalidValueException
+  {
+    final boolean reverseOrder;
+    if (keyString.startsWith("+"))
+    {
+      reverseOrder = false;
+    }
+    else if (keyString.startsWith("-"))
+    {
+      reverseOrder = true;
+    }
+    else
+    {
+      throw new InvalidValueException("Sort order value '" + keyString +
+           "' is invalid because it does not start with either '+' (to " +
+           "indicate ascending order) or '-' (to indicate descending order).");
+    }
+
+    final String attributeName;
+    final String matchingRuleID;
+    final int colonPos = keyString.indexOf(':');
+    if (colonPos > 0)
+    {
+      attributeName = keyString.substring(1, colonPos);
+      matchingRuleID = keyString.substring(colonPos+1);
+    }
+    else
+    {
+      attributeName = keyString.substring(1);
+      matchingRuleID = null;
+    }
+
+    final StringBuilder invalidReason = new StringBuilder();
+    if (! PersistUtils.isValidLDAPName(attributeName, invalidReason))
+    {
+      throw new InvalidValueException("Sort order value '" + keyString +
+           "' is invalid because '" + attributeName + "' is not a valid " +
+           "attribute type name or OID:  " + invalidReason);
+    }
+
+    if (matchingRuleID != null)
+    {
+      invalidReason.setLength(0);
+      if (! PersistUtils.isValidLDAPName(matchingRuleID, invalidReason))
+      {
+        throw new InvalidValueException("Sort order value '" + keyString +
+             "' is invalid because '" + matchingRuleID + "' is not a valid " +
+             "matching rule name or OID:  " + invalidReason);
+      }
+    }
+
+    return new SortKey(attributeName, matchingRuleID, reverseOrder);
+  }
+
+
+
+  /**
    * {@inheritDoc}
    */
   @Override()
@@ -871,10 +1266,16 @@ public final class BasicSearchRateJob
                                    final List<String> outputMessages)
   {
     // Make sure that we can get an LDAP connection to the specified address.
-    final String address = parameters.getStringParameter(
-         serverAddressParameter.getName()).getValue();
-    final int port = parameters.getIntegerParameter(
-         serverPortParameter.getName()).getIntValue();
+    final List<ObjectPair<String,Integer>> addressesAndPorts;
+    try
+    {
+      addressesAndPorts = getAddressesAndPorts(parameters);
+    }
+    catch (final InvalidValueException e)
+    {
+      outputMessages.add(e.getMessage());
+      return false;
+    }
 
     final boolean useSSL;
     final boolean useStartTLS;
@@ -903,139 +1304,149 @@ public final class BasicSearchRateJob
         return false;
     }
 
-    final LDAPConnection connection;
-    try
+    for (final ObjectPair<String,Integer> addressAndPort : addressesAndPorts)
     {
-      if (useSSL)
-      {
-        outputMessages.add("Trying to establish an SSL-based connection to " +
-             address + ':' + port + "...");
-        final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
-        connection = new LDAPConnection(sslUtil.createSSLSocketFactory(),
-             address, port);
-      }
-      else
-      {
-        outputMessages.add("Trying to establish an unencrypted connection to " +
-             address + ':' + port + "...");
-        connection = new LDAPConnection(address, port);
-      }
-
-      outputMessages.add("Successfully connected.");
-    }
-    catch (final Exception e)
-    {
-      outputMessages.add("ERROR:  Unable to establish the connection:  " +
-           StaticUtils.getExceptionMessage(e));
-      return false;
-    }
-
-    try
-    {
-      // If we should secure the connection with StartTLS, then verify that.
-      if (useStartTLS)
+      if (! outputMessages.isEmpty())
       {
         outputMessages.add("");
-        outputMessages.add("Trying to secure the connection with StartTLS...");
+      }
 
-        try
+      final String address = addressAndPort.getFirst();
+      final int port = addressAndPort.getSecond();
+
+      final LDAPConnection connection;
+      try
+      {
+        if (useSSL)
         {
+          outputMessages.add("Trying to establish an SSL-based connection to " +
+               address + ':' + port + "...");
           final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
-          connection.processExtendedOperation(new StartTLSExtendedRequest(
-               sslUtil.createSSLSocketFactory()));
-          outputMessages.add("Successfully secured the connection.");
+          connection = new LDAPConnection(sslUtil.createSSLSocketFactory(),
+               address, port);
         }
-        catch (final Exception e)
+        else
         {
-          outputMessages.add("ERROR:  StartTLS failed:  " +
-               StaticUtils.getExceptionMessage(e));
-          return false;
+          outputMessages.add("Trying to establish an unencrypted connection " +
+               "to " + address + ':' + port + "...");
+          connection = new LDAPConnection(address, port);
         }
+
+        outputMessages.add("Successfully connected.");
+      }
+      catch (final Exception e)
+      {
+        outputMessages.add("ERROR:  Unable to establish the connection:  " +
+             StaticUtils.getExceptionMessage(e));
+        return false;
       }
 
-
-      // If we should authenticate the connection, then verify that.
-      final StringParameter bindDNParam =
-           parameters.getStringParameter(bindDNParameter.getName());
-      final PasswordParameter bindPWParam =
-           parameters.getPasswordParameter(bindPasswordParameter.getName());
-      if ((bindDNParam != null) && bindDNParam.hasValue())
+      try
       {
-        outputMessages.add("");
-        outputMessages.add("Trying to perform an LDAP simple bind with DN '" +
-             bindDNParam.getValue() + "'...");
-
-        try
+        // If we should secure the connection with StartTLS, then verify that.
+        if (useStartTLS)
         {
-          connection.bind(bindDNParam.getValue(), bindPWParam.getValue());
-          outputMessages.add("Successfully authenticated.");
-        }
-        catch (final Exception e)
-        {
-          outputMessages.add("ERROR:  Bind failed:  " +
-               StaticUtils.getExceptionMessage(e));
-          return false;
-        }
-      }
+          outputMessages.add("");
+          outputMessages.add("Trying to secure the connection with StartTLS...");
 
-
-      // If a base DN pattern was provided, then make sure we can retrieve the
-      // entry specified as the search base.
-      final StringParameter baseDNParam =
-           parameters.getStringParameter(baseDNPatternParameter.getName());
-      if ((baseDNParam != null) && baseDNParam.hasValue())
-      {
-        outputMessages.add("");
-
-        String baseDN;
-        try
-        {
-          final ValuePattern valuePattern =
-               new ValuePattern(baseDNParam.getValue());
-          baseDN = valuePattern.nextValue();
-        }
-        catch (final ParseException e)
-        {
-          outputMessages.add("ERROR:  Unable to construct a base DN from " +
-               "pattern '" + baseDNParam.getValue() + "':  " +
-               StaticUtils.getExceptionMessage(e));
-          return false;
-        }
-
-        outputMessages.add("Verifying that search bsae entry '" + baseDN +
-             "' exists...");
-        try
-        {
-          final Entry baseEntry = connection.getEntry(baseDN);
-          if (baseEntry == null)
+          try
           {
-            outputMessages.add(
-                 "ERROR:  The base entry could not be retrieved.");
+            final SSLUtil sslUtil = new SSLUtil(new TrustAllTrustManager());
+            connection.processExtendedOperation(new StartTLSExtendedRequest(
+                 sslUtil.createSSLSocketFactory()));
+            outputMessages.add("Successfully secured the connection.");
+          }
+          catch (final Exception e)
+          {
+            outputMessages.add("ERROR:  StartTLS failed:  " +
+                 StaticUtils.getExceptionMessage(e));
             return false;
           }
-          else
+        }
+
+
+        // If we should authenticate the connection, then verify that.
+        final StringParameter bindDNParam =
+             parameters.getStringParameter(bindDNParameter.getName());
+        final PasswordParameter bindPWParam =
+             parameters.getPasswordParameter(bindPasswordParameter.getName());
+        if ((bindDNParam != null) && bindDNParam.hasValue())
+        {
+          outputMessages.add("");
+          outputMessages.add("Trying to perform an LDAP simple bind with DN '" +
+               bindDNParam.getValue() + "'...");
+
+          try
           {
-            outputMessages.add("Successfully retrieved the entry.");
+            connection.bind(bindDNParam.getValue(), bindPWParam.getValue());
+            outputMessages.add("Successfully authenticated.");
+          }
+          catch (final Exception e)
+          {
+            outputMessages.add("ERROR:  Bind failed:  " +
+                 StaticUtils.getExceptionMessage(e));
+            return false;
           }
         }
-        catch (final Exception e)
+
+
+        // If a base DN pattern was provided, then make sure we can retrieve the
+        // entry specified as the search base.
+        final StringParameter baseDNParam =
+             parameters.getStringParameter(baseDNPatternParameter.getName());
+        if ((baseDNParam != null) && baseDNParam.hasValue())
         {
-          outputMessages.add("ERROR:  Search attempt failed:  " +
-               StaticUtils.getExceptionMessage(e));
-          return false;
+          outputMessages.add("");
+
+          String baseDN;
+          try
+          {
+            final ValuePattern valuePattern =
+                 new ValuePattern(baseDNParam.getValue());
+            baseDN = valuePattern.nextValue();
+          }
+          catch (final ParseException e)
+          {
+            outputMessages.add("ERROR:  Unable to construct a base DN from " +
+                 "pattern '" + baseDNParam.getValue() + "':  " +
+                 StaticUtils.getExceptionMessage(e));
+            return false;
+          }
+
+          outputMessages.add("Verifying that search bsae entry '" + baseDN +
+               "' exists...");
+          try
+          {
+            final Entry baseEntry = connection.getEntry(baseDN);
+            if (baseEntry == null)
+            {
+              outputMessages.add(
+                   "ERROR:  The base entry could not be retrieved.");
+              return false;
+            }
+            else
+            {
+              outputMessages.add("Successfully retrieved the entry.");
+            }
+          }
+          catch (final Exception e)
+          {
+            outputMessages.add("ERROR:  Search attempt failed:  " +
+                 StaticUtils.getExceptionMessage(e));
+            return false;
+          }
         }
       }
-
-
-      // If we've gotten here, then everything was successful.
-      outputMessages.add("");
-      outputMessages.add("All tests completed successfully.");
-      return true;
+      finally
+      {
+        connection.close();
+      }
     }
-    finally
-    {
-      connection.close();
-    }
+
+    // If we've gotten here, then everything was successful.
+    outputMessages.add("");
+    outputMessages.add("All tests completed successfully.");
+    return true;
   }
 
 
@@ -1048,11 +1459,20 @@ public final class BasicSearchRateJob
                                final ParameterList parameters)
          throws UnableToRunException
   {
-    // Initialize the server address and port.
-    final String serverAddress = parameters.getStringParameter(
-         serverAddressParameter.getName()).getValue();
-    final int serverPort = parameters.getIntegerParameter(
-         serverPortParameter.getName()).getIntValue();
+    // Initialize the parent random number generator.
+    parentRandom = new Random();
+
+
+    // Initialize the server addresses and ports.
+    final List<ObjectPair<String,Integer>> addressesAndPorts;
+    try
+    {
+      addressesAndPorts = getAddressesAndPorts(parameters);
+    }
+    catch (final InvalidValueException e)
+    {
+      throw new UnableToRunException(e.getMessage());
+    }
 
     // Initialize the security method.
     final boolean useSSL;
@@ -1090,27 +1510,49 @@ public final class BasicSearchRateJob
          followReferralsParameter.getName()).getBooleanValue());
 
 
-    // Create the server set.
+    // Create the socket factory.
+    final SocketFactory socketFactory;
     if (useSSL)
     {
       try
       {
-        serverSet = new SingleServerSet(serverAddress, serverPort,
-             sslUtil.createSSLSocketFactory(), connectionOptions);
+        socketFactory = sslUtil.createSSLSocketFactory();
       }
       catch (final Exception e)
       {
         throw new UnableToRunException(
-             "Unable to create an SSL socket factory for securing " +
-                  "communication to " + serverAddress + ':' + serverPort +
-                  ":  " + StaticUtils.getExceptionMessage(e),
+             "Unable to create an SSL socket factory for securing LDAP " +
+                  "communication:  " + StaticUtils.getExceptionMessage(e),
              e);
       }
     }
     else
     {
-      serverSet = new SingleServerSet(serverAddress, serverPort,
-           connectionOptions);
+      socketFactory = SocketFactory.getDefault();
+    }
+
+
+    // Create the server set.
+    if (addressesAndPorts.size() > 1)
+    {
+      final String[] addresses = new String[addressesAndPorts.size()];
+      final int[] ports = new int[addressesAndPorts.size()];
+      for (int i=0; i < addressesAndPorts.size(); i++)
+      {
+        final ObjectPair<String,Integer> addressAndPort =
+             addressesAndPorts.get(i);
+        addresses[i] = addressAndPort.getFirst();
+        ports[i] = addressAndPort.getSecond();
+        serverSet = new RoundRobinServerSet(addresses, ports, socketFactory,
+             connectionOptions);
+      }
+    }
+    else
+    {
+      final ObjectPair<String,Integer> addressAndPort =
+           addressesAndPorts.get(0);
+      serverSet = new SingleServerSet(addressAndPort.getFirst(),
+           addressAndPort.getSecond(), socketFactory, connectionOptions);
     }
 
 
@@ -1198,18 +1640,83 @@ public final class BasicSearchRateJob
     }
 
 
-    // Initialize the filter pattern.
+    // Get the alias dereferencing policy.
+    final String derefStr = parameters.getMultiChoiceParameter(
+         derefPolicyParameter.getName()).getValueString();
+    switch (derefStr)
+    {
+      case DEREF_NEVER:
+        dereferencePolicy = DereferencePolicy.NEVER;
+        break;
+      case DEREF_SEARCHING:
+        dereferencePolicy = DereferencePolicy.SEARCHING;
+        break;
+      case DEREF_FINDING_BASE:
+        dereferencePolicy = DereferencePolicy.FINDING;
+        break;
+      case DEREF_ALWAYS:
+        dereferencePolicy = DereferencePolicy.ALWAYS;
+        break;
+      default:
+        throw new UnableToRunException("Unrecognized alias dereferencing " +
+             "policy '" + derefStr + "'.");
+    }
+
+
+    // Get the search size limit.
+    sizeLimit = parameters.getIntegerParameter(
+         sizeLimitParameter.getName()).getIntValue();
+
+
+    // Get the search time limit.
+    timeLimitSeconds = parameters.getIntegerParameter(
+         timeLimitParameter.getName()).getIntValue();
+
+
+    // Get the typesOnly flag.
+    typesOnly = parameters.getBooleanParameter(
+         typesOnlyParameter.getName()).getBooleanValue();
+
+
+    // Initialize the first filter pattern.
     try
     {
-      filterPattern = new ValuePattern(parameters.getStringParameter(
-           filterPatternParameter.getName()).getValue());
+      filterPattern1 = new ValuePattern(parameters.getStringParameter(
+           filterPattern1Parameter.getName()).getValue());
     }
     catch (final Exception e)
     {
       throw new UnableToRunException(
-           "Unable to initialize the filter value pattern:  " +
+           "Unable to initialize the filter 1 value pattern:  " +
                 StaticUtils.getExceptionMessage(e),
            e);
+    }
+
+
+    // Initialize the filter pattern 1 percentage.
+    filter1Percentage = parameters.getIntegerParameter(
+         filter1PercentageParameter.getName()).getIntValue();
+
+
+    // Initialize the second filter pattern.
+    if (filter1Percentage < 100)
+    {
+      try
+      {
+        filterPattern2 = new ValuePattern(parameters.getStringParameter(
+             filterPattern2Parameter.getName()).getValue());
+      }
+      catch (final Exception e)
+      {
+        throw new UnableToRunException(
+             "Unable to initialize the filter 2 value pattern:  " +
+                  StaticUtils.getExceptionMessage(e),
+             e);
+      }
+    }
+    else
+    {
+      filterPattern2 = null;
     }
 
 
@@ -1223,6 +1730,112 @@ public final class BasicSearchRateJob
     else
     {
       requestedAttributes = new String[0];
+    }
+
+
+    // Create the manage DSA IT request control, if appropriate.
+    final BooleanParameter manageDSAITParam =
+         parameters.getBooleanParameter(includeManageDSAITParameter.getName());
+    if ((manageDSAITParam != null) && manageDSAITParam.getBooleanValue())
+    {
+      manageDSAITControl = new ManageDsaITRequestControl(false);
+    }
+    else
+    {
+      manageDSAITControl = null;
+    }
+
+
+    // Create the subentries request control, if appropriate.
+    final BooleanParameter subentriesParam =
+         parameters.getBooleanParameter(includeSubentriesParameter.getName());
+    if ((subentriesParam != null) && subentriesParam.getBooleanValue())
+    {
+      subentriesControl = new SubentriesRequestControl(false);
+    }
+    else
+    {
+      subentriesControl = null;
+    }
+
+
+    // Create the matched values request control, if appropriate.
+    final StringParameter matchedValuesFilterParam =
+         parameters.getStringParameter(matchedValuesFilterParameter.getName());
+    if ((matchedValuesFilterParam != null) &&
+         matchedValuesFilterParam.hasValue())
+    {
+      try
+      {
+        final Filter filter =
+             Filter.create(matchedValuesFilterParam.getValueString());
+        final MatchedValuesFilter matchedValuesFilter =
+             MatchedValuesFilter.create(filter);
+        matchedValuesControl =
+             new MatchedValuesRequestControl(false, matchedValuesFilter);
+      }
+      catch (final LDAPException e)
+      {
+        throw new UnableToRunException(
+             "Unable to create a matched values request control:  " +
+                  StaticUtils.getExceptionMessage(e),
+             e);
+      }
+    }
+    else
+    {
+      matchedValuesControl = null;
+    }
+
+
+    // Create the proxied authorization request control, if appropriate.
+    final StringParameter proxiedAuthIDParam =
+         parameters.getStringParameter(proxiedAuthzIDParameter.getName());
+    if ((proxiedAuthIDParam != null) && proxiedAuthIDParam.hasValue())
+    {
+      proxiedAuthControl = new ProxiedAuthorizationV2RequestControl(
+           proxiedAuthIDParam.getValueString());
+    }
+    else
+    {
+      proxiedAuthControl = null;
+    }
+
+
+    // Create the server-side sort request control, if appropriate.
+    final MultiLineTextParameter sortOrderParam =
+         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
+    if ((sortOrderParam != null) && sortOrderParam.hasValue())
+    {
+      final String[] sortOrderLines = sortOrderParam.getNonBlankLines();
+      if (sortOrderLines.length > 0)
+      {
+        try
+        {
+          final List<SortKey> sortKeys = new ArrayList<>(sortOrderLines.length);
+          for (final String sortOrderLine : sortOrderLines)
+          {
+            sortKeys.add(parseSortKey(sortOrderLine));
+          }
+
+          sortControl = new ServerSideSortRequestControl(false, sortKeys);
+        }
+        catch (final Exception e)
+        {
+          throw new UnableToRunException(
+               "Unable to create a server-side sort request control:  " +
+                    StaticUtils.getExceptionMessage(e),
+               e);
+        }
+      }
+      else
+      {
+        sortControl = null;
+      }
+    }
+    else
+    {
+      sortControl = null;
     }
 
 
@@ -1306,6 +1919,10 @@ public final class BasicSearchRateJob
                                final ParameterList parameters)
          throws UnableToRunException
   {
+    // Initialize the thread-specific random-number generator.
+    random = new Random(parentRandom.nextLong());
+
+
     // Initialize the stat trackers.
     searchesCompleted = new IncrementalTracker(clientID, threadID,
          STAT_SEARCHES_COMPLETED, collectionInterval);
@@ -1330,8 +1947,34 @@ public final class BasicSearchRateJob
 
     // Create a search request object for this thread.  Use a placeholder base
     // DN and filter.
-    searchRequest = new SearchRequest(this, "", scope,
+    searchRequest = new SearchRequest(this, "", scope, dereferencePolicy,
+         sizeLimit, timeLimitSeconds, typesOnly,
          Filter.createPresenceFilter("objectClass"), requestedAttributes);
+
+    if (manageDSAITControl != null)
+    {
+      searchRequest.addControl(manageDSAITControl);
+    }
+
+    if (subentriesControl != null)
+    {
+      searchRequest.addControl(subentriesControl);
+    }
+
+    if (matchedValuesControl != null)
+    {
+      searchRequest.addControl(matchedValuesControl);
+    }
+
+    if (proxiedAuthControl != null)
+    {
+      searchRequest.addControl(proxiedAuthControl);
+    }
+
+    if (sortControl != null)
+    {
+      searchRequest.addControl(sortControl);
+    }
 
 
     // Create a connection pool to use to process the searches.  Each thread
@@ -1419,7 +2062,17 @@ public final class BasicSearchRateJob
 
       // Update the search request with an appropriate base DN and filter.
       searchRequest.setBaseDN(baseDNPattern.nextValue());
-      final String filter = filterPattern.nextValue();
+
+      final String filter;
+      if (random.nextInt(100) < filter1Percentage)
+      {
+        filter = filterPattern1.nextValue();
+      }
+      else
+      {
+        filter = filterPattern2.nextValue();
+      }
+
       try
       {
         searchRequest.setFilter(filter);

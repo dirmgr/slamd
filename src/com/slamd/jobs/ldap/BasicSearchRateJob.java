@@ -222,10 +222,10 @@ public final class BasicSearchRateJob
             "The names of the attributes to request that the server return " +
                  "in search result entries.  Multiple values may be " +
                  "provided, with one value per line.  Each value may be the " +
-                 "name or OID of an LDAP attribute type, \"*\" (to request " +
-                 "that the server return all user attributes), \"+\" (to " +
+                 "name or OID of an LDAP attribute type, '*' (to request " +
+                 "that the server return all user attributes), '+' (to " +
                  "request that the server return all operational " +
-                 "attributes), \"1.1\" (to request that the server not " +
+                 "attributes), '1.1' (to request that the server not " +
                  "return any attributes), or another type of value that the " +
                  "server may support.  If no values are provided, then the " +
                  "standard behavior is for the server to return all user " +
@@ -241,7 +241,7 @@ public final class BasicSearchRateJob
        "warm_up_duration", "Warm-Up Duration",
        "The length of time that the job should be allowed to run before it " +
             "starts collecting statistics.  The value may be a duration with " +
-            "units (for example, \"30 seconds\" or \"2 minutes\"), but if " +
+            "units (for example, '30 seconds' or '2 minutes'), but if " +
             "the value is only numeric without a unit, then it will be " +
             "interpreted as a number of seconds.  A nonzero warm-up time may " +
             "give the job a chance for all client threads to be spun up and " +
@@ -254,7 +254,7 @@ public final class BasicSearchRateJob
        "cool_down_duration", "Cool-Down Duration",
        "The length of time before the job completes that the job should stop " +
             "collecting statistics.  The value may be a duration with units " +
-            "(for example, \"30 seconds\" or \"2 minutes\"), but if the " +
+            "(for example, '30 seconds' or '2 minutes'), but if the " +
             "value is only numeric without a unit, then it will be " +
             "interpreted as a number of seconds.  A nonzero cool-down time " +
             "may help ensure that all client threads are still running and " +

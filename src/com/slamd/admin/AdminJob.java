@@ -6573,7 +6573,7 @@ public final class AdminJob
             clientList.toArray(monitorClients);
           }
 
-          boolean monitorClientsIfAvailable = false;
+          boolean monitorClientsIfAvailable = true;
           String monitorStr = request.getParameter(
                Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS_IF_AVAILABLE);
           if (monitorStr != null)
@@ -6959,6 +6959,17 @@ public final class AdminJob
     htmlBody.append("  " + generateHidden(
                                 Constants.SERVLET_PARAM_JOB_VALIDATE_SCHEDULE,
                                 "1") + EOL);
+    JobFolder[] folders = null;
+    try
+    {
+      folders = configDB.getFolders();
+    } catch (DatabaseException de) {}
+    if ((folders != null) && (folders.length == 1))
+    {
+      htmlBody.append("  " + generateHidden(
+           Constants.SERVLET_PARAM_JOB_FOLDER, folders[0].getFolderName()) +
+           EOL);
+    }
 
     if (jobNumClients > 0)
     {
@@ -7009,6 +7020,26 @@ public final class AdminJob
                       generateHidden(
                            Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS,
                            String.valueOf(delayBetweenStarts)) + EOL);
+
+      if (startTime == null)
+      {
+        htmlBody.append("  " + generateHidden(
+             Constants.SERVLET_PARAM_JOB_START_TIME,
+             dateFormat.format(new Date())) + EOL);
+      }
+      else
+      {
+        htmlBody.append("  " + generateHidden(
+             Constants.SERVLET_PARAM_JOB_START_TIME,
+             dateFormat.format(startTime)) + EOL);
+      }
+
+      htmlBody.append("  " + generateHidden(
+           Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS_IF_AVAILABLE, "1") +
+           EOL);
+
+      htmlBody.append("  " + generateHidden(
+           Constants.SERVLET_PARAM_JOB_WAIT_FOR_CLIENTS, "1") + EOL);
 
       StringBuilder clientBuffer = new StringBuilder();
       String       separator = "";
@@ -7063,7 +7094,10 @@ public final class AdminJob
     {
       // Indicate whether the job should be disabled.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Job Is Disabled</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"Indicates " +
+           "whether the job should be created as disabled and must be " +
+           "manually enabled before it is eligible to start.\">Job Is " +
+           "Disabled</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_DISABLED + '"' +
@@ -7073,7 +7107,10 @@ public final class AdminJob
       // Indicate whether the job should be displayed in restricted read-only
       // mode.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Display In Read-Only Mode</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"Indicates " +
+           "whether this job should be displayed if the SLAMD server is " +
+           "running in read-only mode.\">Display In Read-Only Mode</A></TD>" +
+           EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
                       Constants.SERVLET_PARAM_DISPLAY_IN_READ_ONLY + '"' +
@@ -7084,7 +7121,9 @@ public final class AdminJob
 
       // The number of copies.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Number of Copies</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"Allows " +
+           "creating multiple copies of the job with the same set of " +
+           "parameters.\">Number of Copies</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_COPIES + "\" VALUE=\"" +
@@ -7093,7 +7132,11 @@ public final class AdminJob
 
       // Whether to make copies interdependent.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Make Copies Interdependent</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"If this is " +
+           "true and multiple copies are to be created, then each subsequent " +
+           "copy will be dependent upon the previous copy and will not be " +
+           "eligible to start until the previous copy has completed.\">Make " +
+           "Copies Interdependent</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_MAKE_INTERDEPENDENT + '"' +
@@ -7102,7 +7145,10 @@ public final class AdminJob
 
       // The delay between the start of each copy.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Time Between Copy Startups</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The number " +
+           "of seconds to add to the previous job's scheduled start time " +
+           "when scheduling the next copy.\">Time Between Copy " +
+           "Startups</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
@@ -7112,12 +7158,7 @@ public final class AdminJob
     }
 
     // The name of the folder in which the job should be placed.
-    JobFolder[] folders = null;
-    try
-    {
-      folders = configDB.getFolders();
-    } catch (DatabaseException de) {}
-    if ((folders != null) && (folders.length > 0))
+    if ((folders != null) && (folders.length > 1))
     {
       if (folderName == null)
       {
@@ -7125,25 +7166,27 @@ public final class AdminJob
       }
 
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Place in Folder</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The name of " +
+           "the real job folder in which the job should be " +
+           "organized.\">Place in Folder</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD>" + EOL);
       htmlBody.append("      <SELECT NAME=\"" +
-                      Constants.SERVLET_PARAM_JOB_FOLDER + "\">" + EOL);
+           Constants.SERVLET_PARAM_JOB_FOLDER + "\">" + EOL);
       for (int i=0; i < folders.length; i++)
       {
         if ((folderName != null) &&
-            folderName.equalsIgnoreCase(folders[i].getFolderName()))
+             folderName.equalsIgnoreCase(folders[i].getFolderName()))
         {
           htmlBody.append("        <OPTION VALUE=\"" +
-                          folders[i].getFolderName() + "\" SELECTED>" +
-                          folders[i].getFolderName() + EOL);
+               folders[i].getFolderName() + "\" SELECTED>" +
+               folders[i].getFolderName() + EOL);
         }
         else
         {
           htmlBody.append("        <OPTION VALUE=\"" +
-                          folders[i].getFolderName() + "\">" +
-                          folders[i].getFolderName() + EOL);
+               folders[i].getFolderName() + "\">" +
+               folders[i].getFolderName() + EOL);
         }
       }
       htmlBody.append("      </SELECT>");
@@ -7158,7 +7201,11 @@ public final class AdminJob
       value = "";
     }
     htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Description</TD>" + EOL);
+    htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"A brief " +
+         "description that can help identify the purpose for this " +
+         "job and distinguish it from other jobs in the same folder.  A more " +
+         "complete description can be added in the Job Comments area " +
+         "below.\">Description</A></TD>" + EOL);
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DESCRIPTION + "\" VALUE=\"" +
@@ -7166,29 +7213,35 @@ public final class AdminJob
     htmlBody.append("  </TR>" + EOL);
 
     // The start time
-    if (startTime != null)
+    if (showAdvanced)
     {
-      value = dateFormat.format(startTime);
-    }
-    else
-    {
-      if (populateStartTime)
+      if (startTime != null)
       {
-        value = dateFormat.format(new Date());
+        value = dateFormat.format(startTime);
       }
       else
       {
-        value = "";
+        if (populateStartTime)
+        {
+          value = dateFormat.format(new Date());
+        }
+        else
+        {
+          value = "";
+        }
       }
+      htmlBody.append("  <TR>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The " +
+           "scheduled start time for the job.  If this is empty or specifies " +
+           "a time in the past, then the job will be eligible to start " +
+           "running immediately\">Start Time <FONT " +
+           "SIZE=\"-1\">(YYYYMMDDhhmmss)</FONT></A></TD>" + EOL);
+      htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+      htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
+           Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
+           value + "\" SIZE=\"40\"></TD>" + EOL);
+      htmlBody.append("  </TR>" + EOL);
     }
-    htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Start Time <FONT SIZE=\"-1\">(YYYYMMDDhhmmss)" +
-                    "</FONT></TD>" + EOL);
-    htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
-    htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
-                    Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
-    htmlBody.append("  </TR>" + EOL);
 
     // The stop time
     if (stopTime != null)
@@ -7200,8 +7253,11 @@ public final class AdminJob
       value = "";
     }
     htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Stop Time <FONT SIZE=\"-1\">(YYYYMMDDhhmmss)" +
-                    "</FONT></TD>" + EOL);
+    htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The time that " +
+         "the job should be scheduled to stop running.  If neither a stop " +
+         "time nor a duration is specified, then the job will run until it " +
+         "has completed or until it is cancelled.\">Stop Time <FONT " +
+         "SIZE=\"-1\">(YYYYMMDDhhmmss)</FONT></A></TD>" + EOL);
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_STOP_TIME + "\" VALUE=\"" +
@@ -7218,7 +7274,11 @@ public final class AdminJob
       value = "";
     }
     htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Duration</TD>" + EOL);
+    htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The maximum " +
+         "length of time that the job should be allowed to run.  This can be " +
+         "an integer specifying the number of seconds, or an integer with " +
+         "units like '30 seconds', '5 minute' or '1 " +
+         "hour'.\">Duration</A></TD>" + EOL);
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
@@ -7237,7 +7297,9 @@ public final class AdminJob
         value = "";
       }
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Number of Clients " + star + "</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The number " +
+           "of clients that should be used to run the job.\">Number of " +
+           "Clients " + star + "</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
@@ -7249,7 +7311,9 @@ public final class AdminJob
     if (showAdvanced)
     {
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Use Specific Clients</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The " +
+           "addresses of the specific client systems that should be used to " +
+           "run the job.\">Use Specific Clients</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\"" +
@@ -7267,7 +7331,10 @@ public final class AdminJob
 
       // Resource monitor clients to use.
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Resource Monitor Clients</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The " +
+           "addresses of specific systems from which resource monitor " +
+           "statistics should be collected.\">Resource Monitor " +
+           "Clients</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
@@ -7282,26 +7349,34 @@ public final class AdminJob
       }
       htmlBody.append("</TEXTAREA></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
+
+      // Whether to automatically monitor client systems if available.
+      htmlBody.append("  <TR>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"Indicates " +
+           "whether to collect resource monitor statistics from the client " +
+           "systems if those systems are also running the resource monitor " +
+           "client.\">Monitor Clients if Available</A></TD>" + EOL);
+      htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+      htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
+                      Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS_IF_AVAILABLE +
+                      '"' + (monitorClientsIfAvailable ? " CHECKED" : "") +
+                      "></TD>" + EOL);
+      htmlBody.append("  </TR>" + EOL);
+
+      // Whether to wait for clients to be available.
+      htmlBody.append("  <TR>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"Indicates " +
+           "whether the job should wait for an appropriate set of clients to " +
+           "become available if that is not the case when the scheduled " +
+           "start time arrives.  If this is false, then the job may be " +
+           "cancelled if an appropriate set of clients is not " +
+           "available.\">Wait for Available Clients</A></TD>" + EOL);
+      htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+      htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
+           Constants.SERVLET_PARAM_JOB_WAIT_FOR_CLIENTS +
+           '"' + (waitForClients ? " CHECKED" : "") + "></TD>" + EOL);
+      htmlBody.append("  </TR>" + EOL);
     }
-
-    // Whether to automatically monitor client systems if available.
-    htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Monitor Clients if Available</TD>" + EOL);
-    htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
-    htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
-                    Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS_IF_AVAILABLE +
-                    '"' + (monitorClientsIfAvailable ? " CHECKED" : "") +
-                    "></TD>" + EOL);
-    htmlBody.append("  </TR>" + EOL);
-
-    // Whether to wait for clients to be available.
-    htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Wait for Available Clients</TD>" + EOL);
-    htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
-    htmlBody.append("    <TD><INPUT TYPE=\"CHECKBOX\" NAME=\"" +
-                    Constants.SERVLET_PARAM_JOB_WAIT_FOR_CLIENTS +
-                    '"' + (waitForClients ? " CHECKED" : "") + "></TD>" + EOL);
-    htmlBody.append("  </TR>" + EOL);
 
     // The number of threads per client
     if (jobNumThreads <= 0)
@@ -7315,7 +7390,10 @@ public final class AdminJob
         value = "";
       }
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Threads per Client " + star + "</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The number " +
+           "of concurrent threads that should be used to process the job on " +
+           "each client system.\">Threads per Client " + star + "</A></TD>" +
+           EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREADS_PER_CLIENT +
@@ -7327,7 +7405,9 @@ public final class AdminJob
     {
       // The thread startup delay
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Thread Startup Delay (ms)</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The length " +
+           "of time in milliseconds to delay between starting each thread on " +
+           "a client system.\">Thread Startup Delay (ms)</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
@@ -7352,7 +7432,9 @@ public final class AdminJob
       }
 
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Job Dependencies</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The jobs " +
+           "that must complete before this job is eligible to start " +
+           "running.\">Job Dependencies</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD>" + EOL);
 
@@ -7531,7 +7613,9 @@ public final class AdminJob
           }
         }
         htmlBody.append("  <TR>" + EOL);
-        htmlBody.append("    <TD>Notify on Completion</TD>" + EOL);
+        htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The " +
+             "email addresses of users to notify when this job " +
+             "completes.\">Notify on Completion</A></TD>" + EOL);
         htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
         htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
@@ -7549,11 +7633,17 @@ public final class AdminJob
       }
       else
       {
-        value = secondsToHumanReadableDuration(
-             Constants.DEFAULT_COLLECTION_INTERVAL);
+        value = "";
       }
       htmlBody.append("  <TR>" + EOL);
-      htmlBody.append("    <TD>Statistics Collection Interval</TD>" + EOL);
+      htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"The length " +
+           "of time covered by each data point in the statistics that the " +
+           "job collects.  If the job is scheduled with a maximum duration, " +
+           "then this may be left blank and the server will automatically " +
+           "select a collection interval  If a value is specified, then it " +
+           "may be an integer number of seconds, or it may be an integer " +
+           "with units, like '5 seconds' or '1 minute'.\">Statistics " +
+           "Collection Interval</A></TD>" + EOL);
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
@@ -7596,7 +7686,9 @@ public final class AdminJob
       comments = "";
     }
     htmlBody.append("  <TR>" + EOL);
-    htmlBody.append("    <TD>Job Comments</TD>" + EOL);
+    htmlBody.append("    <TD><A CLASS=\"form_caption\" TITLE=\"A free-form " +
+         "text area that can be used to hold general comments about this " +
+         "job.\">Job Comments</A></TD>" + EOL);
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_COMMENTS + "\" ROWS=\"5\" " +
@@ -7670,7 +7762,7 @@ public final class AdminJob
     int      numClients                = -1;
     int      threadsPerClient          = -1;
     int      threadStartupDelay        = 0;
-    int      collectionInterval        = Constants.DEFAULT_COLLECTION_INTERVAL;
+    int      collectionInterval        = -1;
     String   folderName                = null;
     String   jobComments               = null;
     String[] dependencyIDs             = null;
@@ -8060,6 +8152,36 @@ public final class AdminJob
         infoMessage.append("ERROR:  " + se.getMessage() + "<BR>" + EOL);
         jobIsValid = false;
       }
+    }
+    else if (duration > 0)
+    {
+      // Automatically select a collection interval baed on the duration.
+      if (duration <= 300)
+      {
+        collectionInterval = 1;
+      }
+      else if (duration <= 1800)
+      {
+        collectionInterval = 5;
+      }
+      else if (duration <= 3600)
+      {
+        collectionInterval = 10;
+      }
+      else if (duration <= (3 * 3600))
+      {
+        collectionInterval = 30;
+      }
+      else
+      {
+        collectionInterval = 60;
+      }
+    }
+    else
+    {
+      infoMessage.append("ERROR:  A statistics collection interval must be " +
+                "specified if no duration is given.<BR>" + EOL);
+      jobIsValid = false;
     }
 
     // Figure out how long the job is scheduled to run.  If it is less than

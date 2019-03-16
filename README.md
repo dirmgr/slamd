@@ -16,7 +16,7 @@ SLAMD is especially good at benchmarking LDAP directory servers, but it can be u
 
 SLAMD was primarily written by Neil A. Wilson.  It was first created at Sun Microsystems in 2002, under the direction of Steve Shoaff who suggested both the basic concept and the name.  The name SLAMD is a play on "slapd", which is used in the binary name of some types of LDAP directory servers (it kind of stands for "standalone LDAP daemon").
 
-The original SLAMD code was maintained until about 2010, and then it just sort of went dormant for a long period of time.  It has been dusted off and many of its components updated.  Only minimal testing has been performed thus far, but it seems to be working okay.  No guarantee is made about backward compatibility with older versions, and you now need to use Java 8 or later to run it.
+The original SLAMD code was maintained until about 2010, and then it just sort of went dormant for a long period of time.  It has been dusted off and many of its components updated.  Only minimal testing has been performed thus far, but it seems to be working okay.  The new version should not be considered backward compatible with older versions, and you now need to use Java 8 or later to run it.
 
 SLAMD is open source under the terms of the [Sun Public License version 1.0](LICENSE.txt).  That's the license under which it was originally released, and since no single entity holds the copyright to everything, that's the license that it's always going to have.
 

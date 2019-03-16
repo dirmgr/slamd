@@ -111,7 +111,7 @@ public abstract class LDAPJob
 
   // The parameters used to provide information about the connections.
   private MultiLineTextParameter addressesParameter =
-       new MultiLineTextParameter("addresses", "Server Addresses",
+       new MultiLineTextParameter("addresses", "Server Addresses and Ports",
                 "The addresses (or addresses followed by colons and and port " +
                      "numbers) of the directory servers to which connections " +
                      "should be established.  If multiple addresses are " +

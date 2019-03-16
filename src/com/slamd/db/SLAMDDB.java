@@ -79,7 +79,7 @@ import com.slamd.jobs.ldap.ModifyRateJob;
 import com.slamd.jobs.ldap.MultiConnectionSearchRateJob;
 import com.slamd.jobs.ldap.MultiSearchMixedLoadJob;
 import com.slamd.jobs.ldap.PrimeJob;
-import com.slamd.jobs.ldap.SearchRateJob;
+import com.slamd.jobs.ldap.BasicSearchRateJob;
 import com.slamd.jobs.ldap.SearchAndModifyRateJob;
 import com.slamd.jobs.ldap.SiteMinderJob;
 import com.slamd.jobs.ldap.WaitForDirectoryServerJob;
@@ -94,11 +94,9 @@ import com.slamd.jobs.utility.ExecJob;
 import com.slamd.jobs.utility.NoOpJob;
 import com.slamd.jobs.utility.TCPReplayJob;
 import com.slamd.jobs.utility.ThroughputTestJob;
-import com.slamd.loadvariance.LoadVarianceTestJobClass;
 import com.slamd.report.HTMLReportGenerator;
 import com.slamd.report.PDFReportGenerator;
 import com.slamd.report.TextReportGenerator;
-import com.slamd.scripting.BSFJobClass;
 import com.slamd.scripting.ScriptedJobClass;
 import com.slamd.server.ConfigSubscriber;
 import com.slamd.server.SLAMDServer;
@@ -518,6 +516,7 @@ public final class SLAMDDB
       AsynchronousModifyRateJob.class.getName(),
       AsynchronousSearchRateJob.class.getName(),
       AuthRateJob.class.getName(),
+      BasicSearchRateJob.class.getName(),
       CompareRateJob.class.getName(),
       FileBasedModifyRateJob.class.getName(),
       FileBasedSearchRateJob.class.getName(),
@@ -527,7 +526,6 @@ public final class SLAMDDB
       MultiConnectionSearchRateJob.class.getName(),
       MultiSearchMixedLoadJob.class.getName(),
       PrimeJob.class.getName(),
-      SearchRateJob.class.getName(),
       SearchAndModifyRateJob.class.getName(),
       SiteMinderJob.class.getName(),
       WaitForDirectoryServerJob.class.getName(),

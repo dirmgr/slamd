@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs.ldap;
+package com.slamd.jobs.legacy;
 
 
 
@@ -26,7 +26,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import com.unboundid.ldap.sdk.Filter;
+import com.unboundid.ldap.sdk.LDAPConnection;
+import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.SearchRequest;
+import com.unboundid.ldap.sdk.SearchResult;
+import com.unboundid.ldap.sdk.SearchResultEntry;
+import com.unboundid.ldap.sdk.SearchResultListener;
+import com.unboundid.ldap.sdk.SearchResultReference;
+import com.unboundid.ldap.sdk.SearchScope;
+import com.unboundid.util.FixedRateBarrier;
+import com.unboundid.util.ValuePattern;
+
 import com.slamd.job.UnableToRunException;
+import com.slamd.jobs.ldap.LDAPJob;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.MultiChoiceParameter;
@@ -41,18 +54,6 @@ import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
-
-import com.unboundid.ldap.sdk.Filter;
-import com.unboundid.ldap.sdk.LDAPConnection;
-import com.unboundid.ldap.sdk.LDAPException;
-import com.unboundid.ldap.sdk.SearchRequest;
-import com.unboundid.ldap.sdk.SearchResult;
-import com.unboundid.ldap.sdk.SearchResultEntry;
-import com.unboundid.ldap.sdk.SearchResultListener;
-import com.unboundid.ldap.sdk.SearchResultReference;
-import com.unboundid.ldap.sdk.SearchScope;
-import com.unboundid.util.FixedRateBarrier;
-import com.unboundid.util.ValuePattern;
 
 
 

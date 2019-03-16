@@ -20,6 +20,8 @@ package com.slamd.stat;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Integer;
@@ -289,7 +291,6 @@ public class CategoricalTracker
       }
     }
   }
-
 
 
 
@@ -594,6 +595,34 @@ public class CategoricalTracker
     }
 
     duration = collectionInterval * intervalCounts.length;
+  }
+
+
+
+  /**
+   * Retrieves the sorted data for this tracker.
+   *
+   * @return  The sorted data for this tracker.
+   */
+  private SortedSet<CategoricalTrackerCategoryData> getSortedCategoryData()
+  {
+    final TreeSet<CategoricalTrackerCategoryData> sortedData = new TreeSet<>();
+    for (int i=0; i < categoryNames.length; i++)
+    {
+      final ArrayList<Integer> countPerInterval =
+           new ArrayList<>(countList.size());
+      for (int[] counts : countList)
+      {
+        countPerInterval.add(counts[i]);
+      }
+
+      final CategoricalTrackerCategoryData d =
+           new CategoricalTrackerCategoryData(categoryNames[i], totalCounts[i],
+                countPerInterval);
+      sortedData.add(d);
+    }
+
+    return sortedData;
   }
 
 
@@ -976,15 +1005,15 @@ public class CategoricalTracker
     returnBuffer.append(" -- ");
     String separator = "";
 
-    for (int i=0; i < categoryNames.length; i++)
+    for (final CategoricalTrackerCategoryData d : getSortedCategoryData())
     {
       returnBuffer.append(separator);
-      returnBuffer.append(categoryNames[i]);
+      returnBuffer.append(d.getCategoryName());
       returnBuffer.append(":  ");
-      returnBuffer.append(totalCounts[i]);
+      returnBuffer.append(d.getTotalCount());
       returnBuffer.append(" (");
-      returnBuffer.append(decimalFormat.format(100.0 * totalCounts[i] /
-                                               totalCount));
+      returnBuffer.append(
+           decimalFormat.format(100.0 * d.getTotalCount() / totalCount));
       returnBuffer.append("%)");
       separator = "; ";
     }
@@ -1051,15 +1080,15 @@ public class CategoricalTracker
   {
     StringBuilder html = new StringBuilder();
 
-    for (int i=0; i < categoryNames.length; i++)
+    for (final CategoricalTrackerCategoryData d : getSortedCategoryData())
     {
       html.append("<TABLE BORDER=\"1\">" + Constants.EOL);
       html.append("  <TR>" + Constants.EOL);
-      html.append("    <TD>" + categoryNames[i] + "</TD>" + Constants.EOL);
+      html.append("    <TD>" + d.getCategoryName() + "</TD>" + Constants.EOL);
       html.append("  </TR>" + Constants.EOL);
       html.append("  <TR>" + Constants.EOL);
-      html.append("    <TD>" + totalCounts[i] + " (" +
-                  decimalFormat.format(100.0 * totalCounts[i] / totalCount) +
+      html.append("    <TD>" + d.getTotalCount() + " (" +
+                  decimalFormat.format(100.0 * d.getTotalCount() / totalCount) +
                   "%)</TD>" + Constants.EOL);
       html.append("  </TR>" + Constants.EOL);
       html.append("</TABLE>" + Constants.EOL);
@@ -1154,15 +1183,15 @@ public class CategoricalTracker
     StringBuilder returnBuffer = new StringBuilder();
 
     String separator = "";
-    for (int i=0; i < categoryNames.length; i++)
+    for (final CategoricalTrackerCategoryData d : getSortedCategoryData())
     {
       returnBuffer.append(separator);
-      returnBuffer.append(categoryNames[i]);
+      returnBuffer.append(d.getCategoryName());
       returnBuffer.append(":  ");
-      returnBuffer.append(totalCounts[i]);
+      returnBuffer.append(d.getTotalCount());
       returnBuffer.append(" (");
-      returnBuffer.append(decimalFormat.format(100.0 * totalCounts[i] /
-                                               totalCount));
+      returnBuffer.append(
+           decimalFormat.format(100.0 * d.getTotalCount() / totalCount));
       returnBuffer.append("%)");
       separator = "; ";
     }
@@ -1612,8 +1641,21 @@ public class CategoricalTracker
       }
       else
       {
-        return grapher.generatePieGraph(tracker.categoryNames,
-                                        tracker.totalCounts);
+        final SortedSet<CategoricalTrackerCategoryData> sortedData =
+             tracker.getSortedCategoryData();
+        final String[] sortedCategoryNames = new String[sortedData.size()];
+        final int[] sortedCategoryCounts = new int[sortedData.size()];
+
+        int i = 0;
+        for (final CategoricalTrackerCategoryData d : sortedData)
+        {
+          sortedCategoryNames[i] = d.getCategoryName();
+          sortedCategoryCounts[i] = d.getTotalCount();
+          i++;
+        }
+
+        return grapher.generatePieGraph(sortedCategoryNames,
+             sortedCategoryCounts);
       }
     }
   }
@@ -1680,8 +1722,21 @@ public class CategoricalTracker
     }
     else
     {
-      return grapher.generatePieGraph(tracker.categoryNames,
-                                      tracker.totalCounts);
+      final SortedSet<CategoricalTrackerCategoryData> sortedData =
+           tracker.getSortedCategoryData();
+      final String[] sortedCategoryNames = new String[sortedData.size()];
+      final int[] sortedCategoryCounts = new int[sortedData.size()];
+
+      int i = 0;
+      for (final CategoricalTrackerCategoryData d : sortedData)
+      {
+        sortedCategoryNames[i] = d.getCategoryName();
+        sortedCategoryCounts[i] = d.getTotalCount();
+        i++;
+      }
+
+      return grapher.generatePieGraph(sortedCategoryNames,
+           sortedCategoryCounts);
     }
   }
 
@@ -1790,8 +1845,21 @@ public class CategoricalTracker
     }
     else
     {
-      return grapher.generatePieGraph(tracker.categoryNames,
-                                      tracker.totalCounts);
+      final SortedSet<CategoricalTrackerCategoryData> sortedData =
+           tracker.getSortedCategoryData();
+      final String[] sortedCategoryNames = new String[sortedData.size()];
+      final int[] sortedCategoryCounts = new int[sortedData.size()];
+
+      int i = 0;
+      for (final CategoricalTrackerCategoryData d : sortedData)
+      {
+        sortedCategoryNames[i] = d.getCategoryName();
+        sortedCategoryCounts[i] = d.getTotalCount();
+        i++;
+      }
+
+      return grapher.generatePieGraph(sortedCategoryNames,
+           sortedCategoryCounts);
     }
   }
 
@@ -1846,7 +1914,22 @@ public class CategoricalTracker
     StatGrapher grapher = new StatGrapher(width, height, displayName);
     grapher.setIncludeLegend(true, "Category Name");
     grapher.setShowPercentages(true);
-    return grapher.generatePieGraph(categoryNames, totalCounts);
+
+    final SortedSet<CategoricalTrackerCategoryData> sortedData =
+         getSortedCategoryData();
+    final String[] sortedCategoryNames = new String[sortedData.size()];
+    final int[] sortedCategoryCounts = new int[sortedData.size()];
+
+    int i = 0;
+    for (final CategoricalTrackerCategoryData d : sortedData)
+    {
+      sortedCategoryNames[i] = d.getCategoryName();
+      sortedCategoryCounts[i] = d.getTotalCount();
+      i++;
+    }
+
+    return grapher.generatePieGraph(sortedCategoryNames,
+         sortedCategoryCounts);
   }
 }
 

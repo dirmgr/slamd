@@ -4329,7 +4329,7 @@ public final class Constants
   /**
    * The default width to use for graphs if none is specified.
    */
-  public static final int DEFAULT_GRAPH_WIDTH = 800;
+  public static final int DEFAULT_GRAPH_WIDTH = 1024;
 
 
 
@@ -4352,7 +4352,7 @@ public final class Constants
   /**
    * The default height to use for graphs if none is specified.
    */
-  public static final int DEFAULT_GRAPH_HEIGHT = 600;
+  public static final int DEFAULT_GRAPH_HEIGHT = 768;
 
 
 

@@ -84,10 +84,10 @@ import com.slamd.stat.TimeTracker;
 
 /**
  * This class provides a SLAMD job that can measure the performance of an LDAP
- * directory server with a broader set of options than the
+ * directory server with a more compehensive set of options than the
  * {@link BasicSearchRateJob} job offers.
  */
-public final class AdvancedSearchRateJob
+public final class ComprehensiveSearchRateJob
        extends JobClass
        implements SearchResultListener
 {
@@ -121,244 +121,9 @@ public final class AdvancedSearchRateJob
 
 
   /**
-   * The display name for the stat tracker used to track response time
-   * categories.
-   */
-  private static final String STAT_RESPONSE_TIME_CATEGORIES =
-       "Response Time Categories";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are less than 1 millisecond.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_LESS_THAN_1_MS =
-       "Less Than 1ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 1 millisecond and 2 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_1_AND_2_MS =
-       "Between 1ms and 2ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 2 milliseconds and 3 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_2_AND_3_MS =
-       "Between 2ms and 3ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 3 milliseconds and 4 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_3_AND_4_MS =
-       "Between 3ms and 4ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 4 milliseconds and 5 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_4_AND_5_MS =
-       "Between 4ms and 5ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 5 milliseconds and 10 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_5_AND_10_MS =
-       "Between 5ms and 10ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 10 milliseconds and 20 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_10_AND_20_MS =
-       "Between 10ms and 20ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 20 milliseconds and 30 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_20_AND_30_MS =
-       "Between 20ms and 30ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 30 milliseconds and 40 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_30_AND_40_MS =
-       "Between 30ms and 40ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 40 milliseconds and 50 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_40_AND_50_MS =
-       "Between 40ms and 50ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 50 milliseconds and 100 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_50_AND_100_MS =
-       "Between 50ms and 100ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 100 milliseconds and 200 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_100_AND_200_MS =
-       "Between 100ms and 200ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 200 milliseconds and 300 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_200_AND_300_MS =
-       "Between 200ms and 300ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 300 milliseconds and 400 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_300_AND_400_MS =
-       "Between 300ms and 400ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 400 milliseconds and 500 milliseconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_400_AND_500_MS =
-       "Between 400ms and 500ms";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 500 milliseconds and 1 second.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_500_MS_AND_1_S =
-       "Between 500ms and 1s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 1 second and 2 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_1_AND_2_S =
-       "Between 1s and 2s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 2 seconds and 3 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_2_AND_3_S =
-       "Between 2s and 2s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 3 seconds and 4 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_3_AND_4_S =
-       "Between 3s and 4s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 4 seconds and 5 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_4_AND_5_S =
-       "Between 4s and 5s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 5 seconds and 10 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_5_AND_10_S =
-       "Between 5s and 10s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 10 seconds and 20 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_10_AND_20_S =
-       "Between 10s and 20s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 20 seconds and 30 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_20_AND_30_S =
-       "Between 20s and 30s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are between 30 seconds and 60 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_BETWEEN_30_AND_60_S =
-       "Between 30s and 60s";
-
-
-
-  /**
-   * The display name for the response time category used for response times
-   * that are greater than 60 seconds.
-   */
-  private static final String RESPONSE_TIME_CATEGORY_MORE_THAN_60_S =
-       "Longer Than 60s";
-
-
-
-  /**
    * The serial version UID for this serializable class.
    */
-  private static final long serialVersionUID = -351414023004000562L;
-
+  private static final long serialVersionUID = -2042145904145922562L;
 
 
   // The parameter used to provide a label for the connection details.
@@ -689,18 +454,18 @@ public final class AdvancedSearchRateJob
 
   // Stat trackers used by this job.  We should have a separate copy per thread,
   // so these should be non-static.
-  private CategoricalTracker  responseTimeCategories;
-  private CategoricalTracker  resultCodes;
-  private IncrementalTracker  searchesCompleted;
+  private CategoricalTracker resultCodes;
+  private IncrementalTracker searchesCompleted;
   private IntegerValueTracker entriesReturned;
-  private TimeTracker         searchTimer;
+  private ResponseTimeCategorizer responseTimeCategorizer;
+  private TimeTracker searchTimer;
 
 
 
   /**
    * Creates a new instance of this job class.
    */
-  public AdvancedSearchRateJob()
+  public ComprehensiveSearchRateJob()
   {
     super();
 
@@ -711,7 +476,7 @@ public final class AdvancedSearchRateJob
     searchTimer = null;
     entriesReturned = null;
     resultCodes = null;
-    responseTimeCategories = null;
+    responseTimeCategorizer = null;
   }
 
 
@@ -722,7 +487,7 @@ public final class AdvancedSearchRateJob
   @Override()
   public String getJobName()
   {
-    return "Advanced Search Rate";
+    return "Comprehensive Search Rate";
   }
 
 
@@ -747,7 +512,7 @@ public final class AdvancedSearchRateJob
     return new String[]
     {
       "This job can be used to perform repeated searches against an LDAP " +
-           "directory server with an advanced set of options."
+           "directory server with a comprehensive set of options."
     };
   }
 
@@ -834,8 +599,8 @@ public final class AdvancedSearchRateJob
                               collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
                              collectionInterval),
-      new CategoricalTracker(clientID, threadID, STAT_RESPONSE_TIME_CATEGORIES,
-                             collectionInterval)
+      ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
+           collectionInterval)
     };
   }
 
@@ -853,7 +618,7 @@ public final class AdvancedSearchRateJob
       searchTimer,
       entriesReturned,
       resultCodes,
-      responseTimeCategories
+      responseTimeCategorizer.getStatTracker()
     };
   }
 
@@ -1932,8 +1697,8 @@ public final class AdvancedSearchRateJob
          STAT_ENTRIES_RETURNED, collectionInterval);
     resultCodes = new CategoricalTracker(clientID, threadID,
          STAT_RESULT_CODES, collectionInterval);
-    responseTimeCategories = new CategoricalTracker(clientID, threadID,
-         STAT_RESPONSE_TIME_CATEGORIES, collectionInterval);
+    responseTimeCategorizer = new ResponseTimeCategorizer(clientID, threadID,
+         collectionInterval);
 
     final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
@@ -2100,134 +1865,8 @@ public final class AdvancedSearchRateJob
         {
           entriesReturned.addValue(searchResult.getEntryCount());
           resultCodes.increment(searchResult.getResultCode().toString());
-
-          final long elapsedTimeNanos =
-               afterSearchTimeNanos - beforeSearchTimeNanos;
-          if (elapsedTimeNanos < 1_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_LESS_THAN_1_MS);
-          }
-          else if (elapsedTimeNanos < 2_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_1_AND_2_MS);
-          }
-          else if (elapsedTimeNanos < 3_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_2_AND_3_MS);
-          }
-          else if (elapsedTimeNanos < 4_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_3_AND_4_MS);
-          }
-          else if (elapsedTimeNanos < 5_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_4_AND_5_MS);
-          }
-          else if (elapsedTimeNanos < 10_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_5_AND_10_MS);
-          }
-          else if (elapsedTimeNanos < 20_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_10_AND_20_MS);
-          }
-          else if (elapsedTimeNanos < 30_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_20_AND_30_MS);
-          }
-          else if (elapsedTimeNanos < 40_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_30_AND_40_MS);
-          }
-          else if (elapsedTimeNanos < 50_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_40_AND_50_MS);
-          }
-          else if (elapsedTimeNanos < 100_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_50_AND_100_MS);
-          }
-          else if (elapsedTimeNanos < 200_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_100_AND_200_MS);
-          }
-          else if (elapsedTimeNanos < 300_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_200_AND_300_MS);
-          }
-          else if (elapsedTimeNanos < 400_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_300_AND_400_MS);
-          }
-          else if (elapsedTimeNanos < 500_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_400_AND_500_MS);
-          }
-          else if (elapsedTimeNanos < 1_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_500_MS_AND_1_S);
-          }
-          else if (elapsedTimeNanos < 2_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_1_AND_2_S);
-          }
-          else if (elapsedTimeNanos < 3_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_2_AND_3_S);
-          }
-          else if (elapsedTimeNanos < 4_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_3_AND_4_S);
-          }
-          else if (elapsedTimeNanos < 5_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_4_AND_5_S);
-          }
-          else if (elapsedTimeNanos < 10_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_5_AND_10_S);
-          }
-          else if (elapsedTimeNanos < 20_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_10_AND_20_S);
-          }
-          else if (elapsedTimeNanos < 30_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_20_AND_30_S);
-          }
-          else if (elapsedTimeNanos < 60_000_000_000L)
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_BETWEEN_30_AND_60_S);
-          }
-          else
-          {
-            responseTimeCategories.increment(
-                 RESPONSE_TIME_CATEGORY_MORE_THAN_60_S);
-          }
+          responseTimeCategorizer.categorizeResponseTime(beforeSearchTimeNanos,
+               afterSearchTimeNanos);
         }
       }
       catch (final LDAPException le)
@@ -2267,7 +1906,7 @@ public final class AdvancedSearchRateJob
     searchTimer.startTracker();
     entriesReturned.startTracker();
     resultCodes.startTracker();
-    responseTimeCategories.startTracker();
+    responseTimeCategorizer.startStatTracker();
   }
 
 
@@ -2281,7 +1920,7 @@ public final class AdvancedSearchRateJob
     searchTimer.stopTracker();
     entriesReturned.stopTracker();
     resultCodes.stopTracker();
-    responseTimeCategories.stopTracker();
+    responseTimeCategorizer.stopStatTracker();
   }
 
 

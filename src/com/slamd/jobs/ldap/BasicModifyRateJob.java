@@ -18,21 +18,21 @@ package com.slamd.jobs.ldap;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
-import com.unboundid.ldap.sdk.Filter;
 import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldap.sdk.LDAPException;
-import com.unboundid.ldap.sdk.SearchRequest;
-import com.unboundid.ldap.sdk.SearchResult;
-import com.unboundid.ldap.sdk.SearchResultEntry;
-import com.unboundid.ldap.sdk.SearchResultListener;
-import com.unboundid.ldap.sdk.SearchResultReference;
-import com.unboundid.ldap.sdk.SearchScope;
+import com.unboundid.ldap.sdk.LDAPResult;
+import com.unboundid.ldap.sdk.Modification;
+import com.unboundid.ldap.sdk.ModificationType;
+import com.unboundid.ldap.sdk.ModifyRequest;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
 import com.unboundid.ldap.sdk.SingleServerSet;
 import com.unboundid.ldap.sdk.StartTLSPostConnectProcessor;
@@ -50,7 +50,6 @@ import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.LabelParameter;
 import com.slamd.parameter.MultiChoiceParameter;
-import com.slamd.parameter.MultiLineTextParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
 import com.slamd.parameter.PasswordParameter;
@@ -58,7 +57,6 @@ import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.CategoricalTracker;
 import com.slamd.stat.IncrementalTracker;
-import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
@@ -66,32 +64,23 @@ import com.slamd.stat.TimeTracker;
 
 
 /**
- * This class provides a SLAMD job that can measure the search performance of an
+ * This class provides a SLAMD job that can measure the modify performance of an
  * LDAP directory server with a streamlined set of options.
  */
-public final class BasicSearchRateJob
+public final class BasicModifyRateJob
        extends JobClass
-       implements SearchResultListener
 {
   /**
-   * The display name for the stat tracker used to track searches completed.
+   * The display name for the stat tracker used to track modifies completed.
    */
-  private static final String STAT_SEARCHES_COMPLETED = "Searches Completed";
+  private static final String STAT_MODIFIES_COMPLETED = "Modifies Completed";
 
 
 
   /**
-   * The display name for the stat tracker used to track search durations.
+   * The display name for the stat tracker used to track modify durations.
    */
-  private static final String STAT_SEARCH_DURATION = "Search Duration (ms)";
-
-
-
-  /**
-   * The display name for the stat tracker used to track entries returned.
-   */
-  private static final String STAT_ENTRIES_RETURNED =
-       "Entries Returned per Search";
+  private static final String STAT_MODIFY_DURATION = "Modify Duration (ms)";
 
 
 
@@ -102,13 +91,6 @@ public final class BasicSearchRateJob
 
 
 
-  /**
-   * The serial version UID for this serializable class.
-   */
-  private static final long serialVersionUID = -7038106249008555676L;
-
-
-
   // The parameter used to provide a label for the connection details.
   private LabelParameter connectionLabelParameter = new LabelParameter(
        "Connection Parameters");
@@ -116,15 +98,16 @@ public final class BasicSearchRateJob
   // The parameter used to specify the directory server address.
   private StringParameter serverAddressParameter = new StringParameter(
        "address", "Directory Server Address",
-       "The address of the directory server to search.  It may be a " +
-            "resolvable name or an IP address.",
+       "The address of the directory server in which to process the modify " +
+            "operations.  It may be a resolvable name or an IP address.",
        true, null);
 
   // The parameter used to specify the directory server port.
   private IntegerParameter serverPortParameter = new IntegerParameter(
        "port", "Directory Serve Port",
-       "The port number of the directory server to search.", true, 389, true, 1,
-       true, 65535);
+       "The port number of the directory server in which to process the " +
+            "modify operations.",
+       true, 389, true, 1, true, 65535);
 
   // The mechanism to use to secure communication with the directory server.
   private static final String SECURITY_METHOD_NONE = "None";
@@ -150,85 +133,57 @@ public final class BasicSearchRateJob
   private StringParameter bindDNParameter = new StringParameter(
        "bind_dn", "Bind DN",
        "The DN of the user as whom to bind directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "password must also be empty, and the searches will be " +
-            "performed over unauthenticated connections.",
-       false, null);
+            "simple authentication.",
+       true, null);
 
   // The password to use to bind to the directory server.
   private PasswordParameter bindPasswordParameter = new PasswordParameter(
        "bind_password", "Bind Password",
        "The password to use to bind to the directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "DN must also be empty, and the searches will be performed over " +
-            "unauthenticated connections.",
-       false, null);
-
-  // The parameter used to provide a label for the search request details.
-  private LabelParameter searchRequestLabelParameter = new LabelParameter(
-       "Search Request Parameters");
-
-  // The parameter used to specify the search base DN pattern.
-  private StringParameter baseDNPatternParameter = new StringParameter(
-       "base_dn_pattern", "Search Base DN Pattern",
-       "A pattern to use to generate the base DN to use for each search " +
-            "request.  This may be a fixed DN to use for all searches, or it " +
-            "may be a value pattern that can construct a different base DN " +
-            "for each request.  See https://docs.ldap.com/ldap-sdk/docs/" +
-            "javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.  If no value is specified, " +
-            "then the null DN will be used as the search base.",
-       false, null);
-
-  // The parameter used to specify the search scope.
-  private static final String SCOPE_BASE_OBJECT =
-       "baseObject:  Only the Search Base Entry";
-  private static final String SCOPE_SINGLE_LEVEL =
-       "singleLevel:  Only Immediate Subordinates of the Search Base";
-  private static final String SCOPE_WHOLE_SUBTREE =
-       "Whole Subtree:  The Search Base Entry and All Its Subordinates";
-  private static final String SCOPE_SUBORDINATE_SUBTREE =
-       "Subordinate Subtree:  All Subordinates of the Search Base Entry";
-  private MultiChoiceParameter scopeParameter = new MultiChoiceParameter(
-       "scope", "Search Scope",
-       "The scope, relative to the search base DN, of entries that may be " +
-            "returned by the search.",
-       new String[]
-       {
-         SCOPE_BASE_OBJECT,
-         SCOPE_SINGLE_LEVEL,
-         SCOPE_WHOLE_SUBTREE,
-         SCOPE_SUBORDINATE_SUBTREE
-       },
-       SCOPE_BASE_OBJECT);
-
-  // The parameter used to specify the search filter pattern.
-  private StringParameter filterPatternParameter = new StringParameter(
-       "filter_pattern", "Search Filter Pattern",
-       "A pattern to use to generate the filter to use for each search " +
-            "request.  This may be a fixed filter to use for all searches, " +
-            "or it may be a value pattern that can construct a different " +
-            "filter for each request.  See https://docs.ldap.com/ldap-sdk/" +
-            "docs/javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.",
+            "simple authentication.",
        true, null);
 
-  // The parameter used to specify the attributes to return.
-  private MultiLineTextParameter attributesToReturnParameter =
-       new MultiLineTextParameter("attributes_to_return",
-            "Attributes to Return",
-            "The names of the attributes to request that the server return " +
-                 "in search result entries.  Multiple values may be " +
-                 "provided, with one value per line.  Each value may be the " +
-                 "name or OID of an LDAP attribute type, '*' (to request " +
-                 "that the server return all user attributes), '+' (to " +
-                 "request that the server return all operational " +
-                 "attributes), '1.1' (to request that the server not " +
-                 "return any attributes), or another type of value that the " +
-                 "server may support.  If no values are provided, then the " +
-                 "standard behavior is for the server to return all user " +
-                 "attributes that the requester has permission to access.",
-            new String[0], false);
+  // The parameter used to provide a label for the modify request details.
+  private LabelParameter modifyRequestLabelParameter = new LabelParameter(
+       "Modify Request Parameters");
+
+  // The parameter used to specify the entry DN pattern.
+  private StringParameter entryDNPatternParameter = new StringParameter(
+       "entry_dn_pattern", "Entry DN Pattern",
+       "A pattern to use to generate the DN of the entry to target for each " +
+            "modify request.  This may be a fixed DN to use for all modify " +
+            "operations, or it may be a value pattern that can construct a " +
+            "different entry DN for each request.  See https://docs.ldap.com/" +
+            "ldap-sdk/docs/javadoc/com/unboundid/util/ValuePattern.html for " +
+            "more information about value patterns.",
+       true, null);
+
+  // The parameter used to specify the name of the attribute to modify.
+  private StringParameter attributeToModifyParameter = new StringParameter(
+       "modify_attribute", "Attribute to Modify",
+       "The name or OID of the attribute whose values should be replaced.",
+       true, "description");
+
+  // The parameter used to specify the set of characters to use when generating
+  // the values to replace.
+  private StringParameter characterSetParameter = new StringParameter(
+       "character_set", "Generated Value Character Set",
+       "The set of characters that may be included in generated values.",
+       true, "abcdefghijklmnopqrstuvwxyz");
+
+  // The parameter used to specify the number of values to generate for the
+  // specified attribute.
+  private IntegerParameter valueLengthParameter = new IntegerParameter(
+       "value_length", "Value Length",
+       "The number of characters to include in the generated values.",
+       true, 80, true, 1, false, Integer.MAX_VALUE);
+
+  // The parameter used to specify the number of values to generate for the
+  // specified attribute.
+  private IntegerParameter numberOfValuesParameter = new IntegerParameter(
+       "number_of_values", "Number of Values",
+       "The number of values to generate for the specified attribute.",
+       true, 1, true, 0, false, Integer.MAX_VALUE);
 
   // The parameter used to provide a label for the additional parameters.
   private LabelParameter additionalLabelParameter = new LabelParameter(
@@ -262,15 +217,16 @@ public final class BasicSearchRateJob
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
+  private static char[] characterSet = null;
+  private static int numberOfValues = -1;
+  private static int valueLength = -1;
   private static long coolDownDurationMillis = -1L;
   private static long warmUpDurationMillis = -1L;
-  private static SearchScope scope = null;
   private static SimpleBindRequest bindRequest = null;
   private static SingleServerSet serverSet = null;
   private static StartTLSPostConnectProcessor startTLSProcessor = null;
-  private static String[] requestedAttributes = null;
-  private static ValuePattern baseDNPattern = null;
-  private static ValuePattern filterPattern = null;
+  private static String attributeToModify = null;
+  private static ValuePattern entryDNPattern = null;
 
 
   // A connection pool that this thread may use to communicate with the
@@ -282,35 +238,39 @@ public final class BasicSearchRateJob
   private LDAPConnectionPool connectionPool;
 
 
-  // The search request that will be repeatedly issued.  It will be with a new
-  // base DN and filter for each search to be processed.  It will not be
-  // shared across all the threads, so it should be non-static.
-  private SearchRequest searchRequest;
+  // Random number generators to use for generating values.  There will be a
+  // parent random, which is shared by all threads, and a per-thread random that
+  // will be used to actually generate the values.
+  private static Random parentRandom = null;
+  private Random random = null;
+
+
+  // Arguments used for generating values.
+  private Set<String> valueSet;
+  private StringBuilder valueBuffer;
 
 
   // Stat trackers used by this job.  We should have a separate copy per thread,
   // so these should be non-static.
   private CategoricalTracker resultCodes;
-  private IncrementalTracker searchesCompleted;
-  private IntegerValueTracker entriesReturned;
+  private IncrementalTracker modifiesCompleted;
   private ResponseTimeCategorizer responseTimeCategorizer;
-  private TimeTracker searchTimer;
+  private TimeTracker modifyTimer;
 
 
 
   /**
    * Creates a new instance of this job class.
    */
-  public BasicSearchRateJob()
+  public BasicModifyRateJob()
   {
     super();
 
     connectionPool = null;
-    searchRequest = null;
+    random = null;
 
-    searchesCompleted = null;
-    searchTimer = null;
-    entriesReturned = null;
+    modifiesCompleted = null;
+    modifyTimer = null;
     resultCodes = null;
     responseTimeCategorizer = null;
   }
@@ -323,7 +283,7 @@ public final class BasicSearchRateJob
   @Override()
   public String getJobName()
   {
-    return "Basic Search Rate";
+    return "Basic Modify Rate";
   }
 
 
@@ -334,7 +294,7 @@ public final class BasicSearchRateJob
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP search operations";
+    return "Perform repeated LDAP modify operations";
   }
 
 
@@ -347,8 +307,8 @@ public final class BasicSearchRateJob
   {
     return new String[]
     {
-      "This job can be used to perform repeated searches against an LDAP " +
-           "directory server with a streamlined set of options."
+      "This job can be used to perform repeated modify operations against an " +
+           "LDAP directory server with a streamlined set of options."
     };
   }
 
@@ -385,11 +345,11 @@ public final class BasicSearchRateJob
       bindPasswordParameter,
 
       new PlaceholderParameter(),
-      searchRequestLabelParameter,
-      baseDNPatternParameter,
-      scopeParameter,
-      filterPatternParameter,
-      attributesToReturnParameter,
+      entryDNPatternParameter,
+      attributeToModifyParameter,
+      characterSetParameter,
+      valueLengthParameter,
+      numberOfValuesParameter,
 
       new PlaceholderParameter(),
       additionalLabelParameter,
@@ -414,12 +374,10 @@ public final class BasicSearchRateJob
   {
     return new StatTracker[]
     {
-      new IncrementalTracker(clientID, threadID, STAT_SEARCHES_COMPLETED,
+      new IncrementalTracker(clientID, threadID, STAT_MODIFIES_COMPLETED,
                              collectionInterval),
-      new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
+      new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
                       collectionInterval),
-      new IntegerValueTracker(clientID, threadID, STAT_ENTRIES_RETURNED,
-                              collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
                              collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
@@ -437,9 +395,8 @@ public final class BasicSearchRateJob
   {
     return new StatTracker[]
     {
-      searchesCompleted,
-      searchTimer,
-      entriesReturned,
+      modifiesCompleted,
+      modifyTimer,
       resultCodes,
       responseTimeCategorizer.getStatTracker()
     };
@@ -481,67 +438,35 @@ public final class BasicSearchRateJob
     }
 
 
-    // Make sure that we can generate a valid LDAP DN from the base DN pattern.
-    final StringParameter baseParam =
-         parameters.getStringParameter(baseDNPatternParameter.getName());
-    if ((baseParam != null) && (baseParam.hasValue()))
+    // Make sure that we can generate a valid LDAP DN from the entry DN pattern.
+    final StringParameter entryDNParam =
+         parameters.getStringParameter(entryDNPatternParameter.getName());
+    if ((entryDNParam != null) && (entryDNParam.hasValue()))
     {
       final ValuePattern valuePattern;
       try
       {
-        valuePattern = new ValuePattern(baseParam.getValue());
+        valuePattern = new ValuePattern(entryDNParam.getValue());
       }
       catch (final ParseException e)
       {
         throw new InvalidValueException(
-             "Unable to parse base DN pattern value '" + baseParam.getValue() +
-                  "' as a valid value pattern:  " + e.getMessage(),
+             "Unable to parse entry DN pattern value '" +
+                  entryDNParam.getValue() + "' as a valid value pattern:  " +
+                  e.getMessage(),
              e);
       }
 
-      final String baseDNString = valuePattern.nextValue();
+      final String entryDNString = valuePattern.nextValue();
       try
       {
-        new DN(baseDNString);
+        new DN(entryDNString);
       }
       catch (final LDAPException e)
       {
         throw new InvalidValueException(
-             "Unable to parse a constructed base DN '" + baseDNString +
+             "Unable to parse a constructed entry DN '" + entryDNString +
                   "' as a valid LDAP distinguished name:  " + e.getMatchedDN(),
-             e);
-      }
-    }
-
-
-    // Make sure that we can validate the filter pattern as a vaild LDAP filter.
-    final StringParameter filterParam =
-         parameters.getStringParameter(filterPatternParameter.getName());
-    if ((filterParam != null) && (filterParam.hasValue()))
-    {
-      final ValuePattern valuePattern;
-      try
-      {
-        valuePattern = new ValuePattern(filterParam.getValue());
-      }
-      catch (final ParseException e)
-      {
-        throw new InvalidValueException(
-             "Unable to parse filter pattern value '" + filterParam.getValue() +
-                  "' as a valid value pattern:  " + e.getMessage(),
-             e);
-      }
-
-      final String filterString = valuePattern.nextValue();
-      try
-      {
-        Filter.create(filterString);
-      }
-      catch (final LDAPException e)
-      {
-        throw new InvalidValueException(
-             "Unable to parse a constructed filter '" + filterString +
-                  "' as a valid LDAP filter:  " + e.getMatchedDN(),
              e);
       }
     }
@@ -725,11 +650,11 @@ public final class BasicSearchRateJob
       }
 
 
-      // If a base DN pattern was provided, then make sure we can retrieve the
-      // entry specified as the search base.
-      final StringParameter baseDNParam =
-           parameters.getStringParameter(baseDNPatternParameter.getName());
-      if ((baseDNParam != null) && baseDNParam.hasValue())
+      // If an entry DN pattern was provided, then make sure we can retrieve an
+      // entry whose DN was generated from that pattern.
+      final StringParameter entryDNParam =
+           parameters.getStringParameter(entryDNPatternParameter.getName());
+      if ((entryDNParam != null) && entryDNParam.hasValue())
       {
         outputMessages.add("");
 
@@ -737,26 +662,26 @@ public final class BasicSearchRateJob
         try
         {
           final ValuePattern valuePattern =
-               new ValuePattern(baseDNParam.getValue());
+               new ValuePattern(entryDNParam.getValue());
           baseDN = valuePattern.nextValue();
         }
         catch (final ParseException e)
         {
-          outputMessages.add("ERROR:  Unable to construct a base DN from " +
-               "pattern '" + baseDNParam.getValue() + "':  " +
+          outputMessages.add("ERROR:  Unable to construct an entry DN from " +
+               "pattern '" + entryDNParam.getValue() + "':  " +
                StaticUtils.getExceptionMessage(e));
           return false;
         }
 
-        outputMessages.add("Verifying that search base entry '" + baseDN +
-             "' exists...");
+        outputMessages.add("Verifying that entry '" + baseDN +
+             "' (generated from the entry DN pattern) exists...");
         try
         {
-          final Entry baseEntry = connection.getEntry(baseDN);
-          if (baseEntry == null)
+          final Entry entry = connection.getEntry(baseDN);
+          if (entry == null)
           {
             outputMessages.add(
-                 "ERROR:  The base entry could not be retrieved.");
+                 "ERROR:  The entry could not be retrieved.");
             return false;
           }
           else
@@ -794,6 +719,10 @@ public final class BasicSearchRateJob
                                final ParameterList parameters)
          throws UnableToRunException
   {
+    // Initialize the parent random number generator.
+    parentRandom = new Random();
+
+
     // Initialize the server address and port.
     final String serverAddress = parameters.getStringParameter(
          serverAddressParameter.getName()).getValue();
@@ -896,78 +825,40 @@ public final class BasicSearchRateJob
     }
 
 
-    // Initialize the base DN pattern.
-    final StringParameter baseDNParam = parameters.getStringParameter(
-         baseDNPatternParameter.getName());
+    // Initialize the entry DN pattern.
+    final StringParameter entryDNParam = parameters.getStringParameter(
+         entryDNPatternParameter.getName());
     try
     {
-      if ((baseDNParam != null) && baseDNParam.hasValue())
-      {
-        baseDNPattern = new ValuePattern(baseDNParam.getValue());
-      }
-      else
-      {
-        baseDNPattern = new ValuePattern("");
-      }
+      entryDNPattern = new ValuePattern(entryDNParam.getValue());
     }
     catch (final Exception e)
     {
       throw new UnableToRunException(
-           "Unable to initialize the base DN value pattern:  " +
+           "Unable to initialize the entry DN value pattern:  " +
                 StaticUtils.getExceptionMessage(e),
            e);
     }
 
 
-    // Get the search scope.
-    final String scopeStr = parameters.getMultiChoiceParameter(
-         scopeParameter.getName()).getValueString();
-    switch (scopeStr)
-    {
-      case SCOPE_BASE_OBJECT:
-        scope = SearchScope.BASE;
-        break;
-      case SCOPE_SINGLE_LEVEL:
-        scope = SearchScope.ONE;
-        break;
-      case SCOPE_WHOLE_SUBTREE:
-        scope = SearchScope.SUB;
-        break;
-      case SCOPE_SUBORDINATE_SUBTREE:
-        scope = SearchScope.SUBORDINATE_SUBTREE;
-        break;
-      default:
-        throw new UnableToRunException("Unrecognized search scope '" +
-             scopeStr + "'.");
-    }
+    // Initialize the attribute to modify.
+    attributeToModify = parameters.getStringParameter(
+         attributeToModifyParameter.getName()).getStringValue();
 
 
-    // Initialize the filter pattern.
-    try
-    {
-      filterPattern = new ValuePattern(parameters.getStringParameter(
-           filterPatternParameter.getName()).getValue());
-    }
-    catch (final Exception e)
-    {
-      throw new UnableToRunException(
-           "Unable to initialize the filter value pattern:  " +
-                StaticUtils.getExceptionMessage(e),
-           e);
-    }
+    // Initialize the character set.
+    characterSet = parameters.getStringParameter(
+         characterSetParameter.getName()).getStringValue().toCharArray();
 
 
-    // Initialize the requested attributes.
-    final MultiLineTextParameter attrsParam = parameters.
-         getMultiLineTextParameter(attributesToReturnParameter.getName());
-    if ((attrsParam != null) && attrsParam.hasValue())
-    {
-      requestedAttributes = attrsParam.getNonBlankLines();
-    }
-    else
-    {
-      requestedAttributes = new String[0];
-    }
+    // Initialize the value length.
+    valueLength = parameters.getIntegerParameter(
+         valueLengthParameter.getName()).getIntValue();
+
+
+    // Initialize the number of values.
+    numberOfValues = parameters.getIntegerParameter(
+         numberOfValuesParameter.getName()).getIntValue();
 
 
     // Initialize the warm-up duration.
@@ -1029,13 +920,20 @@ public final class BasicSearchRateJob
                                final ParameterList parameters)
          throws UnableToRunException
   {
+    // Initialize the thread-specific random number generator.
+    random = new Random(parentRandom.nextLong());
+
+
+    // Initialize the value generation variables.
+    valueSet = new HashSet<>(StaticUtils.computeMapCapacity(numberOfValues));
+    valueBuffer = new StringBuilder(valueLength);
+
+
     // Initialize the stat trackers.
-    searchesCompleted = new IncrementalTracker(clientID, threadID,
-         STAT_SEARCHES_COMPLETED, collectionInterval);
-    searchTimer = new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
+    modifiesCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_MODIFIES_COMPLETED, collectionInterval);
+    modifyTimer = new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
          collectionInterval);
-    entriesReturned = new IntegerValueTracker(clientID, threadID,
-         STAT_ENTRIES_RETURNED, collectionInterval);
     resultCodes = new CategoricalTracker(clientID, threadID,
          STAT_RESULT_CODES, collectionInterval);
     responseTimeCategorizer = new ResponseTimeCategorizer(clientID, threadID,
@@ -1045,23 +943,16 @@ public final class BasicSearchRateJob
     if (statReporter != null)
     {
       String jobID = getJobID();
-      searchesCompleted.enableRealTimeStats(statReporter, jobID);
-      searchTimer.enableRealTimeStats(statReporter, jobID);
-      entriesReturned.enableRealTimeStats(statReporter, jobID);
+      modifiesCompleted.enableRealTimeStats(statReporter, jobID);
+      modifyTimer.enableRealTimeStats(statReporter, jobID);
     }
 
 
-    // Create a search request object for this thread.  Use a placeholder base
-    // DN and filter.
-    searchRequest = new SearchRequest(this, "", scope,
-         Filter.createPresenceFilter("objectClass"), requestedAttributes);
-
-
-    // Create a connection pool to use to process the searches.  Each thread
-    // will have its own pool with just a single connection.  We're not sharing
-    // the pool across the connections, but the benefit of the pool is that it
-    // will automatically re-establish connections that might have become
-    // invalid for some reason.
+    // Create a connection pool to use to process the modify operations.  Each
+    // thread will have its own pool with just a single connection.  We're not
+    // sharing the pool across the connections, but the benefit of the pool is
+    // that it will automatically re-establish connections that might have
+    // become invalid for some reason.
     try
     {
       connectionPool = new LDAPConnectionPool(serverSet, bindRequest, 1, 1,
@@ -1110,7 +1001,7 @@ public final class BasicSearchRateJob
     }
 
 
-    // Perform the searches until it's time to stop.
+    // Perform the modify operations until it's time to stop.
     boolean doneCollecting = false;
     while (! shouldStop())
     {
@@ -1130,38 +1021,26 @@ public final class BasicSearchRateJob
       }
 
 
-      // Update the search request with an appropriate base DN and filter.
-      searchRequest.setBaseDN(baseDNPattern.nextValue());
-      final String filter = filterPattern.nextValue();
-      try
-      {
-        searchRequest.setFilter(filter);
-      }
-      catch (final Exception e)
-      {
-        logMessage("ERROR:  Generated invalid search filter '" + filter + "'.");
-        indicateCompletedWithErrors();
-        return;
-      }
+      // Generate the modify request.
+      final ModifyRequest modifyRequest = generateModifyRequest();
 
 
-      // Process the search.
+      // Process the modify operation.
       if (collectingStats)
       {
-        searchTimer.startTimer();
+        modifyTimer.startTimer();
       }
 
       try
       {
-        final long beforeSearchTimeNanos = System.nanoTime();
-        final SearchResult searchResult = connectionPool.search(searchRequest);
-        final long afterSearchTimeNanos = System.nanoTime();
+        final long beforeModifyTimeNanos = System.nanoTime();
+        final LDAPResult modifyResult = connectionPool.modify(modifyRequest);
+        final long afterModifyTimeNanos = System.nanoTime();
         if (collectingStats)
         {
-          entriesReturned.addValue(searchResult.getEntryCount());
-          resultCodes.increment(searchResult.getResultCode().toString());
-          responseTimeCategorizer.categorizeResponseTime(beforeSearchTimeNanos,
-               afterSearchTimeNanos);
+          resultCodes.increment(modifyResult.getResultCode().toString());
+          responseTimeCategorizer.categorizeResponseTime(beforeModifyTimeNanos,
+               afterModifyTimeNanos);
         }
       }
       catch (final LDAPException le)
@@ -1175,8 +1054,8 @@ public final class BasicSearchRateJob
       {
         if (collectingStats)
         {
-          searchTimer.stopTimer();
-          searchesCompleted.increment();
+          modifyTimer.stopTimer();
+          modifiesCompleted.increment();
         }
       }
     }
@@ -1193,13 +1072,48 @@ public final class BasicSearchRateJob
 
 
   /**
+   * Generates the modify request.
+   */
+  private ModifyRequest generateModifyRequest()
+  {
+    valueSet.clear();
+    for (int i=0; i < numberOfValues; i++)
+    {
+      valueSet.add(generateValue());
+    }
+
+    return new ModifyRequest(entryDNPattern.nextValue(),
+         new Modification(ModificationType.REPLACE, attributeToModify,
+              valueSet.toArray(StaticUtils.NO_STRINGS)));
+  }
+
+
+
+  /**
+   * Generates a value for the modification.
+   *
+   * @return  The generated value.
+   */
+  private String generateValue()
+  {
+    valueBuffer.setLength(0);
+    for (int i=0; i < valueLength; i++)
+    {
+      valueBuffer.append(characterSet[random.nextInt(characterSet.length)]);
+    }
+
+    return valueBuffer.toString();
+  }
+
+
+
+  /**
    * Starts the stat trackers for this job.
    */
   private void startTrackers()
   {
-    searchesCompleted.startTracker();
-    searchTimer.startTracker();
-    entriesReturned.startTracker();
+    modifiesCompleted.startTracker();
+    modifyTimer.startTracker();
     resultCodes.startTracker();
     responseTimeCategorizer.startStatTracker();
   }
@@ -1211,9 +1125,8 @@ public final class BasicSearchRateJob
    */
   private void stopTrackers()
   {
-    searchesCompleted.stopTracker();
-    searchTimer.stopTracker();
-    entriesReturned.stopTracker();
+    modifiesCompleted.stopTracker();
+    modifyTimer.stopTracker();
     resultCodes.stopTracker();
     responseTimeCategorizer.stopStatTracker();
   }
@@ -1246,36 +1159,5 @@ public final class BasicSearchRateJob
       connectionPool.close();
       connectionPool = null;
     }
-  }
-
-
-
-  /**
-   * Indicates that the provided search result entry has been returned by the
-   * server and may be processed by this search result listener.
-   *
-   * @param  searchEntry  The search result entry that has been returned by the
-   *                      server.
-   */
-  @Override()
-  public void searchEntryReturned(final SearchResultEntry searchEntry)
-  {
-    // We don't need to do anything with the entry.
-  }
-
-
-
-  /**
-   * Indicates that the provided search result reference has been returned by
-   * the server and may be processed by this search result listener.
-   *
-   * @param  searchReference  The search result reference that has been returned
-   *                          by the server.
-   */
-  @Override()
-  public void searchReferenceReturned(
-                   final SearchResultReference searchReference)
-  {
-    // We don't need to do anything with the reference.
   }
 }

@@ -21,9 +21,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import javax.net.SocketFactory;
 
-import com.unboundid.ldap.sdk.DereferencePolicy;
+import com.unboundid.ldap.sdk.Control;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
 import com.unboundid.ldap.sdk.Filter;
@@ -31,25 +32,20 @@ import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.LDAPResult;
+import com.unboundid.ldap.sdk.Modification;
+import com.unboundid.ldap.sdk.ModifyRequest;
 import com.unboundid.ldap.sdk.RoundRobinServerSet;
-import com.unboundid.ldap.sdk.SearchRequest;
-import com.unboundid.ldap.sdk.SearchResult;
-import com.unboundid.ldap.sdk.SearchResultEntry;
-import com.unboundid.ldap.sdk.SearchResultListener;
-import com.unboundid.ldap.sdk.SearchResultReference;
-import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.ldap.sdk.ServerSet;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
 import com.unboundid.ldap.sdk.SingleServerSet;
 import com.unboundid.ldap.sdk.StartTLSPostConnectProcessor;
+import com.unboundid.ldap.sdk.controls.AssertionRequestControl;
 import com.unboundid.ldap.sdk.controls.ManageDsaITRequestControl;
-import com.unboundid.ldap.sdk.controls.MatchedValuesFilter;
-import com.unboundid.ldap.sdk.controls.MatchedValuesRequestControl;
+import com.unboundid.ldap.sdk.controls.PermissiveModifyRequestControl;
+import com.unboundid.ldap.sdk.controls.PostReadRequestControl;
+import com.unboundid.ldap.sdk.controls.PreReadRequestControl;
 import com.unboundid.ldap.sdk.controls.ProxiedAuthorizationV2RequestControl;
-import com.unboundid.ldap.sdk.controls.ServerSideSortRequestControl;
-import com.unboundid.ldap.sdk.controls.SortKey;
-import com.unboundid.ldap.sdk.controls.SubentriesRequestControl;
-import com.unboundid.ldap.sdk.persist.PersistUtils;
 import com.unboundid.ldap.sdk.extensions.StartTLSExtendedRequest;
 import com.unboundid.util.FixedRateBarrier;
 import com.unboundid.util.ObjectPair;
@@ -75,7 +71,6 @@ import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.CategoricalTracker;
 import com.slamd.stat.IncrementalTracker;
-import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
@@ -83,33 +78,24 @@ import com.slamd.stat.TimeTracker;
 
 
 /**
- * This class provides a SLAMD job that can measure the search performance of an
+ * This class provides a SLAMD job that can measure the modify performance of an
  * LDAP directory server with a more compehensive set of options than the
- * {@link BasicSearchRateJob} job offers.
+ * {@link BasicModifyRateJob} job offers.
  */
-public final class ComprehensiveSearchRateJob
+public final class ComprehensiveModifyRateJob
        extends JobClass
-       implements SearchResultListener
 {
   /**
-   * The display name for the stat tracker used to track searches completed.
+   * The display name for the stat tracker used to track modifies completed.
    */
-  private static final String STAT_SEARCHES_COMPLETED = "Searches Completed";
+  private static final String STAT_MODIFIES_COMPLETED = "Modifies Completed";
 
 
 
   /**
-   * The display name for the stat tracker used to track search durations.
+   * The display name for the stat tracker used to track modify durations.
    */
-  private static final String STAT_SEARCH_DURATION = "Search Duration (ms)";
-
-
-
-  /**
-   * The display name for the stat tracker used to track entries returned.
-   */
-  private static final String STAT_ENTRIES_RETURNED =
-       "Entries Returned per Search";
+  private static final String STAT_MODIFY_DURATION = "Modify Duration (ms)";
 
 
 
@@ -135,11 +121,12 @@ public final class ComprehensiveSearchRateJob
        new MultiLineTextParameter("addresses_and_ports",
             "Server Addresses and Ports",
             "The addresses (resolvable names or IP addresses) and port " +
-                 "numbers of the directory servers to search (for example, " +
-                 "'ldap.example.com:389').  If multiple servers are to be " +
-                 "targeted, then each address:port value should be listed on " +
-                 "a separate line, and the job will use a round-robin " +
-                 "algorithm when establishing connections to each server.",
+                 "numbers of the directory servers in which to process the " +
+                 "modify  operations (for example, 'ldap.example.com:389').  " +
+                 "If multiple servers are to be targeted, then each " +
+                 "address:port value should be listed on a separate line, " +
+                 "and the job will use a round-robin algorithm when " +
+                 "establishing connections to each server.",
             new String[0], true);
 
   // The mechanism to use to secure communication with the directory server.
@@ -166,198 +153,133 @@ public final class ComprehensiveSearchRateJob
   private StringParameter bindDNParameter = new StringParameter(
        "bind_dn", "Bind DN",
        "The DN of the user as whom to bind directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "password must also be empty, and the searches will be " +
-            "performed over unauthenticated connections.",
-       false, null);
+            "simple authentication.",
+       true, null);
 
   // The password to use to bind to the directory server.
   private PasswordParameter bindPasswordParameter = new PasswordParameter(
        "bind_password", "Bind Password",
        "The password to use to bind to the directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "DN must also be empty, and the searches will be performed over " +
-            "unauthenticated connections.",
-       false, null);
+            "simple authentication.",
+       true, null);
 
-  // The parameter used to provide a label for the search request details.
-  private LabelParameter searchRequestLabelParameter = new LabelParameter(
-       "Search Request Parameters");
+  // The parameter used to provide a label for the modify request details.
+  private LabelParameter modifyRequestLabelParameter = new LabelParameter(
+       "Modify Request Parameters");
 
-  // The parameter used to specify the search base DN pattern.
-  private StringParameter baseDNPatternParameter = new StringParameter(
-       "base_dn_pattern", "Search Base DN Pattern",
-       "A pattern to use to generate the base DN to use for each search " +
-            "request.  This may be a fixed DN to use for all searches, or it " +
-            "may be a value pattern that can construct a different base DN " +
-            "for each request.  See https://docs.ldap.com/ldap-sdk/docs/" +
-            "javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.  If no value is specified, " +
-            "then the null DN will be used as the search base.",
-       false, null);
-
-  // The parameter used to specify the search scope.
-  private static final String SCOPE_BASE_OBJECT =
-       "baseObject:  Only the Search Base Entry";
-  private static final String SCOPE_SINGLE_LEVEL =
-       "singleLevel:  Only Immediate Subordinates of the Search Base";
-  private static final String SCOPE_WHOLE_SUBTREE =
-       "Whole Subtree:  The Search Base Entry and All Its Subordinates";
-  private static final String SCOPE_SUBORDINATE_SUBTREE =
-       "Subordinate Subtree:  All Subordinates of the Search Base Entry";
-  private MultiChoiceParameter scopeParameter = new MultiChoiceParameter(
-       "scope", "Search Scope",
-       "The scope, relative to the search base DN, of entries that may be " +
-            "returned by the search.",
-       new String[]
-       {
-         SCOPE_BASE_OBJECT,
-         SCOPE_SINGLE_LEVEL,
-         SCOPE_WHOLE_SUBTREE,
-         SCOPE_SUBORDINATE_SUBTREE
-       },
-       SCOPE_BASE_OBJECT);
-
-  // The parameter used to specify the alias dereferencing policy.
-  private static final String DEREF_NEVER =
-       "Never Dereference Aliases";
-  private static final String DEREF_SEARCHING =
-       "Dereference Aliases Below the Search Base";
-  private static final String DEREF_FINDING_BASE =
-       "Dereference the Search Base Entry if It Is an Alias";
-  private static final String DEREF_ALWAYS =
-       "Dereference All Aliases";
-  private MultiChoiceParameter derefPolicyParameter = new MultiChoiceParameter(
-       "deref_policy", "Alias Dereferencing Policy",
-       "The dereferencing policy to use for any aliases encountered in " +
-            "search processing.",
-       new String[]
-       {
-         DEREF_NEVER,
-         DEREF_SEARCHING,
-         DEREF_FINDING_BASE,
-         DEREF_ALWAYS,
-       },
-       DEREF_NEVER);
-
-  // The parameter used to specify the search size limit.
-  private IntegerParameter sizeLimitParameter = new IntegerParameter(
-       "size_limit", "Search Size Limit",
-       "The maximum number of entries that the server should return for any " +
-            "individual search request.",
-       true, 0, true, 0, false, Integer.MAX_VALUE);
-
-  // The parameter used to specify the time limit.
-  private IntegerParameter timeLimitParameter = new IntegerParameter(
-       "time_limit_seconds", "Search Time Limit (Seconds)",
-       "The maximum length of time, in seconds, that the server should spend " +
-            "processing any individual search request.",
-       true, 0, true, 0, false, Integer.MAX_VALUE);
-
-  // The parameter used to specify the value of the typesOnly flag.
-  private BooleanParameter typesOnlyParameter = new BooleanParameter(
-       "types_only", "Return Attribute Types Without Values",
-       "Indicates whether search result entries should only include " +
-            "attribute names without values, rather than including both " +
-            "attribute names and values.",
-       false);
-
-  // The parameter used to specify the first search filter pattern.
-  private StringParameter filterPattern1Parameter = new StringParameter(
-       "filter_pattern_1", "Search Filter Pattern 1",
-       "A pattern to use to generate the first filter to use for search " +
-            "requests.  This may be a fixed filter to use for all searches, " +
-            "or it may be a value pattern that can construct a different " +
-            "filter for each request.  See https://docs.ldap.com/ldap-sdk/" +
-            "docs/javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.  This parameter always " +
+  // The parameter used to specify the first entry DN pattern.
+  private StringParameter entryDNPattern1Parameter = new StringParameter(
+       "entry_dn_pattern_1", "Entry DN Pattern 1",
+       "A pattern to use to generate the DN of the entry to target with " +
+            "modify requests.  This may be a fixed DN to use for all " +
+            "modifies, or it may be a value pattern that can construct a " +
+            "different DN for each request.  See https://docs.ldap.com/" +
+            "ldap-sdk/docs/javadoc/com/unboundid/util/ValuePattern.html for " +
+            "more information about value patterns.  This parameter always " +
             "requires a value.",
        true, null);
 
-  // The parameter used to specify the second search filter pattern.
-  private StringParameter filterPattern2Parameter = new StringParameter(
-       "filter_pattern_2", "Search Filter Pattern 2",
-       "A pattern to use to generate the first filter to use for search " +
-            "requests.  This may be a fixed filter to use for all searches, " +
-            "or it may be a value pattern that can construct a different " +
-            "filter for each request.  See https://docs.ldap.com/ldap-sdk/" +
-            "docs/javadoc/com/unboundid/util/ValuePattern.html for more " +
-            "information about value patterns.  This parameter requires a " +
-            "value if the Filter 1 Percentage value is less than 100.",
+  // The parameter used to specify the second entry DN pattern.
+  private StringParameter entryDNPattern2Parameter = new StringParameter(
+       "entry_dn_pattern_2", "Entry DN Pattern 2",
+       "A pattern to use to generate the DN of the entry to target with " +
+            "modify requests.  This may be a fixed DN to use for all " +
+            "modifies, or it may be a value pattern that can construct a " +
+            "different DN for each request.  See https://docs.ldap.com/" +
+            "ldap-sdk/docs/javadoc/com/unboundid/util/ValuePattern.html for " +
+            "more information about value patterns.  This parameter requires " +
+            "a value if the Entry DN 1 Percentage value is less than 100.",
        false, null);
 
-  // The parameter used to specify the percentage of searches that should use
-  // the first pattern.
-  private IntegerParameter filter1PercentageParameter = new IntegerParameter(
-       "filter_1_percent", "Filter 1 Percentage",
-       "The percentage of searches that should use a filter generated from " +
-            "the first pattern rather than the second pattern.",
+  // The parameter used to specify the percentage of modifies that should use
+  // the first entry DN pattern.
+  private IntegerParameter entryDN1PercentageParameter = new IntegerParameter(
+       "entry_dn_1_percent", "Entry DN 1 Percentage",
+       "The percentage of modifies that should use an entry DN generated " +
+            "from the first pattern rather than the second pattern.",
        true, 100, true, 0, true, 100);
 
-  // The parameter used to specify the attributes to return.
-  private MultiLineTextParameter attributesToReturnParameter =
-       new MultiLineTextParameter("attributes_to_return",
-            "Attributes to Return",
-            "The names of the attributes to request that the server return " +
-                 "in search result entries.  Multiple values may be " +
-                 "provided, with one value per line.  Each value may be the " +
-                 "name or OID of an LDAP attribute type, '*' (to request " +
-                 "that the server return all user attributes), '+' (to " +
-                 "request that the server return all operational " +
-                 "attributes), '1.1' (to request that the server not " +
-                 "return any attributes), or another type of value that the " +
-                 "server may support.  If no values are provided, then the " +
-                 "standard behavior is for the server to return all user " +
-                 "attributes that the requester has permission to access.",
-            new String[0], false);
+  // The parameter used to specify the attributes to modify.
+  private MultiLineTextParameter attributesToModifyParameter =
+       new MultiLineTextParameter("attributes_to_modify",
+            "Attributes to Modify",
+            "The details of the attributes to modify.  Each line may provide " +
+                 "information about an attribute whose values shoudl be " +
+                 "replaced.  If the line contains just an attribute name, " +
+                 "then a single replacement value will be generated for that " +
+                 "attribute using 80 randomly selected alphabetic " +
+                 "characters.  For more control, you may use the format " +
+                 "'attributeName:numValues:valuePattern', where the name of " +
+                 "the attribute is followed by a colon and the number of " +
+                 "values to generate for that attribute, followed by a colon " +
+                 "and the value pattern to use to generate values for that " +
+                 "attribute.",
+            new String[]
+            {
+              "description:1:[random:80:abcdefghijklmnopqrstuvwxyz]"
+            },
+            true);
 
   // The parameter used to provide a label for controls to include in the
   // request.
   private LabelParameter controlsLabelParameter = new LabelParameter(
-       "Search Request Control Parameters");
+       "Modify Request Control Parameters");
 
   private BooleanParameter includeManageDSAITParameter = new BooleanParameter(
        "include_manage_dsa_it_control", "Include Manage DSA IT Request Control",
-       "Indicates that search requests should include the manage DSA IT " +
-            "request control, which indicates that the server should return " +
-            "smart referral entries as regular entries rather than search " +
-            "result references.",
+       "Indicates that modify requests should include the manage DSA IT " +
+            "request control, which indicates that the server should modify " +
+            "smart referral entries as regular entries rather than " +
+            "generating a referral result.",
        false);
 
-  private BooleanParameter includeSubentriesParameter = new BooleanParameter(
-       "include_subentries_control", "Include Subentries Request Control",
-       "Indicates that search requests should include the subentries request " +
-            "control, which indicates that LDAP subentries should be " +
-            "included in the set of search result entries.",
+  private BooleanParameter includePermissiveModifyParameter =
+       new BooleanParameter("include_permissive_modify_control",
+            "Include Permissive Modify Request Control",
+            "Indicates that modify requests should include the permissive " +
+                 "modify request control, which indicates that the server " +
+                 "should ignore modifications that would not result in a " +
+                 "change to the entry (for example, adding a value that " +
+                 "already exists or deleting a value that does not exist).",
        false);
-
-  private StringParameter matchedValuesFilterParameter = new StringParameter(
-       "matched_values_filter", "Matched Values Filter",
-       "Indicates that search requests should include a matched values " +
-            "request control with the specified filter, which indicates that " +
-            "search result entries should exclude attribute values that do " +
-            "not match the specified filter.  Note that this should be a " +
-            "static filter rather than a value pattern.",
-       false, null);
 
   private StringParameter proxiedAuthzIDParameter = new StringParameter(
        "proxied_auth_id", "Proxied Authorization ID",
-       "Indicates that search requests should include a proxied " +
+       "Indicates that modify requests should include a proxied " +
             "authorization request control with the specified authorization " +
             "ID.  Note that this should be a static authorization ID string " +
             "rather than a value pattern.",
        false, null);
 
-  private MultiLineTextParameter sortOrderParameter =
-       new MultiLineTextParameter("sort_order", "Server-Side Sort Order",
-            "Indciates that search requests should include a server-side " +
-                 "sort request control to indicate that entries should be " +
-                 "sorted in the specified order.  Each value must be a " +
-                 "string that starts with either '+' (for ascending " +
-                 "order) or '-' (for descending order), followed by the name " +
-                 "of an attribute type, and optionally followed by a colon " +
-                 "and the name or OID of an ordering matching rule.",
-            new String[0], false);
+  private StringParameter assertionFilterParameter = new StringParameter(
+       "assertion_filter", "Assertion Filter",
+       "Indicates that modify requests should include an LDAP assertion " +
+            "request control with the provided filter.  Modify operations " +
+            "will only succeed if the target entry matches the provided " +
+            "filter.  Note that this should be a static filter rather than " +
+            "a value pattern.",
+       false, null);
+
+  private MultiLineTextParameter preReadAttributesParameter =
+       new MultiLineTextParameter("pre_read_attributes", "Pre-Read Attributes",
+            "Indicates that modify requests should include an LDAP pre-read " +
+                 "request control to indicate that the server should return " +
+                 "the values of the specified attributes as they appeared " +
+                 "before the modify operation was processed.  Multiple " +
+                 "pre-read attributes may be specified by placing each " +
+                 "attribute on a separate line.",
+            StaticUtils.NO_STRINGS, false);
+
+  private MultiLineTextParameter postReadAttributesParameter =
+       new MultiLineTextParameter("post_read_attributes",
+            "Post-Read Attributes",
+            "Indicates that modify requests should include an LDAP post-read " +
+                 "request control to indicate that the server should return " +
+                 "the values of the specified attributes as they appeared " +
+                 "after the modify operation was processed.  Multiple " +
+                 "post-read attributes may be specified by placing each " +
+                 "attribute on a separate line.",
+            StaticUtils.NO_STRINGS, false);
 
   // The parameter used to provide a label for the additional parameters.
   private LabelParameter additionalLabelParameter = new LabelParameter(
@@ -395,10 +317,10 @@ public final class ComprehensiveSearchRateJob
             "any referrals that are returned by the server.",
        false);
 
-  // The parameter used to specify the maximum search rate to attempt.
+  // The parameter used to specify the maximum modify rate to attempt.
   private IntegerParameter maxRateParameter = new IntegerParameter("max_rate",
-       "Max Search Rate (Searches/Second/Client)",
-       "The maximum search rate, in terms of searches per second, that each " +
+       "Max Modify Rate (Modifies/Second/Client)",
+       "The maximum modify rate, in terms of modifies per second, that each " +
             "client should attempt to maintain.  Note that if the job runs " +
             "on multiple clients, then each client will try to maintain this " +
             "rate, so the overall desired rate should be divided by the " +
@@ -409,32 +331,23 @@ public final class ComprehensiveSearchRateJob
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
-  private static boolean typesOnly = false;
-  private static DereferencePolicy dereferencePolicy = null;
+  private static Control[] requestControls = null;
   private static FixedRateBarrier rateLimiter = null;
-  private static int filter1Percentage = -1;
-  private static int sizeLimit = -1;
-  private static int timeLimitSeconds = -1;
+  private static int entryDN1Percentage = -1;
+  private static List<ComprehensiveModifyRateAttributeModification>
+       attributeModifications = null;
   private static long coolDownDurationMillis = -1L;
   private static long warmUpDurationMillis = -1L;
-  private static ManageDsaITRequestControl manageDSAITControl = null;
-  private static MatchedValuesRequestControl matchedValuesControl = null;
-  private static ProxiedAuthorizationV2RequestControl proxiedAuthControl = null;
-  private static SearchScope scope = null;
-  private static ServerSideSortRequestControl sortControl = null;
   private static SimpleBindRequest bindRequest = null;
   private static ServerSet serverSet = null;
   private static StartTLSPostConnectProcessor startTLSProcessor = null;
-  private static String[] requestedAttributes = null;
-  private static SubentriesRequestControl subentriesControl = null;
-  private static ValuePattern baseDNPattern = null;
-  private static ValuePattern filterPattern1 = null;
-  private static ValuePattern filterPattern2 = null;
+  private static ValuePattern entryDNPattern1 = null;
+  private static ValuePattern entryDNPattern2 = null;
 
 
-  // Random number generators to use for selecting which filter to use.  There
-  // will be a parent random, which is shared by all threads, and a per-thread
-  // random that will be used to actually select the DN pattern.
+  // Random number generators to use for selecting which entry DN pattern to
+  // use.  There will be a parent random, which is shared by all threads, and a
+  // per-thread random that will be used to actually select the DN pattern.
   private static Random parentRandom = null;
   private Random random = null;
 
@@ -448,35 +361,32 @@ public final class ComprehensiveSearchRateJob
   private LDAPConnectionPool connectionPool;
 
 
-  // The search request that will be repeatedly issued.  It will be with a new
-  // base DN and filter for each search to be processed.  It will not be
-  // shared across all the threads, so it should be non-static.
-  private SearchRequest searchRequest;
+  // An argument to use for generating values.
+  private Set<String> valueSet;
 
 
   // Stat trackers used by this job.  We should have a separate copy per thread,
   // so these should be non-static.
   private CategoricalTracker resultCodes;
-  private IncrementalTracker searchesCompleted;
-  private IntegerValueTracker entriesReturned;
+  private IncrementalTracker modifiesCompleted;
   private ResponseTimeCategorizer responseTimeCategorizer;
-  private TimeTracker searchTimer;
+  private TimeTracker modifyTimer;
 
 
 
   /**
    * Creates a new instance of this job class.
    */
-  public ComprehensiveSearchRateJob()
+  public ComprehensiveModifyRateJob()
   {
     super();
 
     connectionPool = null;
-    searchRequest = null;
+    random = null;
+    valueSet = null;
 
-    searchesCompleted = null;
-    searchTimer = null;
-    entriesReturned = null;
+    modifiesCompleted = null;
+    modifyTimer = null;
     resultCodes = null;
     responseTimeCategorizer = null;
   }
@@ -489,7 +399,7 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public String getJobName()
   {
-    return "Comprehensive Search Rate";
+    return "Comprehensive Modify Rate";
   }
 
 
@@ -500,7 +410,7 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP search operations";
+    return "Perform repeated LDAP modify operations";
   }
 
 
@@ -513,8 +423,8 @@ public final class ComprehensiveSearchRateJob
   {
     return new String[]
     {
-      "This job can be used to perform repeated searches against an LDAP " +
-           "directory server with a comprehensive set of options."
+      "This job can be used to perform repeated modify operations against an " +
+           "LDAP directory server with a comprehensive set of options."
     };
   }
 
@@ -550,25 +460,20 @@ public final class ComprehensiveSearchRateJob
       bindPasswordParameter,
 
       new PlaceholderParameter(),
-      searchRequestLabelParameter,
-      baseDNPatternParameter,
-      scopeParameter,
-      derefPolicyParameter,
-      sizeLimitParameter,
-      timeLimitParameter,
-      typesOnlyParameter,
-      filterPattern1Parameter,
-      filterPattern2Parameter,
-      filter1PercentageParameter,
-      attributesToReturnParameter,
+      modifyRequestLabelParameter,
+      entryDNPattern1Parameter,
+      entryDNPattern2Parameter,
+      entryDN1PercentageParameter,
+      attributesToModifyParameter,
 
       new PlaceholderParameter(),
       controlsLabelParameter,
       includeManageDSAITParameter,
-      includeSubentriesParameter,
-      matchedValuesFilterParameter,
+      includePermissiveModifyParameter,
       proxiedAuthzIDParameter,
-      sortOrderParameter,
+      assertionFilterParameter,
+      preReadAttributesParameter,
+      postReadAttributesParameter,
 
       new PlaceholderParameter(),
       additionalLabelParameter,
@@ -595,12 +500,10 @@ public final class ComprehensiveSearchRateJob
   {
     return new StatTracker[]
     {
-      new IncrementalTracker(clientID, threadID, STAT_SEARCHES_COMPLETED,
+      new IncrementalTracker(clientID, threadID, STAT_MODIFIES_COMPLETED,
                              collectionInterval),
-      new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
+      new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
                       collectionInterval),
-      new IntegerValueTracker(clientID, threadID, STAT_ENTRIES_RETURNED,
-                              collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
                              collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
@@ -618,9 +521,8 @@ public final class ComprehensiveSearchRateJob
   {
     return new StatTracker[]
     {
-      searchesCompleted,
-      searchTimer,
-      entriesReturned,
+      modifiesCompleted,
+      modifyTimer,
       resultCodes,
       responseTimeCategorizer.getStatTracker()
     };
@@ -666,150 +568,110 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Make sure that we can generate a valid LDAP DN from the base DN pattern.
-    final StringParameter baseParam =
-         parameters.getStringParameter(baseDNPatternParameter.getName());
-    if ((baseParam != null) && (baseParam.hasValue()))
+    // Make sure that we can generate a valid LDAP DN from the first entry DN
+    // pattern.
+    final StringParameter dnPattern1Param =
+         parameters.getStringParameter(entryDNPattern1Parameter.getName());
+    if ((dnPattern1Param != null) && (dnPattern1Param.hasValue()))
     {
       final ValuePattern valuePattern;
       try
       {
-        valuePattern = new ValuePattern(baseParam.getValue());
+        valuePattern = new ValuePattern(dnPattern1Param.getValue());
       }
       catch (final ParseException e)
       {
         throw new InvalidValueException(
-             "Unable to parse base DN pattern value '" + baseParam.getValue() +
-                  "' as a valid value pattern:  " + e.getMessage(),
+             "Unable to parse entry DN pattern 1 value '" +
+                  dnPattern1Param.getValue() + "' as a valid value pattern:  " +
+                  e.getMessage(),
              e);
       }
 
-      final String baseDNString = valuePattern.nextValue();
+      final String dnString = valuePattern.nextValue();
       try
       {
-        new DN(baseDNString);
+        new DN(dnString);
       }
       catch (final LDAPException e)
       {
         throw new InvalidValueException(
-             "Unable to parse a constructed base DN '" + baseDNString +
-                  "' as a valid LDAP distinguished name:  " + e.getMatchedDN(),
+             "Unable to parse DN '" + dnString +
+                  "' (constructed from entry DN pattern 1) as a valid LDAP " +
+                  "distinguished name:  " + e.getMatchedDN(),
              e);
       }
     }
 
 
-    // Make sure that we can validate the first filter pattern as a vaild LDAP
-    // filter.
-    final StringParameter filter1Param =
-         parameters.getStringParameter(filterPattern1Parameter.getName());
-    if ((filter1Param != null) && (filter1Param.hasValue()))
+    // If a second entry DN pattern was provided, then make sure that it is
+    // valid.  If no entry DN pattern 2 was provided, make sure that's okay.
+    final StringParameter dnPattern2Param =
+         parameters.getStringParameter(entryDNPattern1Parameter.getName());
+    if ((dnPattern2Param != null) && (dnPattern2Param.hasValue()))
     {
       final ValuePattern valuePattern;
       try
       {
-        valuePattern = new ValuePattern(filter1Param.getValue());
+        valuePattern = new ValuePattern(dnPattern2Param.getValue());
       }
       catch (final ParseException e)
       {
         throw new InvalidValueException(
-             "Unable to parse filter pattern 1 value '" +
-                  filter1Param.getValue() + "' as a valid value pattern:  " +
+             "Unable to parse entry DN pattern 2 value '" +
+                  dnPattern2Param.getValue() + "' as a valid value pattern:  " +
                   e.getMessage(),
              e);
       }
 
-      final String filterString = valuePattern.nextValue();
+      final String dnString = valuePattern.nextValue();
       try
       {
-        Filter.create(filterString);
+        new DN(dnString);
       }
       catch (final LDAPException e)
       {
         throw new InvalidValueException(
-             "Unable to parse a constructed filter 1 value '" + filterString +
-                  "' as a valid LDAP filter:  " + e.getMatchedDN(),
-             e);
-      }
-    }
-
-
-    // If a second filter pattern was provided, then make sure it is valid.
-    // If a second filter pattern was not provided,then make sure that's okay.
-    final StringParameter filter2Param =
-         parameters.getStringParameter(filterPattern1Parameter.getName());
-    if ((filter2Param != null) && (filter2Param.hasValue()))
-    {
-      final ValuePattern valuePattern;
-      try
-      {
-        valuePattern = new ValuePattern(filter2Param.getValue());
-      }
-      catch (final ParseException e)
-      {
-        throw new InvalidValueException(
-             "Unable to parse filter pattern 2 value '" +
-                  filter2Param.getValue() + "' as a valid value pattern:  " +
-                  e.getMessage(),
-             e);
-      }
-
-      final String filterString = valuePattern.nextValue();
-      try
-      {
-        Filter.create(filterString);
-      }
-      catch (final LDAPException e)
-      {
-        throw new InvalidValueException(
-             "Unable to parse a constructed filter 2 value '" + filterString +
-                  "' as a valid LDAP filter:  " + e.getMatchedDN(),
+             "Unable to parse DN '" + dnString +
+                  "' (constructed from entry DN pattern 2) as a valid LDAP " +
+                  "distinguished name:  " + e.getMatchedDN(),
              e);
       }
     }
     else
     {
-      final int filter1Percent = parameters.getIntegerParameter(
-           filter1PercentageParameter.getName()).getIntValue();
-      if (filter1Percent < 100)
+      final int dn1Percent = parameters.getIntegerParameter(
+           entryDN1PercentageParameter.getName()).getIntValue();
+      if (dn1Percent < 100)
       {
-        throw new InvalidValueException("If the filter 1 percentage value " +
-             "is less than 100, then a second filter pattern must be " +
+        throw new InvalidValueException("If the entry DN 1 percentage value " +
+             "is less than 100, then a second entry DN pattern must be " +
              "provided.");
       }
     }
 
 
-    // If a matched values filter was provided, then validate it.
-    final StringParameter matchedValuesFilterParam =
-         parameters.getStringParameter(matchedValuesFilterParameter.getName());
-    if ((matchedValuesFilterParam != null) &&
-         matchedValuesFilterParam.hasValue())
+    // Validate the set of attributes to modify.
+    getAttributesToModify(parameters);
+
+
+    // If an assertion filter was provided, then validate it.
+    final StringParameter assertionFilterParam =
+         parameters.getStringParameter(assertionFilterParameter.getName());
+    if ((assertionFilterParam != null) &&
+         assertionFilterParam.hasValue())
     {
-      final String filterStr = matchedValuesFilterParam.getStringValue();
+      final String filterStr = assertionFilterParam.getStringValue();
       try
       {
-        final Filter filter = Filter.create(filterStr);
-        MatchedValuesFilter.create(filter);
+        Filter.create(filterStr);
       }
       catch (final LDAPException e)
       {
         throw new InvalidValueException(
-             "Matched values filter '" + filterStr + "' is not valid:  " +
+             "Assertion filter '" + filterStr + "' is not valid:  " +
                   e.getMessage(),
              e);
-      }
-    }
-
-
-    // If a sort order was provided, then validate it.
-    final MultiLineTextParameter sortOrderParam =
-         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
-    if ((sortOrderParam != null) && sortOrderParam.hasValue())
-    {
-      for (final String sortOrderLine : sortOrderParam.getNonBlankLines())
-      {
-        parseSortKey(sortOrderLine);
       }
     }
 
@@ -950,68 +812,39 @@ public final class ComprehensiveSearchRateJob
 
 
   /**
-   * Parses the provided string as a sort key.
+   * Retrieves information about the set of attributes to modify.
    *
-   * @param  keyString  The string to be parsed.  It must not be {@code null}.
+   * @param  parameters  The parameter list from which to parse the set of
+   *                     attributes to modify.
    *
-   * @return  The sort key that was parsed.
+   * @return  Information about the set of attributes to modify.
    *
-   * @throws  InvalidValueException  If the provided string cannot be parsed as
-   *                                 a valid sort key.
+   * @throws  InvalidValueException  If a problem is encountered while
+   *                                 constructing the set of attributes to
+   *                                 modify.
    */
-  private SortKey parseSortKey(final String keyString)
+  private List<ComprehensiveModifyRateAttributeModification>
+               getAttributesToModify(final ParameterList parameters)
           throws InvalidValueException
   {
-    final boolean reverseOrder;
-    if (keyString.startsWith("+"))
+    final MultiLineTextParameter param = parameters.getMultiLineTextParameter(
+         attributesToModifyParameter.getName());
+    final String[] nonBlankLines = param.getNonBlankLines();
+    if (nonBlankLines.length == 0)
     {
-      reverseOrder = false;
-    }
-    else if (keyString.startsWith("-"))
-    {
-      reverseOrder = true;
-    }
-    else
-    {
-      throw new InvalidValueException("Sort order value '" + keyString +
-           "' is invalid because it does not start with either '+' (to " +
-           "indicate ascending order) or '-' (to indicate descending order).");
+      throw new InvalidValueException("The set of attributes to modify must " +
+           "not be empty.");
     }
 
-    final String attributeName;
-    final String matchingRuleID;
-    final int colonPos = keyString.indexOf(':');
-    if (colonPos > 0)
+    final ArrayList<ComprehensiveModifyRateAttributeModification> attrMods =
+         new ArrayList<>(nonBlankLines.length);
+    for (final String line : nonBlankLines)
     {
-      attributeName = keyString.substring(1, colonPos);
-      matchingRuleID = keyString.substring(colonPos+1);
-    }
-    else
-    {
-      attributeName = keyString.substring(1);
-      matchingRuleID = null;
+      attrMods.add(ComprehensiveModifyRateAttributeModification.
+           parseAttributeToModify(line));
     }
 
-    final StringBuilder invalidReason = new StringBuilder();
-    if (! PersistUtils.isValidLDAPName(attributeName, invalidReason))
-    {
-      throw new InvalidValueException("Sort order value '" + keyString +
-           "' is invalid because '" + attributeName + "' is not a valid " +
-           "attribute type name or OID:  " + invalidReason);
-    }
-
-    if (matchingRuleID != null)
-    {
-      invalidReason.setLength(0);
-      if (! PersistUtils.isValidLDAPName(matchingRuleID, invalidReason))
-      {
-        throw new InvalidValueException("Sort order value '" + keyString +
-             "' is invalid because '" + matchingRuleID + "' is not a valid " +
-             "matching rule name or OID:  " + invalidReason);
-      }
-    }
-
-    return new SortKey(attributeName, matchingRuleID, reverseOrder);
+    return attrMods;
   }
 
 
@@ -1159,38 +992,86 @@ public final class ComprehensiveSearchRateJob
         }
 
 
-        // If a base DN pattern was provided, then make sure we can retrieve the
-        // entry specified as the search base.
-        final StringParameter baseDNParam =
-             parameters.getStringParameter(baseDNPatternParameter.getName());
-        if ((baseDNParam != null) && baseDNParam.hasValue())
+        // If a first entry DN pattern was provided, then make sure we can
+        // retrieve an entry whose DN was generated from that pattern.
+        final StringParameter entryDN1Param =
+             parameters.getStringParameter(entryDNPattern1Parameter.getName());
+        if ((entryDN1Param != null) && entryDN1Param.hasValue())
         {
           outputMessages.add("");
 
-          String baseDN;
+          String entryDN;
           try
           {
             final ValuePattern valuePattern =
-                 new ValuePattern(baseDNParam.getValue());
-            baseDN = valuePattern.nextValue();
+                 new ValuePattern(entryDN1Param.getValue());
+            entryDN = valuePattern.nextValue();
           }
           catch (final ParseException e)
           {
-            outputMessages.add("ERROR:  Unable to construct a base DN from " +
-                 "pattern '" + baseDNParam.getValue() + "':  " +
+            outputMessages.add("ERROR:  Unable to construct an entry DN from " +
+                 "pattern '" + entryDN1Param.getValue() + "':  " +
                  StaticUtils.getExceptionMessage(e));
             return false;
           }
 
-          outputMessages.add("Verifying that search base entry '" + baseDN +
-               "' exists...");
+          outputMessages.add("Verifying that entry '" + entryDN +
+               "' (generated from entry DN pattern 1) exists...");
           try
           {
-            final Entry baseEntry = connection.getEntry(baseDN);
+            final Entry baseEntry = connection.getEntry(entryDN);
             if (baseEntry == null)
             {
               outputMessages.add(
-                   "ERROR:  The base entry could not be retrieved.");
+                   "ERROR:  The entry could not be retrieved.");
+              return false;
+            }
+            else
+            {
+              outputMessages.add("Successfully retrieved the entry.");
+            }
+          }
+          catch (final Exception e)
+          {
+            outputMessages.add("ERROR:  Search attempt failed:  " +
+                 StaticUtils.getExceptionMessage(e));
+            return false;
+          }
+        }
+
+
+        // If a second entry DN pattern was provided, then make sure we can
+        // retrieve an entry whose DN was generated from that pattern.
+        final StringParameter entryDN2Param =
+             parameters.getStringParameter(entryDNPattern2Parameter.getName());
+        if ((entryDN2Param != null) && entryDN2Param.hasValue())
+        {
+          outputMessages.add("");
+
+          String entryDN;
+          try
+          {
+            final ValuePattern valuePattern =
+                 new ValuePattern(entryDN2Param.getValue());
+            entryDN = valuePattern.nextValue();
+          }
+          catch (final ParseException e)
+          {
+            outputMessages.add("ERROR:  Unable to construct an entry DN from " +
+                 "pattern '" + entryDN2Param.getValue() + "':  " +
+                 StaticUtils.getExceptionMessage(e));
+            return false;
+          }
+
+          outputMessages.add("Verifying that entry '" + entryDN +
+               "' (generated from entry DN pattern 2) exists...");
+          try
+          {
+            final Entry baseEntry = connection.getEntry(entryDN);
+            if (baseEntry == null)
+            {
+              outputMessages.add(
+                   "ERROR:  The entry could not be retrieved.");
               return false;
             }
             else
@@ -1363,197 +1244,87 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Initialize the base DN pattern.
-    final StringParameter baseDNParam = parameters.getStringParameter(
-         baseDNPatternParameter.getName());
+    // Initialize entry DN pattern 1.
+    final StringParameter dn1Param = parameters.getStringParameter(
+         entryDNPattern1Parameter.getName());
     try
     {
-      if ((baseDNParam != null) && baseDNParam.hasValue())
-      {
-        baseDNPattern = new ValuePattern(baseDNParam.getValue());
-      }
-      else
-      {
-        baseDNPattern = new ValuePattern("");
-      }
+      entryDNPattern1 = new ValuePattern(dn1Param.getValue());
     }
     catch (final Exception e)
     {
       throw new UnableToRunException(
-           "Unable to initialize the base DN value pattern:  " +
-                StaticUtils.getExceptionMessage(e),
+           "Unable to create a value pattern from the first entry DN " +
+                "pattern:  " + StaticUtils.getExceptionMessage(e),
            e);
     }
 
 
-    // Get the search scope.
-    final String scopeStr = parameters.getMultiChoiceParameter(
-         scopeParameter.getName()).getValueString();
-    switch (scopeStr)
-    {
-      case SCOPE_BASE_OBJECT:
-        scope = SearchScope.BASE;
-        break;
-      case SCOPE_SINGLE_LEVEL:
-        scope = SearchScope.ONE;
-        break;
-      case SCOPE_WHOLE_SUBTREE:
-        scope = SearchScope.SUB;
-        break;
-      case SCOPE_SUBORDINATE_SUBTREE:
-        scope = SearchScope.SUBORDINATE_SUBTREE;
-        break;
-      default:
-        throw new UnableToRunException("Unrecognized search scope '" +
-             scopeStr + "'.");
-    }
-
-
-    // Get the alias dereferencing policy.
-    final String derefStr = parameters.getMultiChoiceParameter(
-         derefPolicyParameter.getName()).getValueString();
-    switch (derefStr)
-    {
-      case DEREF_NEVER:
-        dereferencePolicy = DereferencePolicy.NEVER;
-        break;
-      case DEREF_SEARCHING:
-        dereferencePolicy = DereferencePolicy.SEARCHING;
-        break;
-      case DEREF_FINDING_BASE:
-        dereferencePolicy = DereferencePolicy.FINDING;
-        break;
-      case DEREF_ALWAYS:
-        dereferencePolicy = DereferencePolicy.ALWAYS;
-        break;
-      default:
-        throw new UnableToRunException("Unrecognized alias dereferencing " +
-             "policy '" + derefStr + "'.");
-    }
-
-
-    // Get the search size limit.
-    sizeLimit = parameters.getIntegerParameter(
-         sizeLimitParameter.getName()).getIntValue();
-
-
-    // Get the search time limit.
-    timeLimitSeconds = parameters.getIntegerParameter(
-         timeLimitParameter.getName()).getIntValue();
-
-
-    // Get the typesOnly flag.
-    typesOnly = parameters.getBooleanParameter(
-         typesOnlyParameter.getName()).getBooleanValue();
-
-
-    // Initialize the first filter pattern.
-    try
-    {
-      filterPattern1 = new ValuePattern(parameters.getStringParameter(
-           filterPattern1Parameter.getName()).getValue());
-    }
-    catch (final Exception e)
-    {
-      throw new UnableToRunException(
-           "Unable to initialize the filter 1 value pattern:  " +
-                StaticUtils.getExceptionMessage(e),
-           e);
-    }
-
-
-    // Initialize the filter pattern 1 percentage.
-    filter1Percentage = parameters.getIntegerParameter(
-         filter1PercentageParameter.getName()).getIntValue();
+    // Initialize the entry DN pattern 1 percentage.
+    entryDN1Percentage = parameters.getIntegerParameter(
+         entryDN1PercentageParameter.getName()).getIntValue();
 
 
     // Initialize the second filter pattern.
-    if (filter1Percentage < 100)
+    if (entryDN1Percentage < 100)
     {
+      // Initialize entry DN pattern 2.
+      final StringParameter dn2Param = parameters.getStringParameter(
+           entryDNPattern2Parameter.getName());
+      if ((dn2Param != null) && dn2Param.hasValue())
       try
       {
-        filterPattern2 = new ValuePattern(parameters.getStringParameter(
-             filterPattern2Parameter.getName()).getValue());
+        entryDNPattern2 = new ValuePattern(dn2Param.getValue());
       }
       catch (final Exception e)
       {
         throw new UnableToRunException(
-             "Unable to initialize the filter 2 value pattern:  " +
-                  StaticUtils.getExceptionMessage(e),
+             "Unable to create a value pattern from the second entry DN " +
+                  "pattern:  " + StaticUtils.getExceptionMessage(e),
              e);
       }
     }
     else
     {
-      filterPattern2 = null;
+      entryDNPattern2 = null;
     }
 
 
-    // Initialize the requested attributes.
+    // Initialize the attribute modification data.
     final MultiLineTextParameter attrsParam = parameters.
-         getMultiLineTextParameter(attributesToReturnParameter.getName());
-    if ((attrsParam != null) && attrsParam.hasValue())
+         getMultiLineTextParameter(attributesToModifyParameter.getName());
+    final String[] attrsTomodifyValues = attrsParam.getNonBlankLines();
+    attributeModifications = new ArrayList<>(attrsTomodifyValues.length);
+    for (final String s : attrsTomodifyValues)
     {
-      requestedAttributes = attrsParam.getNonBlankLines();
-    }
-    else
-    {
-      requestedAttributes = new String[0];
+      try
+      {
+        attributeModifications.add(ComprehensiveModifyRateAttributeModification.
+             parseAttributeToModify(s));
+      }
+      catch (final InvalidValueException e)
+      {
+        throw new UnableToRunException(e.getMessage(), e);
+      }
     }
 
 
     // Create the manage DSA IT request control, if appropriate.
+    List<Control> controlList = new ArrayList<>(6);
     final BooleanParameter manageDSAITParam =
          parameters.getBooleanParameter(includeManageDSAITParameter.getName());
     if ((manageDSAITParam != null) && manageDSAITParam.getBooleanValue())
     {
-      manageDSAITControl = new ManageDsaITRequestControl(false);
-    }
-    else
-    {
-      manageDSAITControl = null;
+      controlList.add(new ManageDsaITRequestControl(false));
     }
 
 
-    // Create the subentries request control, if appropriate.
-    final BooleanParameter subentriesParam =
-         parameters.getBooleanParameter(includeSubentriesParameter.getName());
-    if ((subentriesParam != null) && subentriesParam.getBooleanValue())
+    // Create the permissive modify request control, if appropriate.
+    final BooleanParameter permissiveModParam = parameters.
+         getBooleanParameter(includePermissiveModifyParameter.getName());
+    if ((permissiveModParam != null) && permissiveModParam.getBooleanValue())
     {
-      subentriesControl = new SubentriesRequestControl(false);
-    }
-    else
-    {
-      subentriesControl = null;
-    }
-
-
-    // Create the matched values request control, if appropriate.
-    final StringParameter matchedValuesFilterParam =
-         parameters.getStringParameter(matchedValuesFilterParameter.getName());
-    if ((matchedValuesFilterParam != null) &&
-         matchedValuesFilterParam.hasValue())
-    {
-      try
-      {
-        final Filter filter =
-             Filter.create(matchedValuesFilterParam.getValueString());
-        final MatchedValuesFilter matchedValuesFilter =
-             MatchedValuesFilter.create(filter);
-        matchedValuesControl =
-             new MatchedValuesRequestControl(false, matchedValuesFilter);
-      }
-      catch (final LDAPException e)
-      {
-        throw new UnableToRunException(
-             "Unable to create a matched values request control:  " +
-                  StaticUtils.getExceptionMessage(e),
-             e);
-      }
-    }
-    else
-    {
-      matchedValuesControl = null;
+      controlList.add(new PermissiveModifyRequestControl(false));
     }
 
 
@@ -1562,50 +1333,61 @@ public final class ComprehensiveSearchRateJob
          parameters.getStringParameter(proxiedAuthzIDParameter.getName());
     if ((proxiedAuthIDParam != null) && proxiedAuthIDParam.hasValue())
     {
-      proxiedAuthControl = new ProxiedAuthorizationV2RequestControl(
-           proxiedAuthIDParam.getValueString());
-    }
-    else
-    {
-      proxiedAuthControl = null;
+      controlList.add(new ProxiedAuthorizationV2RequestControl(
+           proxiedAuthIDParam.getValueString()));
     }
 
 
-    // Create the server-side sort request control, if appropriate.
-    final MultiLineTextParameter sortOrderParam =
-         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
-    if ((sortOrderParam != null) && sortOrderParam.hasValue())
+    // Create the assertion request control, if appropriate.
+    final StringParameter assertionFilterParam =
+         parameters.getStringParameter(assertionFilterParameter.getName());
+    if ((assertionFilterParam != null) && assertionFilterParam.hasValue())
     {
-      final String[] sortOrderLines = sortOrderParam.getNonBlankLines();
-      if (sortOrderLines.length > 0)
+      try
       {
-        try
-        {
-          final List<SortKey> sortKeys = new ArrayList<>(sortOrderLines.length);
-          for (final String sortOrderLine : sortOrderLines)
-          {
-            sortKeys.add(parseSortKey(sortOrderLine));
-          }
-
-          sortControl = new ServerSideSortRequestControl(false, sortKeys);
-        }
-        catch (final Exception e)
-        {
-          throw new UnableToRunException(
-               "Unable to create a server-side sort request control:  " +
-                    StaticUtils.getExceptionMessage(e),
-               e);
-        }
+        controlList.add(new AssertionRequestControl(
+             assertionFilterParam.getValueString()));
       }
-      else
+      catch (final LDAPException e)
       {
-        sortControl = null;
+        throw new UnableToRunException(
+             "Unable to parse the assertion request control filter '" +
+             assertionFilterParam.getValueString() +
+                  "' as a valid LDAP filter:  " + e.getMessage(),
+             e);
       }
     }
-    else
+
+
+    // Create the pre-read request control, if appropriate.
+    final MultiLineTextParameter preReadAttrsParam = parameters.
+         getMultiLineTextParameter(preReadAttributesParameter.getName());
+    if ((preReadAttrsParam != null) && preReadAttrsParam.hasValue())
     {
-      sortControl = null;
+      final String[] preReadAttrs = preReadAttrsParam.getNonBlankLines();
+      if (preReadAttrs.length > 0)
+      {
+        controlList.add(new PreReadRequestControl(false, preReadAttrs));
+      }
     }
+
+
+    // Create the post-read request control, if appropriate.
+    final MultiLineTextParameter postReadAttrsParam = parameters.
+         getMultiLineTextParameter(postReadAttributesParameter.getName());
+    if ((postReadAttrsParam != null) && postReadAttrsParam.hasValue())
+    {
+      final String[] postReadAttrs = postReadAttrsParam.getNonBlankLines();
+      if (postReadAttrs.length > 0)
+      {
+        controlList.add(new PostReadRequestControl(false, postReadAttrs));
+      }
+    }
+
+
+    // Convert the control list into an array.
+    requestControls = new Control[controlList.size()];
+    controlList.toArray(requestControls);
 
 
     // Initialize the warm-up duration.
@@ -1693,12 +1475,10 @@ public final class ComprehensiveSearchRateJob
 
 
     // Initialize the stat trackers.
-    searchesCompleted = new IncrementalTracker(clientID, threadID,
-         STAT_SEARCHES_COMPLETED, collectionInterval);
-    searchTimer = new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
+    modifiesCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_MODIFIES_COMPLETED, collectionInterval);
+    modifyTimer = new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
          collectionInterval);
-    entriesReturned = new IntegerValueTracker(clientID, threadID,
-         STAT_ENTRIES_RETURNED, collectionInterval);
     resultCodes = new CategoricalTracker(clientID, threadID,
          STAT_RESULT_CODES, collectionInterval);
     responseTimeCategorizer = new ResponseTimeCategorizer(clientID, threadID,
@@ -1708,41 +1488,8 @@ public final class ComprehensiveSearchRateJob
     if (statReporter != null)
     {
       String jobID = getJobID();
-      searchesCompleted.enableRealTimeStats(statReporter, jobID);
-      searchTimer.enableRealTimeStats(statReporter, jobID);
-      entriesReturned.enableRealTimeStats(statReporter, jobID);
-    }
-
-
-    // Create a search request object for this thread.  Use a placeholder base
-    // DN and filter.
-    searchRequest = new SearchRequest(this, "", scope, dereferencePolicy,
-         sizeLimit, timeLimitSeconds, typesOnly,
-         Filter.createPresenceFilter("objectClass"), requestedAttributes);
-
-    if (manageDSAITControl != null)
-    {
-      searchRequest.addControl(manageDSAITControl);
-    }
-
-    if (subentriesControl != null)
-    {
-      searchRequest.addControl(subentriesControl);
-    }
-
-    if (matchedValuesControl != null)
-    {
-      searchRequest.addControl(matchedValuesControl);
-    }
-
-    if (proxiedAuthControl != null)
-    {
-      searchRequest.addControl(proxiedAuthControl);
-    }
-
-    if (sortControl != null)
-    {
-      searchRequest.addControl(sortControl);
+      modifiesCompleted.enableRealTimeStats(statReporter, jobID);
+      modifyTimer.enableRealTimeStats(statReporter, jobID);
     }
 
 
@@ -1829,48 +1576,26 @@ public final class ComprehensiveSearchRateJob
       }
 
 
-      // Update the search request with an appropriate base DN and filter.
-      searchRequest.setBaseDN(baseDNPattern.nextValue());
-
-      final String filter;
-      if (random.nextInt(100) < filter1Percentage)
-      {
-        filter = filterPattern1.nextValue();
-      }
-      else
-      {
-        filter = filterPattern2.nextValue();
-      }
-
-      try
-      {
-        searchRequest.setFilter(filter);
-      }
-      catch (final Exception e)
-      {
-        logMessage("ERROR:  Generated invalid search filter '" + filter + "'.");
-        indicateCompletedWithErrors();
-        return;
-      }
+      // Generate the modify request to send to the server.
+      final ModifyRequest modifyRequest = generateModifyRequest();
 
 
-      // Process the search.
+      // Process the modify oepration.
       if (collectingStats)
       {
-        searchTimer.startTimer();
+        modifyTimer.startTimer();
       }
 
       try
       {
-        final long beforeSearchTimeNanos = System.nanoTime();
-        final SearchResult searchResult = connectionPool.search(searchRequest);
-        final long afterSearchTimeNanos = System.nanoTime();
+        final long beforeModifyTimeNanos = System.nanoTime();
+        final LDAPResult modifyResult = connectionPool.modify(modifyRequest);
+        final long afterModifyTimeNanos = System.nanoTime();
         if (collectingStats)
         {
-          entriesReturned.addValue(searchResult.getEntryCount());
-          resultCodes.increment(searchResult.getResultCode().toString());
-          responseTimeCategorizer.categorizeResponseTime(beforeSearchTimeNanos,
-               afterSearchTimeNanos);
+          resultCodes.increment(modifyResult.getResultCode().toString());
+          responseTimeCategorizer.categorizeResponseTime(beforeModifyTimeNanos,
+               afterModifyTimeNanos);
         }
       }
       catch (final LDAPException le)
@@ -1884,8 +1609,8 @@ public final class ComprehensiveSearchRateJob
       {
         if (collectingStats)
         {
-          searchTimer.stopTimer();
-          searchesCompleted.increment();
+          modifyTimer.stopTimer();
+          modifiesCompleted.increment();
         }
       }
     }
@@ -1902,13 +1627,40 @@ public final class ComprehensiveSearchRateJob
 
 
   /**
+   * Generates a modify request to process.
+   *
+   * @return  The modify request that was generated.
+   */
+  private ModifyRequest generateModifyRequest()
+  {
+    final String entryDN;
+    if (random.nextInt(100) < entryDN1Percentage)
+    {
+      entryDN = entryDNPattern1.nextValue();
+    }
+    else
+    {
+      entryDN = entryDNPattern2.nextValue();
+    }
+
+    final Modification[] mods = new Modification[attributeModifications.size()];
+    for (int i=0; i < mods.length; i++)
+    {
+      mods[i] = attributeModifications.get(i).generateModification();
+    }
+
+    return new ModifyRequest(entryDN, mods, requestControls);
+  }
+
+
+
+  /**
    * Starts the stat trackers for this job.
    */
   private void startTrackers()
   {
-    searchesCompleted.startTracker();
-    searchTimer.startTracker();
-    entriesReturned.startTracker();
+    modifiesCompleted.startTracker();
+    modifyTimer.startTracker();
     resultCodes.startTracker();
     responseTimeCategorizer.startStatTracker();
   }
@@ -1920,9 +1672,8 @@ public final class ComprehensiveSearchRateJob
    */
   private void stopTrackers()
   {
-    searchesCompleted.stopTracker();
-    searchTimer.stopTracker();
-    entriesReturned.stopTracker();
+    modifiesCompleted.stopTracker();
+    modifyTimer.stopTracker();
     resultCodes.stopTracker();
     responseTimeCategorizer.stopStatTracker();
   }
@@ -1955,36 +1706,5 @@ public final class ComprehensiveSearchRateJob
       connectionPool.close();
       connectionPool = null;
     }
-  }
-
-
-
-  /**
-   * Indicates that the provided search result entry has been returned by the
-   * server and may be processed by this search result listener.
-   *
-   * @param  searchEntry  The search result entry that has been returned by the
-   *                      server.
-   */
-  @Override()
-  public void searchEntryReturned(final SearchResultEntry searchEntry)
-  {
-    // We don't need to do anything with the entry.
-  }
-
-
-
-  /**
-   * Indicates that the provided search result reference has been returned by
-   * the server and may be processed by this search result listener.
-   *
-   * @param  searchReference  The search result reference that has been returned
-   *                          by the server.
-   */
-  @Override()
-  public void searchReferenceReturned(
-                   final SearchResultReference searchReference)
-  {
-    // We don't need to do anything with the reference.
   }
 }

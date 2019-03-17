@@ -42,6 +42,7 @@ import com.slamd.job.OptimizingJob;
 import com.slamd.job.SingleStatisticOptimizationAlgorithm;
 import com.slamd.job.UnknownJobClass;
 import com.slamd.parameter.InvalidValueException;
+import com.slamd.parameter.LabelParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
 import com.slamd.parameter.PlaceholderParameter;
@@ -5546,9 +5547,23 @@ public final class AdminOptimizingJob
       Parameter[] parameters =
            optimizingJob.getOptimizationAlgorithm().
                 getOptimizationAlgorithmParameters().getParameters();
-      for (int i=0; i < parameters.length; i++)
+      for (int i=0, j=0; i < parameters.length; i++,j++)
       {
-        if ((i % 2) == 0)
+        if ((parameters[i] instanceof PlaceholderParameter) ||
+             (parameters[i] instanceof LabelParameter))
+        {
+          j--;
+          continue;
+        }
+
+        if (readOnlyMode && hideSensitiveInformation &&
+             parameters[i].isSensitive())
+        {
+          j--;
+          continue;
+        }
+
+        if ((j % 2) == 0)
         {
           htmlBody.append("  <TR CLASS=\"" +
                           Constants.STYLE_JOB_SUMMARY_LINE_A + "\">" + EOL);
@@ -5559,24 +5574,11 @@ public final class AdminOptimizingJob
                           Constants.STYLE_JOB_SUMMARY_LINE_B + "\">" + EOL);
         }
 
-        if (parameters[i] instanceof PlaceholderParameter)
-        {
-          htmlBody.append("    <TD COLSPAN=\"3\">&nbsp;</TD>" + EOL);
-        }
-        else if (readOnlyMode && hideSensitiveInformation &&
-                 parameters[i].isSensitive())
-        {
-          htmlBody.append("    <TD COLSPAN=\"3\">&nbsp;</TD>" + EOL);
-        }
-        else
-        {
-          htmlBody.append("    <TD>" + parameters[i].getDisplayName() +
-                          "</TD>" + EOL);
-          htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
-          htmlBody.append("    <TD>" + parameters[i].getHTMLDisplayValue() +
-                          "</TD>" + EOL);
-        }
-
+        htmlBody.append("    <TD>" + parameters[i].getDisplayName() +
+             "</TD>" + EOL);
+        htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+        htmlBody.append("    <TD>" + parameters[i].getHTMLDisplayValue() +
+             "</TD>" + EOL);
         htmlBody.append("  </TR>" + EOL);
       }
     }

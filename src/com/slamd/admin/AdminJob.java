@@ -2774,18 +2774,14 @@ public final class AdminJob
       {
         Parameter p =
             job.getParameterList().getParameter(params[i].getName());
-        if (readOnlyMode && hideSensitiveInformation && p.isSensitive())
+        if ((p == null) || (p instanceof PlaceholderParameter) ||
+           (p instanceof LabelParameter))
         {
+          j--;
           continue;
         }
 
-        String valueStr = "(not specified)";
-        if (p != null)
-        {
-          valueStr = p.getHTMLDisplayValue();
-        }
-        else if ((params[i] instanceof PlaceholderParameter) ||
-                 (params[i] instanceof LabelParameter))
+        if (readOnlyMode && hideSensitiveInformation && p.isSensitive())
         {
           j--;
           continue;
@@ -2803,9 +2799,9 @@ public final class AdminJob
         }
 
         htmlBody.append("    <TD>" + params[i].getDisplayName() +
-                        "</TD>" + EOL);
+             "</TD>" + EOL);
         htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
-        htmlBody.append("    <TD>" + valueStr + "</TD>" + EOL);
+        htmlBody.append("    <TD>" + p.getHTMLDisplayValue() + "</TD>" + EOL);
         htmlBody.append("  </TR>" + EOL);
       }
     }

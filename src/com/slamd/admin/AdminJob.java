@@ -7127,7 +7127,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_COPIES + "\" VALUE=\"" +
-                      numCopies + "\" SIZE=\"40\"></TD>" + EOL);
+                      numCopies + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
 
       // Whether to make copies interdependent.
@@ -7153,7 +7153,7 @@ public final class AdminJob
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
                       "\" VALUE=\"" + delayBetweenStarts +
-                      "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -7239,7 +7239,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
            Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-           value + "\" SIZE=\"40\"></TD>" + EOL);
+           value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -7261,7 +7261,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_STOP_TIME + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
+                    value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The duration
@@ -7282,7 +7282,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
+                    value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The number of clients
@@ -7303,7 +7303,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      value + "\" SIZE=\"40\"></TD>" + EOL);
+                      value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -7317,7 +7317,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\"" +
-                      " COLS=\"40\">");
+                      " COLS=\"80\">");
       String separator = "";
       for (int i=0; ((clients != null) && (i < clients.length)); i++)
       {
@@ -7338,7 +7338,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                      "\" ROWS=\"5\"" + " COLS=\"40\">");
+                      "\" ROWS=\"5\"" + " COLS=\"80\">");
       separator = "";
       for (int i=0; ((monitorClients != null) && (i < monitorClients.length));
            i++)
@@ -7397,7 +7397,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREADS_PER_CLIENT +
-                      "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -7412,7 +7412,7 @@ public final class AdminJob
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
                       "\" VALUE=\"" + threadStartupDelay +
-                      "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
 
       // The job dependencies
@@ -7619,7 +7619,7 @@ public final class AdminJob
         htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
         htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
-                        "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                        "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
         htmlBody.append("  </TR>" + EOL);
       }
     }
@@ -7647,7 +7647,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -9320,7 +9320,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
+                    value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The stop time
@@ -9339,7 +9339,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_STOP_TIME + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
+                    value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The duration
@@ -9357,7 +9357,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    value + "\" SIZE=\"40\"></TD>" + EOL);
+                    value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The number of clients
@@ -9377,7 +9377,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      value + "\" SIZE=\"40\"></TD>" + EOL);
+                      value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -9388,7 +9388,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\"" +
-                    " COLS=\"40\">");
+                    " COLS=\"80\">");
     String separator = "";
     for (int i=0; ((clients != null) && (i < clients.length)); i++)
     {
@@ -9407,7 +9407,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                    "\" ROWS=\"5\"" + " COLS=\"40\">");
+                    "\" ROWS=\"5\"" + " COLS=\"80\">");
     separator = "";
     for (int i=0; ((monitorClients != null) && (i < monitorClients.length));
          i++)
@@ -9457,7 +9457,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREADS_PER_CLIENT +
-                      "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 
@@ -9469,7 +9469,7 @@ public final class AdminJob
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
                     "\" VALUE=\"" + threadStartupDelay +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The job dependencies
@@ -9686,7 +9686,7 @@ public final class AdminJob
     htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
-                    "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("  </TR>" + EOL);
 
     // The collection interval
@@ -9706,7 +9706,7 @@ public final class AdminJob
       htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("    <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + value + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + value + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("  </TR>" + EOL);
     }
 

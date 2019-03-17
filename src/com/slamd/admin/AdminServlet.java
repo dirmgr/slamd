@@ -2029,7 +2029,7 @@ public class AdminServlet
         htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
         htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_UPLOAD_FILE_PATH +
-                        "\" SIZE=\"40\">" + EOL);
+                        "\" SIZE=\"80\">" + EOL);
         htmlBody.append("    </TR>" + EOL);
         htmlBody.append("    <TR>" + EOL);
         htmlBody.append("      <TD>File TYPE</TD>" + EOL);
@@ -3320,7 +3320,7 @@ public class AdminServlet
         htmlBody.append("  Virtual Folder Name:  " + EOL);
         htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_VIRTUAL_JOB_FOLDER +
-                        "\" SIZE=\"40\">" + EOL);
+                        "\" SIZE=\"80\">" + EOL);
         htmlBody.append("  <BR><BR>" + EOL);
         htmlBody.append("  <INPUT TYPE=\"CHECKBOX\" NAME=\"" +
                         Constants.SERVLET_PARAM_DISPLAY_IN_READ_ONLY +
@@ -6726,7 +6726,7 @@ public class AdminServlet
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_FOLDER +
-                      "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
       htmlBody.append("    <TR>" + EOL);
       htmlBody.append("      <TD>Display In Restricted Read-Only Mode</TD>" +
@@ -7325,7 +7325,7 @@ public class AdminServlet
       htmlBody.append("  New Virtual Folder Name:  " + EOL);
       htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_NEW_FOLDER_NAME +
-                      "\" SIZE=\"40\">" + EOL);
+                      "\" SIZE=\"80\">" + EOL);
       htmlBody.append("  <BR><BR>" + EOL);
       htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Add Jobs\">" + EOL);
       htmlBody.append("</FORM>" + EOL);
@@ -9004,7 +9004,7 @@ public class AdminServlet
     }
     htmlBody.append("  Job Class Name:  " + EOL);
     htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
-                    Constants.SERVLET_PARAM_JOB_CLASS + "\" SIZE=\"40\">" +
+                    Constants.SERVLET_PARAM_JOB_CLASS + "\" SIZE=\"80\">" +
                     EOL);
     htmlBody.append("<BR><BR>" + EOL);
     htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Add Job Class\">" + EOL);
@@ -9131,7 +9131,7 @@ public class AdminServlet
       htmlBody.append("  Job Pack File Path:  " + EOL);
       htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_PACK_PATH +
-                      "\" SIZE=\"40\">" + EOL);
+                      "\" SIZE=\"80\">" + EOL);
       htmlBody.append("  <BR>" + EOL);
       htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Install Job Pack\">" +
                       EOL);

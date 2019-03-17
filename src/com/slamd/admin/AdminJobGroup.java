@@ -1630,14 +1630,14 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_NEW_NAME + "\" VALUE=\"" + newName +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
     htmlBody.append("    <TR>" + EOL);
     htmlBody.append("      <TD>Job Group Description</TD>" + EOL);
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DESCRIPTION + "\" VALUE=\"" +
-                    newDescription + "\" SIZE=\"40\"></TD>" + EOL);
+                    newDescription + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     htmlBody.append("    <TR>" + EOL);
@@ -1898,7 +1898,7 @@ public class AdminJobGroup
         }
 
         htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
-                        Constants.SERVLET_PARAM_LABEL_TEXT + "\" SIZE=\"40\">" +
+                        Constants.SERVLET_PARAM_LABEL_TEXT + "\" SIZE=\"80\">" +
                         EOL);
         htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\">" + EOL);
         htmlBody.append("</FORM>" + EOL);
@@ -2013,7 +2013,7 @@ public class AdminJobGroup
 
         htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_LABEL_TEXT +
-                      "\" VALUE=\"" + label + "\" SIZE=\"40\">" +  EOL);
+                      "\" VALUE=\"" + label + "\" SIZE=\"80\">" +  EOL);
         htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\">" + EOL);
         htmlBody.append("</FORM>" + EOL);
         return;
@@ -2119,7 +2119,7 @@ public class AdminJobGroup
           }
 
           htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
-                          Constants.SERVLET_PARAM_NEW_NAME + "\" SIZE=\"40\"" +
+                          Constants.SERVLET_PARAM_NEW_NAME + "\" SIZE=\"80\"" +
                           " VALUE=\"" + params[selectedIndex].getDisplayName() +
                           "\">" + EOL);
           htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\">" + EOL);
@@ -3375,7 +3375,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_NEW_NAME + "\" VALUE=\"" + newName +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3404,7 +3404,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideNumClients() <= 0)
@@ -3420,7 +3420,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      numClientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      numClientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -3437,7 +3437,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREADS_PER_CLIENT +
-                      "\" VALUE=\"" + numThreadsStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + numThreadsStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -3460,7 +3460,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideCollectionInterval() <= 0)
@@ -3479,7 +3479,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -3636,7 +3636,7 @@ public class AdminJobGroup
         htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_MAP_TO_DISPLAY_NAME_PREFIX +
                         stubs[i].getName() + "\" VALUE=\"" +
-                        stubs[i].getDisplayName() + "\" SIZE=\"40\"></TD>" +
+                        stubs[i].getDisplayName() + "\" SIZE=\"80\"></TD>" +
                         EOL);
         htmlBody.append("    </TR>" + EOL);
 
@@ -4362,7 +4362,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_NEW_NAME + "\" VALUE=\"" + newName +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -4392,7 +4392,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideNumClients() <= 0)
@@ -4408,7 +4408,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      numClientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      numClientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -4424,7 +4424,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MIN +
-                    "\" VALUE=\"" + minThreadsStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + minThreadsStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -4446,7 +4446,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MAX +
-                    "\" VALUE=\"" + maxThreadsStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + maxThreadsStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -4462,7 +4462,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_THREAD_INCREMENT +
-                    "\" VALUE=\"" + incrementStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + incrementStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -4484,7 +4484,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideCollectionInterval() <= 0)
@@ -4503,7 +4503,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -4522,7 +4522,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MAX_NON_IMPROVING +
                     "\" VALUE=\"" + nonImprovingStr +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     boolean reRunBestIteration;
@@ -4577,7 +4577,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_RERUN_DURATION + "\" VALUE=\"" +
-                    reRunDurationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    reRunDurationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -4789,7 +4789,7 @@ public class AdminJobGroup
         htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_MAP_TO_DISPLAY_NAME_PREFIX +
                         stubs[i].getName() + "\" VALUE=\"" +
-                        stubs[i].getDisplayName() + "\" SIZE=\"40\"></TD>" +
+                        stubs[i].getDisplayName() + "\" SIZE=\"80\"></TD>" +
                         EOL);
         htmlBody.append("    </TR>" + EOL);
 
@@ -4956,7 +4956,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_GROUP_NAME +
-                    "\" VALUE=\"" + name + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + name + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     htmlBody.append("    <TR>" + EOL);
@@ -4966,7 +4966,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_GROUP_DESCRIPTION +
-                    "\" VALUE=\"" + description + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + description + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     htmlBody.append("    <TR>" + EOL);
@@ -5650,7 +5650,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_GROUP_JOB_NAME + "\" VALUE=\"" +
-                    jobName + "\" SIZE=\"40\"></TD>" + EOL);
+                    jobName + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     String durationStr =
@@ -5664,7 +5664,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideNumClients() <= 0)
@@ -5680,7 +5680,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      numClientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      numClientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -5697,7 +5697,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_THREADS_PER_CLIENT +
-                      "\" VALUE=\"" + numThreadsStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + numThreadsStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -5713,7 +5713,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideCollectionInterval() <= 0)
@@ -5731,7 +5731,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -5919,7 +5919,7 @@ public class AdminJobGroup
         htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_MAP_TO_DISPLAY_NAME_PREFIX +
                         stubs[i].getName() + "\" VALUE=\"" +
-                        stubs[i].getDisplayName() + "\" SIZE=\"40\"></TD>" +
+                        stubs[i].getDisplayName() + "\" SIZE=\"80\"></TD>" +
                         EOL);
         htmlBody.append("    </TR>" + EOL);
 
@@ -6911,7 +6911,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_GROUP_OPTIMIZING_JOB_NAME +
-                    "\" VALUE=\"" + jobName + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + jobName + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     String durationStr =
@@ -6925,7 +6925,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     String delayStr =
@@ -6939,7 +6939,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideNumClients() <= 0)
@@ -6955,7 +6955,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      numClientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      numClientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -6971,7 +6971,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MIN + "\" VALUE=\"" +
-                    minThreadsStr + "\" SIZE=\"40\"></TD>" +
+                    minThreadsStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -6986,7 +6986,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MAX + "\" VALUE=\"" +
-                    maxThreadsStr + "\" SIZE=\"40\"></TD>" +
+                    maxThreadsStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -7002,7 +7002,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_THREAD_INCREMENT + "\" VALUE=\"" +
-                    incrementStr + "\" SIZE=\"40\"></TD>" +
+                    incrementStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -7017,7 +7017,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (jobClass.overrideCollectionInterval() <= 0)
@@ -7035,7 +7035,7 @@ public class AdminJobGroup
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -7053,7 +7053,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MAX_NON_IMPROVING +
                     "\" VALUE=\"" + maxNonImprovingStr +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     boolean reRunBestIteration = false;
@@ -7085,7 +7085,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_RERUN_DURATION + "\" VALUE=\"" +
-                    reRunDurationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    reRunDurationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     if (! jobList.isEmpty())
@@ -7313,7 +7313,7 @@ public class AdminJobGroup
         htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_MAP_TO_DISPLAY_NAME_PREFIX +
                         stubs[i].getName() + "\" VALUE=\"" +
-                        stubs[i].getDisplayName() + "\" SIZE=\"40\"></TD>" +
+                        stubs[i].getDisplayName() + "\" SIZE=\"80\"></TD>" +
                         EOL);
         htmlBody.append("    </TR>" + EOL);
 
@@ -8084,7 +8084,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    startTimeStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    startTimeStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -8095,7 +8095,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\"" +
-                    " COLS=\"40\">");
+                    " COLS=\"80\">");
     String separator = "";
     for (int i=0; ((requestedClients != null) &&
                    (i < requestedClients.length)); i++)
@@ -8115,7 +8115,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                    "\" ROWS=\"5\"" + " COLS=\"40\">");
+                    "\" ROWS=\"5\"" + " COLS=\"80\">");
     separator = "";
     for (int i=0; ((monitorClients != null) && (i < monitorClients.length));
          i++)
@@ -8488,7 +8488,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_NEW_NAME + "\" VALUE=\"" +
-                    cloneName + "\" SIZE=\"40\">" + EOL);
+                    cloneName + "\" SIZE=\"80\">" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     htmlBody.append("    <TR>" + EOL);
@@ -8496,7 +8496,7 @@ public class AdminJobGroup
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DESCRIPTION + "\" VALUE=\"" +
-                    description + "\" SIZE=\"40\">" + EOL);
+                    description + "\" SIZE=\"80\">" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
     htmlBody.append("    <TR>" + EOL);

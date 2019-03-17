@@ -1441,7 +1441,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DESCRIPTION + "\" VALUE=\"" +
-                    description + "\" SIZE=\"40\"></TD>" + EOL);
+                    description + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1546,7 +1546,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    startTimeStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    startTimeStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1562,7 +1562,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1580,7 +1580,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1598,7 +1598,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      clientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      clientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -1615,7 +1615,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\" " +
-                    "COLS=\"40\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
+                    "COLS=\"80\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1631,7 +1631,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                    "\" ROWS=\"5\" COLS=\"40\">" + clientsStr +
+                    "\" ROWS=\"5\" COLS=\"80\">" + clientsStr +
                     "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -1670,7 +1670,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MIN + "\" VALUE=\"" +
-                    minThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    minThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1686,7 +1686,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MAX + "\" VALUE=\"" +
-                    maxThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    maxThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1703,7 +1703,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_THREAD_INCREMENT + "\" VALUE=\"" +
-                    incrementStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    incrementStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1719,7 +1719,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -1740,7 +1740,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -1760,7 +1760,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MAX_NON_IMPROVING +
                     "\" VALUE=\"" + maxNonImprovingStr +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1799,7 +1799,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_RERUN_DURATION + "\" VALUE=\"" +
-                    reRunDurationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    reRunDurationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -1944,7 +1944,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
-                      "\" VALUE=\"" + mailStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + mailStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -2285,7 +2285,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    startTimeStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    startTimeStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2309,7 +2309,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2327,7 +2327,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2345,7 +2345,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      clientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      clientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -2362,7 +2362,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\" " +
-                    "COLS=\"40\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
+                    "COLS=\"80\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2378,7 +2378,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                    "\" ROWS=\"5\" COLS=\"40\">" + clientsStr +
+                    "\" ROWS=\"5\" COLS=\"80\">" + clientsStr +
                     "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -2408,7 +2408,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MIN + "\" VALUE=\"" +
-                    minThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    minThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2424,7 +2424,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MAX + "\" VALUE=\"" +
-                    maxThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    maxThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2441,7 +2441,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_THREAD_INCREMENT + "\" VALUE=\"" +
-                    incrementStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    incrementStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2457,7 +2457,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -2478,7 +2478,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -2498,7 +2498,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MAX_NON_IMPROVING +
                     "\" VALUE=\"" + maxNonImprovingStr +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2537,7 +2537,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_RERUN_DURATION + "\" VALUE=\"" +
-                    reRunDurationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    reRunDurationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -2643,7 +2643,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
-                      "\" VALUE=\"" + mailStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + mailStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -3035,7 +3035,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_START_TIME + "\" VALUE=\"" +
-                    startTimeStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    startTimeStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3055,7 +3055,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_DURATION + "\" VALUE=\"" +
-                    durationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    durationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3068,7 +3068,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_TIME_BETWEEN_STARTUPS +
-                    "\" VALUE=\"" + delayStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" VALUE=\"" + delayStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3081,7 +3081,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NUM_CLIENTS + "\" VALUE=\"" +
-                      clientsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      clientsStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 
@@ -3106,7 +3106,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_CLIENTS + "\" ROWS=\"5\" " +
-                    "COLS=\"40\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
+                    "COLS=\"80\">" + clientsStr + "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3129,7 +3129,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><TEXTAREA NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MONITOR_CLIENTS +
-                    "\" ROWS=\"5\" COLS=\"40\">" + clientsStr +
+                    "\" ROWS=\"5\" COLS=\"80\">" + clientsStr +
                     "</TEXTAREA></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -3153,7 +3153,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MIN + "\" VALUE=\"" +
-                    minThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    minThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3173,7 +3173,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREADS_MAX + "\" VALUE=\"" +
-                    maxThreadsStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    maxThreadsStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3185,7 +3185,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_THREAD_INCREMENT + "\" VALUE=\"" +
-                    incrementStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    incrementStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3197,7 +3197,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_THREAD_STARTUP_DELAY +
-                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"40\"></TD>" +
+                    "\" VALUE=\"" + startupDelayStr + "\" SIZE=\"80\"></TD>" +
                     EOL);
     htmlBody.append("    </TR>" + EOL);
 
@@ -3212,7 +3212,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_COLLECTION_INTERVAL +
-                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"40\"></TD>" +
+                      "\" VALUE=\"" + intervalStr + "\" SIZE=\"80\"></TD>" +
                       EOL);
       htmlBody.append("    </TR>" + EOL);
     }
@@ -3228,7 +3228,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_JOB_MAX_NON_IMPROVING +
                     "\" VALUE=\"" + maxNonImprovingStr +
-                    "\" SIZE=\"40\"></TD>" + EOL);
+                    "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3257,7 +3257,7 @@ public final class AdminOptimizingJob
     htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
     htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                     Constants.SERVLET_PARAM_RERUN_DURATION + "\" VALUE=\"" +
-                    reRunDurationStr + "\" SIZE=\"40\"></TD>" + EOL);
+                    reRunDurationStr + "\" SIZE=\"80\"></TD>" + EOL);
     htmlBody.append("    </TR>" + EOL);
 
 
@@ -3372,7 +3372,7 @@ public final class AdminOptimizingJob
       htmlBody.append("      <TD>&nbsp;</TD>" + EOL);
       htmlBody.append("      <TD><INPUT TYPE=\"TEXT\" NAME=\"" +
                       Constants.SERVLET_PARAM_JOB_NOTIFY_ADDRESS +
-                      "\" VALUE=\"" + mailStr + "\" SIZE=\"40\"></TD>" + EOL);
+                      "\" VALUE=\"" + mailStr + "\" SIZE=\"80\"></TD>" + EOL);
       htmlBody.append("    </TR>" + EOL);
     }
 

@@ -65,7 +65,7 @@ public class FileURLParameter
   /**
    * The number of columns to display by default if no other value is specified.
    */
-  private static final int DEFAULT_VISIBLE_COLUMNS = 40;
+  private static final int DEFAULT_VISIBLE_COLUMNS = 80;
 
 
 

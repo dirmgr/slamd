@@ -1558,7 +1558,7 @@ public class AdminUI
         htmlBody.append("  Number of Clients:  " + EOL);
         htmlBody.append("  <INPUT TYPE=\"TEXT\" NAME=\"" +
                         Constants.SERVLET_PARAM_JOB_NUM_CLIENTS +
-                        "\" SIZE=\"40\">" + EOL);
+                        "\" SIZE=\"80\">" + EOL);
         htmlBody.append("<BR><BR>" + EOL);
         htmlBody.append("  <INPUT TYPE=\"SUBMIT\" VALUE=\"Create Clients\">" +
                         EOL);

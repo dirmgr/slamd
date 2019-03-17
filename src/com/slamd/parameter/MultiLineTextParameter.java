@@ -36,7 +36,7 @@ public class MultiLineTextParameter
 {
   // The number of columns that will be visible in the text area used to
   // retrieve the value of the parameter.
-  private int visibleColumns = 30;
+  private int visibleColumns = 80;
 
   // The number of rows that will be visible in the text area used to retrieve
   // the value of the parameter.

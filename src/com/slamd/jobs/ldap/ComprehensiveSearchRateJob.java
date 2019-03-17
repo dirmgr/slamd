@@ -406,6 +406,18 @@ public final class ComprehensiveSearchRateJob
             "limiting will be performed.",
        false, -1, true, -1, true, Integer.MAX_VALUE);
 
+  // The parameter used to specify the number of searches between reconnects.
+  private IntegerParameter searchesBetweenReconnectsParameter =
+       new IntegerParameter("searches_between_reconnects",
+            "Searches Between Reconnects",
+            "The number of search operations that the job should process on " +
+                 "a connection before closing that connection and " +
+                 "establishing a new one.  A value of zero indicates that " +
+                 "each thread should continue using the same connection for " +
+                 "all search operations (although it may re-establish the " +
+                 "connection if it appears that it is no longer valid).",
+            false, 0, true, 0, false, Integer.MAX_VALUE);
+
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
@@ -413,6 +425,7 @@ public final class ComprehensiveSearchRateJob
   private static DereferencePolicy dereferencePolicy = null;
   private static FixedRateBarrier rateLimiter = null;
   private static int filter1Percentage = -1;
+  private static int searchesBetweenReconnects = -1;
   private static int sizeLimit = -1;
   private static int timeLimitSeconds = -1;
   private static long coolDownDurationMillis = -1L;
@@ -576,6 +589,7 @@ public final class ComprehensiveSearchRateJob
       coolDownDurationParameter,
       followReferralsParameter,
       maxRateParameter,
+      searchesBetweenReconnectsParameter,
 
       new PlaceholderParameter()
     };
@@ -1675,6 +1689,20 @@ public final class ComprehensiveSearchRateJob
     {
       rateLimiter = null;
     }
+
+
+    // Initialize the number of searches between reconnects.
+    final IntegerParameter searchesBetweenReconnectsParam = parameters.
+         getIntegerParameter(searchesBetweenReconnectsParameter.getName());
+    if ((searchesBetweenReconnectsParam != null) &&
+         searchesBetweenReconnectsParam.hasValue())
+    {
+      searchesBetweenReconnects = searchesBetweenReconnectsParam.getIntValue();
+    }
+    else
+    {
+      searchesBetweenReconnects = 0;
+    }
   }
 
 
@@ -1801,8 +1829,20 @@ public final class ComprehensiveSearchRateJob
 
     // Perform the searches until it's time to stop.
     boolean doneCollecting = false;
+    long reconnectCounter = 0L;
     while (! shouldStop())
     {
+      // See if it's time to close and re-establish a connection.
+      if (searchesBetweenReconnects > 0)
+      {
+        reconnectCounter++;
+        if ((reconnectCounter % searchesBetweenReconnects) == 0L)
+        {
+          connectionPool.shrinkPool(0);
+        }
+      }
+
+
       // If we should rate-limit the searches, then wait if necesary.
       if (rateLimiter != null)
       {

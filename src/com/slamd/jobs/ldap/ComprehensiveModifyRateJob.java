@@ -328,12 +328,25 @@ public final class ComprehensiveModifyRateJob
             "limiting will be performed.",
        false, -1, true, -1, true, Integer.MAX_VALUE);
 
+  // The parameter used to specify the number of modifies between reconnects.
+  private IntegerParameter modifiesBetweenReconnectsParameter =
+       new IntegerParameter("modifies_between_reconnects",
+            "Modifies Between Reconnects",
+            "The number of modify operations that the job should process on " +
+                 "a connection before closing that connection and " +
+                 "establishing a new one.  A value of zero indicates that " +
+                 "each thread should continue using the same connection for " +
+                 "all modify operations (although it may re-establish the " +
+                 "connection if it appears that it is no longer valid).",
+            false, 0, true, 0, false, Integer.MAX_VALUE);
+
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
   private static Control[] requestControls = null;
   private static FixedRateBarrier rateLimiter = null;
   private static int entryDN1Percentage = -1;
+  private static int modifiesBetweenReconnects = -1;
   private static List<ComprehensiveModifyRateAttributeModification>
        attributeModifications = null;
   private static long coolDownDurationMillis = -1L;
@@ -481,6 +494,7 @@ public final class ComprehensiveModifyRateJob
       coolDownDurationParameter,
       followReferralsParameter,
       maxRateParameter,
+      modifiesBetweenReconnectsParameter,
 
       new PlaceholderParameter()
     };
@@ -1457,6 +1471,20 @@ public final class ComprehensiveModifyRateJob
     {
       rateLimiter = null;
     }
+
+
+    // Initialize the number of modifies between reconnects.
+    final IntegerParameter modsBetweenReconnectsParam = parameters.
+         getIntegerParameter(modifiesBetweenReconnectsParameter.getName());
+    if ((modsBetweenReconnectsParam != null) &&
+         modsBetweenReconnectsParam.hasValue())
+    {
+      modifiesBetweenReconnects = modsBetweenReconnectsParam.getIntValue();
+    }
+    else
+    {
+      modifiesBetweenReconnects = 0;
+    }
   }
 
 
@@ -1548,8 +1576,20 @@ public final class ComprehensiveModifyRateJob
 
     // Perform the searches until it's time to stop.
     boolean doneCollecting = false;
+    long reconnectCounter = 0L;
     while (! shouldStop())
     {
+      // See if it's time to close and re-establish a connection.
+      if (modifiesBetweenReconnects > 0)
+      {
+        reconnectCounter++;
+        if ((reconnectCounter % modifiesBetweenReconnects) == 0L)
+        {
+          connectionPool.shrinkPool(0);
+        }
+      }
+
+
       // If we should rate-limit the searches, then wait if necesary.
       if (rateLimiter != null)
       {

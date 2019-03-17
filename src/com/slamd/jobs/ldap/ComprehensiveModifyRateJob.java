@@ -106,12 +106,6 @@ public final class ComprehensiveModifyRateJob
 
 
 
-  /**
-   * The serial version UID for this serializable class.
-   */
-  private static final long serialVersionUID = -2042145904145922562L;
-
-
   // The parameter used to provide a label for the connection details.
   private LabelParameter connectionLabelParameter = new LabelParameter(
        "Connection Parameters");

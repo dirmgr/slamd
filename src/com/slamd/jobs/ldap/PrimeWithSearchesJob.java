@@ -66,7 +66,7 @@ import com.slamd.stat.TimeTracker;
  *
  * @author   Neil A. Wilson
  */
-public final class PrimeJob
+public final class PrimeWithSearchesJob
        extends JobClass
 {
   /**
@@ -302,7 +302,7 @@ public final class PrimeJob
    * other initialization should be performed in the <CODE>initialize</CODE>
    * method.
    */
-  public PrimeJob()
+  public PrimeWithSearchesJob()
   {
     super();
   }
@@ -315,7 +315,7 @@ public final class PrimeJob
   @Override()
   public String getJobName()
   {
-    return "Prime";
+    return "Prime With Searches";
   }
 
 

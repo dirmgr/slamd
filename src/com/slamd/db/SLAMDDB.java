@@ -83,7 +83,7 @@ import com.slamd.jobs.ldap.MixedLoadJob;
 import com.slamd.jobs.ldap.ModifyDNRateJob;
 import com.slamd.jobs.ldap.MultiConnectionSearchRateJob;
 import com.slamd.jobs.ldap.MultiSearchMixedLoadJob;
-import com.slamd.jobs.ldap.PrimeJob;
+import com.slamd.jobs.ldap.PrimeWithSearchesJob;
 import com.slamd.jobs.ldap.SearchAndModifyRateJob;
 import com.slamd.jobs.ldap.SiteMinderJob;
 import com.slamd.jobs.ldap.WaitForDirectoryServerJob;
@@ -533,7 +533,7 @@ public final class SLAMDDB
       ModifyDNRateJob.class.getName(),
       MultiConnectionSearchRateJob.class.getName(),
       MultiSearchMixedLoadJob.class.getName(),
-      PrimeJob.class.getName(),
+      PrimeWithSearchesJob.class.getName(),
       SearchAndModifyRateJob.class.getName(),
       SiteMinderJob.class.getName(),
       WaitForDirectoryServerJob.class.getName(),

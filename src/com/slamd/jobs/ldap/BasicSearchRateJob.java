@@ -46,7 +46,6 @@ import com.slamd.common.DurationParser;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
 import com.slamd.job.UnableToRunException;
-import com.slamd.parameter.BooleanParameter;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.LabelParameter;
@@ -260,13 +259,6 @@ public final class BasicSearchRateJob
             "the load against the server will be more consistent.",
        true, "0 seconds");
 
-  // The parameter used to indicate whether to follow referrals.
-  private BooleanParameter followReferralsParameter = new BooleanParameter(
-       "follow_referrals", "Follow Referrals",
-       "Indicates whether the client should attempt to automatically follow " +
-            "any referrals that are returned by the server.",
-       false);
-
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
@@ -401,8 +393,7 @@ public final class BasicSearchRateJob
       new PlaceholderParameter(),
       additionalLabelParameter,
       warmUpDurationParameter,
-      coolDownDurationParameter,
-      followReferralsParameter
+      coolDownDurationParameter
     };
 
     return new ParameterList(parameters);
@@ -838,8 +829,6 @@ public final class BasicSearchRateJob
     // Initialize the LDAP connection options.
     final LDAPConnectionOptions connectionOptions = new LDAPConnectionOptions();
     connectionOptions.setUseSynchronousMode(true);
-    connectionOptions.setFollowReferrals(parameters.getBooleanParameter(
-         followReferralsParameter.getName()).getBooleanValue());
 
 
     // Create the server set.

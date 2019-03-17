@@ -415,13 +415,13 @@ public final class BasicSearchRateJob
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_SEARCHES_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_ENTRIES_RETURNED,
-                              collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
-                             collectionInterval),
+           collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
            collectionInterval)
     };

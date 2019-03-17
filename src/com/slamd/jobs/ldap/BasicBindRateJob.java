@@ -308,11 +308,11 @@ public final class BasicBindRateJob
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_BINDS_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_BIND_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
-                             collectionInterval),
+           collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
            collectionInterval)
     };

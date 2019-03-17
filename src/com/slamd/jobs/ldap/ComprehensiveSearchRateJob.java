@@ -84,7 +84,7 @@ import com.slamd.stat.TimeTracker;
 
 /**
  * This class provides a SLAMD job that can measure the search performance of an
- * LDAP directory server with a more compehensive set of options than the
+ * LDAP directory server with a more comprehensive set of options than the
  * {@link BasicSearchRateJob} job offers.
  */
 public final class ComprehensiveSearchRateJob
@@ -402,7 +402,7 @@ public final class ComprehensiveSearchRateJob
             "client should attempt to maintain.  Note that if the job runs " +
             "on multiple clients, then each client will try to maintain this " +
             "rate, so the overall desired rate should be divided by the " +
-            "number  of clients.  If no value is specified, then no rate " +
+            "number of clients.  If no value is specified, then no rate " +
             "limiting will be performed.",
        false, -1, true, -1, true, Integer.MAX_VALUE);
 
@@ -610,13 +610,13 @@ public final class ComprehensiveSearchRateJob
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_SEARCHES_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new IntegerValueTracker(clientID, threadID, STAT_ENTRIES_RETURNED,
-                              collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
-                             collectionInterval),
+           collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
            collectionInterval)
     };

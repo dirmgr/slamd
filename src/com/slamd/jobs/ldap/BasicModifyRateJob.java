@@ -375,11 +375,11 @@ public final class BasicModifyRateJob
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_MODIFIES_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
-                             collectionInterval),
+           collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
            collectionInterval)
     };

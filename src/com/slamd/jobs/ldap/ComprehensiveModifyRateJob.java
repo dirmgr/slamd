@@ -79,7 +79,7 @@ import com.slamd.stat.TimeTracker;
 
 /**
  * This class provides a SLAMD job that can measure the modify performance of an
- * LDAP directory server with a more compehensive set of options than the
+ * LDAP directory server with a more comprehensive set of options than the
  * {@link BasicModifyRateJob} job offers.
  */
 public final class ComprehensiveModifyRateJob
@@ -116,7 +116,7 @@ public final class ComprehensiveModifyRateJob
             "Server Addresses and Ports",
             "The addresses (resolvable names or IP addresses) and port " +
                  "numbers of the directory servers in which to process the " +
-                 "modify  operations (for example, 'ldap.example.com:389').  " +
+                 "modify operations (for example, 'ldap.example.com:389').  " +
                  "If multiple servers are to be targeted, then each " +
                  "address:port value should be listed on a separate line, " +
                  "and the job will use a round-robin algorithm when " +
@@ -318,7 +318,7 @@ public final class ComprehensiveModifyRateJob
             "client should attempt to maintain.  Note that if the job runs " +
             "on multiple clients, then each client will try to maintain this " +
             "rate, so the overall desired rate should be divided by the " +
-            "number  of clients.  If no value is specified, then no rate " +
+            "number of clients.  If no value is specified, then no rate " +
             "limiting will be performed.",
        false, -1, true, -1, true, Integer.MAX_VALUE);
 
@@ -509,11 +509,11 @@ public final class ComprehensiveModifyRateJob
     return new StatTracker[]
     {
       new IncrementalTracker(clientID, threadID, STAT_MODIFIES_COMPLETED,
-                             collectionInterval),
+           collectionInterval),
       new TimeTracker(clientID, threadID, STAT_MODIFY_DURATION,
-                      collectionInterval),
+           collectionInterval),
       new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
-                             collectionInterval),
+           collectionInterval),
       ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
            collectionInterval)
     };
@@ -1515,7 +1515,7 @@ public final class ComprehensiveModifyRateJob
     }
 
 
-    // Create a connection pool to use to process the searches.  Each thread
+    // Create a connection pool to use to process the modifies.  Each thread
     // will have its own pool with just a single connection.  We're not sharing
     // the pool across the connections, but the benefit of the pool is that it
     // will automatically re-establish connections that might have become
@@ -1568,7 +1568,7 @@ public final class ComprehensiveModifyRateJob
     }
 
 
-    // Perform the searches until it's time to stop.
+    // Perform the modifies until it's time to stop.
     boolean doneCollecting = false;
     long reconnectCounter = 0L;
     while (! shouldStop())
@@ -1584,7 +1584,7 @@ public final class ComprehensiveModifyRateJob
       }
 
 
-      // If we should rate-limit the searches, then wait if necesary.
+      // If we should rate-limit the modifies, then wait if necesary.
       if (rateLimiter != null)
       {
         if (rateLimiter.await())
@@ -1595,15 +1595,15 @@ public final class ComprehensiveModifyRateJob
 
 
       // See if it's time to change the tracking state.
-      final long searchStartTime = System.currentTimeMillis();
-      if (collectingStats && (searchStartTime >= stopCollectingTime))
+      final long modifyStartTime = System.currentTimeMillis();
+      if (collectingStats && (modifyStartTime >= stopCollectingTime))
       {
         stopTrackers();
         collectingStats = false;
         doneCollecting  = true;
       }
       else if ((! collectingStats) && (! doneCollecting) &&
-               (searchStartTime >= startCollectingTime))
+               (modifyStartTime >= startCollectingTime))
       {
         collectingStats = true;
         startTrackers();

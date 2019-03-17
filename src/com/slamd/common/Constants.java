@@ -2390,7 +2390,7 @@ public final class Constants
   public static final String STYLE_SHEET_DATA =
        "    <STYLE TYPE=\"text/css\">" + EOL +
        "      BODY               { color: #000000; " +
-            "background-color: #FFFFFF }" + EOL +
+            "background-color: #FFFFFF; font-family: sans-serif }" + EOL +
        "      A:link             { color: #594FBF; text-decoration: none }" +
             EOL +
        "      A:visited          { color: #594FBF; text-decoration: none }" +

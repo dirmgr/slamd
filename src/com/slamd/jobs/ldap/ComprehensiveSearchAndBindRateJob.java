@@ -18,11 +18,16 @@ package com.slamd.jobs.ldap;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import javax.net.SocketFactory;
 
+import com.unboundid.ldap.sdk.BindResult;
+import com.unboundid.ldap.sdk.Control;
 import com.unboundid.ldap.sdk.DereferencePolicy;
 import com.unboundid.ldap.sdk.DN;
 import com.unboundid.ldap.sdk.Entry;
@@ -31,25 +36,18 @@ import com.unboundid.ldap.sdk.LDAPConnection;
 import com.unboundid.ldap.sdk.LDAPConnectionOptions;
 import com.unboundid.ldap.sdk.LDAPConnectionPool;
 import com.unboundid.ldap.sdk.LDAPException;
+import com.unboundid.ldap.sdk.ResultCode;
 import com.unboundid.ldap.sdk.RoundRobinServerSet;
 import com.unboundid.ldap.sdk.SearchRequest;
 import com.unboundid.ldap.sdk.SearchResult;
-import com.unboundid.ldap.sdk.SearchResultEntry;
-import com.unboundid.ldap.sdk.SearchResultListener;
-import com.unboundid.ldap.sdk.SearchResultReference;
 import com.unboundid.ldap.sdk.SearchScope;
 import com.unboundid.ldap.sdk.ServerSet;
 import com.unboundid.ldap.sdk.SimpleBindRequest;
 import com.unboundid.ldap.sdk.SingleServerSet;
 import com.unboundid.ldap.sdk.StartTLSPostConnectProcessor;
+import com.unboundid.ldap.sdk.controls.AuthorizationIdentityRequestControl;
 import com.unboundid.ldap.sdk.controls.ManageDsaITRequestControl;
-import com.unboundid.ldap.sdk.controls.MatchedValuesFilter;
-import com.unboundid.ldap.sdk.controls.MatchedValuesRequestControl;
 import com.unboundid.ldap.sdk.controls.ProxiedAuthorizationV2RequestControl;
-import com.unboundid.ldap.sdk.controls.ServerSideSortRequestControl;
-import com.unboundid.ldap.sdk.controls.SortKey;
-import com.unboundid.ldap.sdk.controls.SubentriesRequestControl;
-import com.unboundid.ldap.sdk.persist.PersistUtils;
 import com.unboundid.ldap.sdk.extensions.StartTLSExtendedRequest;
 import com.unboundid.util.FixedRateBarrier;
 import com.unboundid.util.ObjectPair;
@@ -75,7 +73,6 @@ import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.CategoricalTracker;
 import com.slamd.stat.IncrementalTracker;
-import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
@@ -83,18 +80,30 @@ import com.slamd.stat.TimeTracker;
 
 
 /**
- * This class provides a SLAMD job that can measure the search performance of an
- * LDAP directory server with a more comprehensive set of options than the
- * {@link BasicSearchRateJob} job offers.
+ * This class provides a SLAMD job that can measure the authentication
+ * performance (where an authentication attempt consists of a search to find a
+ * user followed by a bind to verify the user's credentials) of an LDAP
+ * directory server with a more comprehensive set of options than the
+ * {@link BasicSearchAndBindRateJob} job offers.
  */
-public final class ComprehensiveSearchRateJob
+public final class ComprehensiveSearchAndBindRateJob
        extends JobClass
-       implements SearchResultListener
 {
   /**
-   * The display name for the stat tracker used to track searches completed.
+   * The display name for the stat tracker used to track authentications
+   * completed.
    */
-  private static final String STAT_SEARCHES_COMPLETED = "Searches Completed";
+  private static final String STAT_AUTHS_COMPLETED =
+       "Authentications Completed";
+
+
+
+  /**
+   * The display name for the stat tracker used to track authentication
+   * durations.
+   */
+  private static final String STAT_AUTH_DURATION =
+       "Authentication Duration (ms)";
 
 
 
@@ -106,24 +115,24 @@ public final class ComprehensiveSearchRateJob
 
 
   /**
-   * The display name for the stat tracker used to track entries returned.
-   */
-  private static final String STAT_ENTRIES_RETURNED =
-       "Entries Returned per Search";
-
-
-
-  /**
    * The display name for the stat tracker used to track result codes.
    */
-  private static final String STAT_RESULT_CODES = "Result Codes";
+  private static final String STAT_SEARCH_RESULT_CODES = "Search Result Codes";
 
 
 
   /**
-   * The serial version UID for this serializable class.
+   * The display name for the stat tracker used to track bind durations.
    */
-  private static final long serialVersionUID = -2042145904145922562L;
+  private static final String STAT_BIND_DURATION = "Bind Duration (ms)";
+
+
+
+  /**
+   * The display name for the stat tracker used to track bind result codes.
+   */
+  private static final String STAT_BIND_RESULT_CODES = "Bind Result Codes";
+
 
 
   // The parameter used to provide a label for the connection details.
@@ -135,7 +144,8 @@ public final class ComprehensiveSearchRateJob
        new MultiLineTextParameter("addresses_and_ports",
             "Server Addresses and Ports",
             "The addresses (resolvable names or IP addresses) and port " +
-                 "numbers of the directory servers to search (for example, " +
+                 "numbers of the directory servers in which to process the " +
+                 "search and bind operations (for example, " +
                  "'ldap.example.com:389').  If multiple servers are to be " +
                  "targeted, then each address:port value should be listed on " +
                  "a separate line, and the job will use a round-robin " +
@@ -160,25 +170,27 @@ public final class ComprehensiveSearchRateJob
 
   // The parameter used to provide a label for the authentication details.
   private LabelParameter authenticationLabelParameter = new LabelParameter(
-       "Authentication Parameters");
+       "Search User Authentication Parameters");
 
-  // The DN to use to bind to the directory server.
-  private StringParameter bindDNParameter = new StringParameter(
-       "bind_dn", "Bind DN",
-       "The DN of the user as whom to bind directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "password must also be empty, and the searches will be " +
-            "performed over unauthenticated connections.",
+  // The DN to use to bind to the directory server when processing searches.
+  private StringParameter searchUserBindDNParameter = new StringParameter(
+       "search_user_bind_dn", "Search User Bind DN",
+       "The DN of the user as whom to bind to the directory server when " +
+            "searching for users to authenticate.  If this is not provided, " +
+            "then the search user bind password must also be empty, and the " +
+            "searches will be performed over unauthenticated connections.",
        false, null);
 
   // The password to use to bind to the directory server.
-  private PasswordParameter bindPasswordParameter = new PasswordParameter(
-       "bind_password", "Bind Password",
-       "The password to use to bind to the directory server using LDAP " +
-            "simple authentication.  If this is not provided, then the bind " +
-            "DN must also be empty, and the searches will be performed over " +
-            "unauthenticated connections.",
-       false, null);
+  private PasswordParameter searchUserBindPasswordParameter =
+       new PasswordParameter("search_user_bind_password",
+            "Search User Bind Password",
+            "The password of the user as whom to bind to the directory " +
+                 "server when searching for users to authenticate.  If this " +
+                 "is not provided, then the search user bind DN must also " +
+                 "be empty, and the searches will be performed over " +
+                 "unauthenticated connections.",
+            false, null);
 
   // The parameter used to provide a label for the search request details.
   private LabelParameter searchRequestLabelParameter = new LabelParameter(
@@ -240,27 +252,12 @@ public final class ComprehensiveSearchRateJob
        },
        DEREF_NEVER);
 
-  // The parameter used to specify the search size limit.
-  private IntegerParameter sizeLimitParameter = new IntegerParameter(
-       "size_limit", "Search Size Limit",
-       "The maximum number of entries that the server should return for any " +
-            "individual search request.",
-       true, 0, true, 0, false, Integer.MAX_VALUE);
-
   // The parameter used to specify the time limit.
   private IntegerParameter timeLimitParameter = new IntegerParameter(
        "time_limit_seconds", "Search Time Limit (Seconds)",
        "The maximum length of time, in seconds, that the server should spend " +
             "processing any individual search request.",
        true, 0, true, 0, false, Integer.MAX_VALUE);
-
-  // The parameter used to specify the value of the typesOnly flag.
-  private BooleanParameter typesOnlyParameter = new BooleanParameter(
-       "types_only", "Return Attribute Types Without Values",
-       "Indicates whether search result entries should only include " +
-            "attribute names without values, rather than including both " +
-            "attribute names and values.",
-       false);
 
   // The parameter used to specify the first search filter pattern.
   private StringParameter filterPattern1Parameter = new StringParameter(
@@ -311,11 +308,6 @@ public final class ComprehensiveSearchRateJob
                  "attributes that the requester has permission to access.",
             new String[0], false);
 
-  // The parameter used to provide a label for controls to include in the
-  // request.
-  private LabelParameter controlsLabelParameter = new LabelParameter(
-       "Search Request Control Parameters");
-
   private BooleanParameter includeManageDSAITParameter = new BooleanParameter(
        "include_manage_dsa_it_control", "Include Manage DSA IT Request Control",
        "Indicates that search requests should include the manage DSA IT " +
@@ -323,22 +315,6 @@ public final class ComprehensiveSearchRateJob
             "smart referral entries as regular entries rather than search " +
             "result references.",
        false);
-
-  private BooleanParameter includeSubentriesParameter = new BooleanParameter(
-       "include_subentries_control", "Include Subentries Request Control",
-       "Indicates that search requests should include the subentries request " +
-            "control, which indicates that LDAP subentries should be " +
-            "included in the set of search result entries.",
-       false);
-
-  private StringParameter matchedValuesFilterParameter = new StringParameter(
-       "matched_values_filter", "Matched Values Filter",
-       "Indicates that search requests should include a matched values " +
-            "request control with the specified filter, which indicates that " +
-            "search result entries should exclude attribute values that do " +
-            "not match the specified filter.  Note that this should be a " +
-            "static filter rather than a value pattern.",
-       false, null);
 
   private StringParameter proxiedAuthzIDParameter = new StringParameter(
        "proxied_auth_id", "Proxied Authorization ID",
@@ -348,16 +324,37 @@ public final class ComprehensiveSearchRateJob
             "rather than a value pattern.",
        false, null);
 
-  private MultiLineTextParameter sortOrderParameter =
-       new MultiLineTextParameter("sort_order", "Server-Side Sort Order",
-            "Indciates that search requests should include a server-side " +
-                 "sort request control to indicate that entries should be " +
-                 "sorted in the specified order.  Each value must be a " +
-                 "string that starts with either '+' (for ascending " +
-                 "order) or '-' (for descending order), followed by the name " +
-                 "of an attribute type, and optionally followed by a colon " +
-                 "and the name or OID of an ordering matching rule.",
-            new String[0], false);
+  // The parameter used to provide a label for the bind request parameters.
+  private LabelParameter bindRequestLabelParameter = new LabelParameter(
+       "Bind Request Parameters");
+
+  // The parameter that specifies the password to authenticate found users.
+  private PasswordParameter userPasswordParameter = new PasswordParameter(
+       "user_authentication_password", "User Authentication Password",
+       "The password to include in the simple bind request used to " +
+            "authenticate a user identified by searching.  Either a user " +
+            "authentication password or a user authentication password " +
+            "attribute must be provided.",
+       false, null);
+
+  // The parameter that specifies the name of the user entry attribute that
+  // holds the clear-text password used to authenticate found users.
+  private StringParameter userPasswordAttributeParameter = new StringParameter(
+       "user_authentication_password_attribute",
+       "User Authentication Password Attribute",
+       "The name of an attribute in a user's entry that contains the " +
+            "clear-text password to use to authenticate that user.  Either a " +
+            "user authentication password or a user authentication password " +
+            "attribute must be provided.",
+       false, null);
+
+  private BooleanParameter includeAuthzIDControlParameter =
+       new BooleanParameter("include_authz_id_control",
+            "Include Authorization Identity Request Control",
+            "Indicates that bind requests should include the authorization " +
+                 "identity request control, to request that the server " +
+                 "return the identity of the authenticated user.",
+            false);
 
   // The parameter used to provide a label for the additional parameters.
   private LabelParameter additionalLabelParameter = new LabelParameter(
@@ -397,49 +394,48 @@ public final class ComprehensiveSearchRateJob
 
   // The parameter used to specify the maximum search rate to attempt.
   private IntegerParameter maxRateParameter = new IntegerParameter("max_rate",
-       "Max Search Rate (Searches/Second/Client)",
-       "The maximum search rate, in terms of searches per second, that each " +
-            "client should attempt to maintain.  Note that if the job runs " +
-            "on multiple clients, then each client will try to maintain this " +
-            "rate, so the overall desired rate should be divided by the " +
-            "number of clients.  If no value is specified, then no rate " +
-            "limiting will be performed.",
+       "Max Authentication Rate (Auths/Second/Client)",
+       "The maximum authentication rate, in terms of searches and their " +
+            "associated binds per second, that each client should attempt to " +
+            "maintain.  Note that if the job runs on multiple clients, then " +
+            "each client will try to maintain this rate, so the overall " +
+            "desired rate should be divided by the number of clients.  If no " +
+            "value is specified, then no rate limiting will be performed.",
        false, -1, true, -1, true, Integer.MAX_VALUE);
 
   // The parameter used to specify the number of searches between reconnects.
-  private IntegerParameter searchesBetweenReconnectsParameter =
-       new IntegerParameter("searches_between_reconnects",
-            "Searches Between Reconnects",
-            "The number of search operations that the job should process on " +
+  private IntegerParameter authenticationsBetweenReconnectsParameter =
+       new IntegerParameter("authentications_between_reconnects",
+            "Authentications Between Reconnects",
+            "The number of authentication operations (a search and its " +
+                 "associated bind) that the job should process on " +
                  "a connection before closing that connection and " +
                  "establishing a new one.  A value of zero indicates that " +
                  "each thread should continue using the same connection for " +
-                 "all search operations (although it may re-establish the " +
-                 "connection if it appears that it is no longer valid).",
+                 "all authentication attempts (although it may re-establish " +
+                 "the connection if it appears that it is no longer valid).",
             false, 0, true, 0, false, Integer.MAX_VALUE);
 
 
   // Variables needed to perform processing using the parameter values.  These
   // should be static so that the values are shared across all threads.
-  private static boolean typesOnly = false;
+  private static Control[] bindRequestControls;
   private static DereferencePolicy dereferencePolicy = null;
   private static FixedRateBarrier rateLimiter = null;
   private static int filter1Percentage = -1;
-  private static int searchesBetweenReconnects = -1;
-  private static int sizeLimit = -1;
+  private static int authenticationsBetweenReconnects = -1;
   private static int timeLimitSeconds = -1;
   private static long coolDownDurationMillis = -1L;
   private static long warmUpDurationMillis = -1L;
   private static ManageDsaITRequestControl manageDSAITControl = null;
-  private static MatchedValuesRequestControl matchedValuesControl = null;
   private static ProxiedAuthorizationV2RequestControl proxiedAuthControl = null;
   private static SearchScope scope = null;
-  private static ServerSideSortRequestControl sortControl = null;
-  private static SimpleBindRequest bindRequest = null;
+  private static SimpleBindRequest searchUserBindRequest = null;
   private static ServerSet serverSet = null;
   private static StartTLSPostConnectProcessor startTLSProcessor = null;
-  private static String[] requestedAttributes = null;
-  private static SubentriesRequestControl subentriesControl = null;
+  private static String userAuthenticationPassword;
+  private static String userAuthenticationPasswordAttribute;
+  private static Set<String> requestedAttributes = null;
   private static ValuePattern baseDNPattern = null;
   private static ValuePattern filterPattern1 = null;
   private static ValuePattern filterPattern2 = null;
@@ -452,13 +448,15 @@ public final class ComprehensiveSearchRateJob
   private Random random = null;
 
 
-  // A connection pool that this thread may use to communicate with the
-  // directory server.  Each thread will have its own pool with just a single
-  // connection, so this should be non-static.  We're not sharing the pool
-  // across the threads, which will reduce contention, but the benefit of using
-  // a pool over a simple connection is that it can automatically re-establish
-  // a connection if it becomes invalid for some reason.
-  private LDAPConnectionPool connectionPool;
+  // A pair of connection pools (one for searches, and a second for binds) that
+  // this thread may use to communicate with the directory server.  Each thread
+  // will have its own set of pools with just a single connection each, so this
+  // should be non-static.  We're not sharing the pool across the threads, which
+  // will reduce contention, but the benefit of using a pool over a simple
+  // connection is that it can automatically re-establish a connection if it
+  // becomes invalid for some reason.
+  private LDAPConnectionPool searchPool;
+  private LDAPConnectionPool bindPool;
 
 
   // The search request that will be repeatedly issued.  It will be with a new
@@ -469,10 +467,14 @@ public final class ComprehensiveSearchRateJob
 
   // Stat trackers used by this job.  We should have a separate copy per thread,
   // so these should be non-static.
-  private CategoricalTracker resultCodes;
-  private IncrementalTracker searchesCompleted;
-  private IntegerValueTracker entriesReturned;
-  private ResponseTimeCategorizer responseTimeCategorizer;
+  private CategoricalTracker bindResultCodes;
+  private CategoricalTracker searchResultCodes;
+  private IncrementalTracker authenticationsCompleted;
+  private ResponseTimeCategorizer authenticationResponseTimeCategorizer;
+  private ResponseTimeCategorizer bindResponseTimeCategorizer;
+  private ResponseTimeCategorizer searchResponseTimeCategorizer;
+  private TimeTracker authenticationTimer;
+  private TimeTracker bindTimer;
   private TimeTracker searchTimer;
 
 
@@ -480,18 +482,23 @@ public final class ComprehensiveSearchRateJob
   /**
    * Creates a new instance of this job class.
    */
-  public ComprehensiveSearchRateJob()
+  public ComprehensiveSearchAndBindRateJob()
   {
     super();
 
-    connectionPool = null;
+    searchPool = null;
+    bindPool = null;
     searchRequest = null;
 
-    searchesCompleted = null;
+    authenticationsCompleted = null;
+    authenticationTimer = null;
     searchTimer = null;
-    entriesReturned = null;
-    resultCodes = null;
-    responseTimeCategorizer = null;
+    bindTimer = null;
+    searchResultCodes = null;
+    bindResultCodes = null;
+    authenticationResponseTimeCategorizer = null;
+    searchResponseTimeCategorizer = null;
+    bindResponseTimeCategorizer = null;
   }
 
 
@@ -502,7 +509,7 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public String getJobName()
   {
-    return "Comprehensive Search Rate";
+    return "Comprehensive Search And Bind Rate";
   }
 
 
@@ -513,7 +520,9 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP search operations";
+    return "Perform repeated LDAP authentications consisting of a search " +
+         "to find a user followed by a simple bind as that user to verify " +
+         "the user's credentials.";
   }
 
 
@@ -526,8 +535,10 @@ public final class ComprehensiveSearchRateJob
   {
     return new String[]
     {
-      "This job can be used to perform repeated searches against an LDAP " +
-           "directory server with a comprehensive set of options."
+      "This job can be used to perform repeated authentications against an " +
+           "LDAP directory server (consisting of a search to find a user " +
+           "followed by a bind to verify the user's credentials) with a " +
+           "comprehensive set of options."
     };
   }
 
@@ -559,29 +570,27 @@ public final class ComprehensiveSearchRateJob
 
       new PlaceholderParameter(),
       authenticationLabelParameter,
-      bindDNParameter,
-      bindPasswordParameter,
+      searchUserBindDNParameter,
+      searchUserBindPasswordParameter,
 
       new PlaceholderParameter(),
       searchRequestLabelParameter,
       baseDNPatternParameter,
       scopeParameter,
       derefPolicyParameter,
-      sizeLimitParameter,
       timeLimitParameter,
-      typesOnlyParameter,
       filterPattern1Parameter,
       filterPattern2Parameter,
       filter1PercentageParameter,
       attributesToReturnParameter,
+      includeManageDSAITParameter,
+      proxiedAuthzIDParameter,
 
       new PlaceholderParameter(),
-      controlsLabelParameter,
-      includeManageDSAITParameter,
-      includeSubentriesParameter,
-      matchedValuesFilterParameter,
-      proxiedAuthzIDParameter,
-      sortOrderParameter,
+      bindRequestLabelParameter,
+      userPasswordParameter,
+      userPasswordAttributeParameter,
+      includeAuthzIDControlParameter,
 
       new PlaceholderParameter(),
       additionalLabelParameter,
@@ -589,7 +598,7 @@ public final class ComprehensiveSearchRateJob
       coolDownDurationParameter,
       followReferralsParameter,
       maxRateParameter,
-      searchesBetweenReconnectsParameter,
+      authenticationsBetweenReconnectsParameter,
 
       new PlaceholderParameter()
     };
@@ -609,15 +618,26 @@ public final class ComprehensiveSearchRateJob
   {
     return new StatTracker[]
     {
-      new IncrementalTracker(clientID, threadID, STAT_SEARCHES_COMPLETED,
+      new IncrementalTracker(clientID, threadID, STAT_AUTHS_COMPLETED,
+           collectionInterval),
+      new TimeTracker(clientID, threadID, STAT_AUTH_DURATION,
            collectionInterval),
       new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
            collectionInterval),
-      new IntegerValueTracker(clientID, threadID, STAT_ENTRIES_RETURNED,
+      new TimeTracker(clientID, threadID, STAT_BIND_DURATION,
            collectionInterval),
-      new CategoricalTracker(clientID, threadID, STAT_RESULT_CODES,
+      new CategoricalTracker(clientID, threadID, STAT_SEARCH_RESULT_CODES,
            collectionInterval),
-      ResponseTimeCategorizer.getStatTrackerStub(clientID, threadID,
+      new CategoricalTracker(clientID, threadID, STAT_BIND_RESULT_CODES,
+           collectionInterval),
+      ResponseTimeCategorizer.getStatTrackerStub(
+           "Authentication Response Time Categories", clientID, threadID,
+           collectionInterval),
+      ResponseTimeCategorizer.getStatTrackerStub(
+           "Search Response Time Categories", clientID, threadID,
+           collectionInterval),
+      ResponseTimeCategorizer.getStatTrackerStub(
+           "Bind Response Time Categories", clientID, threadID,
            collectionInterval)
     };
   }
@@ -632,11 +652,15 @@ public final class ComprehensiveSearchRateJob
   {
     return new StatTracker[]
     {
-      searchesCompleted,
+      authenticationsCompleted,
+      authenticationTimer,
       searchTimer,
-      entriesReturned,
-      resultCodes,
-      responseTimeCategorizer.getStatTracker()
+      bindTimer,
+      searchResultCodes,
+      bindResultCodes,
+      authenticationResponseTimeCategorizer.getStatTracker(),
+      searchResponseTimeCategorizer.getStatTracker(),
+      bindResponseTimeCategorizer.getStatTracker()
     };
   }
 
@@ -657,26 +681,29 @@ public final class ComprehensiveSearchRateJob
     getAddressesAndPorts(parameters);
 
 
-    // The bind DN and password must be both empty or both non-empty.
+    // The search bind DN and password must be both empty or both non-empty.
     // NOTE:  We won't try to verify that the bind DN is actually a valid LDAP
     // distinguished name because some protocol-violating directory servers
     // allow LDAP simple binds with bind DNs that aren't actually DNs.
-    final StringParameter bindDNParam =
-         parameters.getStringParameter(bindDNParameter.getName());
-    final PasswordParameter bindPWParam =
-         parameters.getPasswordParameter(bindPasswordParameter.getName());
-    if ((bindDNParam != null) && bindDNParam.hasValue())
+    final StringParameter searchUserBindDNParam =
+         parameters.getStringParameter(searchUserBindDNParameter.getName());
+    final PasswordParameter searchUserBindPWParam = parameters.
+         getPasswordParameter(searchUserBindPasswordParameter.getName());
+    if ((searchUserBindDNParam != null) && searchUserBindDNParam.hasValue())
     {
-      if ((bindPWParam == null) || (! bindPWParam.hasValue()))
+      if ((searchUserBindPWParam == null) ||
+           (! searchUserBindPWParam.hasValue()))
       {
-        throw new InvalidValueException("If a bind DN is provided, then a " +
-             "bind password must also be provided.");
+        throw new InvalidValueException("If a search user bind DN is " +
+             "provided, then a search user bind password must also be " +
+             "provided.");
       }
     }
-    else if ((bindPWParam != null) && bindPWParam.hasValue())
+    else if ((searchUserBindPWParam != null) &&
+         searchUserBindPWParam.hasValue())
     {
-        throw new InvalidValueException("If a bind password is provided, " +
-             "then a bind DN must also be provided.");
+        throw new InvalidValueException("If a esarch user bind password is " +
+             "provided, then a search user bind DN must also be provided.");
     }
 
 
@@ -794,37 +821,27 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // If a matched values filter was provided, then validate it.
-    final StringParameter matchedValuesFilterParam =
-         parameters.getStringParameter(matchedValuesFilterParameter.getName());
-    if ((matchedValuesFilterParam != null) &&
-         matchedValuesFilterParam.hasValue())
+    // Make sure that exactly one of the user password or user password
+    // attribute parameters was given a value.
+    final PasswordParameter userPasswordParam =
+         parameters.getPasswordParameter(userPasswordParameter.getName());
+    final StringParameter userPasswordAttrParam = parameters.getStringParameter(
+         userPasswordAttributeParameter.getName());
+    if ((userPasswordParam != null) && userPasswordParam.hasValue())
     {
-      final String filterStr = matchedValuesFilterParam.getStringValue();
-      try
+      if ((userPasswordAttrParam != null) && userPasswordAttrParam.hasValue())
       {
-        final Filter filter = Filter.create(filterStr);
-        MatchedValuesFilter.create(filter);
-      }
-      catch (final LDAPException e)
-      {
-        throw new InvalidValueException(
-             "Matched values filter '" + filterStr + "' is not valid:  " +
-                  e.getMessage(),
-             e);
+        throw new InvalidValueException("You cannot specify both a user " +
+             "authentication password or a user authentication password " +
+             "attribute.");
       }
     }
-
-
-    // If a sort order was provided, then validate it.
-    final MultiLineTextParameter sortOrderParam =
-         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
-    if ((sortOrderParam != null) && sortOrderParam.hasValue())
+    else if ((userPasswordAttrParam == null) ||
+         (! userPasswordAttrParam.hasValue()))
     {
-      for (final String sortOrderLine : sortOrderParam.getNonBlankLines())
-      {
-        parseSortKey(sortOrderLine);
-      }
+      throw new InvalidValueException("You must specify either a user " +
+           "authentication password or a user authentication password " +
+           "attribute.");
     }
 
 
@@ -964,73 +981,6 @@ public final class ComprehensiveSearchRateJob
 
 
   /**
-   * Parses the provided string as a sort key.
-   *
-   * @param  keyString  The string to be parsed.  It must not be {@code null}.
-   *
-   * @return  The sort key that was parsed.
-   *
-   * @throws  InvalidValueException  If the provided string cannot be parsed as
-   *                                 a valid sort key.
-   */
-  private SortKey parseSortKey(final String keyString)
-          throws InvalidValueException
-  {
-    final boolean reverseOrder;
-    if (keyString.startsWith("+"))
-    {
-      reverseOrder = false;
-    }
-    else if (keyString.startsWith("-"))
-    {
-      reverseOrder = true;
-    }
-    else
-    {
-      throw new InvalidValueException("Sort order value '" + keyString +
-           "' is invalid because it does not start with either '+' (to " +
-           "indicate ascending order) or '-' (to indicate descending order).");
-    }
-
-    final String attributeName;
-    final String matchingRuleID;
-    final int colonPos = keyString.indexOf(':');
-    if (colonPos > 0)
-    {
-      attributeName = keyString.substring(1, colonPos);
-      matchingRuleID = keyString.substring(colonPos+1);
-    }
-    else
-    {
-      attributeName = keyString.substring(1);
-      matchingRuleID = null;
-    }
-
-    final StringBuilder invalidReason = new StringBuilder();
-    if (! PersistUtils.isValidLDAPName(attributeName, invalidReason))
-    {
-      throw new InvalidValueException("Sort order value '" + keyString +
-           "' is invalid because '" + attributeName + "' is not a valid " +
-           "attribute type name or OID:  " + invalidReason);
-    }
-
-    if (matchingRuleID != null)
-    {
-      invalidReason.setLength(0);
-      if (! PersistUtils.isValidLDAPName(matchingRuleID, invalidReason))
-      {
-        throw new InvalidValueException("Sort order value '" + keyString +
-             "' is invalid because '" + matchingRuleID + "' is not a valid " +
-             "matching rule name or OID:  " + invalidReason);
-      }
-    }
-
-    return new SortKey(attributeName, matchingRuleID, reverseOrder);
-  }
-
-
-
-  /**
    * {@inheritDoc}
    */
   @Override()
@@ -1150,9 +1100,9 @@ public final class ComprehensiveSearchRateJob
 
         // If we should authenticate the connection, then verify that.
         final StringParameter bindDNParam =
-             parameters.getStringParameter(bindDNParameter.getName());
-        final PasswordParameter bindPWParam =
-             parameters.getPasswordParameter(bindPasswordParameter.getName());
+             parameters.getStringParameter(searchUserBindDNParameter.getName());
+        final PasswordParameter bindPWParam = parameters.getPasswordParameter(
+             searchUserBindPasswordParameter.getName());
         if ((bindDNParam != null) && bindDNParam.hasValue())
         {
           outputMessages.add("");
@@ -1339,18 +1289,18 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Initialize the bind request.
+    // Initialize the search user bind request.
     final StringParameter bindDNParam =
-         parameters.getStringParameter(bindDNParameter.getName());
+         parameters.getStringParameter(searchUserBindDNParameter.getName());
     if ((bindDNParam != null) && bindDNParam.hasValue())
     {
-      bindRequest = new SimpleBindRequest(bindDNParam.getValue(),
+      searchUserBindRequest = new SimpleBindRequest(bindDNParam.getValue(),
            parameters.getPasswordParameter(
-                bindPasswordParameter.getName()).getValue());
+                searchUserBindPasswordParameter.getName()).getValue());
     }
     else
     {
-      bindRequest = null;
+      searchUserBindRequest = null;
     }
 
 
@@ -1446,19 +1396,9 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Get the search size limit.
-    sizeLimit = parameters.getIntegerParameter(
-         sizeLimitParameter.getName()).getIntValue();
-
-
     // Get the search time limit.
     timeLimitSeconds = parameters.getIntegerParameter(
          timeLimitParameter.getName()).getIntValue();
-
-
-    // Get the typesOnly flag.
-    typesOnly = parameters.getBooleanParameter(
-         typesOnlyParameter.getName()).getBooleanValue();
 
 
     // Initialize the first filter pattern.
@@ -1508,11 +1448,12 @@ public final class ComprehensiveSearchRateJob
          getMultiLineTextParameter(attributesToReturnParameter.getName());
     if ((attrsParam != null) && attrsParam.hasValue())
     {
-      requestedAttributes = attrsParam.getNonBlankLines();
+      requestedAttributes = new LinkedHashSet<>(Arrays.asList(
+           attrsParam.getNonBlankLines()));
     }
     else
     {
-      requestedAttributes = new String[0];
+      requestedAttributes = new LinkedHashSet<>(0);
     }
 
 
@@ -1526,48 +1467,6 @@ public final class ComprehensiveSearchRateJob
     else
     {
       manageDSAITControl = null;
-    }
-
-
-    // Create the subentries request control, if appropriate.
-    final BooleanParameter subentriesParam =
-         parameters.getBooleanParameter(includeSubentriesParameter.getName());
-    if ((subentriesParam != null) && subentriesParam.getBooleanValue())
-    {
-      subentriesControl = new SubentriesRequestControl(false);
-    }
-    else
-    {
-      subentriesControl = null;
-    }
-
-
-    // Create the matched values request control, if appropriate.
-    final StringParameter matchedValuesFilterParam =
-         parameters.getStringParameter(matchedValuesFilterParameter.getName());
-    if ((matchedValuesFilterParam != null) &&
-         matchedValuesFilterParam.hasValue())
-    {
-      try
-      {
-        final Filter filter =
-             Filter.create(matchedValuesFilterParam.getValueString());
-        final MatchedValuesFilter matchedValuesFilter =
-             MatchedValuesFilter.create(filter);
-        matchedValuesControl =
-             new MatchedValuesRequestControl(false, matchedValuesFilter);
-      }
-      catch (final LDAPException e)
-      {
-        throw new UnableToRunException(
-             "Unable to create a matched values request control:  " +
-                  StaticUtils.getExceptionMessage(e),
-             e);
-      }
-    }
-    else
-    {
-      matchedValuesControl = null;
     }
 
 
@@ -1585,40 +1484,38 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Create the server-side sort request control, if appropriate.
-    final MultiLineTextParameter sortOrderParam =
-         parameters.getMultiLineTextParameter(sortOrderParameter.getName());
-    if ((sortOrderParam != null) && sortOrderParam.hasValue())
+    // Initialize the user authentication password, the authentication password
+    // attribute, and the search request attributes.
+    final PasswordParameter userPasswordParam = parameters.getPasswordParameter(
+         userPasswordParameter.getName());
+    if ((userPasswordParam != null) && userPasswordParam.hasValue())
     {
-      final String[] sortOrderLines = sortOrderParam.getNonBlankLines();
-      if (sortOrderLines.length > 0)
-      {
-        try
-        {
-          final List<SortKey> sortKeys = new ArrayList<>(sortOrderLines.length);
-          for (final String sortOrderLine : sortOrderLines)
-          {
-            sortKeys.add(parseSortKey(sortOrderLine));
-          }
-
-          sortControl = new ServerSideSortRequestControl(false, sortKeys);
-        }
-        catch (final Exception e)
-        {
-          throw new UnableToRunException(
-               "Unable to create a server-side sort request control:  " +
-                    StaticUtils.getExceptionMessage(e),
-               e);
-        }
-      }
-      else
-      {
-        sortControl = null;
-      }
+      userAuthenticationPassword = userPasswordParam.getValueString();
+      userAuthenticationPasswordAttribute = null;
     }
     else
     {
-      sortControl = null;
+      userAuthenticationPassword = null;
+      userAuthenticationPasswordAttribute = parameters.getStringParameter(
+           userPasswordAttributeParameter.getName()).getValueString();
+      requestedAttributes.add(userAuthenticationPasswordAttribute);
+    }
+
+
+    // Create the authorization identity request control, if appropriate.
+    final BooleanParameter includeAuthzIDControlParam = parameters.
+         getBooleanParameter(includeAuthzIDControlParameter.getName());
+    if ((includeAuthzIDControlParam != null) &&
+         includeAuthzIDControlParam.getBooleanValue())
+    {
+      bindRequestControls = new Control[]
+      {
+        new AuthorizationIdentityRequestControl(false)
+      };
+    }
+    else
+    {
+      bindRequestControls = StaticUtils.NO_CONTROLS;
     }
 
 
@@ -1691,17 +1588,19 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Initialize the number of searches between reconnects.
-    final IntegerParameter searchesBetweenReconnectsParam = parameters.
-         getIntegerParameter(searchesBetweenReconnectsParameter.getName());
-    if ((searchesBetweenReconnectsParam != null) &&
-         searchesBetweenReconnectsParam.hasValue())
+    // Initialize the number of authentications between reconnects.
+    final IntegerParameter authsBetweenReconnectsParam =
+         parameters.getIntegerParameter(
+              authenticationsBetweenReconnectsParameter.getName());
+    if ((authsBetweenReconnectsParam != null) &&
+         authsBetweenReconnectsParam.hasValue())
     {
-      searchesBetweenReconnects = searchesBetweenReconnectsParam.getIntValue();
+      authenticationsBetweenReconnects =
+           authsBetweenReconnectsParam.getIntValue();
     }
     else
     {
-      searchesBetweenReconnects = 0;
+      authenticationsBetweenReconnects = 0;
     }
   }
 
@@ -1721,46 +1620,48 @@ public final class ComprehensiveSearchRateJob
 
 
     // Initialize the stat trackers.
-    searchesCompleted = new IncrementalTracker(clientID, threadID,
-         STAT_SEARCHES_COMPLETED, collectionInterval);
+    authenticationsCompleted = new IncrementalTracker(clientID, threadID,
+         STAT_AUTHS_COMPLETED, collectionInterval);
+    authenticationTimer = new TimeTracker(clientID, threadID,
+         STAT_AUTH_DURATION, collectionInterval);
     searchTimer = new TimeTracker(clientID, threadID, STAT_SEARCH_DURATION,
+           collectionInterval);
+    bindTimer = new TimeTracker(clientID, threadID, STAT_BIND_DURATION,
          collectionInterval);
-    entriesReturned = new IntegerValueTracker(clientID, threadID,
-         STAT_ENTRIES_RETURNED, collectionInterval);
-    resultCodes = new CategoricalTracker(clientID, threadID,
-         STAT_RESULT_CODES, collectionInterval);
-    responseTimeCategorizer = new ResponseTimeCategorizer(clientID, threadID,
+    searchResultCodes = new CategoricalTracker(clientID, threadID,
+         STAT_SEARCH_RESULT_CODES, collectionInterval);
+    bindResultCodes = new CategoricalTracker(clientID, threadID,
+         STAT_BIND_RESULT_CODES, collectionInterval);
+    authenticationResponseTimeCategorizer = new ResponseTimeCategorizer(
+         "Authentication Response Time Categories", clientID, threadID,
+         collectionInterval);
+    searchResponseTimeCategorizer = new ResponseTimeCategorizer(
+         "Search Response Time Categories", clientID, threadID,
+         collectionInterval);
+    bindResponseTimeCategorizer = new ResponseTimeCategorizer(
+         "Bind Response Time Categories", clientID, threadID,
          collectionInterval);
 
     final RealTimeStatReporter statReporter = getStatReporter();
     if (statReporter != null)
     {
       String jobID = getJobID();
-      searchesCompleted.enableRealTimeStats(statReporter, jobID);
+      authenticationsCompleted.enableRealTimeStats(statReporter, jobID);
+      authenticationTimer.enableRealTimeStats(statReporter, jobID);
       searchTimer.enableRealTimeStats(statReporter, jobID);
-      entriesReturned.enableRealTimeStats(statReporter, jobID);
+      bindTimer.enableRealTimeStats(statReporter, jobID);
     }
 
 
     // Create a search request object for this thread.  Use a placeholder base
     // DN and filter.
-    searchRequest = new SearchRequest(this, "", scope, dereferencePolicy,
-         sizeLimit, timeLimitSeconds, typesOnly,
-         Filter.createPresenceFilter("objectClass"), requestedAttributes);
+    searchRequest = new SearchRequest("", scope, dereferencePolicy, 1,
+         timeLimitSeconds, false, Filter.createPresenceFilter("objectClass"),
+         requestedAttributes.toArray(StaticUtils.NO_STRINGS));
 
     if (manageDSAITControl != null)
     {
       searchRequest.addControl(manageDSAITControl);
-    }
-
-    if (subentriesControl != null)
-    {
-      searchRequest.addControl(subentriesControl);
-    }
-
-    if (matchedValuesControl != null)
-    {
-      searchRequest.addControl(matchedValuesControl);
     }
 
     if (proxiedAuthControl != null)
@@ -1768,20 +1669,18 @@ public final class ComprehensiveSearchRateJob
       searchRequest.addControl(proxiedAuthControl);
     }
 
-    if (sortControl != null)
-    {
-      searchRequest.addControl(sortControl);
-    }
 
-
-    // Create a connection pool to use to process the searches.  Each thread
-    // will have its own pool with just a single connection.  We're not sharing
-    // the pool across the connections, but the benefit of the pool is that it
-    // will automatically re-establish connections that might have become
-    // invalid for some reason.
+    // Create a connection pool to use to process the searches and binds.  Each
+    // thread will have its own pair of pools (one for searches and one for
+    // binds) with just a single connection each.  We're not sharing the pools
+    // across the connections, but the benefit of the pool is that it will
+    // automatically re-establish connections that might have become invalid for
+    // some reason.
     try
     {
-      connectionPool = new LDAPConnectionPool(serverSet, bindRequest, 1, 1,
+      searchPool = new LDAPConnectionPool(serverSet, searchUserBindRequest, 1,
+           1, startTLSProcessor, true);
+      bindPool = new LDAPConnectionPool(serverSet, null, 1, 1,
            startTLSProcessor, true);
     }
     catch (final Exception e)
@@ -1827,18 +1726,20 @@ public final class ComprehensiveSearchRateJob
     }
 
 
-    // Perform the searches until it's time to stop.
+    // Perform the authentications until it's time to stop.
     boolean doneCollecting = false;
     long reconnectCounter = 0L;
     while (! shouldStop())
     {
-      // See if it's time to close and re-establish a connection.
-      if (searchesBetweenReconnects > 0)
+      // See if it's time to close and re-establish a connection.  If so, then
+      // do it in each pool.
+      if (authenticationsBetweenReconnects > 0)
       {
         reconnectCounter++;
-        if ((reconnectCounter % searchesBetweenReconnects) == 0L)
+        if ((reconnectCounter % authenticationsBetweenReconnects) == 0L)
         {
-          connectionPool.shrinkPool(0);
+          searchPool.shrinkPool(0);
+          bindPool.shrinkPool(0);
         }
       }
 
@@ -1894,38 +1795,131 @@ public final class ComprehensiveSearchRateJob
       }
 
 
-      // Process the search.
-      if (collectingStats)
-      {
-        searchTimer.startTimer();
-      }
-
+      // Start the authentication process.
+      Long beforeAuthTimeNanos = null;
+      Long afterAuthTimeNanos = null;
       try
       {
-        final long beforeSearchTimeNanos = System.nanoTime();
-        final SearchResult searchResult = connectionPool.search(searchRequest);
-        final long afterSearchTimeNanos = System.nanoTime();
+        // Process the search.
         if (collectingStats)
         {
-          entriesReturned.addValue(searchResult.getEntryCount());
-          resultCodes.increment(searchResult.getResultCode().toString());
-          responseTimeCategorizer.categorizeResponseTime(beforeSearchTimeNanos,
-               afterSearchTimeNanos);
+          authenticationTimer.startTimer();
+          searchTimer.startTimer();
         }
-      }
-      catch (final LDAPException le)
-      {
-        if (collectingStats)
+
+        final SearchResult searchResult;
+        try
         {
-          resultCodes.increment(le.getResultCode().toString());
+          beforeAuthTimeNanos = System.nanoTime();
+          searchResult = searchPool.search(searchRequest);
+          final long afterSearchTimeNanos = System.nanoTime();
+          if (collectingStats)
+          {
+            searchResultCodes.increment(
+                 searchResult.getResultCode().toString());
+            searchResponseTimeCategorizer.categorizeResponseTime(
+                 beforeAuthTimeNanos, afterSearchTimeNanos);
+          }
+        }
+        catch (final LDAPException le)
+        {
+          if (collectingStats)
+          {
+            searchResultCodes.increment(le.getResultCode().toString());
+          }
+          continue;
+        }
+        finally
+        {
+          if (collectingStats)
+          {
+            searchTimer.stopTimer();
+          }
+        }
+
+        // Construct the bind request.
+        if (searchResult.getEntryCount() == 0)
+        {
+          if (collectingStats)
+          {
+            bindResultCodes.increment(
+                 ResultCode.NO_RESULTS_RETURNED.toString());
+          }
+          continue;
+        }
+
+        final SimpleBindRequest bindRequest;
+        final Entry userEntry = searchResult.getSearchEntries().get(0);
+        if (userAuthenticationPassword != null)
+        {
+          bindRequest = new SimpleBindRequest(userEntry.getDN(),
+               userAuthenticationPassword, bindRequestControls);
+        }
+        else
+        {
+          final String passwordAttributeValue = userEntry.getAttributeValue(
+               userAuthenticationPasswordAttribute);
+          if (passwordAttributeValue == null)
+          {
+            if (collectingStats)
+            {
+              bindResultCodes.increment(
+                   ResultCode.NO_SUCH_ATTRIBUTE.toString());
+            }
+            continue;
+          }
+
+          bindRequest = new SimpleBindRequest(userEntry.getDN(),
+               passwordAttributeValue, bindRequestControls);
+        }
+
+        // Process the bind.
+        try
+        {
+          if (collectingStats)
+          {
+            bindTimer.startTimer();
+          }
+
+          final long beforeBindTimeNanos = System.nanoTime();
+          final BindResult bindResult = bindPool.bind(bindRequest);
+          afterAuthTimeNanos = System.nanoTime();
+
+          if (collectingStats)
+          {
+            bindResultCodes.increment(bindResult.getResultCode().toString());
+            bindResponseTimeCategorizer.categorizeResponseTime(
+                 beforeBindTimeNanos, afterAuthTimeNanos);
+          }
+        }
+        catch (final LDAPException e)
+        {
+          if (collectingStats)
+          {
+            bindResultCodes.increment(e.getResultCode().toString());
+          }
+        }
+        finally
+        {
+          if (collectingStats)
+          {
+            bindTimer.stopTimer();;
+          }
         }
       }
       finally
       {
         if (collectingStats)
         {
-          searchTimer.stopTimer();
-          searchesCompleted.increment();
+          if (afterAuthTimeNanos == null)
+          {
+            afterAuthTimeNanos = System.nanoTime();
+          }
+
+          authenticationTimer.stopTimer();
+          authenticationsCompleted.increment();
+          authenticationResponseTimeCategorizer.categorizeResponseTime(
+               beforeAuthTimeNanos, afterAuthTimeNanos);
         }
       }
     }
@@ -1946,11 +1940,15 @@ public final class ComprehensiveSearchRateJob
    */
   private void startTrackers()
   {
-    searchesCompleted.startTracker();
+    authenticationsCompleted.startTracker();
+    authenticationTimer.startTracker();
     searchTimer.startTracker();
-    entriesReturned.startTracker();
-    resultCodes.startTracker();
-    responseTimeCategorizer.startStatTracker();
+    bindTimer.startTracker();
+    searchResultCodes.startTracker();
+    bindResultCodes.startTracker();
+    authenticationResponseTimeCategorizer.startStatTracker();
+    searchResponseTimeCategorizer.startStatTracker();
+    bindResponseTimeCategorizer.startStatTracker();
   }
 
 
@@ -1960,11 +1958,15 @@ public final class ComprehensiveSearchRateJob
    */
   private void stopTrackers()
   {
-    searchesCompleted.stopTracker();
+    authenticationsCompleted.stopTracker();
+    authenticationTimer.stopTracker();
     searchTimer.stopTracker();
-    entriesReturned.stopTracker();
-    resultCodes.stopTracker();
-    responseTimeCategorizer.stopStatTracker();
+    bindTimer.stopTracker();
+    searchResultCodes.stopTracker();
+    bindResultCodes.stopTracker();
+    authenticationResponseTimeCategorizer.stopStatTracker();
+    searchResponseTimeCategorizer.stopStatTracker();
+    bindResponseTimeCategorizer.stopStatTracker();
   }
 
 
@@ -1975,10 +1977,16 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public void finalizeThread()
   {
-    if (connectionPool != null)
+    if (searchPool != null)
     {
-      connectionPool.close();
-      connectionPool = null;
+      searchPool.close();
+      searchPool = null;
+    }
+
+    if (bindPool != null)
+    {
+      bindPool.close();
+      bindPool = null;
     }
   }
 
@@ -1990,41 +1998,16 @@ public final class ComprehensiveSearchRateJob
   @Override()
   public synchronized void destroyThread()
   {
-    if (connectionPool != null)
+    if (searchPool != null)
     {
-      connectionPool.close();
-      connectionPool = null;
+      searchPool.close();
+      searchPool = null;
     }
-  }
 
-
-
-  /**
-   * Indicates that the provided search result entry has been returned by the
-   * server and may be processed by this search result listener.
-   *
-   * @param  searchEntry  The search result entry that has been returned by the
-   *                      server.
-   */
-  @Override()
-  public void searchEntryReturned(final SearchResultEntry searchEntry)
-  {
-    // We don't need to do anything with the entry.
-  }
-
-
-
-  /**
-   * Indicates that the provided search result reference has been returned by
-   * the server and may be processed by this search result listener.
-   *
-   * @param  searchReference  The search result reference that has been returned
-   *                          by the server.
-   */
-  @Override()
-  public void searchReferenceReturned(
-                   final SearchResultReference searchReference)
-  {
-    // We don't need to do anything with the reference.
+    if (bindPool != null)
+    {
+      bindPool.close();
+      bindPool = null;
+    }
   }
 }

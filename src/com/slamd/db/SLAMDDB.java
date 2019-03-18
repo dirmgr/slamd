@@ -69,7 +69,6 @@ import com.slamd.jobs.http.GetRateJob;
 import com.slamd.jobs.ldap.AddAndDeleteRateJob;
 import com.slamd.jobs.ldap.AsynchronousModifyRateJob;
 import com.slamd.jobs.ldap.AsynchronousSearchRateJob;
-import com.slamd.jobs.ldap.AuthRateJob;
 import com.slamd.jobs.ldap.BasicBindRateJob;
 import com.slamd.jobs.ldap.BasicModifyRateJob;
 import com.slamd.jobs.ldap.BasicSearchAndBindRateJob;
@@ -77,6 +76,7 @@ import com.slamd.jobs.ldap.BasicSearchRateJob;
 import com.slamd.jobs.ldap.CompareRateJob;
 import com.slamd.jobs.ldap.ComprehensiveBindRateJob;
 import com.slamd.jobs.ldap.ComprehensiveModifyRateJob;
+import com.slamd.jobs.ldap.ComprehensiveSearchAndBindRateJob;
 import com.slamd.jobs.ldap.ComprehensiveSearchRateJob;
 import com.slamd.jobs.ldap.FileBasedModifyRateJob;
 import com.slamd.jobs.ldap.FileBasedSearchRateJob;
@@ -520,7 +520,6 @@ public final class SLAMDDB
       AddAndDeleteRateJob.class.getName(),
       AsynchronousModifyRateJob.class.getName(),
       AsynchronousSearchRateJob.class.getName(),
-      AuthRateJob.class.getName(),
       BasicBindRateJob.class.getName(),
       BasicModifyRateJob.class.getName(),
       BasicSearchAndBindRateJob.class.getName(),
@@ -528,6 +527,7 @@ public final class SLAMDDB
       CompareRateJob.class.getName(),
       ComprehensiveBindRateJob.class.getName(),
       ComprehensiveModifyRateJob.class.getName(),
+      ComprehensiveSearchAndBindRateJob.class.getName(),
       ComprehensiveSearchRateJob.class.getName(),
       FileBasedModifyRateJob.class.getName(),
       FileBasedSearchRateJob.class.getName(),

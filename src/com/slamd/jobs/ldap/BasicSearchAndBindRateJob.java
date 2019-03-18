@@ -50,7 +50,6 @@ import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.LabelParameter;
 import com.slamd.parameter.MultiChoiceParameter;
-import com.slamd.parameter.MultiLineTextParameter;
 import com.slamd.parameter.Parameter;
 import com.slamd.parameter.ParameterList;
 import com.slamd.parameter.PasswordParameter;
@@ -58,7 +57,6 @@ import com.slamd.parameter.PlaceholderParameter;
 import com.slamd.parameter.StringParameter;
 import com.slamd.stat.CategoricalTracker;
 import com.slamd.stat.IncrementalTracker;
-import com.slamd.stat.IntegerValueTracker;
 import com.slamd.stat.RealTimeStatReporter;
 import com.slamd.stat.StatTracker;
 import com.slamd.stat.TimeTracker;
@@ -78,7 +76,7 @@ public final class BasicSearchAndBindRateJob
    * completed.
    */
   private static final String STAT_AUTHS_COMPLETED =
-       "Authentication sCompleted";
+       "Authentications Completed";
 
 
 
@@ -284,7 +282,7 @@ public final class BasicSearchAndBindRateJob
   private static long coolDownDurationMillis = -1L;
   private static long warmUpDurationMillis = -1L;
   private static SearchScope scope = null;
-  private static SimpleBindRequest bindRequest = null;
+  private static SimpleBindRequest searchUserBindRequest = null;
   private static SingleServerSet serverSet = null;
   private static StartTLSPostConnectProcessor startTLSProcessor = null;
   private static String userAuthenticationPassword = null;
@@ -939,18 +937,19 @@ public final class BasicSearchAndBindRateJob
     }
 
 
-    // Initialize the bind request.
+    // Initialize the search user bind request.
     final StringParameter searchUserBindDNParam =
          parameters.getStringParameter(searchUserBindDNParameter.getName());
     if ((searchUserBindDNParam != null) && searchUserBindDNParam.hasValue())
     {
-      bindRequest = new SimpleBindRequest(searchUserBindDNParam.getValue(),
+      searchUserBindRequest = new SimpleBindRequest(
+           searchUserBindDNParam.getValue(),
            parameters.getPasswordParameter(
                 searchUserBindPasswordParameter.getName()).getValue());
     }
     else
     {
-      bindRequest = null;
+      searchUserBindRequest = null;
     }
 
 
@@ -1165,15 +1164,16 @@ public final class BasicSearchAndBindRateJob
          requestedAttributes);
 
 
-    // Create a connection pool to use to process the searches.  Each thread
-    // will have its own pair of pools (one for searches and one for binds) with
-    // just a single connection each.  We're not sharing the pools across the
-    // connections, but the benefit of the pool is that it will automatically
-    // re-establish connections that might have become invalid for some reason.
+    // Create a connection pool to use to process the searches and binds.  Each
+    // thread will have its own pair of pools (one for searches and one for
+    // binds) with just a single connection each.  We're not sharing the pools
+    // across the connections, but the benefit of the pool is that it will
+    // automatically re-establish connections that might have become invalid for
+    // some reason.
     try
     {
-      searchPool = new LDAPConnectionPool(serverSet, bindRequest, 1, 1,
-           startTLSProcessor, true);
+      searchPool = new LDAPConnectionPool(serverSet, searchUserBindRequest, 1,
+           1, startTLSProcessor, true);
       bindPool = new LDAPConnectionPool(serverSet, null, 1, 1,
            startTLSProcessor, true);
     }
@@ -1220,7 +1220,7 @@ public final class BasicSearchAndBindRateJob
     }
 
 
-    // Perform the searches until it's time to stop.
+    // Perform the authentications until it's time to stop.
     boolean doneCollecting = false;
     while (! shouldStop())
     {

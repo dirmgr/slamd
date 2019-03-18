@@ -439,31 +439,9 @@ public class IntegerValueTracker
    * @return  The total number of times that the tracked event occurred over the
    *          total duration.
    */
-  public int getTotalCount()
+  public long getTotalCount()
   {
-    int totalCount = 0;
-
-    for (int i=0; i < countList.size(); i++)
-    {
-      totalCount += countList.get(i);
-    }
-
-    return totalCount;
-  }
-
-
-
-  /**
-   * Retrieves the total number of times that the tracked event occurred over
-   * the total duration.  This method will return the count as a long, which is
-   * less likely to overflow than an integer.
-   *
-   * @return  The total number of times that the tracked event occurred over the
-   *          total duration.
-   */
-  public long getTotalCountAsLong()
-  {
-    long totalCount = 0;
+    long totalCount = 0L;
 
     for (int i=0; i < countList.size(); i++)
     {
@@ -482,31 +460,9 @@ public class IntegerValueTracker
    * @return  The sum of all the individual values added to this stat tracker
    *          over the total duration.
    */
-  public int getTotalValue()
+  public long getTotalValue()
   {
-    int totalValue = 0;
-
-    for (int i=0; i < totalList.size(); i++)
-    {
-      totalValue += totalList.get(i);
-    }
-
-    return totalValue;
-  }
-
-
-
-  /**
-   * Retrieves the sum of all the individual values added to this stat tracker
-   * over the total duration.  The total value will be returned as a long, which
-   * is less likely to overflow than an integer.
-   *
-   * @return  The sum of all the individual values added to this stat tracker
-   *          over the total duration.
-   */
-  public long getTotalValueAsLong()
-  {
-    long totalValue = 0;
+    long totalValue = 0L;
 
     for (int i=0; i < totalList.size(); i++)
     {
@@ -526,10 +482,10 @@ public class IntegerValueTracker
    */
   public double getAverageValue()
   {
-    long totalCount = getTotalCountAsLong();
+    long totalCount = getTotalCount();
     if (totalCount > 0)
     {
-      return (1.0 * getTotalValueAsLong() / totalCount);
+      return (1.0 * getTotalValue() / totalCount);
     }
     else
     {
@@ -658,7 +614,7 @@ public class IntegerValueTracker
   {
     if (! countList.isEmpty())
     {
-      return (1.0 * getTotalCountAsLong() / countList.size());
+      return (1.0 * getTotalCount() / countList.size());
     }
     else
     {
@@ -677,7 +633,7 @@ public class IntegerValueTracker
   {
     if (! totalList.isEmpty())
     {
-      return (1.0 * getTotalValueAsLong() / totalList.size());
+      return (1.0 * getTotalValue() / totalList.size());
     }
     else
     {
@@ -698,7 +654,7 @@ public class IntegerValueTracker
   {
     if (duration > 0)
     {
-      return (1.0 * getTotalCountAsLong() / duration);
+      return (1.0 * getTotalCount() / duration);
     }
     else
     {
@@ -719,7 +675,7 @@ public class IntegerValueTracker
   {
     if (duration > 0)
     {
-      return (1.0 * getTotalValueAsLong() / duration);
+      return (1.0 * getTotalValue() / duration);
     }
     else
     {
@@ -1251,7 +1207,7 @@ public class IntegerValueTracker
    */
   public String getSummaryString()
   {
-    return displayName + " -- Total:  " + getTotalValueAsLong() +
+    return displayName + " -- Total:  " + getTotalValue() +
            ";  Avg Value:  " + decimalFormat.format(getAverageValue()) +
            ";  Avg/Second:  " +
            decimalFormat.format(getAverageValuePerSecond()) +
@@ -1289,8 +1245,8 @@ public class IntegerValueTracker
     }
 
     returnBuffer.append(displayName + Constants.EOL);
-    returnBuffer.append("Total:  " + getTotalValueAsLong() + Constants.EOL);
-    returnBuffer.append("Count:  " + getTotalCountAsLong() + Constants.EOL);
+    returnBuffer.append("Total:  " + getTotalValue() + Constants.EOL);
+    returnBuffer.append("Count:  " + getTotalCount() + Constants.EOL);
     returnBuffer.append("Average Value:  " +
                         decimalFormat.format(getAverageValue()) +
                         Constants.EOL);
@@ -1381,7 +1337,7 @@ public class IntegerValueTracker
     html.append("    <TD><B>Corr Coeff</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalValueAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalValue() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAverageValue()) + "</TD>" +
                 Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAverageValuePerSecond()) +
@@ -1438,7 +1394,7 @@ public class IntegerValueTracker
     html.append("    <TD><B>Horizontality T Score</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalValueAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalValue() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAverageValue()) + "</TD>" +
                 Constants.EOL);
     if (getMaxValue() == Integer.MIN_VALUE)
@@ -1547,7 +1503,7 @@ public class IntegerValueTracker
   {
     return new String[]
     {
-      String.valueOf(getTotalValueAsLong()),
+      String.valueOf(getTotalValue()),
       String.valueOf(decimalFormat.format(getAverageValue())),
       String.valueOf(decimalFormat.format(getAverageValuePerSecond())),
       String.valueOf(decimalFormat.format(getAverageValuePerInterval())),

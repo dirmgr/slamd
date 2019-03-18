@@ -451,31 +451,9 @@ public class IncrementalTracker
    * @return  The total number of times that the tracked event occurred over the
    *          total duration.
    */
-  public int getTotalCount()
+  public long getTotalCount()
   {
-    int totalCount = 0;
-
-    for (int i=0; i < countList.size(); i++)
-    {
-      totalCount += countList.get(i);
-    }
-
-    return totalCount;
-  }
-
-
-
-  /**
-   * Retrieves the total number of times that the tracked event occurred over
-   * the total duration.  This method retrieves the count as a long, which is
-   * less likely to overflow than an integer.
-   *
-   * @return  The total number of times that the tracked event occurred over the
-   *          total duration.
-   */
-  public long getTotalCountAsLong()
-  {
-    long totalCount = 0;
+    long totalCount = 0L;
 
     for (int i=0; i < countList.size(); i++)
     {
@@ -579,7 +557,7 @@ public class IncrementalTracker
   {
     if (! countList.isEmpty())
     {
-      return (1.0 * getTotalCountAsLong() / countList.size());
+      return (1.0 * getTotalCount() / countList.size());
     }
     else
     {
@@ -600,7 +578,7 @@ public class IncrementalTracker
   {
     if (duration > 0)
     {
-      return (1.0 * getTotalCountAsLong() / duration);
+      return (1.0 * getTotalCount() / duration);
     }
     else
     {
@@ -1101,7 +1079,7 @@ public class IncrementalTracker
    */
   public String getSummaryString()
   {
-    return displayName + " -- Count:  " + getTotalCountAsLong() +
+    return displayName + " -- Count:  " + getTotalCount() +
            ";  Avg/Second:  " + decimalFormat.format(getAveragePerSecond()) +
            ";  Avg/Interval:  " +
            decimalFormat.format(getAveragePerInterval()) +
@@ -1138,7 +1116,7 @@ public class IncrementalTracker
     }
 
     returnBuffer.append(displayName + Constants.EOL);
-    returnBuffer.append("Total:  " + getTotalCountAsLong() + Constants.EOL);
+    returnBuffer.append("Total:  " + getTotalCount() + Constants.EOL);
     returnBuffer.append("Average/Second:  " +
                         decimalFormat.format(getAveragePerSecond()) +
                         Constants.EOL);
@@ -1209,7 +1187,7 @@ public class IncrementalTracker
     html.append("    <TD><B>Corr Coeff</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalCountAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalCount() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAveragePerSecond()) +
                 "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAveragePerInterval()) +
@@ -1262,7 +1240,7 @@ public class IncrementalTracker
     html.append("    <TD><B>Horizontality T Score</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalCountAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalCount() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAveragePerSecond()) +
                 "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAveragePerInterval()) +
@@ -1354,7 +1332,7 @@ public class IncrementalTracker
   {
     return new String[]
     {
-      String.valueOf(getTotalCountAsLong()),
+      String.valueOf(getTotalCount()),
       decimalFormat.format(getAveragePerSecond()),
       decimalFormat.format(getAveragePerInterval()),
       decimalFormat.format(getStandardDeviation()),

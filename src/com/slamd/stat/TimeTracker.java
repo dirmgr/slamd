@@ -450,33 +450,10 @@ public class TimeTracker
    * @return  The total length of time in milliseconds that the tracked event
    *          was in progress over the entire duration.
    */
-  public int getTotalDuration()
+  public long getTotalDuration()
   {
     int numIntervals  = durationList.size();
-    int totalDuration = 0;
-
-    for (int i=0; i < numIntervals; i++)
-    {
-      totalDuration += durationList.get(i);
-    }
-
-    return totalDuration;
-  }
-
-
-
-  /**
-   * Retrieves the total length of time in milliseconds that the tracked event
-   * was in progress over the entire duration.  This method returns the value as
-   * a long, which is less likely to overflow than an integer.
-   *
-   * @return  The total length of time in milliseconds that the tracked event
-   *          was in progress over the entire duration.
-   */
-  public long getTotalDurationAsLong()
-  {
-    int  numIntervals  = durationList.size();
-    long totalDuration = 0;
+    long totalDuration = 0L;
 
     for (int i=0; i < numIntervals; i++)
     {
@@ -495,33 +472,10 @@ public class TimeTracker
    * @return  The total number of times that the tracked event occurred over the
    *          entire duration.
    */
-  public int getTotalCount()
+  public long getTotalCount()
   {
     int numIntervals = countList.size();
-    int totalCount   = 0;
-
-    for (int i=0; i < numIntervals; i++)
-    {
-      totalCount += countList.get(i);
-    }
-
-    return totalCount;
-  }
-
-
-
-  /**
-   * Retrieves the total number of times that the tracked event occurred over
-   * the entire duration.  This method returns the value as a long, which is
-   * less likely to overflow than an integer.
-   *
-   * @return  The total number of times that the tracked event occurred over the
-   *          entire duration.
-   */
-  public long getTotalCountAsLong()
-  {
-    int  numIntervals = countList.size();
-    long totalCount   = 0;
+    long totalCount   = 0L;
 
     for (int i=0; i < numIntervals; i++)
     {
@@ -610,11 +564,11 @@ public class TimeTracker
    */
   public double getAverageDuration()
   {
-    long totalCount = getTotalCountAsLong();
+    long totalCount = getTotalCount();
 
     if (totalCount > 0)
     {
-      return (1.0 * getTotalDurationAsLong() / totalCount);
+      return (1.0 * getTotalDuration() / totalCount);
     }
     else
     {
@@ -635,7 +589,7 @@ public class TimeTracker
   {
     if (! countList.isEmpty())
     {
-      return (1.0 * getTotalCountAsLong() / countList.size());
+      return (1.0 * getTotalCount() / countList.size());
     }
     else
     {
@@ -656,7 +610,7 @@ public class TimeTracker
   {
     if (! durationList.isEmpty())
     {
-      return (1.0 * getTotalDurationAsLong() / durationList.size());
+      return (1.0 * getTotalDuration() / durationList.size());
     }
     else
     {
@@ -1350,8 +1304,8 @@ public class TimeTracker
    */
   public String getSummaryString()
   {
-    return displayName + " -- Total Duration:  " + getTotalDurationAsLong() +
-           ";  Total Count:  " + getTotalCountAsLong() +
+    return displayName + " -- Total Duration:  " + getTotalDuration() +
+           ";  Total Count:  " + getTotalCount() +
            ";  Avg Duration:  " + decimalFormat.format(getAverageDuration()) +
            ";  Avg Count/Interval:  " +
            decimalFormat.format(getAverageCountPerInterval()) +
@@ -1387,9 +1341,9 @@ public class TimeTracker
     }
 
     returnBuffer.append(displayName + Constants.EOL);
-    returnBuffer.append("Total Duration:  " + getTotalDurationAsLong() +
+    returnBuffer.append("Total Duration:  " + getTotalDuration() +
                         Constants.EOL);
-    returnBuffer.append("Total Count:  " + getTotalCountAsLong() +
+    returnBuffer.append("Total Count:  " + getTotalCount() +
                         Constants.EOL);
     returnBuffer.append("Average Duration:  " +
                         decimalFormat.format(getAverageDuration()) +
@@ -1478,9 +1432,9 @@ public class TimeTracker
     html.append("    <TD><B>Corr Coeff</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalDurationAsLong() + "</TD>" +
+    html.append("    <TD>" + getTotalDuration() + "</TD>" +
                 Constants.EOL);
-    html.append("    <TD>" + getTotalCountAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalCount() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAverageDuration()) +
                 "</TD>" + Constants.EOL);
     html.append("    <TD>" +
@@ -1536,9 +1490,9 @@ public class TimeTracker
     html.append("    <TD><B>Horizontality T Score</B></TD>" + Constants.EOL);
     html.append("  </TR>" + Constants.EOL);
     html.append("  <TR>" + Constants.EOL);
-    html.append("    <TD>" + getTotalDurationAsLong() + "</TD>" +
+    html.append("    <TD>" + getTotalDuration() + "</TD>" +
                 Constants.EOL);
-    html.append("    <TD>" + getTotalCountAsLong() + "</TD>" + Constants.EOL);
+    html.append("    <TD>" + getTotalCount() + "</TD>" + Constants.EOL);
     html.append("    <TD>" + decimalFormat.format(getAverageDuration()) +
                 "</TD>" + Constants.EOL);
     if (getMaxDuration() == Integer.MIN_VALUE)
@@ -1649,8 +1603,8 @@ public class TimeTracker
   {
     return new String[]
     {
-      String.valueOf(getTotalDurationAsLong()),
-      String.valueOf(getTotalCountAsLong()),
+      String.valueOf(getTotalDuration()),
+      String.valueOf(getTotalCount()),
       String.valueOf(decimalFormat.format(getAverageDuration())),
       String.valueOf(decimalFormat.format(getAverageCountPerInterval())),
       decimalFormat.format(getStandardDeviation()),

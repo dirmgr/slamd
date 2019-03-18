@@ -277,8 +277,27 @@ public final class ResponseTimeCategorizer
   public ResponseTimeCategorizer(final String clientID, final String threadID,
                                  final int collectionInterval)
   {
+    this(STAT_RESPONSE_TIME_CATEGORIES, clientID, threadID, collectionInterval);
+  }
+
+
+
+  /**
+   * Creates a new instance of this response time categorizer with the provided
+   * information.
+   *
+   * @param  trackerName         The display name for the stat tracker.
+   * @param  clientID            The client ID for this instance.
+   * @param  threadID            The thread ID for this instance.
+   * @param  collectionInterval  The statistics collection interval for this
+   *                             instance.
+   */
+  public ResponseTimeCategorizer(final String trackerName,
+                                 final String clientID, final String threadID,
+                                 final int collectionInterval)
+  {
     responseTimeCategories = new CategoricalTracker(clientID, threadID,
-         STAT_RESPONSE_TIME_CATEGORIES, collectionInterval);
+         trackerName, collectionInterval);
   }
 
 
@@ -296,8 +315,29 @@ public final class ResponseTimeCategorizer
                                                final String threadID,
                                                final int collectionInterval)
   {
-    return new CategoricalTracker(clientID, threadID,
-         STAT_RESPONSE_TIME_CATEGORIES, collectionInterval);
+    return getStatTrackerStub(STAT_RESPONSE_TIME_CATEGORIES, clientID,
+         threadID, collectionInterval);
+  }
+
+
+
+  /**
+   * Retrieves a stub for the stat tracker maintained by this class.
+   *
+   * @param  trackerName         The display name for the stat tracker.
+   * @param  clientID            The client ID to use for the stub.
+   * @param  threadID            The thread ID to use for the stub.
+   * @param  collectionInterval  The collection interval to use for the sub.
+   *
+   * @return  The stat tracker stub that was created.
+   */
+  public static StatTracker getStatTrackerStub(final String trackerName,
+                                               final String clientID,
+                                               final String threadID,
+                                               final int collectionInterval)
+  {
+    return new CategoricalTracker(clientID, threadID, trackerName,
+         collectionInterval);
   }
 
 

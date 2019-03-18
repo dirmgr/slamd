@@ -32,23 +32,23 @@ Then change into the new `slamd` directory and run `build.sh` on Linux/UNIX-base
 
 ## Running the SLAMD Server
 
-If you want to run the SLAMD server locally, you can just go into the `build/package/slamd` directory and run `bin/startup.sh` (or `bin/startup.bat` on Windows).  If you want to install it somewhere else, then just copy the `slamd-{timestamp}.zip` file to the desired system, unpack it, and run the startup script.  Then, go to "http://{address}:8080/slamd" in a browser (where {address} is the address of the server on which SLAMD is running, or "localhost" if you're running it on your workstation).  The first time you run it, you should see a page telling you that you need to create a new database, which you can do by simply clicking a button.
+If you want to run the SLAMD server locally, you can just go into the `build/package/slamd` directory and run `start-slamd-server.sh` (or `start-slamd-server.bat` on Windows).  If you want to install it somewhere else, then just copy the `slamd-{timestamp}.zip` file to the desired system, unpack it, and run the startup script.  Then, go to "http://{address}:8080/slamd" in a browser (where {address} is the address of the server on which SLAMD is running, or "localhost" if you're running it on your workstation).  The first time you run it, you should see a page telling you that you need to create a new database, which you can do by simply clicking a button.
 
 
 ## Running the SLAMD Client
 
 To actually be able to do anything with SLAMD, you'll also need to create one or more clients.
 
-To run the SLAMD client, unpack the `slamd_client-{timestamp}.zip` file on whatever machines you want to use as the client.  You'll need to edit the `slamd_client.conf` file to at least specify the address of the SLAMD server in the `SLAMD_ADDRESS` property (you probably won't want to change the port numbers).  If you just want to manually run a single client instance on that machine, then that should be all that you need to change.  If you would rather run the client manager, which can allow you to create and destroy client instances from the SLAMD server's web interface, then you may also want to adjust the `AUTO_CREATE_CLIENTS` and `MAX_CLIENTS` options.  If you only want this client to run jobs for which you explicitly request this client, then you can change `RESTRICTED_MODE` to `on`.
+To run the SLAMD client, unpack the `slamd-client-{timestamp}.zip` file on whatever machines you want to use as the client.  You'll need to edit the `slamd-client.conf` file to at least specify the address of the SLAMD server in the `SLAMD_ADDRESS` property (you probably won't want to change the port numbers).  If you just want to manually run a single client instance on that machine, then that should be all that you need to change.  If you would rather run the client manager, which can allow you to create and destroy client instances from the SLAMD server's web interface, then you may also want to adjust the `AUTO_CREATE_CLIENTS` and `MAX_CLIENTS` options.  If you only want this client to run jobs for which you explicitly request this client, then you can change `RESTRICTED_MODE` to `on`.
 
-Once you have finished editing `slamd_client.conf`, you can start a single instance of the client with the `start_client.sh` (or `start_client.bat`) script.  If you want to start the client manager, then run `start_client_manager.sh` (or `start_client_manager.bat`) instead.  If you do run the client manager, you may need to go to the SLAMD Server Status page in the web interface and request that it create the desired number of client instances.
+Once you have finished editing `slamd-client.conf`, you can start a single instance of the client with the `start-client.sh` (or `start-client.bat`) script.  If you want to start the client manager, then run `start-client-manager.sh` (or `start-client-manager.bat`) instead.  If you do run the client manager, you may need to go to the SLAMD Server Status page in the web interface and request that it create the desired number of client instances.
 
 
 ## Running the SLAMD Resource Monitor Client
 
 SLAMD also provides a resource monitor client, which can measure various performance metrics (CPU utilization, network traffic, disk I/O, etc.) on systems where you're running the SLAMD clients or the server under load.
 
-To run the SLAMD resource monitor client, unpack the `slamd_monitor_client-{timestamp}.zip` file on whatever systems you want to run it on.  Then, edit the `slamd_monitor_client.conf` file to at least specify the SLAMD server address and run the `start_monitor_client.sh` shell script (or `start_monitor_client.bat` batch file).
+To run the SLAMD resource monitor client, unpack the `slamd-monitor-client-{timestamp}.zip` file on whatever systems you want to run it on.  Then, edit the `slamd-monitor-client.conf` file to at least specify the SLAMD server address and run the `start-monitor-client.sh` shell script (or `start-monitor-client.bat` batch file).
 
 
 ## Scheduling a Job

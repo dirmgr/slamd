@@ -16,7 +16,7 @@
  *
  * Contributor(s):  Neil A. Wilson
  */
-package com.slamd.jobs.ldap;
+package com.slamd.jobs.legacy;
 
 
 
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.slamd.job.UnableToRunException;
+import com.slamd.jobs.ldap.LDAPJob;
 import com.slamd.parameter.IntegerParameter;
 import com.slamd.parameter.InvalidValueException;
 import com.slamd.parameter.MultiChoiceParameter;

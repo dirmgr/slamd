@@ -45,7 +45,7 @@ fi
 
 
 # Invoke the tool.
-TOOL_CLASS="com.slamd.tools.SwingClient"
+TOOL_CLASS="com.slamd.tools.CommandLineClient"
 exec "${JAVA_CMD}" ${JVM_ARGS} ${TOOL_CLASS} \
-     -f "${SCRIPT_DIR}/slamd_client.conf" -c "${SCRIPT_DIR}/classes" "${@}"
+     -f "${SCRIPT_DIR}/slamd-client.conf" -c "${SCRIPT_DIR}/classes" "${@}"
 

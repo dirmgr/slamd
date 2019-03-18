@@ -38,7 +38,7 @@ if not %JAVA_HOME_ERROR% == 0 exit /B %JAVA_HOME_ERROR%
 
 rem Invoke the tool.
 set TOOL_CLASS=com.slamd.tools.CommandLineResourceMonitorClient
-"%JAVA_CMD%" %JVM_ARGS% %TOOL_CLASS% -f slamd_monitor_client.conf -c config %*
+"%JAVA_CMD%" %JVM_ARGS% %TOOL_CLASS% -f slamd-monitor-client.conf -c config %*
 goto end
 
 

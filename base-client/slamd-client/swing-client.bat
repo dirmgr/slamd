@@ -37,8 +37,8 @@ if not %JAVA_HOME_ERROR% == 0 exit /B %JAVA_HOME_ERROR%
 
 
 rem Invoke the tool.
-set TOOL_CLASS=com.slamd.tools.CommandLineClient
-"%JAVA_CMD%" %JVM_ARGS% %TOOL_CLASS% -f slamd_client.conf -c classes %*
+set TOOL_CLASS=com.slamd.tools.SwingClient
+"%JAVA_CMD%" %JVM_ARGS% %TOOL_CLASS% -f slamd-client.conf -c classes %*
 goto end
 
 

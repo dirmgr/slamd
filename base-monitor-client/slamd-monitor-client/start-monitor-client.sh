@@ -29,7 +29,7 @@ JVM_ARGS="-server -Xms512m -Xmx512m"
 
 # Determine the user's current working directory and the path to this script.
 USER_WORKING_DIRECTORY=`pwd`
-cd `dirname "${0}"`
+cd "`dirname "${0}"`"
 SCRIPT_DIR=`pwd`
 cd "${USER_WORKING_DIRECTORY}"
 export USER_WORKING_DIRECTORY SCRIPT_DIR
@@ -45,7 +45,8 @@ fi
 
 
 # Invoke the tool.
-TOOL_CLASS="com.slamd.tools.CommandLineClient"
+TOOL_CLASS="com.slamd.tools.CommandLineResourceMonitorClient"
 exec "${JAVA_CMD}" ${JVM_ARGS} ${TOOL_CLASS} \
-     -f "${SCRIPT_DIR}/slamd_client.conf" -c "${SCRIPT_DIR}/classes" "${@}"
+     -f "${SCRIPT_DIR}/slamd-monitor-client.conf" -c "${SCRIPT_DIR}/config" \
+     "${@}"
 

@@ -32,9 +32,9 @@
   <property name="docs.dir"          location="docs"                  />
   <property name="scripts.dir"       location="scripts"               />
   <property name="thirdparty.dir"    location="thirdparty"            />
-  <property name="base.server.dir"   location="base_server"           />
-  <property name="base.client.dir"   location="base_client"           />
-  <property name="base.monitor.dir"  location="base_monitor_client"   />
+  <property name="base.server.dir"   location="base-server"           />
+  <property name="base.client.dir"   location="base-client"           />
+  <property name="base.monitor.dir"  location="base-monitor-client"   />
   <property name="checkstyle.dir"    location="${ext.dir}/checkstyle" />
   <property name="official_build"    value="false"                    />
   <property file="VERSION"                                            />
@@ -239,14 +239,14 @@ public class DynamicConstants
       <fileset dir="${base.client.dir}" includes="**/*" excludes="**/.svn" />
     </copy>
 
-    <mkdir dir="${package.dir}/slamd/slamd_client/classes" />
+    <mkdir dir="${package.dir}/slamd/slamd-client/classes" />
 
-    <mkdir dir="${package.dir}/slamd/slamd_client/lib" />
+    <mkdir dir="${package.dir}/slamd/slamd-client/lib" />
 
     <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
-          todir="${package.dir}/slamd/slamd_client/lib" />
+          todir="${package.dir}/slamd/slamd-client/lib" />
 
-    <copy todir="${package.dir}/slamd/slamd_client/lib">
+    <copy todir="${package.dir}/slamd/slamd-client/lib">
       <fileset dir="${lib.dir}" includes="**/*" excludes="**/.svn" />
     </copy>
 
@@ -254,14 +254,14 @@ public class DynamicConstants
       <fileset dir="${base.monitor.dir}" includes="**/*" excludes="**/.svn" />
     </copy>
 
-    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/classes" />
+    <mkdir dir="${package.dir}/slamd/slamd-monitor-client/classes" />
 
-    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/lib" />
+    <mkdir dir="${package.dir}/slamd/slamd-monitor-client/lib" />
 
     <copy file="${package.dir}/slamd/webapps/slamd/WEB-INF/lib/slamd.jar"
-          todir="${package.dir}/slamd/slamd_monitor_client/lib" />
+          todir="${package.dir}/slamd/slamd-monitor-client/lib" />
 
-    <copy todir="${package.dir}/slamd/slamd_monitor_client/lib">
+    <copy todir="${package.dir}/slamd/slamd-monitor-client/lib">
       <fileset dir="${lib.dir}" includes="**/*" excludes="**/.svn" />
     </copy>
 
@@ -271,33 +271,33 @@ public class DynamicConstants
     <fixcrlf srcDir="${scripts.dir}" destDir="${package.dir}/slamd/tools"
              includes="**/*.bat" eol="crlf" />
 
-    <mkdir dir="${package.dir}/slamd/slamd_client/tools" />
+    <mkdir dir="${package.dir}/slamd/slamd-client/tools" />
     <fixcrlf srcDir="${scripts.dir}"
-             destDir="${package.dir}/slamd/slamd_client/tools"
+             destDir="${package.dir}/slamd/slamd-client/tools"
              includes="**/*.sh" eol="lf" />
     <fixcrlf srcDir="${scripts.dir}"
-             destDir="${package.dir}/slamd/slamd_client/tools"
+             destDir="${package.dir}/slamd/slamd-client/tools"
              includes="**/*.bat" eol="crlf" />
 
-    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/tools" />
+    <mkdir dir="${package.dir}/slamd/slamd-monitor-client/tools" />
     <fixcrlf srcDir="${scripts.dir}"
-             destDir="${package.dir}/slamd/slamd_monitor_client/tools"
+             destDir="${package.dir}/slamd/slamd-monitor-client/tools"
              includes="**/*.sh" eol="lf" />
     <fixcrlf srcDir="${scripts.dir}"
-             destDir="${package.dir}/slamd/slamd_monitor_client/tools"
+             destDir="${package.dir}/slamd/slamd-monitor-client/tools"
              includes="**/*.bat" eol="crlf" />
 
     <fixcrlf srcDir="${package.dir}/slamd/bin" includes="*.sh"  eol="lf" />
     <fixcrlf srcDir="${package.dir}/slamd/bin" includes="*.bat" eol="crlf" />
 
-    <fixcrlf srcDir="${package.dir}/slamd/slamd_client" includes="*.sh"
+    <fixcrlf srcDir="${package.dir}/slamd/slamd-client" includes="*.sh"
              eol="lf" />
-    <fixcrlf srcDir="${package.dir}/slamd/slamd_client" includes="*.bat"
+    <fixcrlf srcDir="${package.dir}/slamd/slamd-client" includes="*.bat"
              eol="crlf" />
 
-    <fixcrlf srcDir="${package.dir}/slamd/slamd_monitor_client" includes="*.sh"
+    <fixcrlf srcDir="${package.dir}/slamd/slamd-monitor-client" includes="*.sh"
              eol="lf" />
-    <fixcrlf srcDir="${package.dir}/slamd/slamd_monitor_client" includes="*.bat"
+    <fixcrlf srcDir="${package.dir}/slamd/slamd-monitor-client" includes="*.bat"
              eol="crlf" />
 
     <mkdir dir="${package.dir}/slamd/tools/MakeLDIF" />
@@ -305,13 +305,13 @@ public class DynamicConstants
       <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
     </copy>
 
-    <mkdir dir="${package.dir}/slamd/slamd_client/tools/MakeLDIF" />
-    <copy toDir="${package.dir}/slamd/slamd_client/tools/MakeLDIF">
+    <mkdir dir="${package.dir}/slamd/slamd-client/tools/MakeLDIF" />
+    <copy toDir="${package.dir}/slamd/slamd-client/tools/MakeLDIF">
       <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
     </copy>
 
-    <mkdir dir="${package.dir}/slamd/slamd_monitor_client/tools/MakeLDIF" />
-    <copy toDir="${package.dir}/slamd/slamd_monitor_client/tools/MakeLDIF">
+    <mkdir dir="${package.dir}/slamd/slamd-monitor-client/tools/MakeLDIF" />
+    <copy toDir="${package.dir}/slamd/slamd-monitor-client/tools/MakeLDIF">
       <fileset dir="${scripts.dir}/MakeLDIF" excludes="**/.svn" />
     </copy>
 
@@ -339,31 +339,31 @@ public class DynamicConstants
           description="Package the SLAMD Server for distribution">
     <echo message="Packaging SLAMD...." />
 
-    <zip destfile="${package.dir}/slamd/slamd_client-${build.id}.zip">
-      <zipfileset dir="${package.dir}/slamd" includes="slamd_client/**/*"
-                  excludes="slamd_client/**/*.sh" filemode="644"
+    <zip destfile="${package.dir}/slamd/slamd-client-${build.id}.zip">
+      <zipfileset dir="${package.dir}/slamd" includes="slamd-client/**/*"
+                  excludes="slamd-client/**/*.sh" filemode="644"
                   dirmode="755" />
-      <zipfileset dir="${package.dir}/slamd" includes="slamd_client/**/*.sh"
+      <zipfileset dir="${package.dir}/slamd" includes="slamd-client/**/*.sh"
                   filemode="755" dirmode="755" />
     </zip>
 
-    <delete dir="${package.dir}/slamd/slamd_client" />
-    <copy file="${package.dir}/slamd/slamd_client-${build.id}.zip"
-          tofile="${package.dir}/slamd_client-${build.id}.zip" />
+    <delete dir="${package.dir}/slamd/slamd-client" />
+    <copy file="${package.dir}/slamd/slamd-client-${build.id}.zip"
+          tofile="${package.dir}/slamd-client-${build.id}.zip" />
 
-    <zip destfile="${package.dir}/slamd/slamd_monitor_client-${build.id}.zip">
+    <zip destfile="${package.dir}/slamd/slamd-monitor-client-${build.id}.zip">
       <zipfileset dir="${package.dir}/slamd"
-                  includes="slamd_monitor_client/**/*"
-                  excludes="slamd_monitor_client/**/*.sh" filemode="644"
+                  includes="slamd-monitor-client/**/*"
+                  excludes="slamd-monitor-client/**/*.sh" filemode="644"
                   dirmode="755" />
       <zipfileset dir="${package.dir}/slamd"
-                  includes="slamd_monitor_client/**/*.sh" filemode="755"
+                  includes="slamd-monitor-client/**/*.sh" filemode="755"
                   dirmode="755" />
     </zip>
 
-    <delete dir="${package.dir}/slamd/slamd_monitor_client" />
-    <copy file="${package.dir}/slamd/slamd_monitor_client-${build.id}.zip"
-          tofile="${package.dir}/slamd_monitor_client-${build.id}.zip" />
+    <delete dir="${package.dir}/slamd/slamd-monitor-client" />
+    <copy file="${package.dir}/slamd/slamd-monitor-client-${build.id}.zip"
+          tofile="${package.dir}/slamd-monitor-client-${build.id}.zip" />
 
     <zip destfile="${package.dir}/slamd-${build.id}.zip">
       <zipfileset dir="${package.dir}" includes="slamd/**/*"

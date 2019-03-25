@@ -716,7 +716,7 @@ public class SunONEDirectoryServerResourceMonitor
                   ((sizeValues = maxSizeAttr.getStringValueArray()) != null) &&
                   (sizeValues.length > 0))
               {
-                maxSizeList.add(new Long(sizeValues[0]));
+                maxSizeList.add(Long.parseLong(sizeValues[0]));
               }
             }
             catch (Exception e)
@@ -1273,7 +1273,7 @@ public class SunONEDirectoryServerResourceMonitor
 
       try
       {
-        connList.add(new Integer(values[0]));
+        connList.add(Integer.parseInt(values[0]));
       }
       catch (NumberFormatException nfe)
       {
@@ -1298,7 +1298,7 @@ public class SunONEDirectoryServerResourceMonitor
 
       try
       {
-        opsInitiated = new Integer(values[0]);
+        opsInitiated = Integer.parseInt(values[0]);
       }
       catch (NumberFormatException nfe)
       {
@@ -1320,7 +1320,7 @@ public class SunONEDirectoryServerResourceMonitor
 
       try
       {
-        opsCompleted = new Integer(values[0]);
+        opsCompleted = Integer.parseInt(values[0]);
       }
       catch (NumberFormatException nfe)
       {
@@ -1364,7 +1364,7 @@ public class SunONEDirectoryServerResourceMonitor
 
           try
           {
-            dbCountList[i].add(new Integer(values[0]));
+            dbCountList[i].add(Integer.parseInt(values[0]));
           }
           catch (NumberFormatException nfe)
           {
@@ -1392,7 +1392,7 @@ public class SunONEDirectoryServerResourceMonitor
 
           try
           {
-            entryCountList[i].add(new Integer(values[0]));
+            entryCountList[i].add(Integer.parseInt(values[0]));
           }
           catch (NumberFormatException nfe)
           {
@@ -1420,7 +1420,7 @@ public class SunONEDirectoryServerResourceMonitor
 
           try
           {
-            cacheEntriesList[i].add(new Integer(values[0]));
+            cacheEntriesList[i].add(Integer.parseInt(values[0]));
           }
           catch (NumberFormatException nfe)
           {
@@ -1448,7 +1448,7 @@ public class SunONEDirectoryServerResourceMonitor
 
           try
           {
-            cacheSizeList[i].add(new Long(values[0]));
+            cacheSizeList[i].add(Long.parseLong(values[0]));
           }
           catch (NumberFormatException nfe)
           {
@@ -1476,7 +1476,7 @@ public class SunONEDirectoryServerResourceMonitor
 
           try
           {
-            cacheHitRatioList[i].add(new Integer(values[0]));
+            cacheHitRatioList[i].add(Integer.parseInt(values[0]));
           }
           catch (NumberFormatException nfe)
           {

@@ -1242,7 +1242,8 @@ public final class JobGroupOptimizingJob
           final String algorithmName =
                algorithmElements[0].decodeAsOctetString().stringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
-               Constants.classForName(algorithmName).newInstance();
+               Constants.classForName(algorithmName).getDeclaredConstructor().
+                    newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();

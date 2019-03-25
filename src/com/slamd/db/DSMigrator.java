@@ -1456,8 +1456,8 @@ public class DSMigrator
         {
           final Class<?> algorithmClass =
                Constants.classForName(optimizationAlgorithmName);
-          optimizationAlgorithm =
-               (OptimizationAlgorithm) algorithmClass.newInstance();
+          optimizationAlgorithm = (OptimizationAlgorithm)
+               algorithmClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {

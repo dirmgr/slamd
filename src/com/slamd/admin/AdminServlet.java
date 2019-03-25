@@ -1476,26 +1476,6 @@ public class AdminServlet
             handleDebugGC(requestInfo);
           }
           else if (subsection.equals(
-                   Constants.SERVLET_SECTION_DEBUG_ENABLE_INSTRUCTION_TRACE))
-          {
-            handleDebugEnableInstructionTrace(requestInfo);
-          }
-          else if (subsection.equals(
-                   Constants.SERVLET_SECTION_DEBUG_DISABLE_INSTRUCTION_TRACE))
-          {
-            handleDebugDisableInstructionTrace(requestInfo);
-          }
-          else if (subsection.equals(
-                   Constants.SERVLET_SECTION_DEBUG_ENABLE_METHOD_TRACE))
-          {
-            handleDebugEnableMethodTrace(requestInfo);
-          }
-          else if (subsection.equals(
-                   Constants.SERVLET_SECTION_DEBUG_DISABLE_METHOD_TRACE))
-          {
-            handleDebugDisableMethodTrace(requestInfo);
-          }
-          else if (subsection.equals(
                    Constants.SERVLET_SECTION_DEBUG_STACK_TRACE))
           {
             handleDebugStackTrace(requestInfo);

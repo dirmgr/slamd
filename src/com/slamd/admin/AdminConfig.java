@@ -2308,8 +2308,8 @@ public class AdminConfig
         try
         {
           Class<?> generatorClass = Constants.classForName(className);
-          ReportGenerator generator =
-               (ReportGenerator) generatorClass.newInstance();
+          ReportGenerator generator = (ReportGenerator)
+               generatorClass.getDeclaredConstructor().newInstance();
           generatorList.add(generator);
         }
         catch (Exception e)
@@ -2543,8 +2543,8 @@ public class AdminConfig
           try
           {
             Class<?> generatorClass = Constants.classForName(className);
-            ReportGenerator generator =
-                 (ReportGenerator) generatorClass.newInstance();
+            ReportGenerator generator = (ReportGenerator)
+                 generatorClass.getDeclaredConstructor().newInstance();
             generatorList.add(generator);
           }
           catch (Exception e)

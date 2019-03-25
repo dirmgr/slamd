@@ -394,8 +394,8 @@ public class CommandLineJobScheduler
         try
         {
           Class<?> algorithmClass = Constants.classForName(algorithmClassName);
-          optimizationAlgorithm =
-               (OptimizationAlgorithm) algorithmClass.newInstance();
+          optimizationAlgorithm = (OptimizationAlgorithm)
+               algorithmClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {
@@ -558,7 +558,8 @@ public class CommandLineJobScheduler
       {
         try
         {
-          jobInstance = (JobClass) jobClass.newInstance();
+          jobInstance = (JobClass)
+               jobClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {
@@ -956,7 +957,8 @@ public class CommandLineJobScheduler
       {
         try
         {
-          jobInstance = (JobClass) jobClass.newInstance();
+          jobInstance = (JobClass)
+               jobClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {
@@ -1005,8 +1007,8 @@ public class CommandLineJobScheduler
       try
       {
         Class<?> algorithmClass = Constants.classForName(algorithmStr);
-        optimizationAlgorithm =
-             (OptimizationAlgorithm) algorithmClass.newInstance();
+        optimizationAlgorithm = (OptimizationAlgorithm)
+             algorithmClass.getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {

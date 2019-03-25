@@ -976,7 +976,7 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer freeMem = new Integer(tokenizer.nextToken());
+        Integer freeMem = Integer.parseInt(tokenizer.nextToken());
         freeMemoryList.add(freeMem);
 
         for (int i=0; i < 14; i++)
@@ -984,9 +984,9 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer userTime   = new Integer(tokenizer.nextToken());
-        Integer systemTime = new Integer(tokenizer.nextToken());
-        Integer idleTime   = new Integer(tokenizer.nextToken());
+        Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+        Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+        Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
         if (enableRealTimeStats)
         {
@@ -1071,9 +1071,9 @@ public class VMStatResourceMonitor
             tokenizer.nextToken();
           }
 
-          Integer userTime   = new Integer(tokenizer.nextToken());
-          Integer systemTime = new Integer(tokenizer.nextToken());
-          Integer idleTime   = new Integer(tokenizer.nextToken());
+          Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+          Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+          Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
           if (enableRealTimeStats)
           {
@@ -1147,9 +1147,9 @@ public class VMStatResourceMonitor
             tokenizer.nextToken();
           }
 
-          Integer userTime   = new Integer(tokenizer.nextToken());
-          Integer systemTime = new Integer(tokenizer.nextToken());
-          Integer idleTime   = new Integer(tokenizer.nextToken());
+          Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+          Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+          Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
           if (enableRealTimeStats)
           {
@@ -1222,10 +1222,10 @@ public class VMStatResourceMonitor
             tokenizer.nextToken();
           }
 
-          Integer userTime   = new Integer(tokenizer.nextToken());
-          Integer systemTime = new Integer(tokenizer.nextToken());
-          Integer idleTime   = new Integer(tokenizer.nextToken());
-          Integer waitTime   = new Integer(tokenizer.nextToken());
+          Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+          Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+          Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
+          Integer waitTime   = Integer.parseInt(tokenizer.nextToken());
 
           if (waitTime > 0)
           {
@@ -1303,7 +1303,7 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer freeMem = new Integer(tokenizer.nextToken());
+        Integer freeMem = Integer.parseInt(tokenizer.nextToken());
         freeMemoryList.add(freeMem);
 
         for (int i=0; i < 10; i++)
@@ -1311,9 +1311,9 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer userTime   = new Integer(tokenizer.nextToken());
-        Integer systemTime = new Integer(tokenizer.nextToken());
-        Integer idleTime   = new Integer(tokenizer.nextToken());
+        Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+        Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+        Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
         if (enableRealTimeStats)
         {
@@ -1386,7 +1386,7 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer freeMem = new Integer(tokenizer.nextToken());
+        Integer freeMem = Integer.parseInt(tokenizer.nextToken());
         freeMemoryList.add(freeMem);
 
         for (int i=0; i < 9; i++)
@@ -1394,9 +1394,9 @@ public class VMStatResourceMonitor
           tokenizer.nextToken();
         }
 
-        Integer userTime   = new Integer(tokenizer.nextToken());
-        Integer systemTime = new Integer(tokenizer.nextToken());
-        Integer idleTime   = new Integer(tokenizer.nextToken());
+        Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+        Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+        Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
         if (enableRealTimeStats)
         {

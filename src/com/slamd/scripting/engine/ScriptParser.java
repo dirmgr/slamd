@@ -319,7 +319,8 @@ public class ScriptParser
     // variable type hash.
     try
     {
-      Variable variableType = (Variable) variableTypeClass.newInstance();
+      Variable variableType = (Variable)
+           variableTypeClass.getDeclaredConstructor().newInstance();
 
       // See if there is already a variable type defined with the same
       // variable type name
@@ -676,7 +677,8 @@ public class ScriptParser
     // variable type hash.
     try
     {
-      Variable variableType = (Variable) variableTypeClass.newInstance();
+      Variable variableType = (Variable)
+           variableTypeClass.getDeclaredConstructor().newInstance();
 
       // See if there is already a variable type defined with the same
       // variable type name
@@ -783,7 +785,8 @@ public class ScriptParser
     try
     {
       Class<?> variableClass = Constants.classForName(className);
-      Variable v = (Variable) variableClass.newInstance();
+      Variable v = (Variable)
+           variableClass.getDeclaredConstructor().newInstance();
       v.setName(variableName);
       variableHash.put(variableName, v);
     }

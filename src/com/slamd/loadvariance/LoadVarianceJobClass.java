@@ -190,8 +190,8 @@ public abstract class LoadVarianceJobClass
         argumentList.toArray(arguments);
 
         Class<?> algorithmClass = Constants.classForName(algorithmName);
-        LoadVarianceAlgorithm loadVariationAlgorithm =
-             (LoadVarianceAlgorithm) algorithmClass.newInstance();
+        LoadVarianceAlgorithm loadVariationAlgorithm = (LoadVarianceAlgorithm)
+             algorithmClass.getDeclaredConstructor().newInstance();
         loadVariationAlgorithm.initializeVariationAlgorithm(arguments);
       }
       catch (Exception e)
@@ -296,8 +296,8 @@ public abstract class LoadVarianceJobClass
         argumentList.toArray(arguments);
 
         Class<?> algorithmClass = Constants.classForName(algorithmName);
-        LoadVarianceAlgorithm varianceAlgorithm =
-             (LoadVarianceAlgorithm) algorithmClass.newInstance();
+        LoadVarianceAlgorithm varianceAlgorithm = (LoadVarianceAlgorithm)
+             algorithmClass.getDeclaredConstructor().newInstance();
         varianceAlgorithm.initializeVariationAlgorithm(arguments);
         int[][] varianceInfo =
              varianceAlgorithm.calculateVariance(durationOfVariance,

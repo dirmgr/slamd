@@ -926,18 +926,6 @@ public abstract class JobClass
 
 
   /**
-   * Prevent the deprecated destroy method from being used by subclasses.
-   */
-  @Override()
-  @SuppressWarnings("deprecation")
-  public final void destroy()
-  {
-    // No implementation required.
-  }
-
-
-
-  /**
    * Provides a means for destroying this job thread if it does not respond
    * to a graceful shutdown request.  The default implementation does nothing,
    * but an actual job class may wish to do something like close a connection to

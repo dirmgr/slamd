@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -32,6 +30,9 @@ import javax.net.ssl.X509TrustManager;
 
 import netscape.ldap.LDAPException;
 import netscape.ldap.LDAPSocketFactory;
+
+import com.unboundid.util.ssl.SSLUtil;
+import com.unboundid.util.ssl.TrustAllTrustManager;
 
 
 
@@ -98,20 +99,14 @@ public class JSSEBlindTrustSocketFactory
     this.debugMode = debugMode;
 
 
-    // Indicate that we will be using JSSE for the SSL-based connections.
-    Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-    System.setProperty("java.protocol.handler.pkgs",
-                       "com.sun.net.ssl.internal.www.protocol");
-
-
     // Get the default SSL context.
     try
     {
-      sslContext = SSLContext.getInstance("SSLv3");
+      sslContext = new SSLUtil(new TrustAllTrustManager()).createSSLContext();
     }
-    catch (NoSuchAlgorithmException nsae)
+    catch (Exception e)
     {
-      throw new LDAPException("Unable to initialize the SSL context:  " + nsae);
+      throw new LDAPException("Unable to initialize the SSL context:  " + e);
     }
 
 

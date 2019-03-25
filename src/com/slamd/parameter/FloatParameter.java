@@ -100,7 +100,7 @@ public class FloatParameter
    */
   public FloatParameter(String name, float value)
   {
-    this(name, name, null, false, new Float(value));
+    this(name, name, null, false, (Float) value);
   }
 
 
@@ -118,7 +118,7 @@ public class FloatParameter
    */
   public FloatParameter(String name, boolean isRequired, float value)
   {
-    this(name, name, null, isRequired, new Float(value));
+    this(name, name, null, isRequired, (Float) value);
   }
 
 
@@ -138,7 +138,7 @@ public class FloatParameter
   public FloatParameter(String name, String displayName, boolean isRequired,
                         float value)
   {
-    this(name, displayName, null, isRequired, new Float(value));
+    this(name, displayName, null, isRequired, (Float) value);
   }
 
 
@@ -159,7 +159,7 @@ public class FloatParameter
   public FloatParameter(String name, String displayName, String description,
                         boolean isRequired, float value)
   {
-    this(name, displayName, description, isRequired, new Float(value));
+    this(name, displayName, description, isRequired, (Float) value);
   }
 
 
@@ -226,7 +226,7 @@ public class FloatParameter
                         float lowerBound, boolean hasUpperBound,
                         float upperBound)
   {
-    this(name, displayName, description, isRequired, new Float(value));
+    this(name, displayName, description, isRequired, (Float) value);
 
     this.hasLowerBound  = hasLowerBound;
     this.lowerBound     = lowerBound;

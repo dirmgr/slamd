@@ -2797,7 +2797,8 @@ public final class OptimizingJob
           final String algorithmName =
                algorithmElements[0].decodeAsOctetString().stringValue();
           optimizationAlgorithm = (OptimizationAlgorithm)
-               Constants.classForName(algorithmName).newInstance();
+               Constants.classForName(algorithmName).getDeclaredConstructor().
+                    newInstance();
 
           optimizationParameters = optimizationAlgorithm.
                getOptimizationAlgorithmParameterStubs(jobClass).clone();
@@ -3064,8 +3065,8 @@ public final class OptimizingJob
       final String counterStr2 = t2.nextToken();
       if (! counterStr1.equals(counterStr2))
       {
-        final Integer counter1 = new Integer(counterStr1.substring(6));
-        final Integer counter2 = new Integer(counterStr2.substring(6));
+        final Integer counter1 = Integer.parseInt(counterStr1.substring(6));
+        final Integer counter2 = Integer.parseInt(counterStr2.substring(6));
         return counter1.compareTo(counter2);
       }
 

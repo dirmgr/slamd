@@ -319,7 +319,8 @@ public class StandaloneClient
       try
       {
         Class<?> jobClass = Constants.classForName(jobClassName);
-        jobInstance = (JobClass) jobClass.newInstance();
+        jobInstance = (JobClass)
+             jobClass.getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {
@@ -446,7 +447,8 @@ public class StandaloneClient
       try
       {
         Class<?> jobClass = Constants.classForName(jobClassName);
-        jobInstance = (JobClass) jobClass.newInstance();
+        jobInstance = (JobClass)
+             jobClass.getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {

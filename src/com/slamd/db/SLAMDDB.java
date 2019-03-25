@@ -4040,7 +4040,8 @@ public final class SLAMDDB
       {
         try
         {
-          jobClass = (JobClass) Constants.classForName(className).newInstance();
+          jobClass = (JobClass) Constants.classForName(className).
+               getDeclaredConstructor().newInstance();
           jobClassList.add(jobClass);
         }
         catch (final Exception e)

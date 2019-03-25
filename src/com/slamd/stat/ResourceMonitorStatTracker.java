@@ -162,7 +162,8 @@ public class ResourceMonitorStatTracker
         String monitorClassName =
              valueElement.decodeAsOctetString().stringValue();
         Class<?> monitorClass = Constants.classForName(monitorClassName);
-        resourceMonitor = (ResourceMonitor) monitorClass.newInstance();
+        resourceMonitor = (ResourceMonitor)
+             monitorClass.getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {

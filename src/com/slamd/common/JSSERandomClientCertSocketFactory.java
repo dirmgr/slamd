@@ -27,7 +27,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
 import java.security.PrivateKey;
-import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -43,6 +42,8 @@ import javax.net.ssl.X509TrustManager;
 
 import netscape.ldap.LDAPException;
 import netscape.ldap.LDAPSocketFactory;
+
+import com.unboundid.util.ssl.SSLUtil;
 
 
 
@@ -245,20 +246,15 @@ public class JSSERandomClientCertSocketFactory
 
 
 
-    // Indicate that we will be using JSSE for the SSL-based connections.
-    Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-    System.setProperty("java.protocol.handler.pkgs",
-                       "com.sun.net.ssl.internal.www.protocol");
-
-
     // Get the default SSL context.
     try
     {
-      sslContext = SSLContext.getInstance("SSLv3");
+      final SSLUtil sslUtil = new SSLUtil(this, this);
+      sslContext = sslUtil.createSSLContext();
     }
-    catch (NoSuchAlgorithmException nsae)
+    catch (final Exception e)
     {
-      String message = "Unable to initialize the SSL context -- " + nsae;
+      String message = "Unable to initialize the SSL context -- " + e;
 
       if (debugMode)
       {

@@ -323,8 +323,8 @@ public class SLAMDServer
         try
         {
           Class<?> algorithmClass = Constants.classForName(algorithmClassName);
-          OptimizationAlgorithm algorithm =
-               (OptimizationAlgorithm) algorithmClass.newInstance();
+          OptimizationAlgorithm algorithm = (OptimizationAlgorithm)
+               algorithmClass.getDeclaredConstructor().newInstance();
           algorithmList.add(algorithm);
         }
         catch (Exception e)
@@ -859,7 +859,7 @@ public class SLAMDServer
         try
         {
           Class<?> jobClass = Constants.classForName(className);
-          return (JobClass) jobClass.newInstance();
+          return (JobClass) jobClass.getDeclaredConstructor().newInstance();
         }
         catch (Exception e)
         {
@@ -1689,8 +1689,8 @@ public class SLAMDServer
         try
         {
           Class<?> algorithmClass = Constants.classForName(className);
-          OptimizationAlgorithm algorithm =
-               (OptimizationAlgorithm) algorithmClass.newInstance();
+          OptimizationAlgorithm algorithm = (OptimizationAlgorithm)
+               algorithmClass.getDeclaredConstructor().newInstance();
           algorithmList.add(algorithm);
         }
         catch (Exception e)
@@ -1809,8 +1809,8 @@ public class SLAMDServer
           try
           {
             Class<?> algorithmClass = Constants.classForName(className);
-            OptimizationAlgorithm algorithm =
-                 (OptimizationAlgorithm) algorithmClass.newInstance();
+            OptimizationAlgorithm algorithm = (OptimizationAlgorithm)
+                 algorithmClass.getDeclaredConstructor().newInstance();
             algorithmList.add(algorithm);
           }
           catch (Exception e)

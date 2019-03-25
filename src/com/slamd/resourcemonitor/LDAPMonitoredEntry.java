@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.unboundid.util.StaticUtils;
+
 import com.slamd.common.Constants;
 import com.slamd.stat.StatTracker;
 
@@ -201,7 +203,7 @@ class LDAPMonitoredEntry
     try
     {
       Class<?> cl = Constants.classForName(fullClass);
-      Object o = cl.newInstance();
+      Object o = cl.getDeclaredConstructor().newInstance();
       if (!(o instanceof StatTracker))
       {
         throw new IllegalArgumentException(
@@ -211,19 +213,7 @@ class LDAPMonitoredEntry
       return (StatTracker)o;
 
     }
-    catch (ClassNotFoundException e)
-    {
-      throw new IllegalArgumentException(
-          "Could not instantiate class " + fullClass, e
-      );
-    }
-    catch (InstantiationException e)
-    {
-      throw new IllegalArgumentException(
-          "Could not instantiate class " + fullClass, e
-      );
-    }
-    catch (IllegalAccessException e)
+    catch (Exception e)
     {
       throw new IllegalArgumentException(
           "Could not instantiate class " + fullClass, e

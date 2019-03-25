@@ -930,7 +930,7 @@ public class TFTPClient
             case PACKET_ERROR:
                 tftpSendPacket.write(opCode, 0, opCode.length);
                 tftpSendPacket.write(getErrorCode(), 0, getErrorCode().length);
-                errorCode = new Byte(getErrorCode()[1]);
+                errorCode = (Byte) getErrorCode()[1];
                 tftpSendPacket.write(ERROR_MESSAGES[errorCode.intValue()].getBytes(),
                           0, ERROR_MESSAGES[errorCode.intValue()].getBytes().length);
                 tftpSendPacket.write(PACKET_DATA_TERMINATOR);

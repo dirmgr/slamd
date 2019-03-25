@@ -27,15 +27,21 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1StreamReader;
 import com.unboundid.asn1.ASN1Writer;
+import com.unboundid.util.StaticUtils;
+import com.unboundid.util.ssl.JVMDefaultTrustManager;
+import com.unboundid.util.ssl.KeyStoreKeyManager;
+import com.unboundid.util.ssl.SSLUtil;
+import com.unboundid.util.ssl.TrustAllTrustManager;
+import com.unboundid.util.ssl.TrustStoreTrustManager;
 
 import com.slamd.common.Constants;
 import com.slamd.common.DynamicConstants;
-import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.common.SLAMDException;
 import com.slamd.job.JobClass;
 import com.slamd.message.ClassTransferResponseMessage;
@@ -566,87 +572,76 @@ public class Client
     // throw an exception.
     if (useSSL)
     {
-      if (blindTrust)
+      try
       {
-        try
+        final KeyManager keyManager;
+        if (sslKeyStore == null)
         {
-          JSSEBlindTrustSocketFactory socketFactory =
-               new JSSEBlindTrustSocketFactory();
-          if (clientAddress == null)
+          keyManager = null;
+        }
+        else
+        {
+          final char[] keyStorePIN;
+          if (sslKeyStorePassword == null)
           {
-            clientSocket = socketFactory.makeSocket(serverAddress, serverPort);
+            keyStorePIN = null;
           }
           else
           {
-            clientSocket = socketFactory.createSocket(serverAddress, serverPort,
-                                InetAddress.getByName(clientAddress), 0);
+            keyStorePIN = sslKeyStorePassword.toCharArray();
           }
 
-          asn1StreamReader =
-               new ASN1StreamReader(clientSocket.getInputStream());
-          outputStream = clientSocket.getOutputStream();
+          keyManager = new KeyStoreKeyManager(sslKeyStore, keyStorePIN);
         }
-        catch (Exception e)
+
+        final TrustManager trustManager;
+        if (blindTrust)
         {
-          String message = "Unable to establish an SSL blind trust " +
-                           "connection to the SLAMD server:  " + e;
-          messageWriter.writeMessage(message);
-          throw new ClientException(message, false, e);
+          trustManager = new TrustAllTrustManager();
         }
+        else if (sslTrustStore == null)
+        {
+          trustManager = JVMDefaultTrustManager.getInstance();
+        }
+        else
+        {
+          final char[] trustStorePIN;
+          if (sslTrustStorePassword == null)
+          {
+            trustStorePIN = null;
+          }
+          else
+          {
+            trustStorePIN = sslTrustStorePassword.toCharArray();
+          }
+
+          trustManager = new TrustStoreTrustManager(sslTrustStore,
+               trustStorePIN, null, true);
+        }
+
+        final SSLUtil sslUtil = new SSLUtil(keyManager, trustManager);
+        if (clientAddress == null)
+        {
+          clientSocket = sslUtil.createSSLSocketFactory().createSocket(
+               serverAddress, serverPort);
+        }
+        else
+        {
+          clientSocket = sslUtil.createSSLSocketFactory().createSocket(
+               serverAddress, serverPort, InetAddress.getByName(clientAddress),
+               0);
+        }
+
+        asn1StreamReader =
+             new ASN1StreamReader(clientSocket.getInputStream());
+        outputStream = clientSocket.getOutputStream();
       }
-      else
+      catch (final Exception e)
       {
-        try
-        {
-          if ((sslKeyStore != null) && (sslKeyStore.length() > 0))
-          {
-            System.setProperty(Constants.SSL_KEY_STORE_PROPERTY, sslKeyStore);
-          }
-
-          if ((sslKeyStorePassword != null) &&
-              (sslKeyStorePassword.length() > 0))
-          {
-            System.setProperty(Constants.SSL_KEY_PASSWORD_PROPERTY,
-                               sslKeyStorePassword);
-          }
-
-          if ((sslTrustStore != null) && (sslTrustStore.length() > 0))
-          {
-            System.setProperty(Constants.SSL_TRUST_STORE_PROPERTY,
-                               sslTrustStore);
-          }
-
-          if ((sslTrustStorePassword != null) &&
-              (sslTrustStorePassword.length() > 0))
-          {
-            System.setProperty(Constants.SSL_TRUST_PASSWORD_PROPERTY,
-                               sslTrustStorePassword);
-          }
-
-          SSLSocketFactory socketFactory =
-               (SSLSocketFactory) SSLSocketFactory.getDefault();
-          if (clientAddress == null)
-          {
-            clientSocket =
-                 socketFactory.createSocket(serverAddress, serverPort);
-          }
-          else
-          {
-            clientSocket = socketFactory.createSocket(serverAddress, serverPort,
-                                InetAddress.getByName(clientAddress), 0);
-          }
-
-          asn1StreamReader =
-               new ASN1StreamReader(clientSocket.getInputStream());
-          outputStream = clientSocket.getOutputStream();
-        }
-        catch (Exception e)
-        {
-          String message = "Unable to establish an SSL-based connection to " +
-                           "the SLAMD server:  " + e;
-          messageWriter.writeMessage(message);
-          throw new ClientException(message, false, e);
-        }
+        String message = "Unable to establish an SSL connection to the SLAMD " +
+             "server:  " + StaticUtils.getExceptionMessage(e);
+        messageWriter.writeMessage(message);
+        throw new ClientException(message, false, e);
       }
     }
     else

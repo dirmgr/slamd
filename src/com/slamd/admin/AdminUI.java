@@ -3524,50 +3524,6 @@ public class AdminUI
                                Constants.SERVLET_SECTION_DEBUG_GC,
                               "Request Garbage Collection") + "</TD>" + EOL);
       html.append("  </TR>" + EOL + EOL);
-
-
-      html.append("  <TR CLASS=\"" + Constants.STYLE_NAV_BAR_LINK + "\">" +
-                  EOL);
-      html.append("    <TD VALIGN=\"TOP\">" + Constants.UI_NAV_BAR_BULLET +
-                  "</TD>" + EOL);
-      html.append("    <TD VALIGN=\"TOP\">" +
-                  generateLink(requestInfo, Constants.SERVLET_SECTION_DEBUG,
-                  Constants.SERVLET_SECTION_DEBUG_ENABLE_INSTRUCTION_TRACE,
-                  "Enable Instruction Tracing") + "</TD>" + EOL);
-      html.append("  </TR>" + EOL + EOL);
-
-
-      html.append("  <TR CLASS=\"" + Constants.STYLE_NAV_BAR_LINK + "\">" +
-                  EOL);
-      html.append("    <TD VALIGN=\"TOP\">" + Constants.UI_NAV_BAR_BULLET +
-                  "</TD>" + EOL);
-      html.append("    <TD VALIGN=\"TOP\">" +
-                  generateLink(requestInfo, Constants.SERVLET_SECTION_DEBUG,
-                  Constants.SERVLET_SECTION_DEBUG_DISABLE_INSTRUCTION_TRACE,
-                  "Disable Instruction Tracing") + "</TD>" + EOL);
-      html.append("  </TR>" + EOL + EOL);
-
-
-      html.append("  <TR CLASS=\"" + Constants.STYLE_NAV_BAR_LINK + "\">" +
-                  EOL);
-      html.append("    <TD VALIGN=\"TOP\">" + Constants.UI_NAV_BAR_BULLET +
-                  "</TD>" + EOL);
-      html.append("    <TD VALIGN=\"TOP\">" +
-                  generateLink(requestInfo, Constants.SERVLET_SECTION_DEBUG,
-                  Constants.SERVLET_SECTION_DEBUG_ENABLE_METHOD_TRACE,
-                  "Enable Method Call Tracing") + "</TD>" + EOL);
-      html.append("  </TR>" + EOL + EOL);
-
-
-      html.append("  <TR CLASS=\"" + Constants.STYLE_NAV_BAR_LINK + "\">" +
-                  EOL);
-      html.append("    <TD VALIGN=\"TOP\">" + Constants.UI_NAV_BAR_BULLET +
-                  "</TD>" + EOL);
-      html.append("    <TD VALIGN=\"TOP\">" +
-                  generateLink(requestInfo, Constants.SERVLET_SECTION_DEBUG,
-                  Constants.SERVLET_SECTION_DEBUG_DISABLE_METHOD_TRACE,
-                  "Disable Method Call Tracing") + "</TD>" + EOL);
-      html.append("  </TR>" + EOL + EOL);
     }
 
 

@@ -295,7 +295,8 @@ public class ClientSideJob
       else
       {
         Class<?> jobClass = Constants.classForName(this.jobClass);
-        JobClass instance = (JobClass) jobClass.newInstance();
+        JobClass instance = (JobClass)
+             jobClass.getDeclaredConstructor().newInstance();
         return;
       }
     }
@@ -568,7 +569,8 @@ public class ClientSideJob
       try
       {
         Class<?> jobClass = Constants.classForName(this.jobClass);
-        jobInstance = (JobClass) jobClass.newInstance();
+        jobInstance = (JobClass)
+             jobClass.getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {
@@ -618,7 +620,8 @@ public class ClientSideJob
     {
       try
       {
-        JobClass jobThread = jobInstance.getClass().newInstance();
+        JobClass jobThread =
+             jobInstance.getClass().getDeclaredConstructor().newInstance();
         String threadID = null;
         if (client != null)
         {

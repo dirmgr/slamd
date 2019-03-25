@@ -631,7 +631,8 @@ public class ResourceMonitorClient
       }
 
       Class<?> monitorClass = Constants.classForName(className);
-      ResourceMonitor monitor = (ResourceMonitor) monitorClass.newInstance();
+      ResourceMonitor monitor = (ResourceMonitor)
+           monitorClass.getDeclaredConstructor().newInstance();
       monitor.initialize(this, properties);
 
       if (! monitor.clientSupported())

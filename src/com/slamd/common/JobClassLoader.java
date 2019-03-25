@@ -80,7 +80,8 @@ public class JobClassLoader
     {
       try
       {
-        return (JobClass) Constants.classForName(className).newInstance();
+        return (JobClass) Constants.classForName(className).
+             getDeclaredConstructor().newInstance();
       }
       catch (Exception e)
       {
@@ -126,7 +127,7 @@ public class JobClassLoader
 
     try
     {
-      return (JobClass) jobClass.newInstance();
+      return (JobClass) jobClass.getDeclaredConstructor().newInstance();
     }
     catch (Exception e)
     {

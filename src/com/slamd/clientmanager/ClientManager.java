@@ -24,20 +24,26 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.TrustManager;
 
 import com.unboundid.asn1.ASN1Element;
 import com.unboundid.asn1.ASN1Exception;
 import com.unboundid.asn1.ASN1StreamReader;
 import com.unboundid.asn1.ASN1Writer;
+import com.unboundid.util.StaticUtils;
+import com.unboundid.util.ssl.JVMDefaultTrustManager;
+import com.unboundid.util.ssl.SSLUtil;
+import com.unboundid.util.ssl.KeyStoreKeyManager;
+import com.unboundid.util.ssl.TrustAllTrustManager;
+import com.unboundid.util.ssl.TrustStoreTrustManager;
 
 import com.slamd.client.Client;
+import com.slamd.client.ClientException;
 import com.slamd.client.ClientMessageWriter;
 import com.slamd.common.Constants;
-import com.slamd.common.JSSEBlindTrustSocketFactory;
 import com.slamd.message.ClientManagerHelloMessage;
 import com.slamd.message.HelloResponseMessage;
 import com.slamd.message.Message;
@@ -118,6 +124,9 @@ public class ClientManager
   // The output stream to use to write to the server.
   private OutputStream outputStream;
 
+  // The SSLUtil instance used to create SSL socket factories.
+  private final SSLUtil sslUtil;
+
   // The socket used to communicate with the SLAMD server.
   Socket socket;
 
@@ -175,6 +184,9 @@ public class ClientManager
    * @param  startCommand           The command to execute to start a single
    *                                client instance.
    * @param  messageWriter          The message writer to use for output.
+   *
+   * @throws  ClientException  If a problem is encountered while creating the
+   *                          client manager.
    */
   public ClientManager(String clientID, String clientAddress,
                        String serverAddress, int serverPort, boolean useSSL,
@@ -182,6 +194,7 @@ public class ClientManager
                        String sslKeyStorePassword, String sslTrustStore,
                        String sslTrustStorePassword, int maxClients,
                        String startCommand, ClientMessageWriter messageWriter)
+         throws ClientException
   {
     this.clientAddress         = clientAddress;
     this.serverAddress         = serverAddress;
@@ -226,33 +239,68 @@ public class ClientManager
     }
     this.clientID = clientID;
 
-    if (useSSL && (! blindTrust))
+    if (useSSL)
     {
-      Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
-      System.setProperty("java.protocol.handler.pkgs",
-                         "com.sun.net.ssl.internal.www.protocol");
-    }
+      try
+      {
+        final KeyManager keyManager;
+        if (sslKeyStore == null)
+        {
+          keyManager = null;
+        }
+        else
+        {
+          final char[] keyStorePIN;
+          if (sslKeyStorePassword == null)
+          {
+            keyStorePIN = null;
+          }
+          else
+          {
+            keyStorePIN = sslKeyStorePassword.toCharArray();
+          }
 
-    if ((sslKeyStore != null) && (sslKeyStore.length() > 0))
-    {
-      System.setProperty(Constants.SSL_KEY_STORE_PROPERTY, sslKeyStore);
-    }
+          keyManager = new KeyStoreKeyManager(sslKeyStore, keyStorePIN);
+        }
 
-    if ((sslKeyStorePassword != null) && (sslKeyStorePassword.length() > 0))
-    {
-      System.setProperty(Constants.SSL_KEY_PASSWORD_PROPERTY,
-                         sslKeyStorePassword);
-    }
+        final TrustManager trustManager;
+        if (blindTrust)
+        {
+          trustManager = new TrustAllTrustManager();
+        }
+        else if (sslTrustStore == null)
+        {
+          trustManager = JVMDefaultTrustManager.getInstance();
+        }
+        else
+        {
+          final char[] trustStorePIN;
+          if (sslTrustStorePassword == null)
+          {
+            trustStorePIN = null;
+          }
+          else
+          {
+            trustStorePIN = sslTrustStorePassword.toCharArray();
+          }
 
-    if ((sslTrustStore != null) && (sslTrustStore.length() > 0))
-    {
-      System.setProperty(Constants.SSL_TRUST_STORE_PROPERTY, sslTrustStore);
-    }
+          trustManager = new TrustStoreTrustManager(sslTrustStore,
+               trustStorePIN, null, true);
+        }
 
-    if ((sslTrustStorePassword != null) && (sslTrustStorePassword.length() > 0))
+        sslUtil = new SSLUtil(keyManager, trustManager);
+      }
+      catch (final Exception e)
+      {
+        throw new ClientException(
+             "Unable to initialize the client manager for SSL " +
+                  "communication:  " + StaticUtils.getExceptionMessage(e),
+             false, e);
+      }
+    }
+    else
     {
-      System.setProperty(Constants.SSL_TRUST_PASSWORD_PROPERTY,
-                         sslTrustStorePassword);
+      sslUtil = null;
     }
   }
 
@@ -302,61 +350,29 @@ public class ClientManager
 
         if (useSSL)
         {
-          if (blindTrust)
+          try
           {
-            try
+            if ((clientAddress == null) || (clientAddress.length() == 0))
             {
-              JSSEBlindTrustSocketFactory socketFactory =
-                   new JSSEBlindTrustSocketFactory();
-              if ((clientAddress == null) || (clientAddress.length() == 0))
-              {
-                socket = socketFactory.makeSocket(serverAddress, serverPort);
-              }
-              else
-              {
-                InetAddress localAddress = InetAddress.getByName(clientAddress);
-                socket = socketFactory.createSocket(serverAddress, serverPort,
-                                                    localAddress, 0);
-              }
-              asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
-              outputStream = socket.getOutputStream();
-              socket.setSoTimeout(MAX_BLOCK_TIME);
+              socket = sslUtil.createSSLSocketFactory().createSocket(
+                   serverAddress, serverPort);
             }
-            catch (Exception e)
+            else
             {
-              messageWriter.writeVerbose("SSL blind trust connect attempt " +
-                                         "failed:  " + e);
-              sleepBeforeReconnectAttempt();
-              continue;
+              InetAddress localAddress = InetAddress.getByName(clientAddress);
+              socket = sslUtil.createSSLSocketFactory().createSocket(
+                   serverAddress, serverPort, localAddress, 0);
             }
+            asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
+            outputStream = socket.getOutputStream();
+            socket.setSoTimeout(MAX_BLOCK_TIME);
           }
-          else
+          catch (Exception e)
           {
-            try
-            {
-              SSLSocketFactory socketFactory =
-                   (SSLSocketFactory) SSLSocketFactory.getDefault();
-              if ((clientAddress == null) || (clientAddress.length() == 0))
-              {
-                socket = socketFactory.createSocket(serverAddress, serverPort);
-              }
-              else
-              {
-                InetAddress localAddress = InetAddress.getByName(clientAddress);
-                socket = socketFactory.createSocket(serverAddress, serverPort,
-                                                    localAddress, 0);
-              }
-
-              asn1StreamReader = new ASN1StreamReader(socket.getInputStream());
-              outputStream = socket.getOutputStream();
-              socket.setSoTimeout(MAX_BLOCK_TIME);
-            }
-            catch (Exception e)
-            {
-              messageWriter.writeVerbose("SSL connect attempt failed:  " + e);
-              sleepBeforeReconnectAttempt();
-              continue;
-            }
+            messageWriter.writeVerbose("SSL blind trust connect attempt " +
+                 "failed:  " + e);
+            sleepBeforeReconnectAttempt();
+            continue;
           }
         }
         else

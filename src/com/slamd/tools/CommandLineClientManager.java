@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Properties;
 
+import com.slamd.client.ClientException;
 import com.slamd.client.ClientMessageWriter;
 import com.slamd.clientmanager.ClientManager;
 
@@ -329,11 +330,19 @@ public class CommandLineClientManager
 
 
     // Create the new client manager instance.
-    ClientManager clientManager =
-         new ClientManager(clientID, clientAddress, host, port, useSSL,
-                           blindTrust, sslKeyStore, sslKeyStorePassword,
-                           sslTrustStore, sslTrustStorePassword, maxClients,
-                           startCommand, this);
+    final ClientManager clientManager;
+    try
+    {
+      clientManager = new ClientManager(clientID, clientAddress, host, port,
+           useSSL, blindTrust, sslKeyStore, sslKeyStorePassword, sslTrustStore,
+           sslTrustStorePassword, maxClients, startCommand, this);
+    }
+    catch (final ClientException e)
+    {
+      System.err.println("ERROR:  " + e.getMessage());
+      return;
+    }
+
     clientManager.setAutoCreateClients(autoCreateClients);
     clientManager.run();
   }

@@ -309,7 +309,8 @@ public abstract class SLAMDMessage
       final SLAMDMessage message;
       try
       {
-        message = (SLAMDMessage) messageClass.newInstance();
+        message = (SLAMDMessage)
+             messageClass.getDeclaredConstructor().newInstance();
         message.initializeDecodedMessage(messageID, extraProperties);
       }
       catch (final Exception e)

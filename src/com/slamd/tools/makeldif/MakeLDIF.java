@@ -2495,7 +2495,8 @@ public class MakeLDIF
           try
           {
             Class<?> tagClass = Constants.classForName(className);
-            customTag = (CustomTag) tagClass.newInstance();
+            customTag = (CustomTag)
+                 tagClass.getDeclaredConstructor().newInstance();
 
             customTag.initialize();
             template.addCustomTag(tagName, customTag);

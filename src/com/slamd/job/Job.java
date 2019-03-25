@@ -3026,7 +3026,8 @@ public final class Job
           try
           {
             final Class<?> jobClass = Constants.classForName(jobClassName);
-            final JobClass stubInstance = (JobClass) jobClass.newInstance();
+            final JobClass stubInstance = (JobClass)
+                 jobClass.getDeclaredConstructor().newInstance();
             parameters = stubInstance.getClientSideParameterStubs().clone();
 
             final ASN1Element[] paramsElements =
@@ -3294,8 +3295,8 @@ public final class Job
       final String counterStr2 = t2.nextToken();
       if (! counterStr1.equals(counterStr2))
       {
-        final Integer counter1 = new Integer(counterStr1.substring(6));
-        final Integer counter2 = new Integer(counterStr2.substring(6));
+        final Integer counter1 = Integer.parseInt(counterStr1.substring(6));
+        final Integer counter2 = Integer.parseInt(counterStr2.substring(6));
         return counter1.compareTo(counter2);
       }
 
@@ -3304,7 +3305,7 @@ public final class Job
       final Integer iteration1;
       if (t1.hasMoreTokens())
       {
-        iteration1 = new Integer(t1.nextToken());
+        iteration1 = Integer.parseInt(t1.nextToken());
       }
       else
       {
@@ -3323,7 +3324,7 @@ public final class Job
 
       if (t2.hasMoreTokens())
       {
-        final Integer iteration2 = new Integer(t2.nextToken());
+        final Integer iteration2 = Integer.parseInt(t2.nextToken());
 
         // It is possible that one of the jobs is a rerun iteration, which
         // should always be ordered after all other iterations of an optimizing

@@ -104,7 +104,8 @@ public class StatEncoder
       byte[] data        = elements[6].decodeAsOctetString().getValue();
 
       Class<?> trackerClass = Constants.classForName(className);
-      StatTracker tracker = (StatTracker) trackerClass.newInstance();
+      StatTracker tracker = (StatTracker)
+           trackerClass.getDeclaredConstructor().newInstance();
       tracker.setClientID(clientID);
       tracker.setThreadID(threadID);
       tracker.setDisplayName(displayName);

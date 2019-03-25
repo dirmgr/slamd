@@ -680,15 +680,15 @@ public class IOStatResourceMonitor
     tokenizer.nextToken(); // Skip the number of reads per interval.
     tokenizer.nextToken(); // Skip the number of writes per interval.
 
-    Double kbRead    = new Double(tokenizer.nextToken());
-    Double kbWritten = new Double(tokenizer.nextToken());
+    Double kbRead    = Double.parseDouble(tokenizer.nextToken());
+    Double kbWritten = Double.parseDouble(tokenizer.nextToken());
 
     tokenizer.nextToken(); // Skip the wait queue length.
     tokenizer.nextToken(); // Skip the number of active transactions.
     tokenizer.nextToken(); // Skip the average service response time.
     tokenizer.nextToken(); // Skip the percent wait time.
 
-    Integer pctBusy = new Integer(tokenizer.nextToken());
+    Integer pctBusy = Integer.parseInt(tokenizer.nextToken());
 
     readList.add(kbRead);
     writeList.add(kbWritten);
@@ -752,8 +752,8 @@ public class IOStatResourceMonitor
     tokenizer.nextToken(); // Skip the KB read per second
     tokenizer.nextToken(); // Skip the KB written per second.
 
-    Double kbRead    = new Double(tokenizer.nextToken());
-    Double kbWritten = new Double(tokenizer.nextToken());
+    Double kbRead    = Double.parseDouble(tokenizer.nextToken());
+    Double kbWritten = Double.valueOf(tokenizer.nextToken());
 
     readList.add(kbRead);
     writeList.add(kbWritten);

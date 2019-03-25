@@ -646,7 +646,8 @@ public abstract class Parameter
     try
     {
       Class<?> parameterClass = Constants.classForName(className);
-      Parameter p = (Parameter) parameterClass.newInstance();
+      Parameter p = (Parameter)
+           parameterClass.getDeclaredConstructor().newInstance();
       p.setName(name);
       p.setValueFromString(valueStr);
 

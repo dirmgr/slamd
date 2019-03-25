@@ -396,7 +396,7 @@ public class MPStatResourceMonitor
           StringTokenizer tokenizer = new StringTokenizer(line, " \t");
           if (firstSetSkipped)
           {
-            Integer cpuID = new Integer(tokenizer.nextToken());
+            Integer cpuID = Integer.parseInt(tokenizer.nextToken());
 
             ArrayList<Integer> userList   = userMap.get(cpuID);
             ArrayList<Integer> systemList = systemMap.get(cpuID);
@@ -451,10 +451,10 @@ public class MPStatResourceMonitor
             tokenizer.nextToken(); // syscl
 
             // Parse out the user, system, wait, and idle times.
-            Integer userTime   = new Integer(tokenizer.nextToken());
-            Integer systemTime = new Integer(tokenizer.nextToken());
-            Integer waitTime   = new Integer(tokenizer.nextToken());
-            Integer idleTime   = new Integer(tokenizer.nextToken());
+            Integer userTime   = Integer.parseInt(tokenizer.nextToken());
+            Integer systemTime = Integer.parseInt(tokenizer.nextToken());
+            Integer waitTime   = Integer.parseInt(tokenizer.nextToken());
+            Integer idleTime   = Integer.parseInt(tokenizer.nextToken());
 
             if (waitTime > 0)
             {
@@ -467,7 +467,7 @@ public class MPStatResourceMonitor
           }
           else
           {
-            Integer cpuID = new Integer(tokenizer.nextToken());
+            Integer cpuID = Integer.parseInt(tokenizer.nextToken());
             userMap.put(cpuID, new ArrayList<Integer>());
             systemMap.put(cpuID, new ArrayList<Integer>());
             idleMap.put(cpuID, new ArrayList<Integer>());

@@ -3364,16 +3364,6 @@ public class AdminUI
                                  Constants.SERVLET_SECTION_JOB_EXPORT_JOB_DATA,
                                  "Export Job Data") + "</TD>" + EOL);
         html.append("  </TR>" + EOL + EOL);
-
-        html.append("  <TR CLASS=\"" + Constants.STYLE_NAV_BAR_LINK + "\">" +
-                    EOL);
-        html.append("    <TD VALIGN=\"TOP\">" + Constants.UI_NAV_BAR_BULLET +
-                    "</TD>" + EOL);
-        html.append("    <TD VALIGN=\"TOP\">" +
-                    generateLink(requestInfo, Constants.SERVLET_SECTION_JOB,
-                                 Constants.SERVLET_SECTION_JOB_MIGRATE,
-                                 "Migrate SLAMD 1.x Data") + "</TD>" + EOL);
-        html.append("  </TR>" + EOL + EOL);
       }
 
       if (requestInfo.mayViewJobClass)

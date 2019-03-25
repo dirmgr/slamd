@@ -5359,14 +5359,6 @@ public final class Constants
 
 
   /**
-   * The name of the administrative subsection that allows the user to migrate
-   * job data from a previous configuration directory to the new database.
-   */
-  public static final String SERVLET_SECTION_JOB_MIGRATE = "migrate_job_data";
-
-
-
-  /**
    * The name of the request parameter that is used to indicate whether the
    * information about the migration directory server has been provided.
    */

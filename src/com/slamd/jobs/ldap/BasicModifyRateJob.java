@@ -1077,6 +1077,8 @@ public final class BasicModifyRateJob
 
   /**
    * Generates the modify request.
+   *
+   * @return  The modify request that was generated.
    */
   private ModifyRequest generateModifyRequest()
   {

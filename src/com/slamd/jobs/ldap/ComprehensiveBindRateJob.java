@@ -653,6 +653,8 @@ public final class ComprehensiveBindRateJob
    * @param  parameters  The parameter list containing the parameters to
    *                     validate.
    *
+   * @return  The set of server addresses and ports.
+   *
    * @throws  InvalidValueException  If there is a problem with the configured
    *                                 set of server addresses and ports.
    */

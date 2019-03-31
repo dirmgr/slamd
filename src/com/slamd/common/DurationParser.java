@@ -279,6 +279,8 @@ public final class DurationParser
    * Provides a number of test cases for the duration parser.
    *
    * @param  args  The command-line arguments.
+   *
+   * @throws  Exception  If an unexpected problem occurs.
    */
   public static void main(final String[] args)
          throws Exception

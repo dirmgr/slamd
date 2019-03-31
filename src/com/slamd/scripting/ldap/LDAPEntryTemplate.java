@@ -32,6 +32,22 @@ import java.util.HashMap;
 public class LDAPEntryTemplate
        implements Cloneable
 {
+  /**
+   * The name of the parent template.  This name is case-insensitive
+   */
+  String parentTemplateName;
+
+
+
+  /**
+   * The name of the attribute that is to be used as the RDN component for
+   * entries of this type.  Multivalued RDNs are not supported.
+   */
+  String rdnAttribute;
+
+
+
+
   // The names of the attributes in this template.  Note that because there can
   // be multiple values for a single attribute, there can be multiple duplicate
   // attribute names.
@@ -48,13 +64,6 @@ public class LDAPEntryTemplate
 
   // The map containing the sequential value counters.
   private HashMap<String,SequentialValueCounter> counterHash;
-
-  // The name of the parent template.  This name is case-insensitive
-  protected String parentTemplateName;
-
-  // The name of the attribute that is to be used as the RDN component for
-  // entries of this type.  Multivalued RDNs are not supported.
-  protected String rdnAttribute;
 
   // The name of this template.  This name is case-insensitive.
   private String templateName;

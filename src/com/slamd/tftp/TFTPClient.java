@@ -117,12 +117,12 @@ public class TFTPClient
   public static final byte PACKET_ERROR = 05;
 
   /**
-   * Ascii mode description string used in building a data TFTP packet
+   * Ascii mode description string used in building a data TFTP packet.
    */
   public static final String DOWNLOAD_NETASCII = "netascii";
 
   /**
-   * Binary mode description string used in building a data TFTP packet
+   * Binary mode description string used in building a data TFTP packet.
    */
   public static final String DOWNLOAD_OCTET = "octet";
 
@@ -379,9 +379,17 @@ public class TFTPClient
          PACKET_RRQ, DEFAULT_MODE, timeout, retries);
   }
 
-  /*
+  /**
    * The setVariables method calls other set methods to correctly build an
    * instance.  Used by the constructors to initialise TFTPClient objects
+   *
+   * @param  serverIP    The ID of the server.
+   * @param  filename    The name of the file to retrieve.
+   * @param  remotePort  The remote port.
+   * @param  opCode      The op code to use.
+   * @param  mode        The mode to use.
+   * @param  timeout     The timeout to use.
+   * @param  retries     The number of retries to attempt.
    */
   private void setVariables(String serverIP, String filename, int remotePort,
                             byte opCode, String mode, int timeout, int retries)
@@ -554,9 +562,11 @@ public class TFTPClient
   }
 
   // Private set methods.
-  /*
+  /**
    * Assigns the local port provided by the socket object. If passed value is
    * 0 or negative, the value of DEFAULT_UDP_PORT is used.
+   *
+   * @param  localPort  The local port.
    */
   private void setLocalPort(int localPort)
   {
@@ -570,9 +580,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Assigns the remote port which is contained in the first packet sent by the
    * TFTP server.
+   *
+   * @param  remotePort  The remote port.
    */
   private void setRemotePort(int remotePort)
   {
@@ -586,9 +598,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Assigns the number of bytes received to the dataLength field.  0 is used
    * if a negative value is passed.
+   *
+   * @param  dataLength  The number of bytes received.
    */
   private void setDataLength(int dataLength)
   {
@@ -602,9 +616,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Assigns the total number of bytes received to the totalDataLength field.
    * If a negative number is passed, 0 is stored.
+   *
+   * @param  totalDataLength  The total number of bytes received.
    */
   private void setTotalDataLength(int totalDataLength)
   {
@@ -618,9 +634,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Assigns the passed byte value to the opCode byte array's second location.
    * If an illegal value is passed, the PACKET_RRQ value is set.
+   *
+   * @param  secondOpCodeByte  The value to use for the second op code byte.
    */
   private void setOpCode(byte secondOpCodeByte)
   {
@@ -640,9 +658,12 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Assigns the passed error code value to the errorCode byte array's second
    * location.  If an illegal value is passed, the ERROR_NO_ERROR value is set.
+   *
+   * @param  secondErrorCodeByte  The value to use for the second error code
+   *                              byte.
    */
   private void setErrorCode(byte secondErrorCodeByte)
   {
@@ -666,24 +687,30 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * Initialises the blockNumber byte array.
+   *
+   * @param  blockNumber  The blockNumber byte array to use.
    */
   private void setBlockNumber(byte[] blockNumber)
   {
     this.blockNumber = blockNumber;
   }
 
-  /*
+  /**
    * Assigns the passed message to the errorMessage String field.
+   *
+   * @param  errorMessage  The error message to use.
    */
   private void setErrorMessage(String errorMessage)
   {
     this.errorMessage = errorMessage;
   }
 
-  /*
+  /**
    * Assigns the integer to the totalActualDataLength field.
+   *
+   * @param  actualLength  The value for the totalActualLength field.
    */
   private void setTotalActualDataLength(int actualLength)
   {
@@ -861,32 +888,40 @@ public class TFTPClient
   // End of public get methods
 
   // Private get methods
-  /*
+  /**
    * Returns the amount of received byte data stored in the dataLength field.
+   *
+   * @return  The amount of received byte data stored in the dataLength field.
    */
   private int getDataLength()
   {
     return dataLength;
   }
 
-  /*
+  /**
    * Returns the opCode byte array second location.
+   *
+   * @return  The opCode byte array second location.
    */
   private byte getOpCode()
   {
     return opCode[1];
   }
 
-  /*
+  /**
    * Returns the blockNumber byte array.
+   *
+   * @return  The blockNumber byte array.
    */
   private byte[] getBlockNumber()
   {
     return blockNumber;
   }
 
-  /*
-   * Returns the Actual number of bytes sent by the tftp server.
+  /**
+   * Returns the actual number of bytes sent by the TFTP server.
+   *
+   * @return  The actual number of bytes sent by the TFTP server.
    */
   private int getActualDownloadedBytes()
   {
@@ -894,9 +929,12 @@ public class TFTPClient
   }
   // End of get methods.
 
-  /*
-   * Try to create a new socket, set the time out and return local port
-   * number.
+  /**
+   * Try to create a new socket and set the time.
+   *
+   * @return  The local port number.
+   *
+   * @throws  TFTPClientException  If a problem occurs.
    */
   private int initialiseSocket() throws TFTPClientException
   {
@@ -919,9 +957,10 @@ public class TFTPClient
     }
   }
 
-  /*
-   * Create send and receive datagram packets.  Throw exception if server IP
-   * is illegal.
+  /**
+   * Create send and receive datagram packets.
+   *
+   * @throws  TFTPClientException  If a problem occurs.
    */
   private void initialisePackets() throws TFTPClientException
   {
@@ -941,10 +980,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * This method builds a new TFTP packet by adding the appropriate fields
-   * to the tftpSendPacket byte array.  Returns true if successful,
-   * false if not.
+   * to the tftpSendPacket byte array.
+   *
+   * @return  {@code true} if successful, or {@code false} if not.
    */
   private boolean buildTftpPacket()
   {
@@ -987,8 +1027,10 @@ public class TFTPClient
     }
   }
 
-  /*
-   * The method parses a tftp packet and disassembles it into its components
+  /**
+   * The method parses a tftp packet and disassembles it into its components.
+   *
+   * @return  The packet type.
    */
   private int parseTftpPacket()
   {
@@ -1052,9 +1094,11 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * This method tries to send the TFTP packet over UDP.  If it cannot
    * an exception is thrown.
+   *
+   * @throws  TFTPClientException  If a problem occurs.
    */
   private void sendTftpPacket() throws TFTPClientException
   {
@@ -1080,9 +1124,13 @@ public class TFTPClient
     }
   }
 
-  /*
+  /**
    * This method tries to read a TFTP packet from the network.  If a socket
    * time out occurs this method returns 1 without reading any packet
+   *
+   * @return  The return code for the read operation.
+   *
+   * @throws  TFTPClientException  If a problem occurs.
    */
   private int readTftpPacket() throws TFTPClientException
   {
@@ -1155,8 +1203,12 @@ public class TFTPClient
     return returnCode;
   }
 
-  /*
+  /**
    * This method fetches a file from a TFTP server.
+   *
+   * @return  The return code for the fetch operation.
+   *
+   * @throws  TFTPClientException  If a problem occurs.
    */
   private int getFileInternal() throws TFTPClientException
   {

@@ -114,8 +114,10 @@ public class SLAMDServer
   private Logger           logger;
 
 
-  // The real-time stat handler.
-  protected RealTimeStatHandler statHandler;
+  /**
+   * The real-time stat handler.
+   */
+  RealTimeStatHandler statHandler;
 
 
   // The job classes that have been defined for use in the configuration

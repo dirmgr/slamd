@@ -28,27 +28,54 @@ import java.util.ArrayList;
  */
 public abstract class InterfaceStatistics
 {
-  // Name used to refer to an "aggragete" interface that captures statistics
-  // for multiple network interfaces.
-  public static final String AGGREGATE_INTERFACE_NAME = "aggregate";
+  /**
+   * Name used to refer to an "aggragete" interface that captures statistics
+   * for multiple network interfaces.
+   */
+  static final String AGGREGATE_INTERFACE_NAME = "aggregate";
 
-  // Network interface name.
+
+
+  /**
+   * A flag that indicates whether we will try to report real-time statistics.
+   */
+  boolean enableRealTimeStats = false;
+
+
+
+  /**
+   * Tracker for number of bytes received by the interface.
+   */
+  final LongValueTracker receivedBytes;
+
+
+
+  /**
+   * Tracker for number of bytes sent by the interface.
+   */
+  final LongValueTracker sentBytes;
+
+
+
+  /**
+   * Collected received bytes values.
+   */
+  final List<Long> rawReceivedBytes = new ArrayList<Long>();
+
+
+
+  /**
+   * Collected sent bytes values.
+   */
+  final List<Long> rawSentBytes = new ArrayList<Long>();
+
+
+
+  /**
+   * Network interface name.
+   */
   private final String name;
 
-  // Tracker for number of bytes received by the interface.
-  protected final LongValueTracker receivedBytes;
-
-  // Tracker for number of bytes sent by the interface.
-  protected final LongValueTracker sentBytes;
-
-  // Collected received bytes values.
-  protected final List<Long> rawReceivedBytes = new ArrayList<Long>();
-
-  // Collected sent bytes values.
-  protected final List<Long> rawSentBytes = new ArrayList<Long>();
-
-  // A flag that indicates whether we will try to report real-time statistics.
-  protected boolean enableRealTimeStats = false;
 
 
   /**

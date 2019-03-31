@@ -269,13 +269,13 @@ public class LDAPModificationVariable
 
 
   // The set of values associated with this array.
-  ArrayList<String> attributeValues;
+  private ArrayList<String> attributeValues;
 
   // The modification type for this attribute.
-  int modType;
+  private int modType;
 
   // The name of this LDAP attribute.
-  String attributeName;
+  private String attributeName;
 
 
 

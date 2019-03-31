@@ -36,15 +36,21 @@ import java.nio.channels.SocketChannel;
 public class ReplayThread
        extends Thread
 {
-  // The number of times the connection was unexpectedly closed during
-  // processing.
+  /**
+   * The number of times the connection was unexpectedly closed during
+   * processing.
+   */
   protected int disconnects;
 
-  // The number of iterations through the entire data set that were completed.
-  protected int iterationsCompleted;
+  /**
+   * The number of iterations through the entire data set that were completed.
+   */
+  int iterationsCompleted;
 
-  // The number of individual capture packets that were replayed.
-  protected int packetsReplayed;
+  /**
+   * The number of individual capture packets that were replayed.
+   */
+  int packetsReplayed;
 
   // The replay utility with which this thread is associated.
   private ReplayCapture replayCapture;

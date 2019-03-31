@@ -103,7 +103,7 @@ import com.slamd.stat.StatTracker;
  *       and returns the response as an HTTPResponse variable.</LI>
  *   <LI>sendRequest(string url) -- Sends an HTTP GET request based on the
  *       information in the provided URL and returns the response as an
- *       HTTPResponse variable.</LI>.
+ *       HTTPResponse variable.</LI>
  *   <LI>setBlindTrust(boolean blindTrust) -- Specifies whether the client
  *       should blindly trust any SSL certificate.</LI>
  *   <LI>setClientAddress(string address) -- Specifies that the client should

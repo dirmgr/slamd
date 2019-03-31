@@ -61,26 +61,43 @@ public abstract class LoadVarianceJobClass
 
 
 
-  // Indicates whether the job should loop through the load variance definition
-  // once the end has been reached.
-  public static boolean loopVarianceDefinition;
-
-  // An array that is used to indicate whether each of the threads should
-  // currently be active or inactive.
-  public static boolean[] threadsActive;
-
-  // The length of time in milliseconds that each thread should sleep while it
-  // is idle before waking up to check to see if it should start running again.
-  public static int idleSleepDuration;
-
-  // An array that stores the duration between changes in the number of active
-  // threads and the increase or decrease to make at those times.
-  public static int[][] varianceData;
+  /**
+   * Indicates whether the job should loop through the load variance definition
+   * once the end has been reached.
+   */
+  static boolean loopVarianceDefinition;
 
 
-  // The reference to the thread that is used to keep track of starting and
-  // stopping each of the individual job threads.
-  public static LoadVarianceControlThread controlThread;
+
+  /**
+   * An array that is used to indicate whether each of the threads should
+   * currently be active or inactive.
+   */
+  static boolean[] threadsActive;
+
+
+
+  /**
+   * The length of time in milliseconds that each thread should sleep while it
+   * is idle before waking up to check to see if it should start running again.
+   */
+  static int idleSleepDuration;
+
+
+
+  /**
+   * An array that stores the duration between changes in the number of active
+   * threads and the increase or decrease to make at those times.
+   */
+  static int[][] varianceData;
+
+
+
+  /**
+   * The reference to the thread that is used to keep track of starting and
+   * stopping each of the individual job threads.
+   */
+  static LoadVarianceControlThread controlThread;
 
 
 

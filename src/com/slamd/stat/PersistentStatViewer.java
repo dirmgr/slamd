@@ -49,13 +49,19 @@ import com.slamd.common.SLAMDException;
 public class PersistentStatViewer
        implements ItemListener
 {
-  // The stat trackers with the information to view.
+  /**
+   * The stat trackers with the information to view.
+   */
   protected StatTracker[] statTrackers;
 
-  // The variables related to the GUI.
+  /**
+   * The list box to choose the type of stat to graph.
+   */
   protected JComboBox<String> statListBox;
-  private   JFrame    appWindow;
-  private   JPanel    graphPanel;
+
+  // Other variables related to the GUI.
+  private JFrame appWindow;
+  private JPanel graphPanel;
 
 
 
@@ -377,7 +383,7 @@ class PersistentStatGraphPanel
 
 
   // The stat viewer with which this panel is associated.
-  PersistentStatViewer statViewer;
+  private PersistentStatViewer statViewer;
 
 
   /**

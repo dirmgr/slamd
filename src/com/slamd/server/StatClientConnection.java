@@ -87,8 +87,10 @@ public class StatClientConnection
   // The SLAMD server with which this client connection is associated.
   private SLAMDServer slamdServer;
 
-  // The socket that provides communication with the client.
-  protected Socket clientSocket;
+  /**
+   * The socket that provides communication with the client.
+   */
+  Socket clientSocket;
 
   // The client ID of the client associated with this connection.
   private String clientID;

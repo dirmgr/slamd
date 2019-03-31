@@ -42,17 +42,21 @@ public class ReplayCapture
   // The list of socket channels that are pending registration with the
   // selector.
   private ArrayList<SocketChannel> pendingRegisterList =
-       new ArrayList<SocketChannel>();
+       new ArrayList<>();
 
   // Indicates whether the replay client should attempt to preserve the original
   // timing associated with the requests.
   private boolean preserveTiming;
 
-  // Indicates whether a request has been received to stop the replay.
-  protected boolean stopRequested;
+  /**
+   * Indicates whether a request has been received to stop the replay.
+   */
+  boolean stopRequested;
 
-  // The data that is to be replayed against the target server.
-  protected CaptureData[] captureData;
+  /**
+   * The data that is to be replayed against the target server.
+   */
+  CaptureData[] captureData;
 
   // The multiplier that should be applied to the time between requests when
   // attempting to preserve the original timing.
@@ -72,19 +76,25 @@ public class ReplayCapture
   // The maximum length of time in seconds to spend replaying data.
   private int maxDuration;
 
-  // The maximum number of times that the entire capture set should be replayed.
-  protected int numIterations;
+  /**
+   * The maximum number of times that the entire capture set should be replayed.
+   */
+  int numIterations;
 
   // The number of concurrent threads that should be used to perform the replay.
   private int numThreads;
 
-  // The port of the target server against which the requests are to be
-  // replayed.
-  protected int targetPort;
+  /**
+   * The port of the target server against which the requests are to be
+   * replayed.
+   */
+  int targetPort;
 
-  // The length of time in milliseconds to sleep between each capture data
-  // packet if we are attempting to preserve the original timing.
-  protected int[] sleepTimes;
+  /**
+   * The length of time in milliseconds to sleep between each capture data
+   * packet if we are attempting to preserve the original timing.
+   */
+  int[] sleepTimes;
 
   // The number of times the connection was unexpectedly closed during
   // processing.
@@ -103,9 +113,11 @@ public class ReplayCapture
   // whenever it arrives.
   private Selector selector;
 
-  // The address of the target server against which the requests are to be
-  // replayed.
-  protected String targetHost;
+  /**
+   * The address of the target server against which the requests are to be
+   * replayed.
+   */
+  String targetHost;
 
 
 

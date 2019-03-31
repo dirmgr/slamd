@@ -45,36 +45,48 @@ public class ClientManagerListener
        extends Thread
        implements ConfigSubscriber
 {
+  /**
+   * The mutex used to provide threadsafe access to the list of client managers.
+   */
+  final Object clientManagerMutex;
+
+
+
+  /**
+   * The config database for the SLAMD server.
+   */
+  SLAMDDB configDB;
+
+
+
+  /**
+   * The SLAMD server with which this listener is associated.
+   */
+  SLAMDServer slamdServer;
+
+
+
   // Indicates whether the listener has actually stopped listening.
-  boolean hasStopped;
+  private boolean hasStopped;
 
   // Indicates whether the listener should keep listening.
-  boolean keepListening;
+  private boolean keepListening;
 
   // Indicates whether the listener should use SSL.
-  boolean useSSL;
+  private boolean useSSL;
 
   // The port number on which this listener should listen.
-  int listenPort;
+  private int listenPort;
 
   // The maximum length of time in seconds that the SLAMD server will wait for a
   // response for a request sent to a client manager.
-  int maxResponseWaitTime;
-
-  // The mutex used to provide threadsafe access to the list of client managers.
-  final Object clientManagerMutex;
+  private int maxResponseWaitTime;
 
   // The server socket used to accept new connections from client managers.
-  ServerSocket serverSocket;
-
-  // The config database for the SLAMD server.
-  SLAMDDB configDB;
-
-  // The SLAMD server with which this listener is associated.
-  SLAMDServer slamdServer;
+  private ServerSocket serverSocket;
 
   // The set of client manager connections that are currently established.
-  ArrayList<ClientManagerConnection> clientManagers;
+  private ArrayList<ClientManagerConnection> clientManagers;
 
 
 

@@ -58,7 +58,10 @@ import static com.slamd.admin.AdminUI.*;
 public final class AdminConfig
        implements ConfigSubscriber
 {
-  static AdminConfig ADMIN_CONFIG = new AdminConfig();
+  /**
+   * A singleton reference to this configuration.
+   */
+  static final AdminConfig ADMIN_CONFIG = new AdminConfig();
 
 
 

@@ -93,11 +93,25 @@ public class Client
 
 
 
+  /**
+   * The socket that will be used to communicate with the SLAMD server.
+   */
+  Socket clientSocket;
+
+
+
+  /**
+   * The identifier that will be used for this client.
+   */
+  String clientID;
+
+
+
   // Static variables that will be used for handling client-side persistence.
-  static boolean               persistStatistics     = false;
-  static int                   persistenceInterval   = 0;
-  static String                persistenceDirectory  = null;
-  static StatPersistenceThread statPersistenceThread = null;
+  private static boolean               persistStatistics     = false;
+  private static int                   persistenceInterval   = 0;
+  private static String                persistenceDirectory  = null;
+  private static StatPersistenceThread statPersistenceThread = null;
 
 
 
@@ -106,86 +120,83 @@ public class Client
 
   // Indicates whether the client should aggregate the data from all the
   // individual threads before sending the results to the server.
-  boolean aggregateThreadData;
+  private boolean aggregateThreadData;
 
   // Indicates whether the client should blindly trust any SSL certificate
   // presented by the SLAMD server.
-  boolean blindTrust;
+  private boolean blindTrust;
 
   // Indicates whether the client should disconnect from the SLAMD server.
-  boolean disconnectRequested;
+  private boolean disconnectRequested;
 
   // Indicates whether the client should enable the collection of real-time
   // statistics.
-  boolean enableRealTimeStats;
+  private boolean enableRealTimeStats;
 
   // Indicates whether the client has disconnected from the SLAMD server.
-  boolean hasDisconnected;
+  private boolean hasDisconnected;
 
   // Indicates whether this client should operate in restricted mode.
-  boolean restrictedMode;
+  private boolean restrictedMode;
 
   // Indicates whether this client has already received a stop request for the
   // current job.
-  boolean stopRequested;
+  private boolean stopRequested;
 
   // Indicates whether this client provides support for time synchronization.
-  boolean supportsTimeSync;
+  private boolean supportsTimeSync;
 
   // Indicates whether to use the standard or custom class loader.
-  boolean useCustomClassLoader;
+  private boolean useCustomClassLoader;
 
   // Indicates whether the client will use SSL to communicate with the SLAMD
   // server.
-  boolean useSSL;
+  private boolean useSSL;
 
   // The message writer to which all informational and verbose messages will be
   // written.
-  ClientMessageWriter messageWriter;
+  private ClientMessageWriter messageWriter;
 
   // The shutdown listener that will be notified when the client has stopped.
-  ClientShutdownListener shutdownListener;
+  private ClientShutdownListener shutdownListener;
 
   // The local definition of a job that is currently defined
-  ClientSideJob jobInProgress;
+  private ClientSideJob jobInProgress;
 
   // The type of authentication that the client will perform with the SLAMD
   // server.
-  int authType;
+  private int authType;
 
   // The current state of the client.
-  int clientState;
+  private int clientState;
 
   // Specifies the message ID of the next message the client will send.
-  int messageID;
+  private int messageID;
 
   // The port number that will be used to communicate with the SLAMD server.
-  int serverPort;
+  private int serverPort;
 
   // The port number that will be used to communicate with the SLAMD server to
   // provide real-time stat data.
-  int serverStatPort;
+  private int serverStatPort;
 
   // The interval in seconds that clients should use when reporting statistics
   // to the server in real-time.
-  int statReportInterval;
+  private int statReportInterval;
 
   // The difference in milliseconds between the clock on the client system and
   // the clock on the server system.
-  long serverTimeOffset;
+  private long serverTimeOffset;
 
   // The output stream used to write data to the server.
   private OutputStream outputStream;
 
   // The stat reporter that can be used for sending real-time statistics to the
   // SLAMD server.
-  RealTimeStatReporter statReporter;
-
-  // The socket that will be used to communicate with the SLAMD server
-  Socket clientSocket;
+  private RealTimeStatReporter statReporter;
 
   // The ID that the client will use to authenticate to the SLAMD server.
-  String authID;
+  private String authID;
 
   // The credentials that the client will use to authenticate to the SLAMD
   // server.
@@ -193,27 +204,24 @@ public class Client
 
   // The name of the directory to which Java class files provided by the server
   // will be written
-  String classPath;
-
-  // The identifier that will be used for this client.
-  String clientID;
+  private String classPath;
 
   // The address of the SLAMD server to which the client will authenticate.
-  String serverAddress;
+  private String serverAddress;
 
   // The location of the JSSE key store that will be used if the communication
   // between the client and the server is SSL-based.
-  String sslKeyStore;
+  private String sslKeyStore;
 
   // The password needed to access the JSSE key store.
-  String sslKeyStorePassword;
+  private String sslKeyStorePassword;
 
   // The location of the JSSE trust store that will be used if the communication
   // between the client and the server is SSL-based.
-  String sslTrustStore;
+  private String sslTrustStore;
 
   // The password needed to access the JSSE trust store.
-  String sslTrustStorePassword;
+  private String sslTrustStorePassword;
 
 
 

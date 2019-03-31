@@ -54,7 +54,7 @@ class LDAPMonitoredEntry
   private final List<StatTracker> trackers = new ArrayList<StatTracker>();
 
   /**
-   * Creates a monitored entry using the properties
+   * Creates a monitored entry using the provided properties.
    * @param propBase property base in the main configuration files (characters
    * up to the first dot)
    * @param entryProps properties as a map under the property base
@@ -166,6 +166,11 @@ class LDAPMonitoredEntry
     return this.attrs.values();
   }
 
+  /**
+   * Retrieves the stat trackers for this class.
+   *
+   * @return  The stat trackers for this class.
+   */
   Collection<StatTracker> getStatTrackers()
   {
     return this.trackers;

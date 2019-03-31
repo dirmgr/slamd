@@ -388,55 +388,213 @@ public class LogPlaybackJobClass
 
 
 
-  // The static class variables that correspond to the parameter values.
-  protected static boolean  addMissingDeletes;
-  protected static boolean  deleteExistingAdds;
-  protected static boolean  doBind;
-  protected static boolean  randomOrder;
-  protected static boolean  repeatOrder;
-  protected static boolean  replayAdds;
-  protected static boolean  replayBinds;
-  protected static boolean  replayCompares;
-  protected static boolean  replayDeletes;
-  protected static boolean  replayModifies;
-  protected static boolean  replaySearches;
+  /**
+   * Indicates whether to add entries that aren't found when attempting a
+   * delete.
+   */
+  static boolean  addMissingDeletes;
+
+
+
+  /**
+   * Indicates whether to delete entries that already exist when trying to add.
+   */
+  static boolean  deleteExistingAdds;
+
+
+
+  /**
+   * Indicates whether to use SSL when communicating with the server.
+   */
   protected static boolean  useSSL;
-  protected static int      opsBetweenDisconnects;
+
+
+
+  /**
+   * The port to use to communicate with the server.
+   */
   protected static int      port;
-  protected static int      timeBetweenRequests;
+
+
+
+  /**
+   * The time in milliseconds between requests.
+   */
+  protected static int  timeBetweenRequests;
+
+
+
+  /**
+   * The address to use to communicate with the server.
+   */
   protected static String   address;
+
+
+
+  /**
+   * The bind DN to use to authenticate to the server.
+   */
   protected static String   bindDN;
-  protected static String   bindPassword;
-  protected static String   bindOperationPassword;
-  protected static String   modifyAttribute;
-  protected static String[] logFiles;
+
+
+
+  /**
+   * The password to use for bind operations.
+   */
+  static String   bindOperationPassword;
+
+
+
+  /**
+   * The name of the attribute to modify.
+   */
+  static String   modifyAttribute;
+
+
+
+  /**
+   * The connection to use when replaying bind operations.
+   */
+  LDAPConnection bindConnection;
+
+
+
+  /**
+   * The connection to use when replaying non-bind operations.
+   */
+  LDAPConnection opConnection;
+
+
+
+  /**
+   * The stat tracker for categorizing operation ratios.
+   */
+  CategoricalTracker opRatios;
+
+
+
+  /**
+   * The stat tracker for categorizing result codes.
+   */
+  protected CategoricalTracker resultCodes;
+
+
+
+  /**
+   * The stat tracker for counting adds replayed.
+   */
+  IncrementalTracker addsReplayed;
+
+
+
+  /**
+   * The stat tracker for counting binds replayed.
+   */
+  IncrementalTracker bindsReplayed;
+
+
+
+  /**
+   * The stat tracker for counting compares replayed.
+   */
+  IncrementalTracker comparesReplayed;
+
+
+
+  /**
+   * The stat tracker for counting deletes replayed.
+   */
+  IncrementalTracker deletesReplayed;
+
+
+
+  /**
+   * The stat tracker for counting modifies replayed.
+   */
+  IncrementalTracker modifiesReplayed;
+
+
+
+  /**
+   * The stat tracker for counting searches replayed.
+   */
+  IncrementalTracker searchesReplayed;
+
+
+
+  /**
+   * The stat tracker for counting all operations replayed.
+   */
+  IncrementalTracker totalReplayed;
+
+
+
+  /**
+   * The add operation timer.
+   */
+  TimeTracker        addTimer;
+
+
+
+  /**
+   * The bind operation timer.
+   */
+  TimeTracker        bindTimer;
+
+
+
+  /**
+   * The compare operation timer.
+   */
+  TimeTracker        compareTimer;
+
+
+
+  /**
+   * The delete operation timer.
+   */
+  TimeTracker        deleteTimer;
+
+
+
+  /**
+   * The modify operation timer.
+   */
+  TimeTracker        modifyTimer;
+
+
+
+  /**
+   * The search operation timer.
+   */
+  protected TimeTracker        searchTimer;
+
+
+
+  /**
+   * The timer fro all types of operations.
+   */
+  TimeTracker        totalTimer;
+
+
+
+  // The static class variables that correspond to the parameter values.
+  private static boolean  doBind;
+  private static boolean  randomOrder;
+  private static boolean  repeatOrder;
+  private static boolean  replayAdds;
+  private static boolean  replayBinds;
+  private static boolean  replayDeletes;
+  private static boolean  replayCompares;
+  private static boolean  replayModifies;
+  private static boolean  replaySearches;
+  private static int      opsBetweenDisconnects;
+  private static String   bindPassword;
+  private static String[] logFiles;
 
   // The information about the operations to replay.
   private static int            nextOperation;
   private static LogOperation[] operationsToReplay;
-
-  // The stat trackers used for this thread.
-  protected CategoricalTracker opRatios;
-  protected CategoricalTracker resultCodes;
-  protected IncrementalTracker addsReplayed;
-  protected IncrementalTracker bindsReplayed;
-  protected IncrementalTracker comparesReplayed;
-  protected IncrementalTracker deletesReplayed;
-  protected IncrementalTracker modifiesReplayed;
-  protected IncrementalTracker searchesReplayed;
-  protected IncrementalTracker totalReplayed;
-  protected TimeTracker        addTimer;
-  protected TimeTracker        bindTimer;
-  protected TimeTracker        compareTimer;
-  protected TimeTracker        deleteTimer;
-  protected TimeTracker        modifyTimer;
-  protected TimeTracker        searchTimer;
-  protected TimeTracker        totalTimer;
-
-  // The connections to the directory server to use for bind operations and all
-  // other operations, respectively.
-  protected LDAPConnection bindConnection;
-  protected LDAPConnection opConnection;
 
   // The random number generators used by this job.
   private static Random parentRandom;

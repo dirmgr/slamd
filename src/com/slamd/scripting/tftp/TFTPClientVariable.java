@@ -416,8 +416,10 @@ public class TFTPClientVariable extends Variable
     statTrackers = new StatTracker[0];
   }
 
-  /*
-   * Stores the passed message in the failureMessage variable
+  /**
+   * Stores the passed message in the failureMessage variable.
+   *
+   * @param  message  The message to be stored.
    */
   private void setFailureMessage(String message)
   {

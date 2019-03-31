@@ -30,7 +30,9 @@ import com.slamd.job.JobClass;
  */
 public abstract class Instruction
 {
-  // The line number in the script on which this instruction begins.
+  /**
+   * The line number in the script on which this instruction begins.
+   */
   protected int lineNumber;
 
 

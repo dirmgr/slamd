@@ -64,6 +64,23 @@ public class ClientConnection
        extends Thread
        implements Comparable<ClientConnection>
 {
+  /**
+   * Indicates whether this client is operating in restricted mode.  If so, then
+   * it should only be used to handle jobs for which it has been explicitly
+   * requested.
+   */
+  boolean restrictedMode;
+
+
+
+
+  /**
+   * The network socket used to communicate with the client.
+   */
+  Socket socket;
+
+
+
   // The list used to hold responses to solicited messages
   private ArrayList<Message> messageList;
 
@@ -73,11 +90,6 @@ public class ClientConnection
   // Indicates whether this connection should keep listening for new messages
   // from the client.
   private boolean keepListening;
-
-  // Indicates whether this client is operating in restricted mode.  If so, then
-  // it should only be used to handle jobs for which it has been explicitly
-  // requested.
-  protected boolean restrictedMode;
 
   // Indicates whether this client supports time synchronization.
   private boolean supportsTimeSync;
@@ -113,9 +125,6 @@ public class ClientConnection
 
   // The SLAMD server with which this client connection is associated
   private SLAMDServer slamdServer;
-
-  // The network socket used to communicate with the client
-  protected Socket socket;
 
   // The authentication ID provided by the client.
   private String authID;

@@ -413,8 +413,10 @@ public class HTTPRequestVariable
 
 
 
-  // The actual HTTP request that we will use to perform all processing.
-  protected HTTPRequest httpRequest;
+  /**
+   * The actual HTTP request that we will use to perform all processing.
+   */
+  HTTPRequest httpRequest;
 
 
 

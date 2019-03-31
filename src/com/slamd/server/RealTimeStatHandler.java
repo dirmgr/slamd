@@ -41,8 +41,10 @@ import com.slamd.message.ReportStatisticMessage;
  */
 public class RealTimeStatHandler
 {
-  // The maximum number of collection intervals that should be maintained.
-  protected int maxIntervals;
+  /**
+   * The maximum number of collection intervals that should be maintained.
+   */
+  int maxIntervals;
 
   // The hash map that associates statistical data with the corresponding job.
   private HashMap<String,RealTimeJobStats> statHash;

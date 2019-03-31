@@ -81,45 +81,45 @@ public class ClientManager
 
 
   // The set of processes associated with this client manager.
-  ArrayList<Process> processList;
+  private ArrayList<Process> processList;
 
   // The ASN.1 reader used to read messages from the server.
-  ASN1StreamReader asn1StreamReader;
+  private ASN1StreamReader asn1StreamReader;
 
   // Indicates whether the client manager should blindly trust any SSL
   // certificate presented by the SLAMD server.
-  boolean blindTrust;
+  private boolean blindTrust;
 
   // Indicates whether the client manager is currently connected to the SLAMD
   // server.
-  boolean connected;
+  private boolean connected;
 
   // Indicates whether the client manager should be stopped.
-  boolean stopClientManager;
+  private boolean stopClientManager;
 
   // Indicates whether the client manager should use SSL to communicate with
   // the SLAMD server.
-  boolean useSSL;
+  private boolean useSSL;
 
   // The buffer used to read data from the client processes.
-  byte[] readBuffer;
+  private byte[] readBuffer;
 
   // The client message writer that will be used for writing messages about the
   // progress of the client manager.
-  ClientMessageWriter messageWriter;
+  private ClientMessageWriter messageWriter;
 
   // The number of client instances to automatically create upon connecting to
   // the SLAMD server.
-  int autoCreateClients;
+  private int autoCreateClients;
 
   // The maximum number of clients that may be created on this system.
-  int maxClients;
+  private int maxClients;
 
   // The ID of the next message that should be sent to the SLAMD server.
-  int nextMessageID;
+  private int nextMessageID;
 
   // The port number for the SLAMD server.
-  int serverPort;
+  private int serverPort;
 
   // The output stream to use to write to the server.
   private OutputStream outputStream;
@@ -128,31 +128,31 @@ public class ClientManager
   private final SSLUtil sslUtil;
 
   // The socket used to communicate with the SLAMD server.
-  Socket socket;
+  private Socket socket;
 
   // The local address the client should use when connecting to the server.
-  String clientAddress;
+  private String clientAddress;
 
   // The client ID for this client manager.
-  String clientID;
+  private String clientID;
 
   // The address of the SLAMD server.
-  String serverAddress;
+  private String serverAddress;
 
   // The location of the JSSE key store.
-  String sslKeyStore;
+  private String sslKeyStore;
 
   // The password required to access the JSSE key store.
-  String sslKeyStorePassword;
+  private String sslKeyStorePassword;
 
   // The location of the JSSE trust store.
-  String sslTrustStore;
+  private String sslTrustStore;
 
   // The password required to access the JSSE trust store.
-  String sslTrustStorePassword;
+  private String sslTrustStorePassword;
 
   // The command to use to start an instance of the client.
-  String startCommand;
+  private String startCommand;
 
 
 

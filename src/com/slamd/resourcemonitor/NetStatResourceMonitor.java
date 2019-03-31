@@ -72,14 +72,17 @@ public class NetStatResourceMonitor
   public static final String PROPERTY_MONITOR_AGGREGATE_STATISTICS =
       "monitor_aggregate_statistics";
 
+
+  /**
+   * The frequency that we should use when collecting statistics.
+   */
+  int collectionInterval;
+
   // A flag that indicates whether we will try to report real-time statistics.
-  boolean enableRealTimeStats;
+  private boolean enableRealTimeStats;
 
   // The stat trackers used to keep track of the amount of traffic transferred.
   private InterfaceStatistics[] interfaceStatistics;
-
-  // The frequency that we should use when collecting statistics.
-  int collectionInterval;
 
   // Names of the monitored interfaces.
   private String[] monitoredInterfaces;

@@ -63,8 +63,10 @@ public class Template
   // template entry has been finalized.
   private int[] subtemplateCounts;
 
-  // The name of the parent template.  This name is case-insensitive
-  protected String parentTemplateName;
+  /**
+   * The name of the parent template.  This name is case-insensitive
+   */
+  String parentTemplateName;
 
   // The name(s) of the attribute(s) that is to be used as the RDN component for
   // entries of this type, converted to lowercase.
@@ -81,9 +83,11 @@ public class Template
   // entry has been finalized.
   private String[] subtemplateNames;
 
-  // The array that will contain all the attribute information once the
-  // template entry has been finalized.
-  protected String[][] attrComponents;
+  /**
+   * The array that will contain all the attribute information once the
+   * template entry has been finalized.
+   */
+  String[][] attrComponents;
 
 
 

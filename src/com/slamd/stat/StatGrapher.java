@@ -132,9 +132,11 @@ public class StatGrapher
   // Indicates whether the graph should include vertical grid lines.
   private boolean includeVerticalGrid;
 
-  // Indicates whether the pie graph should show the percentage for each
-  // category.
-  protected boolean showPercentages;
+  /**
+   * Indicates whether the pie graph should show the percentage for each
+   * category.
+   */
+  boolean showPercentages;
 
   // The decimal format that will be used to format numeric values for display.
   private DecimalFormat decimalFormat;

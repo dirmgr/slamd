@@ -148,6 +148,20 @@ public class ReplicationLatencyResourceMonitor
 
 
 
+  /**
+   * Indicates whether this resource monitor is stopped.
+   */
+  boolean isStopped;
+
+
+
+  /**
+   * Indicates whether this resource monitor is waiting on a persistent search.
+   */
+  boolean waitingOnPSearch;
+
+
+
   // Information used to connect to the servers.
   private int    masterPort;
   private int    replicaPort;
@@ -164,12 +178,6 @@ public class ReplicationLatencyResourceMonitor
   private int    latencyCheckDelay;
   private String attrToModify;
   private String latencyCheckEntryDN;
-
-
-  // Variables used by the monitor thread to help ensure that this thread stops
-  // in a timely manner when appropriate.
-  protected boolean isStopped;
-  protected boolean waitingOnPSearch;
 
 
   // The stat tracker used to measure replication latency.

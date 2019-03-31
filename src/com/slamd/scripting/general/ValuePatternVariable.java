@@ -89,8 +89,10 @@ public static final int ASSIGN_2_METHOD_NUMBER = 1;
 
 
 
-  // The parent random number generator to use to initialize the generators for
-  // each thread.
+  /**
+   * The parent random number generator to use to initialize the generators for
+   * each thread.
+   */
   static Random parentRandom = new Random();
 
 
@@ -112,7 +114,7 @@ public static final int ASSIGN_2_METHOD_NUMBER = 1;
 
 
   // The value pattern to use to construct the values.
-  ValuePattern pattern;
+  private ValuePattern pattern;
 
 
 

@@ -88,7 +88,7 @@ public abstract class NetStatCollector
 
 
     /**
-     * Sets the OS type
+     * Sets the OS type.
      * @param osType   os type
      */
     public void setOSType(int osType)

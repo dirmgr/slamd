@@ -36,7 +36,9 @@ import java.text.DecimalFormat;
  */
 public class ThroughputTestClient
 {
-  // Indicates whether the client should stop reading data from the server.
+  /**
+   * Indicates whether the client should stop reading data from the server.
+   */
   protected boolean shouldStop;
 
   // The buffer used to hold data read from the server.

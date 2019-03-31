@@ -318,6 +318,14 @@ public final class OptimizingJob
 
 
 
+  /**
+   * The SLAMD server with which this optimizing job is associated.
+   */
+  protected SLAMDServer slamdServer;
+
+
+
+
   // Indicates whether a request has been received to cancel this job.
   private boolean cancelRequested;
 
@@ -407,9 +415,6 @@ public final class OptimizingJob
 
   // The set of job-specific parameters associated with this optimizing job.
   private ParameterList parameters;
-
-  // The SLAMD server with which this optimizing job is associated.
-  protected SLAMDServer slamdServer;
 
   // The set of comments for the optimizing job.
   private String comments;

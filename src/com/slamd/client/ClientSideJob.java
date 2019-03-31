@@ -60,58 +60,58 @@ public class ClientSideJob
 
 
   // The set of active job threads.
-  ArrayList<JobClass> activeThreads;
+  private ArrayList<JobClass> activeThreads;
 
   // The set of messages that have been logged during the execution of the job.
-  ArrayList<String> logMessages;
+  private ArrayList<String> logMessages;
 
   // Indicates whether real-time statistics collection should be used.
-  boolean enableRealTimeStats;
+  private boolean enableRealTimeStats;
 
   // Indicates whether the job is done processing for some reason
-  boolean isDone;
+  private boolean isDone;
 
   // Indicates whether the custom job class loader should be used.
-  boolean useCustomClassLoader;
+  private boolean useCustomClassLoader;
 
   // The client message writer that will be used to write messages to the
   // client.
-  ClientMessageWriter messageWriter;
+  private ClientMessageWriter messageWriter;
 
   // The time at which this job should start running.
-  Date startTime;
+  private Date startTime;
 
   // The time at which this job should stop running.
-  Date stopTime;
+  private Date stopTime;
 
   // The client number associated with this job.
-  int clientNumber;
+  private int clientNumber;
 
   // The length of time in seconds to use as the statistics collection interval.
-  int collectionInterval;
+  private int collectionInterval;
 
   // The maximum length of time in seconds that the job should be allowed to
   // run.
-  int duration;
+  private int duration;
 
   // The state of the job as it currently exists.
-  int jobState;
+  private int jobState;
 
   // The number of concurrent job threads that should run on each client.
-  int threadsPerClient;
+  private int threadsPerClient;
 
   // The delay in milliseconds between the time that each thread should be
   // started.
-  int threadStartupDelay;
+  private int threadStartupDelay;
 
   // The time that the job actually started running.
-  long actualStartTime;
+  private long actualStartTime;
 
   // The time that the job actually stopped running.
-  long actualStopTime;
+  private long actualStopTime;
 
   // The time (ms since January 1, 1970) that the job was scheduled to start.
-  long scheduledStartTime;
+  private long scheduledStartTime;
 
   // A mutex used to protect multithreaded access to job threads.
   private final Object jobThreadMutex;
@@ -120,28 +120,28 @@ public class ClientSideJob
   private final Object logMutex;
 
   // The set of parameters that can customize the behavior of the job.
-  ParameterList parameters;
+  private ParameterList parameters;
 
   // The stat reporter that should be used for collecting statistics
-  RealTimeStatReporter statReporter;
+  private RealTimeStatReporter statReporter;
 
   // The client with which this job is associated.
-  Client client;
+  private Client client;
 
   // The set of job threads that are associated with this job.
-  JobClass[] jobThreads;
+  private JobClass[] jobThreads;
 
   // The location in which job class files may be found.
-  String classPath;
+  private String classPath;
 
   // The ID of the client that is being used to run this job.
-  String clientID;
+  private String clientID;
 
   // The unique ID assigned to this job
-  String jobID;
+  private String jobID;
 
   // The name of the Java class file that serves as the job thread
-  String jobClass;
+  private String jobClass;
 
 
 

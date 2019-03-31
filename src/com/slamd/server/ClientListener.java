@@ -64,6 +64,13 @@ public class ClientListener
        extends Thread
        implements ConfigSubscriber
 {
+  /**
+   * The port on which the server is listening for new connections.
+   */
+  int listenPort;
+
+
+
   // The set of connections that are available for use in job processing
   private ArrayList<ClientConnection> availableConnections;
 
@@ -85,9 +92,6 @@ public class ClientListener
 
   // The length of time in seconds that should pass between keepalive messages
   private int keepaliveInterval;
-
-  // The port on which the server is listening for new connections
-  protected int listenPort;
 
   // The maximum number of simultaneous clients that may be connected to the
   // server at once.

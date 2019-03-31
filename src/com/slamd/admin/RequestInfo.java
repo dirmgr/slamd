@@ -40,116 +40,251 @@ import com.slamd.common.Constants;
  */
 public class RequestInfo
 {
-  // Indicates whether the servlet is currently should generate extra HTML that
-  // can be used for debugging purposes.
+  /**
+   * Indicates whether the servlet is currently should generate extra HTML that
+   * can be used for debugging purposes.
+   */
   protected boolean debugHTML;
 
-  // Indicates whether the doPost method should generate the response that gets
-  // sent back to the client or if it has already been sent in the course of
-  // processing.
+
+
+
+  /**
+   * Indicates whether the doPost method should generate the response that gets
+   * sent back to the client or if it has already been sent in the course of
+   * processing.
+   */
   protected boolean generateHTML;
 
-  // Indicates whether the sidebar containing link information should be
-  // generated.
+
+
+  /**
+   * Indicates whether the sidebar containing link information should be
+   * generated.
+   */
   protected boolean generateSidebar;
 
-  // Indicates whether the user has full access to the SLAMD admin interface.
+
+
+  /**
+   * Indicates whether the user has full access to the SLAMD admin interface.
+   */
   protected boolean hasFullAccess;
 
-  // Indicates whether the user may add job class definitions.
+
+
+  /**
+   * Indicates whether the user may add job class definitions.
+   */
   protected boolean mayAddJobClass;
 
-  // Indicates whether the user may cancel scheduled jobs.
+
+
+  /**
+   * Indicates whether the user may cancel scheduled jobs.
+   */
   protected boolean mayCancelJob;
 
-  // Indicates whether the user may delete completed job info.
+
+
+  /**
+   * Indicates whether the user may delete completed job info.
+   */
   protected boolean mayDeleteJob;
 
-  // Indicates whether the user may delete job class definitions.
+
+
+  /**
+   * Indicates whether the user may delete job class definitions.
+   */
   protected boolean mayDeleteJobClass;
 
-  // Indicates whether the user may disconnect clients.
+
+
+  /**
+   * Indicates whether the user may disconnect clients.
+   */
   protected boolean mayDisconnectClients;
 
-  // Indicates whether the user may edit servlet config info.
+
+
+  /**
+   * Indicates whether the user may edit servlet config info.
+   */
   protected boolean mayEditServletConfig;
 
-  // Indicates whether the user may edit SLAMD config info.
+
+
+  /**
+   * Indicates whether the user may edit SLAMD config info.
+   */
   protected boolean mayEditSLAMDConfig;
 
-  // Indicates whether the user may export job data.
+
+
+  /**
+   * Indicates whether the user may export job data.
+   */
   protected boolean mayExportJobData;
 
-  // Indicates whether the user may manage real and virtual job folders.
+
+
+  /**
+   * Indicates whether the user may manage real and virtual job folders.
+   */
   protected boolean mayManageFolders;
 
-  // Indicates whether the user may schedule jobs for execution.
+
+
+  /**
+   * Indicates whether the user may schedule jobs for execution.
+   */
   protected boolean mayScheduleJob;
 
-  // Indicates whether the user may start or stop the access control manager.
+
+
+  /**
+   * Indicates whether the user may start or stop the access control manager.
+   */
   protected boolean mayStartStopAccessManager;
 
-  // Indicates whether the user may start or stop SLAMD.
+
+
+  /**
+   * Indicates whether the user may start or stop SLAMD.
+   */
   protected boolean mayStartStopSLAMD;
 
-  // Indicates whether the user may view job class definitions.
+
+
+  /**
+   * Indicates whether the user may view job class definitions.
+   */
   protected boolean mayViewJobClass;
 
-  // Indicates whether the user may view job information.
+
+
+  /**
+   * Indicates whether the user may view job information.
+   */
   protected boolean mayViewJob;
 
-  // Indicates whether the user may view the servlet config info.
+
+
+  /**
+   * Indicates whether the user may view the servlet config info.
+   */
+  //
   protected boolean mayViewServletConfig;
 
-  // Indicates whether the user may view the SLAMD server config info.
+
+
+  /**
+   * Indicates whether the user may view the SLAMD server config info.
+   */
   protected boolean mayViewSLAMDConfig;
 
-  // Indicates whether the user may view the server status info.
+
+
+  /**
+   * Indicates whether the user may view the server status info.
+   */
   protected boolean mayViewStatus;
 
-  // The structure with information regarding the servlet request.
+
+
+  /**
+   * The structure with information regarding the servlet request.
+   */
   protected final HttpServletRequest request;
 
-  // The structure with information regarding the servlet response.
+
+
+  /**
+   * The structure with information regarding the servlet response.
+   */
+  //
   protected final HttpServletResponse response;
 
-  // The unique ID assigned to this request.  It will appear as an HTML comment
-  // at the top of the response page generated, and will also appear at the
-  // beginning of any messages logged using the admin interface debugging log
-  // level.
+
+
+  /**
+   * The unique ID assigned to this request.  It will appear as an HTML comment
+   * at the top of the response page generated, and will also appear at the
+   * beginning of any messages logged using the admin interface debugging log
+   * level.
+   */
   protected int requestID;
 
-  // The list of fields provided in the multipart request form, if it was a
-  // multipart request.
+
+
+  /**
+   * The list of fields provided in the multipart request form, if it was a
+   * multipart request.
+   */
   protected List<FileItem> multipartFieldList;
 
-  // The string representation of the URL that may be used to generate the
-  // current page using an HTTP GET.
+
+
+  /**
+   * The string representation of the URL that may be used to generate the
+   * current page using an HTTP GET.
+   */
   protected String getURL;
 
-  // The name of the administration section with which this request is
-  // associated.
+
+
+  /**
+   * The name of the administration section with which this request is
+   * associated.
+   */
   protected String section;
 
-  // The base URI for the servlet request.
+
+
+  /**
+   * The base URI for the servlet request.
+   */
   protected String servletBaseURI;
 
-  // The name of the administrative subsection with which this request is
-  // associated.
+
+
+  /**
+   * The name of the administrative subsection with which this request is
+   * associated.
+   */
   protected String subsection;
 
-  // The user ID
+
+
+  /**
+   * The user ID.
+   */
+  //
   protected String userIdentifier;
 
-  // A set of debug information that will be included as comments in the HTML
-  // that is generated.  Any message that would be logged to the SLAMD server
-  // log file will also be written here.
+
+
+
+  /**
+   * A set of debug information that will be included as comments in the HTML
+   * that is generated.  Any message that would be logged to the SLAMD server
+   * log file will also be written here.
+   */
   protected StringBuilder debugInfo;
 
-  // The main body of the HTML page to generate.
+
+
+  /**
+   * The main body of the HTML page to generate.
+   */
   protected StringBuilder htmlBody;
 
-  // A message that should be displayed at the top of the main frame.
+
+
+  /**
+   * The main body of the HTML page to generate.
+   */
   protected StringBuilder infoMessage;
 
 

@@ -36,10 +36,10 @@ public class JobClassLoader
        extends ClassLoader
 {
   // The parent class loader associated with this loader.
-  ClassLoader parent;
+  private ClassLoader parent;
 
   // The filesystem path that indicates where the classes may be found.
-  String classPath;
+  private String classPath;
 
 
 

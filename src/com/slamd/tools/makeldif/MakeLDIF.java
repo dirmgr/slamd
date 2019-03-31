@@ -128,176 +128,272 @@ public class MakeLDIF
 
 
 
-  // A list of the branches defined in the template file.  These need to be
-  // processed in order.
-  ArrayList<Branch> branches;
+  /**
+   * A list of the branches defined in the template file.  These need to be
+   * processed in order.
+   */
+  private ArrayList<Branch> branches;
 
-  // Indicates whether the end of the CSV file has been reached.
-  boolean csvEndReached = false;
+  /**
+   * Indicates whether the end of the CSV file has been reached.
+   */
+  private boolean csvEndReached = false;
 
-  // Indicates whether MakeLDIF is running in debug mode.
-  boolean debugMode = false;
+  /**
+   * Indicates whether MakeLDIF is running in debug mode.
+   */
+  private boolean debugMode = false;
 
-  // Indicates whether filter lists are to be generated.
-  boolean generateFilterList = false;
+  /**
+   * Indicates whether filter lists are to be generated.
+   */
+  private boolean generateFilterList = false;
 
-  // Indicates whether to ignore the first line of the CSV file.
-  boolean ignoreCSVHeaderLine = false;
+  /**
+   * Indicates whether to ignore the first line of the CSV file.
+   */
+  private boolean ignoreCSVHeaderLine = false;
 
-  // Indicates whether all the filter information should be stored in a single
-  // filter file or separated into files based on the filter types.
-  boolean separateFilterFiles = false;
+  /**
+   * Indicates whether all the filter information should be stored in a single
+   * filter file or separated into files based on the filter types.
+   */
+  private boolean separateFilterFiles = false;
 
-  // Indicates whether branch entries should not be written to the resulting
-  // LDIF file.
-  boolean skipBranchEntries = false;
+  /**
+   * Indicates whether branch entries should not be written to the resulting
+   * LDIF file.
+   */
+  private boolean skipBranchEntries = false;
 
-  // Indicates whether long lines in the LDIF output are to be wrapped.  By
-  // default they are not, but can be if you include the "-w" parameter.
-  boolean wrapLongLines = false;
+  /**
+   * Indicates whether long lines in the LDIF output are to be wrapped.  By
+   * default they are not, but can be if you include the "-w" parameter.
+   */
+  private boolean wrapLongLines = false;
 
-  // The reader used to read information from the CSV file.
-  BufferedReader csvReader;
+  /**
+   * The reader used to read information from the CSV file.
+   */
+  private BufferedReader csvReader;
 
-  // The writer used to send the DNs of the entries created into a file
-  BufferedWriter dnWriter;
+  /**
+   * The writer used to send the DNs of the entries created into a file.
+   */
+  private BufferedWriter dnWriter;
 
-  // The writer used to send bind information into a file.
-  BufferedWriter bindInfoWriter;
+  /**
+   * The writer used to send bind information into a file.
+   */
+  private BufferedWriter bindInfoWriter;
 
-  // The writer used to send information into the LDIF file.
-  BufferedWriter ldifWriter;
+  /**
+   * The writer used to send information into the LDIF file.
+   */
+  private BufferedWriter ldifWriter;
 
-  // The writer used to send information to the login information file.
-  BufferedWriter loginWriter;
+  /**
+   * The writer used to send information to the login information file.
+   */
+  private BufferedWriter loginWriter;
 
-  // A character array that contains 5000 characters.  This will be re-used
-  // multiple times for improved performance rather than repeatedly
-  // re-allocating memory each time an array is needed.
-  char[] chars5000 = new char[5000];
+  /**
+   * A character array that contains 5000 characters.  This will be re-used
+   * multiple times for improved performance rather than repeatedly
+   * re-allocating memory each time an array is needed.
+   */
+  private char[] chars5000 = new char[5000];
 
-  // A map containing lists of values read from file.
-  HashMap<String,ValueList> fileLists;
+  /**
+   * A map containing lists of values read from file.
+   */
+  private HashMap<String,ValueList> fileLists;
 
-  // A map containing the filter lists.
-  HashMap<String,UniqueSortedList> filterListHash;
+  /**
+   * A map containing the filter lists.
+   */
+  private HashMap<String,UniqueSortedList> filterListHash;
 
-  // A map containing the templates defined in the template file.
-  HashMap<String,Template> templateHash;
+  /**
+   * A map containing the templates defined in the template file.
+   */
+  private HashMap<String,Template> templateHash;
 
-  // A map containing value lists
-  HashMap<String,ValueList> valueLists;
+  /**
+   * A map containing value lists.
+   */
+  private HashMap<String,ValueList> valueLists;
 
-  // The total number of entries written to the LDIF file so far
-  int entriesWritten;
+  /**
+   * The total number of entries written to the LDIF file so far.
+   */
+  private int entriesWritten;
 
-  // The counter used to keep track of the LDIF filename counter if a limited
-  // number of entries should be written to a single LDIF file.
-  int fileNameCounter = 1;
+  /**
+   * The counter used to keep track of the LDIF filename counter if a limited
+   * number of entries should be written to a single LDIF file.
+   */
+  private int fileNameCounter = 1;
 
-  // The value that indicates the current position in the list of first names
-  int firstNameIndex;
+  /**
+   * The value that indicates the current position in the list of first names.
+   */
+  private int firstNameIndex;
 
-  // The value that indicates the current position in the list of last names
-  int lastNameIndex;
+  /**
+   * The value that indicates the current position in the list of last names.
+   */
+  private int lastNameIndex;
 
-  // The maximum number of entries that will be allowed to match a search filter
-  // in order for it to be included in the filter file.
-  int maxFilterMatches = -1;
+  /**
+   * The maximum number of entries that will be allowed to match a search filter
+   * in order for it to be included in the filter file.
+   */
+  private int maxFilterMatches = -1;
 
-  // The maximum number of entries that should be written to a single LDIF file.
-  int maxPerFile = -1;
+  /**
+   * The maximum number of entries that should be written to a single LDIF file.
+   */
+  private int maxPerFile = -1;
 
-  // The maximum number of entries that should be generated for each template
-  // under each branch.
-  int maxPerTemplate = -1;
+  /**
+   * The maximum number of entries that should be generated for each template
+   * under each branch.
+   */
+  private int maxPerTemplate = -1;
 
-  // The minimum number of entries that will be needed to match a search filter
-  // in order for it to be included in the filter file.
-  int minFilterMatches = 1;
+  /**
+   * The minimum number of entries that will be needed to match a search filter
+   * in order for it to be included in the filter file.
+   */
+  private int minFilterMatches = 1;
 
-  // The number of times that the larger of the first/last name lists has been
-  // completed
-  int nameLoopCounter;
+  /**
+   * The number of times that the larger of the first/last name lists has been
+   * completed.
+   */
+  private int nameLoopCounter;
 
-  // The counter that is added to the last name after all unique combinations of
-  // first and last names have been exhausted so that we can re-use all of those
-  // values and still maintain uniqueness.
-  int nameUniquenessCounter;
+  /**
+   * The counter that is added to the last name after all unique combinations of
+   * first and last names have been exhausted so that we can re-use all of those
+   * values and still maintain uniqueness.
+   */
+  private int nameUniquenessCounter;
 
-  // The number of elements in the first name list.
-  int numFirstNames;
+  /**
+   * The number of elements in the first name list.
+   */
+  private int numFirstNames;
 
-  // The number of elements in the last name list.
-  int numLastNames;
+  /**
+   * The number of elements in the last name list.
+   */
+  private int numLastNames;
 
-  // The number of characters to include in substring filters.
-  int numSubstringChars = 3;
+  /**
+   * The number of characters to include in substring filters.
+   */
+  private int numSubstringChars = 3;
 
-  // The seed that is to be used to initialize the random number generator.
-  long randomSeed = -1;
+  /**
+   * The seed that is to be used to initialize the random number generator.
+   */
+  private long randomSeed = -1;
 
-  // The random number generator being used.
-  Random random;
+  /**
+   * The random number generator being used.
+   */
+  private Random random;
 
-  // The name of the file to use to write the DN and password for generated
-  // entries (provided that they have a password).  Specified with the "-b"
-  // parameter.
-  String bindInfoFile = null;
+  /**
+   * The name of the file to use to write the DN and password for generated
+   * entries (provided that they have a password).  Specified with the "-b"
+   * parameter.
+   */
+  private String bindInfoFile = null;
 
-  // The delimiter to use for the CSV data.
-  String csvDelimiter = null;
+  /**
+   * The delimiter to use for the CSV data.
+   */
+  private String csvDelimiter = null;
 
-  // The path to the CSV file containing data to use when generating the
-  // entries.
-  String csvFile = null;
+  /**
+   * The path to the CSV file containing data to use when generating the
+   * entries.
+   */
+  private String csvFile = null;
 
-  // The name of the file to use to write the DNs of the entries that have been
-  // created.
-  String dnFile = null;
+  /**
+   * The name of the file to use to write the DNs of the entries that have been
+   * created.
+   */
+  private String dnFile = null;
 
-  // The base that we will use for GUIDs instead of the MAC address of the
-  // network interface (since that may not exist, and Java can't get to it
-  // without native calls anyway).
-  String guidBase;
+  /**
+   * The base that we will use for GUIDs instead of the MAC address of the
+   * network interface (since that may not exist, and Java can't get to it
+   * without native calls anyway).
+   */
+  private String guidBase;
 
-  // The name of the file to which search filter information will be written.
-  // Specified with the "-F" parameter.
-  String filterFile = null;
+  /**
+   * The name of the file to which search filter information will be written.
+   * Specified with the "-F" parameter.
+   */
+  private String filterFile = null;
 
-  // The name of the file containing the list of first names to use.  Specified
-  // with the "-f" parameter.
-  String firstNameFile = "first.names";
+  /**
+   * The name of the file containing the list of first names to use.  Specified
+   * with the "-f" parameter.
+   */
+  private String firstNameFile = "first.names";
 
-  // The name of the file containing the list of last names to use.  Specified
-  // with the "-l" parameter.
-  String lastNameFile = "last.names";
+  /**
+   * The name of the file containing the list of last names to use.  Specified
+   * with the "-l" parameter.
+   */
+  private String lastNameFile = "last.names";
 
-  // The path and name of the LDIF file to create.  Specified with the "-o"
-  // parameter.
-  String ldifFile = null;
+  /**
+   * The path and name of the LDIF file to create.  Specified with the "-o"
+   * parameter.
+   */
+  private String ldifFile = null;
 
-  // The path and name of the file to create with login ID/password information.
-  // Specified with the "-L" parameter.
-  String loginFile = null;
+  /**
+   * The path and name of the file to create with login ID/password information.
+   * Specified with the "-L" parameter.
+   */
+  private String loginFile = null;
 
-  // The name of the attribute that will be used as the login ID for the user.
-  // Specified with the "-i" parameter.
-  String loginIDAttr = "uid";
+  /**
+   * The name of the attribute that will be used as the login ID for the user.
+   * Specified with the "-i" parameter.
+   */
+  private String loginIDAttr = "uid";
 
-  // The path to the directory containing the MakeLDIF resource files.
-  // Specified with the "-r" parameter.
-  String resourceDir = null;
+  /**
+   * The path to the directory containing the MakeLDIF resource files.
+   * Specified with the "-r" parameter.
+   */
+  private String resourceDir = null;
 
-  // The path and name of the template file to use.  Specified with the "-t"
-  // parameter.
-  String templateFile = null;
+  /**
+   * The path and name of the template file to use.  Specified with the "-t"
+   * parameter.
+   */
+  private String templateFile = null;
 
-  // The list of first names to use when generating the LDIF
-  String[] firstNames;
+  /**
+   * The list of first names to use when generating the LDIF.
+   */
+  private String[] firstNames;
 
-  // The list of last names to use when generating the LDIF
-  String[] lastNames;
+  /**
+   * The list of last names to use when generating the LDIF.
+   */
+  private String[] lastNames;
 
 
 

@@ -151,100 +151,132 @@ public class HTTPClient
 
 
 
-  // The list of cookies held by this client.
-  ArrayList<HTTPCookie> cookieList;
 
-  // Indicates whether the client will accept GZIP-encoded content.
+  /**
+   * Indicates whether the client will accept GZIP-encoded content.
+   */
   boolean enableGZIP;
 
+
+
+  /**
+   * Indicates whether to use the HTTP 1.1 keepalive feature.
+   */
+  boolean useKeepAlive;
+
+
+
+  /**
+   * The map containing common headers that should always be added to requests.
+   */
+  LinkedHashMap<String,String> commonHeaderMap;
+
+
+
+  /**
+   * The user ID to use to authenticate to the remote server.
+   */
+  String authID;
+
+
+
+  /**
+   * The password to use to authenticate to the remote server.
+   */
+  String authPW;
+
+
+
+  /**
+   * The user ID to use to authenticate to the proxy server.
+   */
+  String proxyAuthID;
+
+
+
+  /**
+   * The password to use to authenticate to the proxy server.
+   */
+  String proxyAuthPW;
+
+
+
+  /**
+   * The address of the proxy server to use.
+   */
+  String proxyHost;
+
+
+
+  // The list of cookies held by this client.
+  private ArrayList<HTTPCookie> cookieList;
+
   // Indicates whether cookie support is enabled for this client.
-  boolean cookiesEnabled;
+  private boolean cookiesEnabled;
 
   // Indicates whether this client is operating in debug mode.
-  boolean debugMode;
+  private boolean debugMode;
 
   // Indicates whether the client should automatically delete any cookie whose
   // value is set to "LOGOUT".
-  boolean deleteLogoutCookies;
+  private boolean deleteLogoutCookies;
 
   // Indicates whether to automatically follow redirects returned by the server.
-  boolean followRedirects;
+  private boolean followRedirects;
 
   // Indicates whether to maintain statistics for the client.
-  boolean keepStats;
+  private boolean keepStats;
 
   // Indicates whether associated files (e.g., images, style sheets, etc.)
   // should be retrieved whenever reading an HTML document.
-  boolean retrieveAssociatedFiles;
+  private boolean retrieveAssociatedFiles;
 
   // Indicates whether the stat trackers are currently active.
-  boolean trackersActive;
-
-  // Indicates whether to use the HTTP 1.1 keepalive feature.
-  boolean useKeepAlive;
+  private boolean trackersActive;
 
   // The stat tracker used to keep track of the response codes for the requests.
-  CategoricalTracker responseCodes;
+  private CategoricalTracker responseCodes;
 
   // A map that associates a host/port pair with a socket so that existing
   // connections can be re-used if available.
-  HashMap<String,Socket> socketHash;
+  private HashMap<String,Socket> socketHash;
 
   // The stat tracker used to keep track of the number of redirects followed.
-  IncrementalTracker redirectsFollowed;
+  private IncrementalTracker redirectsFollowed;
 
   // The stat tracker used to keep track of the number of requests processed.
-  IncrementalTracker requestsProcessed;
+  private IncrementalTracker requestsProcessed;
 
   // The address that should be used for the client system.
-  InetAddress clientAddress;
+  private InetAddress clientAddress;
 
   // The port number of the proxy server to use.
-  int proxyPort;
+  private int proxyPort;
 
   // The maximum length of time in milliseconds to block when trying to read
   // data from the client.
-  int socketTimeout;
+  private int socketTimeout;
 
   // The stat tracker used to keep track of the average size of each response.
-  IntegerValueTracker responseSizes;
-
-  // The hash map containing common headers that should always be added to
-  // requests.
-  LinkedHashMap<String,String> commonHeaderMap;
+  private IntegerValueTracker responseSizes;
 
   // The writer that will be used for debug messages.
-  PrintStream debugWriter;
+  private PrintStream debugWriter;
 
   // The socket factory used to create SSL sockets.
-  SSLSocketFactory sslSocketFactory;
-
-  // The user ID to use to authenticate to the remote server.
-  String authID;
-
-  // The password to use to authenticate to the remote server.
-  String authPW;
-
-  // The user ID to use to authenticate to the proxy server.
-  String proxyAuthID;
-
-  // The password to use to authenticate to the proxy server.
-  String proxyAuthPW;
-
-  // The address of the proxy server to use.
-  String proxyHost;
+  private SSLSocketFactory sslSocketFactory;
 
   // The stat tracker used to keep track of the length of time required to
   // retrieve the content of the response.
-  TimeTracker contentTimer;
+  private TimeTracker contentTimer;
 
   // The stat tracker used to keep track of the length of time required to
   // retrieve the header of the response.
-  TimeTracker headerTimer;
+  private TimeTracker headerTimer;
 
   // The stat tracker used to keep track of the total length of time required to
   // process the request.
-  TimeTracker requestTimer;
+  private TimeTracker requestTimer;
 
 
 

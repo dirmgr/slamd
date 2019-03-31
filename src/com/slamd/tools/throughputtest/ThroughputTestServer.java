@@ -50,10 +50,14 @@ public class ThroughputTestServer
 
 
 
-  // Indicates whether to use TCP_NODELAY when sending data to the client.
+  /**
+   * Indicates whether to use TCP_NODELAY when sending data to the client.
+   */
   protected boolean useTCPNoDelay;
 
-  // The size of the buffer size to use when sending data to the client.
+  /**
+   * The size of the buffer size to use when sending data to the client.
+   */
   protected int bufferSize;
 
   // The port on which the server will listen for connections from clients.

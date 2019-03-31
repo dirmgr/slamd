@@ -90,7 +90,7 @@ import com.slamd.scripting.general.StringVariable;
  *        value.</LI>
  *   <LI>delete(string dn) -- Removes the entry with the specified DN from the
  *       LDAP directory server.  Returns the result code of the delete operation
- *       as an integer value.</LI>.
+ *       as an integer value.</LI>
  *   <LI>disconnect() -- Closes the connection to the directory server.  This
  *       method does not return a value.</LI>
  *   <LI>enableAttemptedOperationCounters() -- Enables the stat trackers that

@@ -290,6 +290,13 @@ public final class Job
 
 
 
+  /**
+   * The SLAMD server with which this job is associated.
+   */
+  protected SLAMDServer slamdServer;
+
+
+
   // Indicates whether this job should be displayed in restricted read-only
   // mode.
   private boolean displayInReadOnlyMode;
@@ -382,9 +389,6 @@ public final class Job
   // The job thread that will be used to obtain information about the actual
   // work to be performed.
   private JobClass infoJobThread;
-
-  // The SLAMD server with which this job is associated
-  protected SLAMDServer slamdServer;
 
   // The name of the folder in which this job is located.
   private String folderName;

@@ -651,6 +651,14 @@ public final class ZFSPoolResourceMonitor
     final int kbRead;
     final int kbWritten;
 
+    /**
+     * Creates a new pool data object with the provide information.
+     *
+     * @param  reads           The number of reads.
+     * @param  writes          The number of writes.
+     * @param  readKilobytes   The number of kilobytes read.
+     * @param  writeKilobytes  The number of kilobytes written.
+     */
     private PoolData(int reads, int writes, int readKilobytes,
                      int writeKilobytes)
     {

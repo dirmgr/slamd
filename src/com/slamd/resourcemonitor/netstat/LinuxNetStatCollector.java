@@ -27,7 +27,10 @@ import java.util.Set;
  */
 public class LinuxNetStatCollector extends NetStatCollector
 {
-  // Should only be instantiated by the builder
+  /**
+   * Creates a new instance of this collector.  This should only be called by
+   * the builder.
+   */
   LinuxNetStatCollector()
   {
   }

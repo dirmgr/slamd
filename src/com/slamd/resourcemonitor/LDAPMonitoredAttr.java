@@ -35,8 +35,12 @@ import com.slamd.stat.StatTracker;
  */
 class LDAPMonitoredAttr
 {
-  // monitored attribute name
+  /**
+   * The monitored attribute name.
+   */
   final String name;
+
+
 
   // display name - this name is displayed on the results page
   private String displayName;

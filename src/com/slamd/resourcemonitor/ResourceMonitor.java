@@ -94,6 +94,14 @@ public abstract class ResourceMonitor
 
 
 
+  /**
+   * The reference to the resource monitor client being used to capture
+   * statistics.
+   */
+  ResourceMonitorClient monitorClient;
+
+
+
   // The list of log messages associated with this monitor thread.
   private List<String> logMessages;
 
@@ -111,10 +119,6 @@ public abstract class ResourceMonitor
 
   // The set of properties that indicate how this monitor thread should operate.
   private Properties monitorProperties;
-
-  // The reference to the resource monitor client being used to capture
-  // statistics.
-  protected ResourceMonitorClient monitorClient;
 
   // The resource monitor job that is currently running.
   private ResourceMonitorJob monitorJob;

@@ -36,7 +36,6 @@
 
   <module name="TreeWalker">
     <!-- Ensure that all methods have Javadoc documentation. -->
-    <!--
     <module name="JavadocMethod">
       <property name="scope"                       value="private" />
       <property name="allowUndeclaredRTE"          value="false"   />
@@ -47,26 +46,21 @@
       <property name="allowMissingPropertyJavadoc" value="false"   />
       <property name="suppressLoadErrors"          value="true"    />
     </module>
-     -->
 
 
     <!-- Ensure that all non-private variables have Javadoc documentation. -->
-    <!--
     <module name="JavadocVariable">
       <property name="scope" value="package" />
     </module>
-     -->
 
 
     <!-- Ensure that all Javadoc comments are well-formed. -->
-    <!--
     <module name="JavadocStyle">
       <property name="scope"              value="private" />
       <property name="checkFirstSentence" value="true"    />
       <property name="checkEmptyJavadoc"  value="false"   />
       <property name="checkHtml"          value="true"    />
     </module>
-     -->
 
 
     <!-- Ensure that there are no star imports. -->

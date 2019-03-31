@@ -57,24 +57,58 @@ public class Logger
 
 
   // Variables that are used in the actual logging process
-  private   boolean        alwaysFlush;
-  protected boolean        closeRequested;
-  protected boolean        logAsynchronously;
-  private   boolean        loggerEnabled;
-  protected BufferedWriter logWriter;
-  private   String         logFilename;
+  private  boolean alwaysFlush;
+  private  boolean loggerEnabled;
+  private  String logFilename;
 
-  protected final Object loggerMutex;
-  protected final Object writerMutex;
+
+
+  /**
+   * Indicates whether a request has been made to close the logger.
+   */
+  boolean closeRequested;
+
+
+
+  /**
+   * Indicates whether to log asynchronously.
+   */
+  boolean logAsynchronously;
+
+
+
+  /**
+   * The writer used to actually write the log.
+   */
+  BufferedWriter logWriter;
+
+
+
+
+  /**
+   * A mutex for threadsafe access to the logger.
+   */
+  final Object loggerMutex;
+
+
+
+  /**
+   * A mutext for threadsafe access to the writer.
+   */
+  final Object writerMutex;
 
 
   // The configuration database for the SLAMD server.
   private SLAMDDB configDB;
 
 
-  // Variables related to asynchronous logging
-  private   LoggerThread      loggerThread;
-  protected ArrayList<String> logBuffer;
+  // A thread for asynchronous logging.
+  private LoggerThread  loggerThread;
+
+  /**
+   * A buffer used for asynchronous logging.
+   */
+  ArrayList<String> logBuffer;
 
 
   // The SLAMD server with which this logger is associated

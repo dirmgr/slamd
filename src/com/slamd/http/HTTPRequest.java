@@ -54,6 +54,13 @@ public class HTTPRequest
 
 
 
+  /**
+   * The base URL for this request.
+   */
+  URL baseURL;
+
+
+
   // The list of parameter names that should be used for this request.
   private ArrayList<String> parameterNames;
 
@@ -68,9 +75,6 @@ public class HTTPRequest
 
   // The request body.
   private String body;
-
-  // The base URL for this request.
-  URL baseURL;
 
 
 

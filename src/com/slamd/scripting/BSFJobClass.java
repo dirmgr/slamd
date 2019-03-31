@@ -457,7 +457,7 @@ public class BSFJobClass
 
 
   /**
-   * Retrieves the value from a specified job argument
+   * Retrieves the value from a specified job argument.
    *
    * @param argName      The name of the argument to retrieve.
    * @param defaultValue The default value if one is not in the Hashtable.
@@ -491,7 +491,7 @@ public class BSFJobClass
 
 
   /**
-   * Retrieves the value from a specified job argument
+   * Retrieves the value from a specified job argument.
    *
    * @param argName The name of the argument to retrieve.
    *

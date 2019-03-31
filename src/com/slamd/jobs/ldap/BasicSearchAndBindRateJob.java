@@ -363,9 +363,7 @@ public final class BasicSearchAndBindRateJob
   @Override()
   public String getShortDescription()
   {
-    return "Perform repeated LDAP authentications consisting of a search " +
-         "to find a user followed by a simple bind as that user to verify " +
-         "the user's credentials.";
+    return "Perform repeated LDAP search and bind operations";
   }
 
 

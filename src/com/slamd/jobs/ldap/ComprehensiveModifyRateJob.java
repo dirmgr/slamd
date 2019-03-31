@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import javax.net.SocketFactory;
 
 import com.unboundid.ldap.sdk.Control;
@@ -368,10 +367,6 @@ public final class ComprehensiveModifyRateJob
   private LDAPConnectionPool connectionPool;
 
 
-  // An argument to use for generating values.
-  private Set<String> valueSet;
-
-
   // Stat trackers used by this job.  We should have a separate copy per thread,
   // so these should be non-static.
   private CategoricalTracker resultCodes;
@@ -390,7 +385,6 @@ public final class ComprehensiveModifyRateJob
 
     connectionPool = null;
     random = null;
-    valueSet = null;
 
     modifiesCompleted = null;
     modifyTimer = null;
@@ -1318,7 +1312,7 @@ public final class ComprehensiveModifyRateJob
 
 
     // Create the manage DSA IT request control, if appropriate.
-    List<Control> controlList = new ArrayList<>(6);
+    final List<Control> controlList = new ArrayList<>(6);
     final BooleanParameter manageDSAITParam =
          parameters.getBooleanParameter(includeManageDSAITParameter.getName());
     if ((manageDSAITParam != null) && manageDSAITParam.getBooleanValue())

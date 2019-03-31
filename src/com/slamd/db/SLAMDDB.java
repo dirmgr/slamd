@@ -72,11 +72,13 @@ import com.slamd.jobs.ldap.AsynchronousSearchRateJob;
 import com.slamd.jobs.ldap.BasicBindRateJob;
 import com.slamd.jobs.ldap.BasicModifyRateJob;
 import com.slamd.jobs.ldap.BasicSearchAndBindRateJob;
+import com.slamd.jobs.ldap.BasicSearchAndModifyRateJob;
 import com.slamd.jobs.ldap.BasicSearchRateJob;
 import com.slamd.jobs.ldap.CompareRateJob;
 import com.slamd.jobs.ldap.ComprehensiveBindRateJob;
 import com.slamd.jobs.ldap.ComprehensiveModifyRateJob;
 import com.slamd.jobs.ldap.ComprehensiveSearchAndBindRateJob;
+import com.slamd.jobs.ldap.ComprehensiveSearchAndModifyRateJob;
 import com.slamd.jobs.ldap.ComprehensiveSearchRateJob;
 import com.slamd.jobs.ldap.FileBasedModifyRateJob;
 import com.slamd.jobs.ldap.FileBasedSearchRateJob;
@@ -85,7 +87,6 @@ import com.slamd.jobs.ldap.ModifyDNRateJob;
 import com.slamd.jobs.ldap.MultiConnectionSearchRateJob;
 import com.slamd.jobs.ldap.MultiSearchMixedLoadJob;
 import com.slamd.jobs.ldap.PrimeWithSearchesJob;
-import com.slamd.jobs.ldap.SearchAndModifyRateJob;
 import com.slamd.jobs.ldap.SiteMinderJob;
 import com.slamd.jobs.ldap.WaitForDirectoryServerJob;
 import com.slamd.jobs.ldap.WeightedSiteMinderJob;
@@ -523,11 +524,13 @@ public final class SLAMDDB
       BasicBindRateJob.class.getName(),
       BasicModifyRateJob.class.getName(),
       BasicSearchAndBindRateJob.class.getName(),
+      BasicSearchAndModifyRateJob.class.getName(),
       BasicSearchRateJob.class.getName(),
       CompareRateJob.class.getName(),
       ComprehensiveBindRateJob.class.getName(),
       ComprehensiveModifyRateJob.class.getName(),
       ComprehensiveSearchAndBindRateJob.class.getName(),
+      ComprehensiveSearchAndModifyRateJob.class.getName(),
       ComprehensiveSearchRateJob.class.getName(),
       FileBasedModifyRateJob.class.getName(),
       FileBasedSearchRateJob.class.getName(),
@@ -536,7 +539,6 @@ public final class SLAMDDB
       MultiConnectionSearchRateJob.class.getName(),
       MultiSearchMixedLoadJob.class.getName(),
       PrimeWithSearchesJob.class.getName(),
-      SearchAndModifyRateJob.class.getName(),
       SiteMinderJob.class.getName(),
       WaitForDirectoryServerJob.class.getName(),
       WeightedSiteMinderJob.class.getName(),

@@ -129,7 +129,7 @@ public final class ExecJob
   @Override()
   public String getShortDescription()
   {
-    return "Execute a command on client systems.";
+    return "Execute a command on client systems";
   }
 
 

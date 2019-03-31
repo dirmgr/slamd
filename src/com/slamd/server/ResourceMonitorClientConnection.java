@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import com.unboundid.asn1.ASN1Element;
-import com.unboundid.asn1.ASN1Exception;
 import com.unboundid.asn1.ASN1StreamReader;
 import com.unboundid.asn1.ASN1Writer;
 

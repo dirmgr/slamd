@@ -1690,7 +1690,8 @@ public final class Scheduler
                     }
                     catch (Exception e)
                     {
-                      slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
+                      slamdServer.logMessage(
+                           Constants.LOG_LEVEL_EXCEPTION_DEBUG,
                            JobClass.stackTraceToString(e));
                     }
                   }

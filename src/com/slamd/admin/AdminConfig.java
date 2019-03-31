@@ -55,7 +55,7 @@ import static com.slamd.admin.AdminUI.*;
  * This class provides a set of methods for providing the interface to the
  * SLAMD server configuration.
  */
-public class AdminConfig
+public final class AdminConfig
        implements ConfigSubscriber
 {
   static AdminConfig ADMIN_CONFIG = new AdminConfig();

@@ -26,8 +26,6 @@ import netscape.ldap.LDAPEntry;
 import netscape.ldap.LDAPException;
 import netscape.ldap.LDAPSearchResults;
 
-import com.unboundid.util.StaticUtils;
-
 import com.slamd.common.Constants;
 import com.slamd.common.SLAMDException;
 import com.slamd.stat.IntegerValueTracker;

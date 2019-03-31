@@ -27,8 +27,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.unboundid.util.StaticUtils;
-
 import com.slamd.common.Constants;
 import com.slamd.stat.StatTracker;
 
@@ -176,6 +174,7 @@ class LDAPMonitoredEntry
   /**
    * {@inheritDoc}
    */
+  @Override()
   public String toString() {
     return String.format("property base: %s, dn: %s, attrs: %s",
         this.propBase, this.dn, Arrays.asList(this.attrNames)

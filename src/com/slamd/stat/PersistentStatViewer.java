@@ -385,7 +385,7 @@ class PersistentStatGraphPanel
    *
    * @param  statViewer  The stat viewer with which this panel is associated.
    */
-  public PersistentStatGraphPanel(PersistentStatViewer statViewer)
+  PersistentStatGraphPanel(PersistentStatViewer statViewer)
   {
     super(true);
 

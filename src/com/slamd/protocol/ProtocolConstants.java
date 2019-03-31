@@ -446,5 +446,15 @@ public final class ProtocolConstants
    * file.
    */
   static final String PROPERTY_UPGRADE_FILE_NAME = "upgrade_file_name";
+
+
+
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private ProtocolConstants()
+  {
+    // No implementation required.
+  }
 }
 

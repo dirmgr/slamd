@@ -17,7 +17,7 @@ package com.slamd.scripting.general;
 
 
 
-import com.slamd.jobs.RateLimiter;
+import com.slamd.common.RateLimiter;
 import com.slamd.scripting.engine.Argument;
 import com.slamd.scripting.engine.Method;
 import com.slamd.scripting.engine.ScriptException;

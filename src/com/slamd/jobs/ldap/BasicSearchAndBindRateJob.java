@@ -1361,7 +1361,7 @@ public final class BasicSearchAndBindRateJob
         {
           if (collectingStats)
           {
-            bindTimer.stopTimer();;
+            bindTimer.stopTimer();
           }
         }
       }

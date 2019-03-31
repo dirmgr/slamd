@@ -951,7 +951,8 @@ public final class ComprehensiveModifyRateJob
         if (useStartTLS)
         {
           outputMessages.add("");
-          outputMessages.add("Trying to secure the connection with StartTLS...");
+          outputMessages.add(
+               "Trying to secure the connection with StartTLS...");
 
           try
           {
@@ -1274,16 +1275,18 @@ public final class ComprehensiveModifyRateJob
       final StringParameter dn2Param = parameters.getStringParameter(
            entryDNPattern2Parameter.getName());
       if ((dn2Param != null) && dn2Param.hasValue())
-      try
       {
-        entryDNPattern2 = new ValuePattern(dn2Param.getValue());
-      }
-      catch (final Exception e)
-      {
-        throw new UnableToRunException(
-             "Unable to create a value pattern from the second entry DN " +
-                  "pattern:  " + StaticUtils.getExceptionMessage(e),
-             e);
+        try
+        {
+          entryDNPattern2 = new ValuePattern(dn2Param.getValue());
+        }
+        catch (final Exception e)
+        {
+          throw new UnableToRunException(
+               "Unable to create a value pattern from the second entry DN " +
+                    "pattern:  " + StaticUtils.getExceptionMessage(e),
+               e);
+        }
       }
     }
     else

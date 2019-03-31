@@ -37,7 +37,7 @@ public interface JobGroupItem
    *
    * @return  The job group with which this job is associated.
    */
-  public JobGroup getJobGroup();
+  JobGroup getJobGroup();
 
 
 
@@ -46,7 +46,7 @@ public interface JobGroupItem
    *
    * @return  The human-readable name for this job.
    */
-  public String getName();
+  String getName();
 
 
 
@@ -55,7 +55,7 @@ public interface JobGroupItem
    *
    * @return  The job class for this job.
    */
-  public JobClass getJobClass();
+  JobClass getJobClass();
 
 
 
@@ -65,6 +65,6 @@ public interface JobGroupItem
    *
    * @return  The ASN.1 element containing the encoded job information.
    */
-  public ASN1Element encode();
+  ASN1Element encode();
 }
 

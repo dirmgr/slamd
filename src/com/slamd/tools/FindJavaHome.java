@@ -29,8 +29,18 @@ import java.io.File;
  *
  * @author   Neil A. Wilson
  */
-public class FindJavaHome
+public final class FindJavaHome
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private FindJavaHome()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Performs the work of determining the location of the Java installation.
    *

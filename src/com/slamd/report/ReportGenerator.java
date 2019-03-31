@@ -40,7 +40,7 @@ public interface ReportGenerator
    * @return  The user-friendly name that can be used to indicate the type of
    *          report that will be generated.
    */
-  public String getReportGeneratorName();
+  String getReportGeneratorName();
 
 
 
@@ -51,7 +51,7 @@ public interface ReportGenerator
    * @return  A new instance of this report generator initialized with the
    *          default configuration.
    */
-  public ReportGenerator newInstance();
+  ReportGenerator newInstance();
 
 
 
@@ -62,7 +62,7 @@ public interface ReportGenerator
    * @return  A set of parameters that can be used to allow the user to
    *          configure the way that the report is generated.
    */
-  public ParameterList getReportParameterStubs();
+  ParameterList getReportParameterStubs();
 
 
 
@@ -73,7 +73,7 @@ public interface ReportGenerator
    * @param  reportParameters  The set of parameters provided by the end user
    *                           that should be used to customize the report.
    */
-  public void initializeReporter(ParameterList reportParameters);
+  void initializeReporter(ParameterList reportParameters);
 
 
 
@@ -83,7 +83,7 @@ public interface ReportGenerator
    *
    * @param  job  The job about which to include information in the report.
    */
-  public void addJobReport(Job job);
+  void addJobReport(Job job);
 
 
 
@@ -94,7 +94,7 @@ public interface ReportGenerator
    * @param  optimizingJob  The optimizing job about which to include
    *                        information in the report.
    */
-  public void addOptimizingJobReport(OptimizingJob optimizingJob);
+  void addOptimizingJobReport(OptimizingJob optimizingJob);
 
 
 
@@ -104,6 +104,6 @@ public interface ReportGenerator
    *
    * @param  requestInfo  State information about the request being processed.
    */
-  public void generateReport(RequestInfo requestInfo);
+  void generateReport(RequestInfo requestInfo);
 }
 

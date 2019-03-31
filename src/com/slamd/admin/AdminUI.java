@@ -56,13 +56,23 @@ import static com.slamd.admin.AdminServlet.*;
  * This class provides a set of methods for providing the core administrative
  * user interface.
  */
-public class AdminUI
+public final class AdminUI
 {
   /**
    * The HTML that should be displayed on the main page displayed when a user
    * initially accesses the SLAMD administrative interface.
    */
   static String defaultHTML = null;
+
+
+
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminUI()
+  {
+    // No implementation required.
+  }
 
 
 

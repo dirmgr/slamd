@@ -259,9 +259,9 @@ public abstract class JobClass
    * @return  The set of stat trackers that will be maintained by this job
    *          class.
    */
-  public abstract StatTracker[] getStatTrackerStubs(final String clientID,
-                                     final String threadID,
-                                     final int collectionInterval);
+  public abstract StatTracker[] getStatTrackerStubs(String clientID,
+                                                    String threadID,
+                                                    int collectionInterval);
 
 
 
@@ -501,10 +501,10 @@ public abstract class JobClass
    *                                completed successfully and the job is unable
    *                                to run.
    */
-  public abstract void initializeThread(final String clientID,
-                                        final String threadID,
-                                        final int collectionInterval,
-                                        final ParameterList parameters)
+  public abstract void initializeThread(String clientID,
+                                        String threadID,
+                                        int collectionInterval,
+                                        ParameterList parameters)
          throws UnableToRunException;
 
 

@@ -43,7 +43,7 @@ public interface ConfigSubscriber
    * @return  The name that this configuration subscriber uses to identify
    *          itself to the configuration handler.
    */
-  public String getSubscriberName();
+  String getSubscriberName();
 
 
 
@@ -54,7 +54,7 @@ public interface ConfigSubscriber
    * @return  The set of configuration parameters associated with this
    *          configuration subscriber.
    */
-  public ParameterList getSubscriberParameters();
+  ParameterList getSubscriberParameters();
 
 
 
@@ -66,8 +66,8 @@ public interface ConfigSubscriber
    * @throws  SLAMDServerException  If there is a problem while making a
    *                                configuration change.
    */
-  public void refreshSubscriberConfiguration()
-         throws SLAMDServerException;
+  void refreshSubscriberConfiguration()
+       throws SLAMDServerException;
 
 
 
@@ -83,7 +83,7 @@ public interface ConfigSubscriber
    *                                not have acceptable values, or if a problem
    *                                occurs while making a configuration change.
    */
-  public void refreshSubscriberConfiguration(String parameterName)
-         throws SLAMDServerException;
+  void refreshSubscriberConfiguration(String parameterName)
+       throws SLAMDServerException;
 }
 

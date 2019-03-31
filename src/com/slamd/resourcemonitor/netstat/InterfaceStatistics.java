@@ -85,7 +85,7 @@ public abstract class InterfaceStatistics
    *
    * @return the received bytes tracker.
    */
-  final public LongValueTracker getReceivedBytes()
+  public final LongValueTracker getReceivedBytes()
   {
     return receivedBytes;
   }
@@ -96,7 +96,7 @@ public abstract class InterfaceStatistics
    *
    * @return the sent bytes tracker.
    */
-  final public LongValueTracker getSentBytes()
+  public final LongValueTracker getSentBytes()
   {
     return sentBytes;
   }
@@ -106,7 +106,7 @@ public abstract class InterfaceStatistics
   /**
    * Enables real time statistics collection.
    */
-  final public void enableRealTimeStats()
+  public final void enableRealTimeStats()
   {
     this.enableRealTimeStats = true;
   }

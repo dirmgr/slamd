@@ -18,7 +18,6 @@ package com.slamd.protocol;
 
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.unboundid.asn1.ASN1Element;
@@ -106,7 +105,7 @@ public abstract class SLAMDMessage
    *                          be strings.
    */
   private void initializeDecodedMessage(final int messageID,
-                                        final Map<String,String> extraProperties)
+                    final Map<String,String> extraProperties)
   {
     this.messageID = messageID;
 
@@ -362,7 +361,7 @@ public abstract class SLAMDMessage
    *                          provided ASN.1 element as the payload for this
    *                          SLAMD message.
    */
-  public abstract void decodeMessagePayload(final ASN1Element payloadElement)
+  public abstract void decodeMessagePayload(ASN1Element payloadElement)
          throws SLAMDException;
 
 
@@ -376,8 +375,7 @@ public abstract class SLAMDMessage
    *                 appended.
    * @param  indent  The number of spaces to indent the payload content.
    */
-  public abstract void payloadToString(final StringBuilder buffer,
-                                       final int indent);
+  public abstract void payloadToString(StringBuilder buffer, int indent);
 
 
 

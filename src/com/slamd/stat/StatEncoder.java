@@ -45,8 +45,18 @@ import com.slamd.common.SLAMDException;
  *
  * @author   Neil A. Wilson
  */
-public class StatEncoder
+public final class StatEncoder
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private StatEncoder()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Encodes the provided stat tracker into an ASN.1 sequence.
    *

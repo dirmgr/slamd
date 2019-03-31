@@ -1,8 +1,4 @@
 /*
- * Copyright 2009-2010 UnboundID Corp.
- * All Rights Reserved.
- */
-/*
  *                             Sun Public License
  *
  * The contents of this file are subject to the Sun Public License Version
@@ -15,6 +11,10 @@
  * All Rights Reserved.
  *
  * Contributor(s):  Neil A. Wilson
+ */
+/*
+ * Copyright 2009-2010 UnboundID Corp.
+ * All Rights Reserved.
  */
 package com.slamd.jobs.ldap;
 

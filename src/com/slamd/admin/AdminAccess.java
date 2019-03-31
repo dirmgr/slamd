@@ -29,8 +29,18 @@ import static com.slamd.admin.AdminServlet.*;
  * This class provides a set of methods for providing access control for the
  * administrative user interface.
  */
-public class AdminAccess
+public final class AdminAccess
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminAccess()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Retrieves the access manager associated with this admin servlet.
    *

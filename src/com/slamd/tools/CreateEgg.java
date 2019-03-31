@@ -44,7 +44,7 @@ import com.unboundid.util.Base64;
  *
  * @author   Neil A. Wilson
  */
-public class CreateEgg
+public final class CreateEgg
 {
   /**
    * The salt that will always be used for encryption.  Since we don't care that
@@ -66,6 +66,16 @@ public class CreateEgg
    * The name of the cipher to use for the encryption.
    */
   public static final String CIPHER_NAME = "PBEWithMD5AndDES";
+
+
+
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private CreateEgg()
+  {
+    // No implementation required.
+  }
 
 
 

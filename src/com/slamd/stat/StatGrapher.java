@@ -1119,7 +1119,11 @@ public class StatGrapher
 
       int j, x1, x2, y1, y2;
       for (j=0; ((j < data[i].length) && ignoreZeroValues &&
-                 Double.isNaN(data[i][j])); j++);
+                 Double.isNaN(data[i][j])); j++)
+      {
+        // No need to do anything.
+      }
+
       if (j >= data[i].length)
       {
         continue;
@@ -2057,7 +2061,11 @@ public class StatGrapher
 
       int j, o1, o2, x1, x2, y1, y2;
       for (j=0; ((j < data[i].length) && ignoreZeroValues &&
-                 Double.isNaN(data[i][j])); j++);
+                 Double.isNaN(data[i][j])); j++)
+      {
+        // No need to do anything.
+      }
+
       if (j >= data[i].length)
       {
         continue;
@@ -2875,7 +2883,11 @@ public class StatGrapher
       g.setColor(COLORS[0]);
       int j, x1, x2, y1, y2;
       for (j=0; ((j < values1.length) && ignoreZeroValues &&
-                 Double.isNaN(values1[j])); j++);
+                 Double.isNaN(values1[j])); j++)
+      {
+        // No need to do anything.
+      }
+
       x1 = valueXToGraphX(j*interval1);
       y1 = valueYToGraphY(values1[j]);
       for (j=j+1; j < values1.length; j++)
@@ -2904,7 +2916,11 @@ public class StatGrapher
       // Iterate through the second set of data and make the line graph.
       g.setColor(COLORS[1]);
       for (j=0; ((j < values2.length) && ignoreZeroValues &&
-                 Double.isNaN(values2[j])); j++);
+                 Double.isNaN(values2[j])); j++)
+      {
+        // No need to do anything.
+      }
+
       x1 = valueXToGraphX(j*interval2);
       y1 = valueYToGraphY(values2[j]);
       for (j=j+1; j < values2.length; j++)
@@ -2935,7 +2951,11 @@ public class StatGrapher
       g.setColor(COLORS[0]);
       int j, x1, x2, y1, y2;
       for (j=0; ((j < values1.length) && ignoreZeroValues &&
-                 Double.isNaN(values1[j])); j++);
+                 Double.isNaN(values1[j])); j++)
+      {
+        // No need to do anything.
+      }
+
       if (j < values1.length)
       {
         x1 = valueXToGraphX((j+1)*interval1);
@@ -2967,7 +2987,11 @@ public class StatGrapher
       // Iterate through the second set of data and make the line graph.
       g.setColor(COLORS[1]);
       for (j=0; ((j < values2.length) && ignoreZeroValues &&
-                 Double.isNaN(values2[j])); j++);
+                 Double.isNaN(values2[j])); j++)
+      {
+        // No need to do anything.
+      }
+
       if (j < values2.length)
       {
         x1 = valueXToGraphX((j+1)*interval2);

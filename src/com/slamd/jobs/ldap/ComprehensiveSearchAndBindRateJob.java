@@ -1078,7 +1078,8 @@ public final class ComprehensiveSearchAndBindRateJob
         if (useStartTLS)
         {
           outputMessages.add("");
-          outputMessages.add("Trying to secure the connection with StartTLS...");
+          outputMessages.add(
+               "Trying to secure the connection with StartTLS...");
 
           try
           {
@@ -1901,7 +1902,7 @@ public final class ComprehensiveSearchAndBindRateJob
         {
           if (collectingStats)
           {
-            bindTimer.stopTimer();;
+            bindTimer.stopTimer();
           }
         }
       }

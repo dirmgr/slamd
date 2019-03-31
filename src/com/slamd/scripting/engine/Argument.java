@@ -31,7 +31,7 @@ public interface Argument
    *
    * @return  The name of the data type associated with this argument.
    */
-  public String getArgumentType();
+  String getArgumentType();
 
 
 
@@ -43,8 +43,8 @@ public interface Argument
    * @throws  ScriptException  If a problem occurs while determining the value
    *                           of this argument.
    */
-  public Variable getArgumentValue()
-         throws ScriptException;
+  Variable getArgumentValue()
+           throws ScriptException;
 
 
 
@@ -55,7 +55,7 @@ public interface Argument
    * @return  A string representation of this argument in a form appropriate for
    *          inclusion in a script.
    */
-  public String getArgumentAsString();
+  String getArgumentAsString();
 
 
 
@@ -67,7 +67,7 @@ public interface Argument
    * @throws  ScriptException  If a problem occurs while retrieving the value as
    *                           a string.
    */
-  public String getValueAsString()
+  String getValueAsString()
          throws ScriptException;
 }
 

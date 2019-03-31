@@ -82,6 +82,16 @@ import static com.slamd.admin.AdminUI.*;
 public final class AdminJob
 {
   /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminJob()
+  {
+    // No implementation required.
+  }
+
+
+
+  /**
    * Handle all processing related to viewing summary for information for a set
    * of jobs in a particular category (pending, running, or completed), or for
    * viewing detailed information about a specific job.

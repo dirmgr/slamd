@@ -29,8 +29,18 @@ import java.net.UnknownHostException;
  *
  * @author   Neil A. Wilson
  */
-public class TCPCapture
+public final class TCPCapture
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private TCPCapture()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Parses the command-line arguments, creates the TCP capture daemon, and
    * starts capturing data.

@@ -110,7 +110,7 @@ package com.slamd.common;
  * This file has been dynamically generated as part of the SLAMD build
  * process.  Do not edit it directly.
  */
-public class DynamicConstants
+public final class DynamicConstants
 {
   /**
    * Indicates whether this is an official build.
@@ -158,6 +158,16 @@ public class DynamicConstants
    * The version qualifier string for this SLAMD build.
    */
   public static final String VERSION_QUALIFIER = "${VERSION_QUALIFIER}";
+
+
+
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private DynamicConstants()
+  {
+    // No implementation required.
+  }
 }
 </echo>
   </target>
@@ -335,7 +345,8 @@ public class DynamicConstants
 
 
   <!-- Package the SLAMD Server into a ZIP file -->
-  <target name="package" depends="clean,init,build,create-package-dir"
+  <target name="package"
+          depends="clean,init,build,checkstyle,create-package-dir"
           description="Package the SLAMD Server for distribution">
     <echo message="Packaging SLAMD...." />
 
@@ -422,12 +433,13 @@ public class DynamicConstants
   <!-- Perform Basic Code Style Checks -->
   <target name="checkstyle" description="Perform basic code style checks">
     <echo message="Checking source code style characteristics...." />
-    <taskdef resource="checkstyletask.properties"
-             classpath="${checkstyle.dir}/checkstyle-all-4.1.jar" />
-
+    <taskdef resource="com/puppycrawl/tools/checkstyle/ant/checkstyle-ant-task.properties"
+             classpath="${checkstyle.dir}/checkstyle-8.18-all.jar"/>
     <checkstyle config="${checkstyle.dir}/slamd-checkstyle.xml"
-                failOnViolation="true">
-      <fileset dir="${source.dir}" includes="**/*.java" />
+                classpath="${classes.dir}" failOnViolation="true">
+      <fileset dir="${source.dir}" includes="**/*.java"
+               excludes="**/Version.java" />
+      <formatter type="plain" />
     </checkstyle>
   </target>
 

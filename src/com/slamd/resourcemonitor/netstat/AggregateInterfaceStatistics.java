@@ -58,6 +58,7 @@ public class AggregateInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void recordSentValue(long value)
   {
     this.sentTotal += value;
@@ -68,6 +69,7 @@ public class AggregateInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void recordReceivedValue(long value)
   {
     this.receivedTotal += value;
@@ -78,6 +80,7 @@ public class AggregateInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void completeIteration()
   {
     if (lastReceivedValue >= 0)

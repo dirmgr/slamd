@@ -147,6 +147,7 @@ public class SolarisNetStatCollector extends NetStatCollector
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void collect() throws IOException
   {
     //

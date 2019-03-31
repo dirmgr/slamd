@@ -33,7 +33,7 @@ package com.slamd.scripting.engine;
  *
  * @author   Neil A. Wilson
  */
-public class BreakException
+public final class BreakException
        extends ScriptException
 {
   /**

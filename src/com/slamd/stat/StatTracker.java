@@ -51,7 +51,7 @@ public interface StatTracker
    *
    * @return  The new instance of this stat tracker.
    */
-  public StatTracker newInstance();
+  StatTracker newInstance();
 
 
 
@@ -59,7 +59,7 @@ public interface StatTracker
    * Indicates that the stat tracker is to start maintaining statistics and that
    * it should start its internal timer.
    */
-  public void startTracker();
+  void startTracker();
 
 
 
@@ -67,7 +67,7 @@ public interface StatTracker
    * Indicates that the stat tracker that there will not be any more statistics
    * collection done and that it should stop its internal timer.
    */
-  public void stopTracker();
+  void stopTracker();
 
 
 
@@ -78,7 +78,7 @@ public interface StatTracker
    * @return  {@code true} if this stat tracker has been started, or
    *          {@code false} if it has not yet been started.
    */
-  public boolean hasBeenStarted();
+  boolean hasBeenStarted();
 
 
 
@@ -88,7 +88,7 @@ public interface StatTracker
    * @return  {@code true} if this stat tracker is currently running, or
    *          {@code false} if not.
    */
-  public boolean isRunning();
+  boolean isRunning();
 
 
 
@@ -102,7 +102,7 @@ public interface StatTracker
    * @param  jobID         The job ID of the job that will be reporting the
    *                       data.
    */
-  public void enableRealTimeStats(RealTimeStatReporter statReporter,
+  void enableRealTimeStats(RealTimeStatReporter statReporter,
                                   String jobID);
 
 
@@ -112,7 +112,7 @@ public interface StatTracker
    *
    * @return  The client ID of the client that used this stat tracker.
    */
-  public String getClientID();
+  String getClientID();
 
 
 
@@ -123,7 +123,7 @@ public interface StatTracker
    *
    * @param  clientID  The client ID of the client that used this stat tracker.
    */
-  public void setClientID(String clientID);
+  void setClientID(String clientID);
 
 
 
@@ -132,7 +132,7 @@ public interface StatTracker
    *
    * @return  The thread ID of the client thread that used this stat tracker.
    */
-  public String getThreadID();
+  String getThreadID();
 
 
 
@@ -144,7 +144,7 @@ public interface StatTracker
    * @param  threadID  The thread ID of the client thread that used this stat
    *                   tracker.
    */
-  public void setThreadID(String threadID);
+  void setThreadID(String threadID);
 
 
 
@@ -153,7 +153,7 @@ public interface StatTracker
    *
    * @return  The user-friendly name associated with this stat tracker.
    */
-  public String getDisplayName();
+  String getDisplayName();
 
 
 
@@ -164,7 +164,7 @@ public interface StatTracker
    *
    * @param  displayName The display name for this stat tracker.
    */
-  public void setDisplayName(String displayName);
+  void setDisplayName(String displayName);
 
 
 
@@ -175,7 +175,7 @@ public interface StatTracker
    * @return  The collection interval (in seconds) that will be used for this
    *          stat tracker.
    */
-  public int getCollectionInterval();
+  int getCollectionInterval();
 
 
 
@@ -187,7 +187,7 @@ public interface StatTracker
    * @param  collectionInterval  The collection interval in seconds to use for
    *                             this stat tracker.
    */
-  public void setCollectionInterval(int collectionInterval);
+  void setCollectionInterval(int collectionInterval);
 
 
 
@@ -198,7 +198,7 @@ public interface StatTracker
    * @return  The total length of time in seconds that this stat tracker was
    *          capturing statistics.
    */
-  public int getDuration();
+  int getDuration();
 
 
 
@@ -209,7 +209,7 @@ public interface StatTracker
    *
    * @param  duration  The duration for this stat tracker.
    */
-  public void setDuration(int duration);
+  void setDuration(int duration);
 
 
 
@@ -221,7 +221,7 @@ public interface StatTracker
    * @return  {@code true} if statistics collected by this stat tracker
    *          should be searchable, or {@code false} if not.
    */
-  public boolean isSearchable();
+  boolean isSearchable();
 
 
 
@@ -238,7 +238,7 @@ public interface StatTracker
    * @return  {@code true} if the value of this stat tracker is greater
    *          than or equal to the provided value, or {@code false} if not.
    */
-  public boolean isAtLeast(double value);
+  boolean isAtLeast(double value);
 
 
 
@@ -255,7 +255,7 @@ public interface StatTracker
    * @return  {@code true} if the value of this stat tracker is less than
    *          or equal to the provided value, or {@code false} if not.
    */
-  public boolean isAtMost(double value);
+  boolean isAtMost(double value);
 
 
 
@@ -266,7 +266,7 @@ public interface StatTracker
    * @return  The number of intervals for which data is available for this stat
    *          tracker.
    */
-  public int getNumIntervals();
+  int getNumIntervals();
 
 
 
@@ -279,7 +279,7 @@ public interface StatTracker
    *
    * @param  trackers  The set of stat trackers whose data is to be aggregated.
    */
-  public void aggregate(StatTracker[] trackers);
+  void aggregate(StatTracker[] trackers);
 
 
 
@@ -290,7 +290,7 @@ public interface StatTracker
    * @return  A brief one-line summary string containing cumulative information
    *          about this stat tracker.
    */
-  public String getSummaryString();
+  String getSummaryString();
 
 
 
@@ -302,7 +302,7 @@ public interface StatTracker
    *
    * @return  The value associated with this stat tracker.
    */
-  public double getSummaryValue();
+  double getSummaryValue();
 
 
 
@@ -313,7 +313,7 @@ public interface StatTracker
    * @return  A detailed string with verbose information about the data
    *          collected by this stat tracker.
    */
-  public String getDetailString();
+  String getDetailString();
 
 
 
@@ -323,7 +323,7 @@ public interface StatTracker
    *
    * @return  An HTML version of the summary data for this stat tracker.
    */
-  public String getSummaryHTML();
+  String getSummaryHTML();
 
 
 
@@ -333,7 +333,7 @@ public interface StatTracker
    *
    * @return  An HTML version of the verbose data for this stat tracker.
    */
-  public String getDetailHTML();
+  String getDetailHTML();
 
 
 
@@ -344,7 +344,7 @@ public interface StatTracker
    * @return  A string array with the labels corresponding to the values
    *          returned from the <CODE>getSummaryData</CODE> method.
    */
-  public String[] getSummaryLabels();
+  String[] getSummaryLabels();
 
 
 
@@ -353,7 +353,7 @@ public interface StatTracker
    *
    * @return  The summary string data for this stat tracker as separate values.
    */
-  public String[] getSummaryData();
+  String[] getSummaryData();
 
 
 
@@ -370,7 +370,7 @@ public interface StatTracker
    * @return  The raw data associated with this stat tracker in a form that can
    *           be exported to some external form.
    */
-  public String[][] getDataForExport(boolean includeLabels);
+  String[][] getDataForExport(boolean includeLabels);
 
 
 
@@ -380,7 +380,7 @@ public interface StatTracker
    *
    * @return  The data collected by this tracker encoded as a byte array.
    */
-  public byte[] encode();
+  byte[] encode();
 
 
 
@@ -393,8 +393,8 @@ public interface StatTracker
    * @throws  SLAMDException  If the provided data cannot be decoded and used
    *                          with this stat tracker.
    */
-  public void decode(byte[] encodedData)
-    throws SLAMDException;
+  void decode(byte[] encodedData)
+       throws SLAMDException;
 
 
 
@@ -408,7 +408,7 @@ public interface StatTracker
    * @return  The set of parameters that may be used to customize the graph that
    *          is generated.
    */
-  public ParameterList getGraphParameterStubs(Job job);
+  ParameterList getGraphParameterStubs(Job job);
 
 
 
@@ -423,7 +423,7 @@ public interface StatTracker
    * @return  The set of parameters that may be used to customize the graph that
    *          is generated.
    */
-  public ParameterList getMonitorGraphParameterStubs(Job job);
+  ParameterList getMonitorGraphParameterStubs(Job job);
 
 
 
@@ -438,7 +438,7 @@ public interface StatTracker
    * @return  The set of parameters that may be used to customize the graph that
    *          is generated.
    */
-  public ParameterList getGraphParameterStubs(Job[] jobs);
+  ParameterList getGraphParameterStubs(Job[] jobs);
 
 
 
@@ -450,7 +450,7 @@ public interface StatTracker
    * @return  The data that represents the points in a line graph for this stat
    *          tracker, or {@code null} if that data is not available.
    */
-  public double[] getGraphData();
+  double[] getGraphData();
 
 
 
@@ -463,7 +463,7 @@ public interface StatTracker
    *          line graph for this stat tracker, or {@code null} if that
    *          data is not applicable.
    */
-  public String getAxisLabel();
+  String getAxisLabel();
 
 
 
@@ -482,8 +482,8 @@ public interface StatTracker
    * @return  The graph created from the statistical information in the provided
    *          job.
    */
-  public BufferedImage createGraph(Job job, int width, int height,
-                                   ParameterList graphParameters);
+  BufferedImage createGraph(Job job, int width, int height,
+                            ParameterList graphParameters);
 
 
 
@@ -501,8 +501,8 @@ public interface StatTracker
    * @return  The graph created from the statistical information in the provided
    *          job.
    */
-  public BufferedImage createMonitorGraph(Job job, int width, int height,
-                                          ParameterList parameters);
+  BufferedImage createMonitorGraph(Job job, int width, int height,
+                                   ParameterList parameters);
 
 
 
@@ -521,8 +521,8 @@ public interface StatTracker
    * @return  The graph created from the statistical information in the provided
    *          job.
    */
-  public BufferedImage createGraph(Job[] jobs, int width, int height,
-                                   ParameterList parameters);
+  BufferedImage createGraph(Job[] jobs, int width, int height,
+                            ParameterList parameters);
 
 
 
@@ -535,6 +535,6 @@ public interface StatTracker
    *
    * @return  The graph created from this stat tracker.
    */
-  public BufferedImage createGraph(int width, int height);
+  BufferedImage createGraph(int width, int height);
 }
 

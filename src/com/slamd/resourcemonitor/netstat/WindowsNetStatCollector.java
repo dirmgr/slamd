@@ -50,6 +50,7 @@ public class WindowsNetStatCollector extends NetStatCollector
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void collect() throws IOException
   {
 

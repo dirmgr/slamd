@@ -36,7 +36,7 @@ import java.io.InputStream;
  * The ZFS pool resource monitor allows monitoring ZFS pools as exposed by the
  * {@code zpool iostat} command.
  */
-public class ZFSPoolResourceMonitor
+public final class ZFSPoolResourceMonitor
   extends ResourceMonitor
 {
   /**
@@ -135,6 +135,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public String getMonitorName() {
     return "ZFS Pool Resource Monitor";
   }
@@ -146,6 +147,7 @@ public class ZFSPoolResourceMonitor
    *
    * @return true if the operating system is Solaris, false otherwise.
    */
+  @Override()
   public boolean clientSupported()
   {
     int osType = getClientOS();
@@ -164,6 +166,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void initializeStatistics(String clientID, String threadID,
                                    int collectionInterval)
   {
@@ -178,6 +181,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public ResourceMonitor newInstance() throws SLAMDException
   {
     final ResourceMonitor monitor = new ZFSPoolResourceMonitor();
@@ -191,6 +195,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void initializeMonitor() throws SLAMDException
   {
     firstIterationSkipped = false;
@@ -245,6 +250,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public StatTracker[] getResourceStatistics()
   {
     final List<StatTracker> stats = new ArrayList<StatTracker>();
@@ -357,6 +363,7 @@ public class ZFSPoolResourceMonitor
   /**
    * {@inheritDoc}
    */
+  @Override()
   public int runMonitor()
   {
     final Process p;
@@ -637,7 +644,7 @@ public class ZFSPoolResourceMonitor
   /**
    * Helper class to capture statistics for a ZFS pool.
    */
-  private class PoolData
+  private final class PoolData
   {
     final int reads;
     final int writes;

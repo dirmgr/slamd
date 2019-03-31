@@ -143,8 +143,8 @@ public class DeleteOperation
         String lastString  = jobThread.getRandomString(8);
 
         Entry entry = new Entry(dn,
-             new Attribute("objectClass", "top", "person", "organizationalPerson",
-                  "inetOrgPerson", "extensibleObject"),
+             new Attribute("objectClass", "top", "person",
+                  "organizationalPerson", "inetOrgPerson", "extensibleObject"),
              new Attribute("givenName", firstString),
              new Attribute("sn", lastString),
              new Attribute("cn", firstString + ' ' + lastString));

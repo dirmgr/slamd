@@ -501,7 +501,8 @@ public final class SingleStatisticWithReplicationLatencyOptimizationAlgorithm
         } catch (final Exception e) {}
 
 
-        final StatTracker[] trackers = iterations[i].getStatTrackers(optimizeStat);
+        final StatTracker[] trackers =
+             iterations[i].getStatTrackers(optimizeStat);
         if ((trackers != null) && (trackers.length > 0))
         {
           final StatTracker tracker = trackers[0].newInstance();

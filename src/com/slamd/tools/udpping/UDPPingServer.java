@@ -31,12 +31,22 @@ import java.net.DatagramSocket;
  *
  * @author   Neil A. Wilson
  */
-public class UDPPingServer
+public final class UDPPingServer
 {
   /**
    * The default port on which this server will listen for connections.
    */
   public static final int DEFAULT_LISTEN_PORT = 7777;
+
+
+
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private UDPPingServer()
+  {
+    // No implementation required.
+  }
 
 
 

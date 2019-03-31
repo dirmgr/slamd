@@ -2226,7 +2226,8 @@ public final class OptimizingJob
 
     // Construct an e-mail message with information about the optimizing job.
     final String EOL = Constants.SMTP_EOL;
-    final String subject = "SLAMD optimizing job " + optimizingJobID + " completed";
+    final String subject = "SLAMD optimizing job " + optimizingJobID +
+         " completed";
     final StringBuilder message = new StringBuilder();
     message.append("The optimization process for the SLAMD optimizing job " +
          optimizingJobID + " has completed." + EOL + EOL);

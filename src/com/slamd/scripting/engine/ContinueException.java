@@ -30,7 +30,7 @@ package com.slamd.scripting.engine;
  *
  * @author   Neil A. Wilson
  */
-public class ContinueException
+public final class ContinueException
        extends ScriptException
 {
   /**

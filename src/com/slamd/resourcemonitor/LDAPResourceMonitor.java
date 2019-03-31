@@ -212,6 +212,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public String getMonitorName() {
     return "LDAP Resource Monitor";
   }
@@ -219,6 +220,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public boolean clientSupported() {
     return true;
   }
@@ -226,6 +228,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void initializeStatistics(String clientID, String threadID,
                                    int collectionInterval)
   {
@@ -253,6 +256,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public ResourceMonitor newInstance() throws SLAMDException {
     final ResourceMonitor monitor = new LDAPResourceMonitor();
     monitor.initialize(getMonitorClient(), getMonitorProperties());
@@ -416,6 +420,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public StatTracker[] getResourceStatistics() {
     // this set will sort the trackers according to their display names
     Set<StatTracker> stats = new TreeSet<StatTracker>(
@@ -450,6 +455,7 @@ public class LDAPResourceMonitor extends ResourceMonitor {
   /**
    * {@inheritDoc}
    */
+  @Override()
   public int runMonitor() {
     if (! monitorRetrievedInInit)
     {

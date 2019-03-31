@@ -85,6 +85,7 @@ public class LinuxNetStatCollector extends NetStatCollector
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void collect() throws IOException
   {
     String line;

@@ -43,8 +43,18 @@ import com.unboundid.util.StaticUtils;
  *
  * @author   Neil A. Wilson
  */
-public class DBDump
+public final class DBDump
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private DBDump()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Parses the command-line arguments, opens the database, and prints out the
    * specified debug information.

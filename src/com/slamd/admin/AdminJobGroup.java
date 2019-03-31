@@ -62,8 +62,18 @@ import static com.slamd.admin.AdminUI.*;
  * This class provides a set of methods for providing logic for managing job
  * groups.
  */
-public class AdminJobGroup
+public final class AdminJobGroup
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminJobGroup()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Handles all processing related to viewing information about the job groups
    * defined in the SLAMD server.

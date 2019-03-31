@@ -32,7 +32,7 @@ public interface ClientMessageWriter
    *
    * @param  message  The message to be written.
    */
-  public void writeMessage(String message);
+  void writeMessage(String message);
 
 
 
@@ -42,7 +42,7 @@ public interface ClientMessageWriter
    *
    * @param  message  The message to be written.
    */
-  public void writeVerbose(String message);
+  void writeVerbose(String message);
 
 
 
@@ -53,6 +53,6 @@ public interface ClientMessageWriter
    * @return  {@code true} if the message writer is using verbose mode, or
    *          {@code false} if not.
    */
-  public boolean usingVerboseMode();
+  boolean usingVerboseMode();
 }
 

@@ -48,6 +48,7 @@ public class SingleInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void recordSentValue(long value)
   {
     if (lastSentValue >= 0)
@@ -69,6 +70,7 @@ public class SingleInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void recordReceivedValue(long value)
   {
     if (lastReceivedValue >= 0)
@@ -90,6 +92,7 @@ public class SingleInterfaceStatistics extends InterfaceStatistics
   /**
    * {@inheritDoc}
    */
+  @Override()
   void completeIteration()
   {
     // nothing to do

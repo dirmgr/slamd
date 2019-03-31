@@ -17,7 +17,6 @@ package com.slamd.admin;
 
 
 
-import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map;
@@ -39,8 +38,18 @@ import static com.slamd.admin.AdminUI.*;
  * This class provides a set of methods for providing debug access to the
  * administrative interface.
  */
-public class AdminDebug
+public final class AdminDebug
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminDebug()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Handles the work of generating debug information about all thread groups
    * and threads defined in the JVM.

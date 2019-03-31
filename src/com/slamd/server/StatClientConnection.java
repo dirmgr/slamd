@@ -24,7 +24,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.unboundid.asn1.ASN1Element;
-import com.unboundid.asn1.ASN1Exception;
 import com.unboundid.asn1.ASN1StreamReader;
 import com.unboundid.asn1.ASN1Writer;
 

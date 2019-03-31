@@ -32,7 +32,7 @@ public interface JobItem
    * @return  An instance of the job class with which this job is associated,
    *          or {@code null} if it could not be retrieved for some reason.
    */
-  public JobClass getJobClass();
+  JobClass getJobClass();
 
 
 
@@ -43,7 +43,7 @@ public interface JobItem
    *          {@code null} if it was not scheduled as part of any job
    *          group.
    */
-  public String getJobGroup();
+  String getJobGroup();
 
 
 
@@ -52,6 +52,6 @@ public interface JobItem
    *
    * @return  The name of the folder in which this job is located.
    */
-  public String getFolderName();
+  String getFolderName();
 }
 

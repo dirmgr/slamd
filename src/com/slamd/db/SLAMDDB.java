@@ -3564,8 +3564,8 @@ public final class SLAMDDB
     {
       abortTransaction(txn);
 
-      final String message = "Unexpected exception caught while attempting to " +
-           "move optimizing job:  " + e;
+      final String message = "Unexpected exception caught while attempting " +
+           "to move optimizing job:  " + e;
       slamdServer.logMessage(Constants.LOG_LEVEL_CONFIG, message);
       slamdServer.logMessage(Constants.LOG_LEVEL_EXCEPTION_DEBUG,
            JobClass.stackTraceToString(e));

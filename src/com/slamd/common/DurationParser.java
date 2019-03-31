@@ -1,8 +1,4 @@
 /*
- * Copyright 2010 UnboundID Corp.
- * All Rights Reserved.
- */
-/*
  *                             Sun Public License
  *
  * The contents of this file are subject to the Sun Public License Version
@@ -16,6 +12,10 @@
  * All Rights Reserved.
  *
  * Contributor(s):  Neil A. Wilson
+ */
+/*
+ * Copyright 2010 UnboundID Corp.
+ * All Rights Reserved.
  */
 package com.slamd.common;
 
@@ -52,6 +52,16 @@ package com.slamd.common;
  */
 public final class DurationParser
 {
+  /**
+   * Prevent this utility class from being instantiated.
+   */
+  private DurationParser()
+  {
+    // No implementation required.
+  }
+
+
+
   /**
    * Parses the provided string as a duration.
    *

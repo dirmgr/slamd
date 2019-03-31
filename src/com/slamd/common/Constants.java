@@ -6473,6 +6473,16 @@ public final class Constants
 
 
   /**
+   * Prevent this utility class from being instantiated.
+   */
+  private Constants()
+  {
+    // No implementation required.
+  }
+
+
+
+  /**
    * Converts the provided string to a form that will be more suitable for
    * display in an HTML document.  In particular, it will convert special
    * characters like angle brackets and line breaks to

@@ -1313,7 +1313,8 @@ public final class ComprehensiveSearchAndModifyRateJob
         if (useStartTLS)
         {
           outputMessages.add("");
-          outputMessages.add("Trying to secure the connection with StartTLS...");
+          outputMessages.add(
+               "Trying to secure the connection with StartTLS...");
 
           try
           {

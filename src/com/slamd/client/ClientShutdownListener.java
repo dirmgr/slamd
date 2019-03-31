@@ -30,6 +30,6 @@ public interface ClientShutdownListener
    * Indicates that the client has disconnected from the server and that the
    * client may wish to take whatever action is appropriate.
    */
-  public void clientDisconnected();
+  void clientDisconnected();
 }
 

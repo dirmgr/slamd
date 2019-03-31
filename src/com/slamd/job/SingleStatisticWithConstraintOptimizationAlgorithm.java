@@ -675,9 +675,10 @@ public final class SingleStatisticWithConstraintOptimizationAlgorithm
       slamdServer.logMessage(Constants.LOG_LEVEL_JOB_DEBUG,
            "SingleStatisticWithConstraintOptimizationAlgorithm." +
                 "isBestIterationSoFar(" + iteration.getJobID() +
-                ") returning false because value " + value + " for constraint " +
-                "statistic " + constrainStat + " is less than the minimum " +
-                "allowed value of " + constraintValue);
+                ") returning false because value " + value +
+                " for constraint statistic " + constrainStat +
+                " is less than the minimum allowed value of " +
+                constraintValue);
       return false;
     }
 

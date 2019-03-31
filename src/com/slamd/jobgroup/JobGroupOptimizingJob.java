@@ -297,20 +297,17 @@ public final class JobGroupOptimizingJob
    *                                 optimizing job.
    */
   public JobGroupOptimizingJob(final String name, final JobGroup jobGroup,
-                               final JobClass jobClass, final int duration,
-                               final int delayBetweenIterations,
-                               final int numClients, final int minThreads,
-                               final int maxThreads, final int threadIncrement,
-                               final int collectionInterval,
-                               final int maxNonImproving,
-                               final int threadStartupDelay,
-                               final boolean reRunBestIteration,
-                               final int reRunDuration,
-                               final List<String> dependencies,
-                               final OptimizationAlgorithm optimizationAlgorithm,
-                               final ParameterList optimizationParameters,
-                               final Map<String,String> mappedParameters,
-                               final ParameterList fixedParameters)
+              final JobClass jobClass, final int duration,
+              final int delayBetweenIterations, final int numClients,
+              final int minThreads, final int maxThreads,
+              final int threadIncrement, final int collectionInterval,
+              final int maxNonImproving, final int threadStartupDelay,
+              final boolean reRunBestIteration, final int reRunDuration,
+              final List<String> dependencies,
+              final OptimizationAlgorithm optimizationAlgorithm,
+              final ParameterList optimizationParameters,
+              final Map<String,String> mappedParameters,
+              final ParameterList fixedParameters)
   {
     this.name                   = name;
     this.jobGroup               = jobGroup;

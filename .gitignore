@@ -1,4 +1,5 @@
 build
 src/com/slamd/common/DynamicConstants.java
+.checkstyle-cache-main
 .idea
 *.iml

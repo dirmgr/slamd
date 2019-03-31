@@ -50,6 +50,7 @@ public class AIXNetStatCollector extends NetStatCollector
   /**
    * {@inheritDoc}
    */
+  @Override()
   public void collect() throws IOException
   {
     // We can get information about TCP network traffic by executing the command

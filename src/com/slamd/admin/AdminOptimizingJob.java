@@ -64,6 +64,16 @@ import static com.slamd.admin.AdminUI.*;
 public final class AdminOptimizingJob
 {
   /**
+   * Prevent this utility class from being instantiated.
+   */
+  private AdminOptimizingJob()
+  {
+    // No implementation required.
+  }
+
+
+
+  /**
    * Handles the work of retrieving information about the specified optimizing
    * job as a plain text document.
    *

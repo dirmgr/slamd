@@ -7086,6 +7086,27 @@ public final class AdminJob
 
     htmlBody.append("<TABLE BORDER=\"0\">" + EOL);
 
+    // A label for generic parameters.  Only show this if there are any label
+    // parameters in the parameter list.
+    boolean includeGeneralParametersLabel = false;
+    for (final Parameter parameter : parameters.getParameters())
+    {
+      if (parameter instanceof LabelParameter)
+      {
+        includeGeneralParametersLabel = true;
+        break;
+      }
+    }
+
+    if (includeGeneralParametersLabel)
+    {
+      htmlBody.append("  <TR>" + EOL);
+      htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+      htmlBody.append("    <TD>&nbsp;</TD>" + EOL);
+      htmlBody.append("    <TD><B>General Parameters</B></TD>" + EOL);
+      htmlBody.append("  </TR>" + EOL);
+    }
+
     if (showAdvanced)
     {
       // Indicate whether the job should be disabled.

@@ -146,7 +146,7 @@ public class CommandLineClientManager
    * is provided.  Note that this does not apply to Windows systems, as they
    * require a different default command.
    */
-  public static final String DEFAULT_START_COMMAND = "./start_client.sh";
+  public static final String DEFAULT_START_COMMAND = "./start-client.sh";
 
 
 
@@ -154,7 +154,7 @@ public class CommandLineClientManager
    * The default command that will be used to start the client manager on
    * Windows systems if none is provided.
    */
-  public static final String DEFAULT_START_COMMAND_WINDOWS = "start_client.bat";
+  public static final String DEFAULT_START_COMMAND_WINDOWS = "start-client.bat";
 
 
 
